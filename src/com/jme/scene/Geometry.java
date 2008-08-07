@@ -648,16 +648,13 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
                 return null;
             }
         }
-        
-        // ensure vertex buffer starts at 0 for reading.
-        getVertexBuffer().rewind();
 
+        final FloatBuffer vertBuf = getVertexBuffer();
         for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
-            BufferUtils.populateFromBuffer(compVect, getVertexBuffer(), v);
+            BufferUtils.populateFromBuffer(compVect, vertBuf, v);
             localToWorld(compVect, compVect);
             BufferUtils.setInBuffer(compVect, store, v);
         }
-        store.clear();
         return store;
     }
 
@@ -672,14 +669,19 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * @return store or new FloatBuffer if store == null.
      */
     public FloatBuffer getWorldNormals(FloatBuffer store) {
-        if (store == null || store.capacity() != getNormalBuffer().limit())
-            store = BufferUtils.clone(getNormalBuffer());
+        if (store == null || store.capacity() != getNormalBuffer().limit()) {
+            store = BufferUtils.createFloatBuffer(getNormalBuffer().limit());
+            if (store == null) {
+                return null;
+            }
+        }
+
+        final FloatBuffer normBuf = getNormalBuffer();
         for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
-            BufferUtils.populateFromBuffer(compVect, store, v);
+            BufferUtils.populateFromBuffer(compVect, normBuf, v);
             getWorldRotation().multLocal(compVect);
             BufferUtils.setInBuffer(compVect, store, v);
         }
-        store.clear();
         return store;
     }
 
