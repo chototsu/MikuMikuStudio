@@ -37,6 +37,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import com.jme.input.action.InputAction;
@@ -137,7 +140,7 @@ public class InputHandler {
      * mouse actions defined.
      */
     public InputHandler() {
-        initializeDefaultDevices();
+      
     }
 
     /**
@@ -238,40 +241,36 @@ public class InputHandler {
      * Devices for all handlers.
      * TODO: we could decide to have one device per handler to reduce amount of triggers that are checked on each event
      */
-    private static Map<String, InputHandlerDevice> devices;
+    private static final ConcurrentMap<String, InputHandlerDevice> devices = new ConcurrentHashMap<String, InputHandlerDevice>();
+    private static boolean devicesInitialized;
+    private static final ReentrantLock devicesInitializedLock = new ReentrantLock();
+    
 
-    /**
-     * create mouse, keyboard and joystick devices (if not yet created).
-     */
-    private static void initializeDefaultDevices() {
-        //TODO: synchronize if multithreaded creation of handlers should be supported
-        if ( devices == null ) {
-            devices = new HashMap<String, InputHandlerDevice>();
-            addDevice( new MouseInputHandlerDevice() );
-            addDevice( new KeyboardInputHandlerDevice() );
-            for ( int i = JoystickInput.get().getJoystickCount() - 1; i >= 0; i-- ) {
-                Joystick joystick = JoystickInput.get().getJoystick( i );
-                String name = joystick.getName();
-                String uniqueName = name;
-                for ( int j=2; devices.get(uniqueName) != null; j++ ) {
-                    uniqueName = name + " ("+j+")";
-                }
-                addDevice( new JoystickInputHandlerDevice( joystick, uniqueName ) );
-            }
+    private static Map<String, InputHandlerDevice> getDevicesMap() {
+    	devicesInitializedLock.lock();
+    	try {    		
+    		if (!devicesInitialized) {
+    			devicesInitialized = true;
+    			addDevice( new MouseInputHandlerDevice() );
+    			addDevice( new KeyboardInputHandlerDevice() );
+    			for ( int i = JoystickInput.get().getJoystickCount() - 1; i >= 0; i-- ) {
+    				Joystick joystick = JoystickInput.get().getJoystick( i );
+    				String name = joystick.getName();
+    				String uniqueName = name;
+    				for ( int j=2; devices.get(uniqueName) != null; j++ ) {
+    					uniqueName = name + " ("+j+")";
+    				}
+    				addDevice( new JoystickInputHandlerDevice( joystick, uniqueName ) );
+    			}
+    		}
+    	} finally {
+    		devicesInitializedLock.unlock();
         }
+    	return devices;
     }
-
-    private static Collection<InputHandlerDevice> devicesReadOnly;
-
+    
     public static Collection<InputHandlerDevice> getDevices() {
-        if ( devices == null ) {
-            throw new IllegalStateException( "devices have not been initialized" +
-                    " - create an InputHandler first" );
-        }
-        if ( devicesReadOnly == null ) {
-            devicesReadOnly = Collections.unmodifiableCollection( devices.values() );
-        }
-        return devicesReadOnly;
+    	return Collections.unmodifiableCollection( getDevicesMap().values() );
     }
 
     /**
@@ -308,13 +307,14 @@ public class InputHandler {
      * @param allowRepeats false to invoke action once for each button down, true to invoke each frame while the
      */
     public void addAction( InputActionInterface action, String deviceName, int button, int axis, boolean allowRepeats ) {
+    	Map<String, InputHandlerDevice> devicesMap = getDevicesMap();
         if ( DEVICE_ALL.equals( deviceName ) ) {
-            for ( InputHandlerDevice device : devices.values() ) {
+            for ( InputHandlerDevice device : devicesMap.values() ) {
                 device.createTriggers( action, axis, button, allowRepeats, this );
             }
         }
         else {
-            InputHandlerDevice device = devices.get( deviceName );
+            InputHandlerDevice device = devicesMap.get( deviceName );
             if ( device != null ) {
                 device.createTriggers( action, axis, button, allowRepeats, this );
             }
