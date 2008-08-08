@@ -197,7 +197,10 @@ public class JOGLCamera extends AbstractCamera {
             RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
             matRecord.switchMode(GL.GL_PROJECTION);
 
-            gl.glLoadMatrixf(getProjectionMatrix().fillFloatBuffer(tmp_FloatBuffer));
+            tmp_FloatBuffer.rewind();
+            getProjectionMatrix().fillFloatBuffer(tmp_FloatBuffer);
+            tmp_FloatBuffer.rewind();
+            gl.glLoadMatrixf(tmp_FloatBuffer);
         }
 
     }
@@ -233,7 +236,10 @@ public class JOGLCamera extends AbstractCamera {
             RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
             matRecord.switchMode(GL.GL_MODELVIEW);
 
-            gl.glLoadMatrixf(getModelViewMatrix().fillFloatBuffer(tmp_FloatBuffer));
+            tmp_FloatBuffer.rewind();
+            getModelViewMatrix().fillFloatBuffer(tmp_FloatBuffer);
+            tmp_FloatBuffer.rewind();
+            gl.glLoadMatrixf(tmp_FloatBuffer);
         }
     }
 }

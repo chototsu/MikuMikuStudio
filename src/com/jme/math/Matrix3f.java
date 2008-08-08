@@ -357,17 +357,19 @@ public class Matrix3f  implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * <code>fillFloatBuffer</code> fills a FloatBuffer object with
-     * the matrix data.
-     * @param fb the buffer to fill, must be correct size
-     * @return matrix data as a FloatBuffer.
+     * <code>fillFloatBuffer</code> fills a FloatBuffer object with the matrix
+     * data.
+     * 
+     * @param fb
+     *            the buffer to fill, starting at current position. Must have
+     *            room for 9 more floats.
+     * @return matrix data as a FloatBuffer. (position is advanced by 9 and any
+     *         limit set is not changed).
      */
     public FloatBuffer fillFloatBuffer(FloatBuffer fb) {
-        fb.clear();
         fb.put(m00).put(m01).put(m02);
         fb.put(m10).put(m11).put(m12);
         fb.put(m20).put(m21).put(m22);
-        fb.rewind();
         return fb;
     }
 

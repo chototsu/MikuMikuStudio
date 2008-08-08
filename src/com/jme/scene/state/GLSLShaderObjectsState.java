@@ -446,7 +446,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     public void setUniform(String name, Matrix3f value, boolean rowMajor) {
         ShaderVariableMatrix3 shaderUniform =
                 getShaderUniform(name, ShaderVariableMatrix3.class);
+        // prepare buffer for writing
+        shaderUniform.matrixBuffer.rewind();
         value.fillFloatBuffer(shaderUniform.matrixBuffer);
+        // prepare buffer for reading
+        shaderUniform.matrixBuffer.rewind();
         shaderUniform.rowMajor = rowMajor;
 
         setNeedsRefresh(true);
@@ -462,7 +466,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     public void setUniform(String name, Matrix4f value, boolean rowMajor) {
         ShaderVariableMatrix4 shaderUniform =
                 getShaderUniform(name, ShaderVariableMatrix4.class);
+        // prepare buffer for writing
+        shaderUniform.matrixBuffer.rewind();
         value.fillFloatBuffer(shaderUniform.matrixBuffer);
+        // prepare buffer for reading
+        shaderUniform.matrixBuffer.rewind();
         shaderUniform.rowMajor = rowMajor;
 
         setNeedsRefresh(true);

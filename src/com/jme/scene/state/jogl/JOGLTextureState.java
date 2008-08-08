@@ -1318,8 +1318,10 @@ public class JOGLTextureState extends TextureState {
             checkAndSetUnit(unit, record);
             matRecord.switchMode(GL.GL_TEXTURE);
             if (doMatrix) {
+                record.tmp_matrixBuffer.rewind();
                 texture.getMatrix().fillFloatBuffer(record.tmp_matrixBuffer,
                         true);
+                record.tmp_matrixBuffer.rewind();
                 gl.glLoadMatrixf(record.tmp_matrixBuffer); // TODO Check for float
             } else {
                 gl.glLoadIdentity();

@@ -193,7 +193,10 @@ public class LWJGLCamera extends AbstractCamera {
             RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
             matRecord.switchMode(GL11.GL_PROJECTION);
 
-            GL11.glLoadMatrix(getProjectionMatrix().fillFloatBuffer(tmp_FloatBuffer));
+            tmp_FloatBuffer.rewind();
+            getProjectionMatrix().fillFloatBuffer(tmp_FloatBuffer);
+            tmp_FloatBuffer.rewind();
+            GL11.glLoadMatrix(tmp_FloatBuffer);
         }
 
     }
@@ -225,7 +228,10 @@ public class LWJGLCamera extends AbstractCamera {
             RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
             matRecord.switchMode(GL11.GL_MODELVIEW);
 
-            GL11.glLoadMatrix(getModelViewMatrix().fillFloatBuffer(tmp_FloatBuffer));
+            tmp_FloatBuffer.rewind();
+            getModelViewMatrix().fillFloatBuffer(tmp_FloatBuffer);
+            tmp_FloatBuffer.rewind();
+            GL11.glLoadMatrix(tmp_FloatBuffer);
         }
     }
 }

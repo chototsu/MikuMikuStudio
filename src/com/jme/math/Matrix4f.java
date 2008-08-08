@@ -555,30 +555,20 @@ public class Matrix4f  implements Serializable, Savable, Cloneable {
     public FloatBuffer toFloatBuffer() {
     	return toFloatBuffer(false);
     }
-    
+
     /**
-     * <code>toFloatBuffer</code> returns a FloatBuffer object that contains
-     * the matrix data.
+     * <code>toFloatBuffer</code> returns a FloatBuffer object that contains the
+     * matrix data.
      * 
-     * @param columnMajor if true, this buffer should be filled with column
-     * 		major data, otherwise it will be filled row major.
-     * @return matrix data as a FloatBuffer.
+     * @param columnMajor
+     *            if true, this buffer should be filled with column major data,
+     *            otherwise it will be filled row major.
+     * @return matrix data as a FloatBuffer. The position is set to 0 for
+     *         convenience.
      */
     public FloatBuffer toFloatBuffer(boolean columnMajor) {
     	FloatBuffer fb = BufferUtils.createFloatBuffer(16);
-        
-    	if(columnMajor) {
-    	    fb.put(m00).put(m10).put(m20).put(m30);
-	        fb.put(m01).put(m11).put(m21).put(m31);
-	        fb.put(m02).put(m12).put(m22).put(m32);
-	        fb.put(m03).put(m13).put(m23).put(m33);
-	    } else {
-	        fb.put(m00).put(m01).put(m02).put(m03);
-	        fb.put(m10).put(m11).put(m12).put(m13);
-	        fb.put(m20).put(m21).put(m22).put(m23);
-	        fb.put(m30).put(m31).put(m32).put(m33);
-	    }
-        
+    	fillFloatBuffer(fb, columnMajor);
     	fb.rewind();
     	return fb;
     }
@@ -594,15 +584,19 @@ public class Matrix4f  implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * <code>fillFloatBuffer</code> fills a FloatBuffer object with
-     * the matrix data.
-     * @param fb the buffer to fill, must be correct size
-     * @param columnMajor if true, this buffer should be filled with column
-     * 		major data, otherwise it will be filled row major.
-     * @return matrix data as a FloatBuffer.
+     * <code>fillFloatBuffer</code> fills a FloatBuffer object with the matrix
+     * data.
+     * 
+     * @param fb
+     *            the buffer to fill, starting at current position. Must have
+     *            room for 16 more floats.
+     * @param columnMajor
+     *            if true, this buffer should be filled with column major data,
+     *            otherwise it will be filled row major.
+     * @return matrix data as a FloatBuffer. (position is advanced by 16 and any
+     *         limit set is not changed).
      */
     public FloatBuffer fillFloatBuffer(FloatBuffer fb, boolean columnMajor) {
-        fb.clear();
         if(columnMajor) {
     	    fb.put(m00).put(m10).put(m20).put(m30);
 	        fb.put(m01).put(m11).put(m21).put(m31);
@@ -614,7 +608,6 @@ public class Matrix4f  implements Serializable, Savable, Cloneable {
 	        fb.put(m20).put(m21).put(m22).put(m23);
 	        fb.put(m30).put(m31).put(m32).put(m33);
 	    }
-        fb.rewind();
         return fb;
     }
     
