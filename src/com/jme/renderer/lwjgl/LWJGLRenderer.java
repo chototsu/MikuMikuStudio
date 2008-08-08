@@ -1748,10 +1748,8 @@ public class LWJGLRenderer extends Renderer {
         // Determine the original texture configuration, so that this method can
         // restore the texture configuration to its original state.
         final IntBuffer intBuf = BufferUtils.createIntBuffer(16);
-        intBuf.clear();
         GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D, intBuf);
         final int origTexBinding = intBuf.get(0);
-        intBuf.clear();
         GL11.glGetInteger(GL11.GL_UNPACK_ALIGNMENT, intBuf);
         final int origAlignment = intBuf.get(0);
         final int origRowLength = 0;
