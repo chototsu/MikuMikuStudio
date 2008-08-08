@@ -950,11 +950,11 @@ public abstract class AbstractCamera implements Camera {
         if (isParallelProjection()) {
             _projection.loadIdentity();
             _projection.m00 = 2.0f / (frustumRight - frustumLeft);
-            _projection.m11 = 2.0f / (frustumTop - frustumBottom);
+            _projection.m11 = 2.0f / (frustumBottom - frustumTop);
             _projection.m22 = -2.0f / (frustumFar - frustumNear);
             _projection.m33 = 1f;
             _projection.m30 = -(frustumRight + frustumLeft) / (frustumRight - frustumLeft);
-            _projection.m31 = -(frustumTop + frustumBottom) / (frustumTop - frustumBottom);
+            _projection.m31 = -(frustumBottom + frustumTop) / (frustumBottom - frustumTop);
             _projection.m32 = -(frustumFar + frustumNear) / (frustumFar - frustumNear);
         } else {
             // XXX: Cache results or is this low cost enough to happen every time it is called?
