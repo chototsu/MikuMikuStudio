@@ -318,7 +318,7 @@ public class ProceduralTextureGenerator {
    * <code>TextureTile</code> is an inner class that contains data
    * for each input texture. All data is public with no methods.
    */
-  private class TextureTile {
+  private static class TextureTile {
     public BufferedImage imageData;
     public int lowHeight;
     public int optimalHeight;

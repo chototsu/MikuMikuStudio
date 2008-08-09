@@ -105,7 +105,7 @@ public class MidPointHeightMap extends AbstractHeightMap {
             unloadHeightMap();
         }
 
-        height = size / 2;
+        height = size / 2f;
         heightReducer = Math.pow(2, -1 * roughness);
 
         heightData = new float[size*size];
