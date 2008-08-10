@@ -44,8 +44,8 @@ import com.jme.system.DisplaySystem;
  */
 public class TextGameState extends BasicGameState {
 	
-	private Text textObject;
-	private Node textNode;
+	protected Text textObject;
+	protected Node textNode;
 	private String text;
 
 	public TextGameState(String text) {
