@@ -34,6 +34,7 @@ package jmetest.util;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -192,6 +193,7 @@ public class JMESwingTest {
             JMECanvas jmeCanvas = ((JMECanvas) comp);
             jmeCanvas.setImplementor(impl);
             jmeCanvas.setUpdateInput(true);
+            jmeCanvas.setDrawWhenDirty(true);
 
             // -----------END OF GL STUFF-------------
 
@@ -260,14 +262,35 @@ public class JMESwingTest {
 
             scrollPane.setViewportView(jTree1);
             comp.setBounds(0, 0, width, height);
-            contentPane.add(comp, BorderLayout.CENTER);
+            JPanel center = new JPanel() {
+                @Override
+                public void paintComponents(Graphics g) {
+                    ((JMECanvas)comp).makeDirty();
+                    super.paintComponents(g);
+                }
+                @Override
+                public void paint(Graphics g) {
+                    ((JMECanvas)comp).makeDirty();
+                    super.paint(g);
+                }
+                @Override
+                public void update(Graphics g) {
+                    ((JMECanvas)comp).makeDirty();
+                    super.update(g);
+                }
+            };
+            center.setOpaque(true);
+            center.add(comp, BorderLayout.CENTER);
+            contentPane.add(center, BorderLayout.CENTER);
         }
 
         protected void doResize() {
             if (scaleBox != null && scaleBox.isSelected()) {
                 impl.resizeCanvas(comp.getWidth(), comp.getHeight());
+                ((JMECanvas)comp).makeDirty();
             } else {
                 impl.resizeCanvas(width, height);
+                ((JMECanvas)comp).makeDirty();
             }
         }
 

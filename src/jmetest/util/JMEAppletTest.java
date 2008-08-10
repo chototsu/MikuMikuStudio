@@ -88,7 +88,7 @@ public class JMEAppletTest extends Applet {
                 .getHeight());
         jmeCanvas.setImplementor(impl);
         jmeCanvas.setUpdateInput(true);
-        jmeCanvas.setVSync(true);
+        jmeCanvas.setTargetRate(60);
 
         // shell.setText("SWT/JME Example");
         // shell.setSize(width, height);

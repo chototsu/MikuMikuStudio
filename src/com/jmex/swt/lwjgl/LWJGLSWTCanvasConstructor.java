@@ -35,6 +35,8 @@ package com.jmex.swt.lwjgl;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
 import org.lwjgl.LWJGLException;
@@ -46,53 +48,68 @@ import com.jme.system.canvas.JMECanvas;
 
 public class LWJGLSWTCanvasConstructor implements CanvasConstructor {
 
-	public JMECanvas makeCanvas(HashMap<String, Object> props) {
-		try {
-			Composite parent = (Composite) props.get(LWJGLSWTConstants.PARENT);
+    public JMECanvas makeCanvas(HashMap<String, Object> props) {
+        try {
+            Composite parent = (Composite) props.get(LWJGLSWTConstants.PARENT);
 
-			GLData data = new GLData();
-			data.doubleBuffer = true;
+            GLData data = new GLData();
+            data.doubleBuffer = true;
 
-			Integer style = (Integer)props.get(LWJGLSWTConstants.STYLE);
-			if (style == null) {
-				style = SWT.NONE;
-			}
+            Integer style = (Integer) props.get(LWJGLSWTConstants.STYLE);
+            if (style == null) {
+                style = SWT.NONE;
+            }
 
-			Integer depthBits = (Integer)props.get(LWJGLSWTConstants.DEPTH_BITS);
-			if (depthBits != null) {
-				data.depthSize = depthBits;
-			} else {
-				data.depthSize = DisplaySystem.getDisplaySystem().getMinDepthBits();
-			}
+            Integer depthBits = (Integer) props
+                    .get(LWJGLSWTConstants.DEPTH_BITS);
+            if (depthBits != null) {
+                data.depthSize = depthBits;
+            } else {
+                data.depthSize = DisplaySystem.getDisplaySystem()
+                        .getMinDepthBits();
+            }
 
-			Integer alphaBits = (Integer)props.get(LWJGLSWTConstants.ALPHA_BITS);
-			if (alphaBits != null) {
-				data.alphaSize = alphaBits;
-			} else {
-				data.alphaSize = DisplaySystem.getDisplaySystem().getMinAlphaBits();
-			}
+            Integer alphaBits = (Integer) props
+                    .get(LWJGLSWTConstants.ALPHA_BITS);
+            if (alphaBits != null) {
+                data.alphaSize = alphaBits;
+            } else {
+                data.alphaSize = DisplaySystem.getDisplaySystem()
+                        .getMinAlphaBits();
+            }
 
-			Integer stencilBits = (Integer)props.get(LWJGLSWTConstants.STENCIL_BITS);
-			if (alphaBits != null) {
-				data.stencilSize = stencilBits;
-			} else {
-				data.stencilSize = DisplaySystem.getDisplaySystem().getMinStencilBits();
-			}
+            Integer stencilBits = (Integer) props
+                    .get(LWJGLSWTConstants.STENCIL_BITS);
+            if (alphaBits != null) {
+                data.stencilSize = stencilBits;
+            } else {
+                data.stencilSize = DisplaySystem.getDisplaySystem()
+                        .getMinStencilBits();
+            }
 
-			// NOTE: SWT does not actually implement samples yet.
-			Integer samples = (Integer)props.get(LWJGLSWTConstants.SAMPLES);
-			if (samples != null) {
-				data.samples = samples;
-			} else {
-				data.samples = DisplaySystem.getDisplaySystem().getMinStencilBits();
-			}
+            // NOTE: SWT does not actually implement samples yet.
+            Integer samples = (Integer) props.get(LWJGLSWTConstants.SAMPLES);
+            if (samples != null) {
+                data.samples = samples;
+            } else {
+                data.samples = DisplaySystem.getDisplaySystem()
+                        .getMinStencilBits();
+            }
 
-			LWJGLSWTCanvas canvas = new LWJGLSWTCanvas(parent, style, data);
+            final LWJGLSWTCanvas canvas = new LWJGLSWTCanvas(parent, style,
+                    data);
 
-			return canvas;
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-			throw new JmeException("Unable to create lwjgl-swt canvas: "+e.getLocalizedMessage());
-		}
-	}
+            canvas.addPaintListener(new PaintListener() {
+                public void paintControl(PaintEvent e) {
+                    canvas.makeDirty();
+                }
+            });
+
+            return canvas;
+        } catch (LWJGLException e) {
+            e.printStackTrace();
+            throw new JmeException("Unable to create lwjgl-swt canvas: "
+                    + e.getLocalizedMessage());
+        }
+    }
 }

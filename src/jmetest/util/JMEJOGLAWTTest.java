@@ -108,7 +108,7 @@ public class JMEJOGLAWTTest {
         MyImplementor impl = new MyImplementor(width, height);
         jmeCanvas.setImplementor(impl);
         jmeCanvas.setUpdateInput(true);
-        jmeCanvas.setVSync(true);
+        jmeCanvas.setDrawWhenDirty(true);
 
         // TODO Remove when complete (original SWT code).
         // shell.setText("SWT/JME Example");

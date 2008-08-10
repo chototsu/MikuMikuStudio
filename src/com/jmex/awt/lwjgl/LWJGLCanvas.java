@@ -69,6 +69,14 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
     private JMECanvasImplementor impl;
 
     private boolean updateInput = false;
+    
+    private double syncNS = 0;
+    private int syncRate = 0;
+
+    private long lastRender = 0;
+
+    private boolean drawWhenDirty = false;
+    private boolean dirty = true;
 
     public LWJGLCanvas() throws LWJGLException {
         super(generatePixelFormat());
@@ -77,10 +85,6 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
     private static PixelFormat generatePixelFormat() {
         return ((LWJGLDisplaySystem) DisplaySystem.getDisplaySystem())
                 .getFormat();
-    }
-
-    public void setVSync(boolean sync) {
-        setVSyncEnabled(sync);
     }
 
     public void setImplementor(JMECanvasImplementor impl) {
@@ -111,28 +115,47 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     @Override
     protected void paintGL() {
+
         try {
             ((LWJGLDisplaySystem) DisplaySystem.getDisplaySystem())
                     .switchContext(this);
-
-            if (updateInput)
+            
+            if (updateInput) {
                 InputSystem.update();
+            }
 
-            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE)
-                    .execute();
+            GameTaskQueueManager.getManager().getQueue(
+                    GameTaskQueue.UPDATE).execute();
 
             impl.doUpdate();
 
-            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER)
-                    .execute();
+            if (!drawWhenDirty || dirty) {
+                GameTaskQueueManager.getManager().getQueue(
+                        GameTaskQueue.RENDER).execute();
 
-            impl.doRender();
+                impl.doRender();
 
-            swapBuffers();
-            repaint();
+                swapBuffers();
+                dirty = false;
+            }
         } catch (LWJGLException e) {
             logger.log(Level.SEVERE, "Exception in paintGL()", e);
         }
+
+        // sync
+        if (syncRate > 0) {
+            long sinceLast = System.nanoTime() - lastRender;
+            if (sinceLast < syncNS) {
+                try {
+                    Thread.sleep((Math
+                            .round((syncNS - sinceLast) / 1000000L)));
+                } catch (InterruptedException e) {
+                }
+            }
+            lastRender = System.nanoTime();
+        }
+
+        repaint();
     }
 
     public void setBackground(Color bgColor) {
@@ -148,7 +171,7 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
      * (non-Javadoc)
      * @see com.jmex.awt.JMECanvas#doUpdateInput()
      */
-    public boolean doUpdateInput() {
+    public boolean isUpdateInput() {
         return updateInput;
     }
 
@@ -158,5 +181,26 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
      */
     public void setUpdateInput(boolean doUpdate) {
         updateInput = doUpdate;
+    }
+
+    public void setTargetRate(int fps) {
+        this.syncRate = fps;
+        this.syncNS = 1000000000.0 / syncRate;
+    }
+
+    public int getTargetSyncRate() {
+        return syncRate;
+    }
+
+    public void setDrawWhenDirty(boolean whenDirty) {
+        this.drawWhenDirty = whenDirty;
+    }
+
+    public boolean isDrawWhenDirty() {
+        return drawWhenDirty;
+    }
+
+    public void makeDirty() {
+        dirty = true;
     }
 }

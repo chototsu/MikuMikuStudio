@@ -1167,7 +1167,7 @@ public class RenParticleEditor extends JFrame {
             Callable<Void> exe = new Callable<Void>() {
                 public Void call() {
                     forceUpdateToSize();
-                    ((JMECanvas) glCanvas).setVSync(false);
+                    ((JMECanvas) glCanvas).setTargetRate(60);
                     return null;
                 }
             };

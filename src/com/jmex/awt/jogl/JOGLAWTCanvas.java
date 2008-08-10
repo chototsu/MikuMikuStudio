@@ -33,6 +33,7 @@
 package com.jmex.awt.jogl;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,6 +74,15 @@ public class JOGLAWTCanvas extends GLCanvas implements JMECanvas,
     private static final Logger logger = Logger.getLogger(CLASSNAME);
 
     private JOGLRenderer renderer;
+
+    private double syncNS = 0;
+    private int syncRate = 0;
+
+    private long lastRender = 0;
+
+    private boolean drawWhenDirty = false;
+    private boolean dirty = true;
+    private boolean updateInput = false;
 
     // TODO Remove the public modifier, making canvas requests go through the
     // Canvas Constructor.
@@ -124,20 +134,12 @@ public class JOGLAWTCanvas extends GLCanvas implements JMECanvas,
         this.impl = impl;
     }
 
-    public void setVSync(boolean sync) {
-        // TODO Auto-generated method stub
-        logger.info("setVSync " + sync);
-    }
-
     public void setUpdateInput(boolean doUpdate) {
-        // TODO Auto-generated method stub
-        logger.info("setUpdateInput " + doUpdate);
+        updateInput = doUpdate;
     }
 
-    public boolean doUpdateInput() {
-        // TODO Auto-generated method stub
-        logger.info("doUpdateInput");
-        return false;
+    public boolean isUpdateInput() {
+        return updateInput;
     }
 
     /* GLEventListener Methods -------------------------------------------- */
@@ -167,19 +169,37 @@ public class JOGLAWTCanvas extends GLCanvas implements JMECanvas,
         // Switching the context is not necessary, since this is handled by the
         // GLEventListener.
 
-        // FIXME Check with the input system.
-        // if (updateInput)
-        InputSystem.update();
+        if (updateInput) {
+            InputSystem.update();
+        }
 
         // Perform updates, queued updates first.
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE)
-                .execute();
+        GameTaskQueueManager.getManager().getQueue(
+                GameTaskQueue.UPDATE).execute();
+
         impl.doUpdate();
 
-        // Perform rendering, queued rendering first.
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER)
-                .execute();
-        impl.doRender();
+        if (!drawWhenDirty || dirty) {
+            // Perform rendering, queued rendering first.
+            GameTaskQueueManager.getManager().getQueue(
+                    GameTaskQueue.RENDER).execute();
+
+            impl.doRender();
+            dirty = false;
+        }
+
+        // sync
+        if (syncRate > 0) {
+            long sinceLast = System.nanoTime() - lastRender;
+            if (sinceLast < syncNS) {
+                try {
+                    Thread.sleep((Math
+                            .round((syncNS - sinceLast) / 1000000L)));
+                } catch (InterruptedException e) {
+                }
+            }
+            lastRender = System.nanoTime();
+        }
     }
 
     public void displayChanged(final GLAutoDrawable drawable,
@@ -197,4 +217,30 @@ public class JOGLAWTCanvas extends GLCanvas implements JMECanvas,
         renderer.reinit(width, height);
     }
 
+    @Override
+    public void paint(Graphics arg0) {
+        dirty = true;
+        super.paint(arg0);
+    }
+
+    public void setTargetRate(int fps) {
+        this.syncRate = fps;
+        this.syncNS = 1000000000.0 / fps;
+    }
+
+    public int getTargetSyncRate() {
+        return syncRate;
+    }
+
+    public void setDrawWhenDirty(boolean whenDirty) {
+        this.drawWhenDirty = whenDirty;
+    }
+
+    public boolean isDrawWhenDirty() {
+        return drawWhenDirty;
+    }
+
+    public void makeDirty() {
+        dirty = true;
+    }
 }

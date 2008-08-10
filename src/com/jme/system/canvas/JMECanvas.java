@@ -34,16 +34,59 @@ package com.jme.system.canvas;
 
 /**
  * <code>JMEComponent</code> is an interface to classes allowing jME generated
- * graphics to be displayed in an AWT/Swing interface.
- *
+ * graphics to be displayed in an AWT/Swing/SWT or other such UI framework.
+ * 
  * @author Joshua Slack
- * @version $Id: JMECanvas.java,v 1.3 2006/01/13 19:40:04 renanse Exp $
  */
 
 public interface JMECanvas {
-    
+
+    /**
+     * 
+     * @param impl
+     */
     void setImplementor(JMECanvasImplementor impl);
-    void setVSync(boolean sync);
-    boolean doUpdateInput();
+
+    /**
+     * 
+     * @return
+     */
+    boolean isUpdateInput();
+
+    /**
+     * 
+     * @param doUpdate
+     */
     void setUpdateInput(boolean doUpdate);
+
+    /**
+     * 
+     * @param fps
+     */
+    void setTargetRate(int fps);
+
+    /**
+     * 
+     * @return
+     */
+    int getTargetSyncRate();
+
+    /**
+     * Only draw if the canvas is flagged as dirty.
+     * 
+     * @param whenDirty
+     */
+    void setDrawWhenDirty(boolean whenDirty);
+
+    /**
+     * 
+     * @return
+     */
+    boolean isDrawWhenDirty();
+
+    /**
+     * Force this canvas to be flagged as dirty. See
+     * {@link #setDrawWhenDirty(boolean)}.
+     */
+    void makeDirty();
 }

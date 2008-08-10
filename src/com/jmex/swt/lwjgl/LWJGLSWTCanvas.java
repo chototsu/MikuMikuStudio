@@ -68,9 +68,9 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     private boolean updateInput = false;
 
-    private boolean vysnc = false;
+    private double syncNS = 0f;
 
-    private double syncNS = 1000000000 / 60f; // sync rate of 60 fps
+    private int syncRate = 0;
 
     private boolean inited = false;
 
@@ -78,20 +78,24 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     private long lastRender = 0;
 
+    private boolean drawWhenDirty = false;
+    private boolean dirty = true;
+
     public LWJGLSWTCanvas(Composite parent, int style, GLData data)
             throws LWJGLException {
         super(parent, style, data);
         renderRunner = new Runnable() {
 
             public void run() {
-                if (!inited)
+                if (!inited) {
                     init();
-                if (vysnc) {
+                }
+                if (syncRate > 0) {
                     long sinceLast = System.nanoTime() - lastRender;
                     if (sinceLast < syncNS) {
                         try {
                             Thread.sleep((Math
-                                    .round((syncNS - sinceLast) / 1000000)));
+                                    .round((syncNS - sinceLast) / 1000000L)));
                         } catch (InterruptedException e) {
                         }
                     }
@@ -100,10 +104,6 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
                 render();
             }
         };
-    }
-
-    public void setVSync(boolean sync) {
-        this.vysnc = sync;
     }
 
     public void setImplementor(JMECanvasImplementor impl) {
@@ -121,7 +121,7 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
             // Complete canvas initialization.
             Point size = this.getSize();
             display.initForCanvas(Math.max(size.x, 1), Math.max(size.y, 1));
-            
+
             // Perform game initialization.
             impl.doSetup();
 
@@ -139,34 +139,40 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     public void render() {
         if (!isDisposed()) {
-            setCurrent();
             try {
+                setCurrent();
+
                 ((LWJGLDisplaySystem) DisplaySystem.getDisplaySystem())
                         .switchContext(this);
                 GLContext.useContext(this);
 
-                if (updateInput)
+                if (updateInput) {
                     InputSystem.update();
+                }
 
-                GameTaskQueueManager.getManager()
-                        .getQueue(GameTaskQueue.UPDATE).execute();
+                GameTaskQueueManager.getManager().getQueue(
+                        GameTaskQueue.UPDATE).execute();
 
                 impl.doUpdate();
 
-                GameTaskQueueManager.getManager()
-                        .getQueue(GameTaskQueue.RENDER).execute();
+                if (!drawWhenDirty || dirty) {
+                    GameTaskQueueManager.getManager().getQueue(
+                            GameTaskQueue.RENDER).execute();
 
-                impl.doRender();
+                    impl.doRender();
 
-                swapBuffers();
-                getDisplay().asyncExec(renderRunner);
+                    swapBuffers();
+
+                    dirty = false;
+                }
             } catch (LWJGLException e) {
-                logger.log(Level.SEVERE, "Exception in paintGL()", e);
+                logger.log(Level.SEVERE, "Exception in render()", e);
             }
+            getDisplay().asyncExec(renderRunner);
         }
     }
 
-    public boolean doUpdateInput() {
+    public boolean isUpdateInput() {
         return updateInput;
     }
 
@@ -174,11 +180,24 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
         updateInput = doUpdate;
     }
 
-    public void setTargetSyncRate(int targetSyncRate) {
-        this.syncNS = 1000000000f / targetSyncRate;
+    public void setTargetRate(int fps) {
+        this.syncRate = fps;
+        this.syncNS = 1000000000.0 / syncRate;
     }
 
     public int getTargetSyncRate() {
-        return (int) (1000000000f * syncNS);
+        return syncRate;
+    }
+
+    public void setDrawWhenDirty(boolean whenDirty) {
+        this.drawWhenDirty = whenDirty;
+    }
+
+    public boolean isDrawWhenDirty() {
+        return drawWhenDirty;
+    }
+
+    public void makeDirty() {
+        dirty = true;
     }
 }
