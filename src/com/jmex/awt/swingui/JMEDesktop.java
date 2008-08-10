@@ -369,7 +369,6 @@ public class JMEDesktop extends Quad {
 
         texture.setScale( new Vector3f( 1, -1, 1 ) );
         ts.setTexture( texture );
-        ts.apply();
         this.setRenderState( ts );
 
         BlendState alpha = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
