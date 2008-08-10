@@ -89,6 +89,8 @@ public class JMEJOGLAWTTest {
         // JMESWTTest class.
         final JMECanvas jmeCanvas = ds
                 .createCanvas(width, height, "AWT", props);
+        jmeCanvas.setUpdateInput(true);
+        jmeCanvas.setTargetRate(60);
 
         // XXX Note that the canvas can be added to the frame without any prior
         // interaction (such as parameter passing to createCanvas).
@@ -107,8 +109,6 @@ public class JMEJOGLAWTTest {
         // Important! Here is where we add the guts to the panel:
         MyImplementor impl = new MyImplementor(width, height);
         jmeCanvas.setImplementor(impl);
-        jmeCanvas.setUpdateInput(true);
-        jmeCanvas.setDrawWhenDirty(true);
 
         // TODO Remove when complete (original SWT code).
         // shell.setText("SWT/JME Example");

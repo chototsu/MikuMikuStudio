@@ -33,7 +33,7 @@
 package com.jme.system.canvas;
 
 /**
- * <code>JMEComponent</code> is an interface to classes allowing jME generated
+ * <code>JMECanvas</code> is an interface to classes allowing jME generated
  * graphics to be displayed in an AWT/Swing/SWT or other such UI framework.
  * 
  * @author Joshua Slack
@@ -42,45 +42,57 @@ package com.jme.system.canvas;
 public interface JMECanvas {
 
     /**
+     * Sets the logic/gameplay implementation for this JMECanvas
      * 
      * @param impl
+     *            the implementor object that will provide rendering/update
+     *            logic.
      */
     void setImplementor(JMECanvasImplementor impl);
 
     /**
-     * 
-     * @return
+     * @return true if the logic loop of this canvas should ask jME's input
+     *         system to "poll".
      */
     boolean isUpdateInput();
 
     /**
-     * 
      * @param doUpdate
+     *            true if the logic loop of this canvas should ask jME's input
+     *            system to "poll".
      */
     void setUpdateInput(boolean doUpdate);
 
     /**
+     * Set the desired update/redraw frequency of this canvas. If
+     * setDrawWhenDirty was called with true, this frequency is just a cap to
+     * possible redraw rate.
      * 
      * @param fps
+     *            the desired target rate in frames per second
      */
     void setTargetRate(int fps);
 
     /**
-     * 
-     * @return
+     * @return the desired target rate in frames per second
+     * @see #setTargetRate(int)
      */
     int getTargetSyncRate();
 
     /**
-     * Only draw if the canvas is flagged as dirty.
+     * 
      * 
      * @param whenDirty
+     *            true if we should only draw if the canvas is flagged as dirty.
+     *            false if we should draw on every loop regardless of dirty
+     *            state.
      */
     void setDrawWhenDirty(boolean whenDirty);
 
     /**
      * 
-     * @return
+     * @return true if we should only draw if the canvas is flagged as dirty.
+     *         false if we should draw on every loop regardless of dirty state.
      */
     boolean isDrawWhenDirty();
 

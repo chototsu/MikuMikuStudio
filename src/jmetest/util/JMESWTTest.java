@@ -36,8 +36,6 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -55,7 +53,6 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.system.canvas.JMECanvas;
 import com.jme.system.canvas.SimpleCanvasImpl;
 import com.jme.system.lwjgl.LWJGLSystemProvider;
 import com.jme.util.TextureManager;
@@ -86,9 +83,11 @@ public class JMESWTTest {
     
         HashMap<String, Object> props = new HashMap<String, Object>();
         props.put(LWJGLSWTConstants.PARENT, comp);
-        props.put(LWJGLSWTConstants.STYLE, SWT.DOUBLE_BUFFERED);
+        props.put(LWJGLSWTConstants.STYLE, SWT.NONE);
         props.put(LWJGLSWTConstants.DEPTH_BITS, 8);
         final LWJGLSWTCanvas canvas = (LWJGLSWTCanvas)ds.createCanvas(width, height, "SWT", props);
+        canvas.setUpdateInput(true);
+        canvas.setTargetRate(60);
 
         KeyInput.setProvider(SWTKeyInput.class.getCanonicalName());
         canvas.addKeyListener((SWTKeyInput) KeyInput.get());
@@ -98,9 +97,6 @@ public class JMESWTTest {
           // Important! Here is where we add the guts to the panel:
         jmetest.util.JMESWTTest.MyImplementor impl = new MyImplementor(width, height);
         canvas.setImplementor(impl);
-        canvas.setUpdateInput(true);
-        canvas.setTargetRate(60);
-        canvas.setDrawWhenDirty(true);
 
         shell.setText("SWT/JME Example");
         shell.setSize(width, height);

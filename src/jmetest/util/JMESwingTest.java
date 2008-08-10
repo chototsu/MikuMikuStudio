@@ -33,8 +33,6 @@
 package jmetest.util;
 
 import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -82,6 +80,7 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.awt.input.AWTMouseInput;
 import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
+import com.jmex.awt.lwjgl.LWJGLCanvas;
 
 /**
  * <code>JMESwingTest</code> is a test demoing the JMEComponent and
@@ -135,7 +134,7 @@ public class JMESwingTest {
 
         JPanel contentPane;
         JPanel mainPanel = new JPanel();
-        Canvas comp = null;
+        LWJGLCanvas canvas = null;
         JButton coolButton = new JButton();
         JButton uncoolButton = new JButton();
         JPanel spPanel = new JPanel();
@@ -172,11 +171,13 @@ public class JMESwingTest {
             // make the canvas:
             DisplaySystem display = DisplaySystem.getDisplaySystem(LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER);
             display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
-            comp = (Canvas)display.createCanvas(width, height);
+            canvas = (LWJGLCanvas)display.createCanvas(width, height);
+            canvas.setUpdateInput(true);
+            canvas.setTargetRate(60);
 
             // add a listener... if window is resized, we can do something about
             // it.
-            comp.addComponentListener(new ComponentAdapter() {
+            canvas.addComponentListener(new ComponentAdapter() {
                 public void componentResized(ComponentEvent ce) {
                     doResize();
                 }
@@ -185,15 +186,12 @@ public class JMESwingTest {
             // Setup key and mouse input
             KeyInput.setProvider(KeyInput.INPUT_AWT);
             KeyListener kl = (KeyListener) KeyInput.get();
-            comp.addKeyListener(kl);
-            AWTMouseInput.setup(comp, false);
+            canvas.addKeyListener(kl);
+            AWTMouseInput.setup(canvas, false);
 
             // Important! Here is where we add the guts to the panel:
             impl = new MyImplementor(width, height);
-            JMECanvas jmeCanvas = ((JMECanvas) comp);
-            jmeCanvas.setImplementor(impl);
-            jmeCanvas.setUpdateInput(true);
-            jmeCanvas.setDrawWhenDirty(true);
+            canvas.setImplementor(impl);
 
             // -----------END OF GL STUFF-------------
 
@@ -213,7 +211,7 @@ public class JMESwingTest {
                     colorPanel.setBackground(color);
                     Callable<?> call = new Callable<Object>() {
                         public Object call() throws Exception {
-                            comp.setBackground(color);
+                            canvas.setBackground(color);
                             return null;
                         }
                     };
@@ -225,7 +223,7 @@ public class JMESwingTest {
             scaleBox.setSelected(true);
             scaleBox.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if (comp != null)
+                    if (canvas != null)
                         doResize();
                 }
             });
@@ -261,37 +259,17 @@ public class JMESwingTest {
             spPanel.add(scrollPane, BorderLayout.CENTER);
 
             scrollPane.setViewportView(jTree1);
-            comp.setBounds(0, 0, width, height);
-            JPanel center = new JPanel() {
-                @Override
-                public void paintComponents(Graphics g) {
-                    ((JMECanvas)comp).makeDirty();
-                    super.paintComponents(g);
-                }
-                @Override
-                public void paint(Graphics g) {
-                    ((JMECanvas)comp).makeDirty();
-                    super.paint(g);
-                }
-                @Override
-                public void update(Graphics g) {
-                    ((JMECanvas)comp).makeDirty();
-                    super.update(g);
-                }
-            };
-            center.setOpaque(true);
-            center.add(comp, BorderLayout.CENTER);
-            contentPane.add(center, BorderLayout.CENTER);
+            canvas.setBounds(0, 0, width, height);
+            contentPane.add(canvas, BorderLayout.CENTER);
         }
 
         protected void doResize() {
             if (scaleBox != null && scaleBox.isSelected()) {
-                impl.resizeCanvas(comp.getWidth(), comp.getHeight());
-                ((JMECanvas)comp).makeDirty();
+                impl.resizeCanvas(canvas.getWidth(), canvas.getHeight());
             } else {
                 impl.resizeCanvas(width, height);
-                ((JMECanvas)comp).makeDirty();
             }
+            ((JMECanvas)canvas).makeDirty();
         }
 
         // Overridden so we can exit when window is closed
