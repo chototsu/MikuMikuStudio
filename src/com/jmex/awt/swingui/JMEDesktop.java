@@ -1092,7 +1092,7 @@ public class JMEDesktop extends Quad {
                 }
             }
             try {
-                if ( graphics != null ) {
+                if ( graphics != null && texture.getTextureId() > 0) {
                     graphics.update( texture );
                 }
             } finally {
