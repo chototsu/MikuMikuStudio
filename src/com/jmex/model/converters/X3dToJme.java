@@ -2070,7 +2070,7 @@ public class X3dToJme extends FormatConverter {
     private void copyTexCoords(TextureState ts, Geometry geom) {
         if (geom != null) {
             for (int i = 1; i < ts.getNumberOfSetTextures(); i++) {
-                geom.copyTextureCoordinates(0, 0, i);
+                geom.copyTextureCoordinates(0, i, 1);
             }
         }
     }
