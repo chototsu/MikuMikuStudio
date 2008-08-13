@@ -51,11 +51,11 @@ import com.jme.scene.TriMesh;
  * the cache size is compared to the maxElements value. If the cache is larger
  * than maxElements, the cache is sent to the CollisionTreeController for
  * cleaning. There are a number of settings that can be used to control how
- * trees are generated. First, generateTrees denotes whethere the manager should
+ * trees are generated. First, generateTrees denotes whether the manager should
  * be creating trees at all. This is set to true by default. doSort defines if
  * the CollisionTree triangle array should be sorted as it is built. This is
  * false by default. Sorting is beneficial for model data that is not well
- * ordered spatially. This occurance is rare, and sorting slows creation time.
+ * ordered spatially. This occurrence is rare, and sorting slows creation time.
  * It is, therefore, only to be used when model data requires it. maxTrisPerLeaf
  * defines the number of triangles a leaf node in the collision tree should
  * maintain. The larger number of triangles maintained in a leaf node, the
