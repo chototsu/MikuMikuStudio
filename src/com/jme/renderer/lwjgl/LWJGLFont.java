@@ -38,6 +38,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.state.lwjgl.records.RendererRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
@@ -131,7 +132,7 @@ public class LWJGLFont {
      * @param set
      *            the mode of font: NORMAL or ITALICS.
      */
-    public void print(LWJGLRenderer r, float x, float y, Vector3f scale, StringBuffer text, int set) {
+    public void print(Renderer r, float x, float y, Vector3f scale, StringBuffer text, int set) {
         RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
         if (set > 1) {
             set = 1;

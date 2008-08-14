@@ -39,6 +39,7 @@ import javax.media.opengl.glu.GLU;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.state.jogl.records.RendererRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
@@ -135,7 +136,7 @@ public class JOGLFont {
      * @param set
      *            the mode of font: NORMAL or ITALICS.
      */
-    public void print(JOGLRenderer r, float x, float y, Vector3f scale, StringBuffer text, int set) {
+    public void print(Renderer r, float x, float y, Vector3f scale, StringBuffer text, int set) {
         final GL gl = GLU.getCurrentGL();
 
         RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
