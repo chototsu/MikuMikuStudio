@@ -74,6 +74,8 @@ public final class JOGLContextCapabilities {
     public boolean GL_EXT_blend_subtract;
 
     public boolean GL_EXT_fog_coord;
+    
+    public boolean GL_EXT_compiled_vertex_array;
 
     public boolean GL_ARB_fragment_program;
 
@@ -141,12 +143,15 @@ public final class JOGLContextCapabilities {
 
     public boolean GL_ARB_vertex_buffer_object;
 
-    public JOGLContextCapabilities(GLAutoDrawable autoDrawable) {
-        init(autoDrawable);
+    public JOGLContextCapabilities(GLAutoDrawable autodrawable) {
+        init(autodrawable.getGL());
     }
 
-    public void init(GLAutoDrawable autoDrawable) {
-        final GL gl = autoDrawable.getGL();
+    public JOGLContextCapabilities(final GL gl) {
+        init(gl);
+    }
+
+    public void init(final GL gl) {
 
         // See Renderer
         GL_ARB_vertex_buffer_object = gl
@@ -249,6 +254,8 @@ public final class JOGLContextCapabilities {
                 .isExtensionAvailable("GL_EXT_texture_mirror_clamp");
         GL_ARB_texture_border_clamp = gl
                 .isExtensionAvailable("GL_ARB_texture_border_clamp");
+
+        GL_EXT_compiled_vertex_array = gl.isExtensionAvailable("GL_EXT_compiled_vertex_array");
     }
 
 }
