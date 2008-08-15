@@ -31,7 +31,6 @@
  */
 package com.jmex.terrain.util;
 
-import com.jme.bounding.BoundingSphere;
 import com.jme.intersection.BoundingPickResults;
 import com.jme.intersection.PickData;
 import com.jme.math.Ray;
@@ -39,8 +38,8 @@ import com.jme.math.Triangle;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Geometry;
+import com.jme.scene.Spatial;
 import com.jmex.terrain.TerrainBlock;
-import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.AbstractBresenhamTracer.Direction;
 
 /**
@@ -56,7 +55,6 @@ import com.jmex.terrain.util.AbstractBresenhamTracer.Direction;
  */
 public class BresenhamTerrainPicker {
 
-    private final BoundingSphere _tempBounding = new BoundingSphere();
     private final Triangle _gridTriA = new Triangle(new Vector3f(),
             new Vector3f(), new Vector3f());
     private final Triangle _gridTriB = new Triangle(new Vector3f(),
@@ -65,7 +63,7 @@ public class BresenhamTerrainPicker {
     private final Vector3f _calcVec1 = new Vector3f();
     private final Ray _workRay = new Ray();
 
-    private final TerrainPage _page;
+    private final Spatial _root;
     private final BoundingPickResults _pr;
     private final BresenhamYUpGridTracer _tracer;
 
@@ -76,8 +74,8 @@ public class BresenhamTerrainPicker {
      * @param page
      *            the TerrainPage to work on.
      */
-    public BresenhamTerrainPicker(TerrainPage page) {
-        _page = page;
+    public BresenhamTerrainPicker(final Spatial root) {
+        _root = root;
         _pr = new BoundingPickResults();
         _pr.setCheckDistance(true);
         _tracer = new BresenhamYUpGridTracer();
@@ -98,10 +96,10 @@ public class BresenhamTerrainPicker {
      */
     public Vector3f getTerrainIntersection(final Ray worldPick,
             final Vector3f store) {
-        if (_page == null || _page.getWorldBound() == null)
+        if (_root == null || _root.getWorldBound() == null)
             return null;
 
-        if (!_page.getWorldBound().intersects(worldPick))
+        if (!_root.getWorldBound().intersects(worldPick))
             return null;
 
         // Set up our working ray
@@ -110,7 +108,7 @@ public class BresenhamTerrainPicker {
         // Grab all terrain blocks and do a grid walk on each starting from
         // closest.
         _pr.clear();
-        _page.findPick(_workRay, _pr);
+        _root.findPick(_workRay, _pr);
 
         for (int i = 0, max = _pr.getNumber(); i < max; i++) {
             PickData pd = _pr.getPickData(i);
@@ -121,17 +119,12 @@ public class BresenhamTerrainPicker {
             if (g instanceof TerrainBlock) {
                 TerrainBlock block = (TerrainBlock) g;
 
-                _tempBounding.getCenter()
-                        .set(block.getWorldBound().getCenter());
-                _tempBounding.setRadius(0);
-                _tempBounding.mergeLocal(block.getWorldBound());
-
                 _tracer.getGridSpacing().set(block.getWorldScale()).multLocal(
                         block.getStepScale());
                 _tracer.setGridOrigin(block.getWorldTranslation());
 
                 _workRay.getOrigin().set(worldPick.getDirection()).multLocal(
-                        pd.getDistance()).addLocal(worldPick.getOrigin());
+                        pd.getDistance()-.1f).addLocal(worldPick.getOrigin());
 
                 _tracer.startWalk(_workRay);
 
