@@ -183,6 +183,7 @@ public class TextureStateRecord extends StateRecord {
     public static boolean isCompressedType(Format format) {
         switch (format) {
             case NativeDXT1:
+            case NativeDXT1A:
             case NativeDXT3:
             case NativeDXT5:
                 return true;
