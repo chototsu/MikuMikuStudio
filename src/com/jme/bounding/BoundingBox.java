@@ -78,7 +78,7 @@ public class BoundingBox extends BoundingVolume {
 
 	private static final Vector3f[] verts = new Vector3f[3];
     /**
-     * Default contstructor instantiates a new <code>BoundingBox</code>
+     * Default constructor instantiates a new <code>BoundingBox</code>
      * object.
      */
     public BoundingBox() {
@@ -668,9 +668,8 @@ public class BoundingBox extends BoundingVolume {
      */
     public IntersectionRecord intersectsWhere(Ray ray) {
         Vector3f diff = _compVect1.set(ray.origin).subtractLocal(center);
-        // convert ray to box coordinates
-        Vector3f direction = _compVect2.set(ray.direction.x, ray.direction.y,
-                ray.direction.z);
+        Vector3f direction = _compVect2.set(ray.direction);
+
         float[] t = { 0f, Float.POSITIVE_INFINITY };
         
         float saveT0 = t[0], saveT1 = t[1];
