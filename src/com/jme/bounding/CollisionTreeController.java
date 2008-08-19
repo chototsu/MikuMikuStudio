@@ -32,8 +32,8 @@
 
 package com.jme.bounding;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.jme.scene.TriMesh;
 
@@ -55,6 +55,6 @@ public interface CollisionTreeController {
 	 * @param protectedList the list of elements to not remove.
 	 * @param desiredSize the desiredSize of the final cache.
 	 */
-	void clean(LinkedHashMap<TriMesh, CollisionTree> cache, 
-			ArrayList<TriMesh> protectedList, int desiredSize);
+	void clean(Map<TriMesh, CollisionTree> cache, 
+			List<TriMesh> protectedList, int desiredSize);
 }
