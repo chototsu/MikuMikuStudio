@@ -33,7 +33,10 @@
 package com.jme.bounding;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
@@ -91,11 +94,11 @@ public class CollisionTreeManager {
     public static final int DEFAULT_MAX_TRIS_PER_LEAF = 16;
 
     // the singleton instance of the manager
-    private static CollisionTreeManager instance;
+    private static CollisionTreeManager instance = new CollisionTreeManager();
 
     // the cache and protected list for storing trees.
-    private LinkedHashMap<TriMesh, CollisionTree> cache;
-    private ArrayList<TriMesh> protectedList;
+    private Map<TriMesh, CollisionTree> cache;
+    private List<TriMesh> protectedList;
 
     private boolean generateTrees = true;
     private boolean doSort;
@@ -111,7 +114,8 @@ public class CollisionTreeManager {
      * private constructor for the Singleton. Initializes the cache.
      */
     private CollisionTreeManager() {
-        cache = new LinkedHashMap<TriMesh, CollisionTree>(1);
+        cache = Collections.synchronizedMap(new LinkedHashMap<TriMesh, CollisionTree>(1));
+        setCollisionTreeController(new UsageTreeController());
     }
 
     /**
@@ -120,10 +124,6 @@ public class CollisionTreeManager {
      * @return the singleton instance of the manager.
      */
     public static CollisionTreeManager getInstance() {
-        if (instance == null) {
-            instance = new CollisionTreeManager();
-            instance.setCollisionTreeController(new UsageTreeController());
-        }
         return instance;
     }
 
@@ -145,9 +145,9 @@ public class CollisionTreeManager {
      * 
      * @param mesh
      *            the mesh to use as the key for the tree to obtain.
-     * @return the tree assocated with a triangle mesh
+     * @return the tree associated with a triangle mesh
      */
-    public CollisionTree getCollisionTree(TriMesh mesh) {
+    public synchronized CollisionTree getCollisionTree(TriMesh mesh) {
         CollisionTree toReturn = null;
 
         // If we have a shared mesh, we want to use the tree of the target.
@@ -259,7 +259,7 @@ public class CollisionTreeManager {
                     // so it is not removed by a controller.
                     if (protect) {
                         if (protectedList == null) {
-                            protectedList = new ArrayList<TriMesh>(1);
+                            protectedList = Collections.synchronizedList(new ArrayList<TriMesh>(1));
                         }
                         protectedList.add(((SharedMesh) mesh).getTarget());
                     }
@@ -272,7 +272,7 @@ public class CollisionTreeManager {
                 // so it is not removed by a controller.
                 if (protect) {
                     if (protectedList == null) {
-                        protectedList = new ArrayList<TriMesh>(1);
+                        protectedList = Collections.synchronizedList(new ArrayList<TriMesh>(1));
                     }
                     protectedList.add(mesh);
                 }
