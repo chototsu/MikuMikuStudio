@@ -119,7 +119,7 @@ public class CollisionTree implements Serializable {
     static private Vector3f[] target = new Vector3f[3];
 
     // Comparator used to sort triangle indices
-    protected static TreeComparator comparator = new TreeComparator();
+    protected static final TreeComparator comparator = new TreeComparator();
 
     /**
      * Constructor creates a new instance of CollisionTree.
