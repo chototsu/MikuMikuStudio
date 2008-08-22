@@ -229,7 +229,7 @@ public class CollisionTree implements Serializable {
     }
 
     /**
-     * Tests if the world bounds of the node at this level interesects a
+     * Tests if the world bounds of the node at this level intersects a
      * provided bounding volume. If an intersection occurs, true is returned,
      * otherwise false is returned. If the provided volume is invalid, false is
      * returned.
