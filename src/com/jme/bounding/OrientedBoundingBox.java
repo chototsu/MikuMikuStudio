@@ -62,6 +62,7 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     private static final long serialVersionUID = 1L;
 
+    // TODO: Really need to move from static compute fields to an object pool.
     static private final Vector3f _compVect3 = new Vector3f();
 
     static private final Vector3f _compVect4 = new Vector3f();
@@ -71,6 +72,12 @@ public class OrientedBoundingBox extends BoundingVolume {
     static private final Vector3f _compVect6 = new Vector3f();
 
     static private final Vector3f _compVect7 = new Vector3f();
+
+    static private final Vector3f _compVect8 = new Vector3f();
+
+    static private final Vector3f _compVect9 = new Vector3f();
+
+    static private final Vector3f _compVect10 = new Vector3f();
 
     static private final Vector3f tempVe = new Vector3f();
 
@@ -118,7 +125,7 @@ public class OrientedBoundingBox extends BoundingVolume {
             .createVector3Buffer(16);
 
     /**
-     * If true, the box's vectorStore array correctly represnts the box's
+     * If true, the box's vectorStore array correctly represents the box's
      * corners.
      */
     public boolean correctCorners = false;
@@ -172,7 +179,6 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     public void computeFromPoints(FloatBuffer points) {
         containAABB(points);
-        correctCorners = false;
     }
 
     /**
@@ -223,7 +229,8 @@ public class OrientedBoundingBox extends BoundingVolume {
     }
 
     public BoundingVolume merge(BoundingVolume volume) {
-        return new OrientedBoundingBox().mergeLocal(volume);
+        // clone ourselves into a new bounding volume, then merge.
+        return clone(new OrientedBoundingBox()).mergeLocal(volume);
     }
 
     public BoundingVolume mergeLocal(BoundingVolume volume) {
@@ -357,27 +364,23 @@ public class OrientedBoundingBox extends BoundingVolume {
         // matrix. The input box axes are converted to quaternions. The average
         // quaternion is computed, then normalized to unit length. The result is
         // the slerp of the two input quaternions with t-value of 1/2. The
-        // result
-        // is converted back to a rotation matrix and its columns are selected
-        // as
-        // the merged box axes.
+        // result is converted back to a rotation matrix and its columns are
+        // selected as the merged box axes.
         Quaternion kQ0 = tempQa, kQ1 = tempQb;
         kQ0.fromAxes(rkBox0.xAxis, rkBox0.yAxis, rkBox0.zAxis);
         kQ1.fromAxes(rkBox1.xAxis, rkBox1.yAxis, rkBox1.zAxis);
 
         if (kQ0.dot(kQ1) < 0.0f)
             kQ1.negate();
-        
+
         Quaternion kQ = kQ0.addLocal(kQ1);
         kQ.normalize();
-        
+
         Matrix3f kBoxaxis = kQ.toRotationMatrix(tempMa);
-        kBoxaxis.getColumn(0, xAxis);
-        kBoxaxis.getColumn(1, yAxis);
-        kBoxaxis.getColumn(2, zAxis);
-        
-        correctCorners = false;
-        
+        Vector3f newXaxis = kBoxaxis.getColumn(0, _compVect8);
+        Vector3f newYaxis = kBoxaxis.getColumn(1, _compVect9);
+        Vector3f newZaxis = kBoxaxis.getColumn(2, _compVect10);
+
         // Project the input box vertices onto the merged-box axes. Each axis
         // D[i] containing the current center C has a minimum projected value
         // pmin[i] and a maximum projected value pmax[i]. The corresponding end
@@ -394,27 +397,27 @@ public class OrientedBoundingBox extends BoundingVolume {
         Vector3f kDiff = _compVect4;
         Vector3f kMin = _compVect5;
         Vector3f kMax = _compVect6;
-        kMin.x = kMin.y = kMin.z = +Float.MAX_VALUE;
-        kMax.x = kMax.y = kMax.z = -Float.MAX_VALUE;
+        kMin.zero();
+        kMax.zero();
 
         if (!rkBox0.correctCorners)
             rkBox0.computeCorners();
         for (i = 0; i < 8; i++) {
             rkBox0.vectorStore[i].subtract(kBoxCenter, kDiff);
 
-            fDot = kDiff.dot(xAxis);
+            fDot = kDiff.dot(newXaxis);
             if (fDot > kMax.x)
                 kMax.x = fDot;
             else if (fDot < kMin.x)
                 kMin.x = fDot;
 
-            fDot = kDiff.dot(yAxis);
+            fDot = kDiff.dot(newYaxis);
             if (fDot > kMax.y)
                 kMax.y = fDot;
             else if (fDot < kMin.y)
                 kMin.y = fDot;
 
-            fDot = kDiff.dot(zAxis);
+            fDot = kDiff.dot(newZaxis);
             if (fDot > kMax.z)
                 kMax.z = fDot;
             else if (fDot < kMin.z)
@@ -427,24 +430,28 @@ public class OrientedBoundingBox extends BoundingVolume {
         for (i = 0; i < 8; i++) {
             rkBox1.vectorStore[i].subtract(kBoxCenter, kDiff);
 
-            fDot = kDiff.dot(xAxis);
+            fDot = kDiff.dot(newXaxis);
             if (fDot > kMax.x)
                 kMax.x = fDot;
             else if (fDot < kMin.x)
                 kMin.x = fDot;
 
-            fDot = kDiff.dot(yAxis);
+            fDot = kDiff.dot(newYaxis);
             if (fDot > kMax.y)
                 kMax.y = fDot;
             else if (fDot < kMin.y)
                 kMin.y = fDot;
 
-            fDot = kDiff.dot(zAxis);
+            fDot = kDiff.dot(newZaxis);
             if (fDot > kMax.z)
                 kMax.z = fDot;
             else if (fDot < kMin.z)
                 kMin.z = fDot;
         }
+
+        this.xAxis.set(newXaxis);
+        this.yAxis.set(newYaxis);
+        this.zAxis.set(newZaxis);
 
         this.extent.x = .5f * (kMax.x - kMin.x);
         kBoxCenter.addLocal(this.xAxis.mult(.5f * (kMax.x + kMin.x), tempVe));
@@ -480,78 +487,23 @@ public class OrientedBoundingBox extends BoundingVolume {
         return toReturn;
     }
 
-    public void recomputeMesh() {
-        if (!correctCorners)
-            computeCorners();
-    }
-
     /**
      * Sets the vectorStore information to the 8 corners of the box.
      */
     public void computeCorners() {
+        Vector3f akEAxis0 = xAxis.mult(extent.x, _compVect1);
+        Vector3f akEAxis1 = yAxis.mult(extent.y, _compVect2);
+        Vector3f akEAxis2 = zAxis.mult(extent.z, _compVect3);
+        
+        vectorStore[0].set(center).subtractLocal(akEAxis0).subtractLocal(akEAxis1).subtractLocal(akEAxis2);
+        vectorStore[1].set(center).addLocal(akEAxis0).subtractLocal(akEAxis1).subtractLocal(akEAxis2);
+        vectorStore[2].set(center).addLocal(akEAxis0).addLocal(akEAxis1).subtractLocal(akEAxis2);
+        vectorStore[3].set(center).subtractLocal(akEAxis0).addLocal(akEAxis1).subtractLocal(akEAxis2);
+        vectorStore[4].set(center).subtractLocal(akEAxis0).subtractLocal(akEAxis1).addLocal(akEAxis2);
+        vectorStore[5].set(center).addLocal(akEAxis0).subtractLocal(akEAxis1).addLocal(akEAxis2);
+        vectorStore[6].set(center).addLocal(akEAxis0).addLocal(akEAxis1).addLocal(akEAxis2);
+        vectorStore[7].set(center).subtractLocal(akEAxis0).addLocal(akEAxis1).addLocal(akEAxis2);
         correctCorners = true;
-        float xDotYcrossZ = xAxis.dot(yAxis.cross(zAxis, _compVect1));
-        Vector3f yCrossZmulX = yAxis.cross(zAxis, _compVect1).multLocal(
-                extent.x);
-        Vector3f zCrossXmulY = zAxis.cross(xAxis, _compVect2).multLocal(
-                extent.y);
-        Vector3f xCrossYmulZ = xAxis.cross(yAxis, _compVect3).multLocal(
-                extent.z);
-
-        vectorStore[0].set(
-                ((yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x) / xDotYcrossZ)
-                        + center.x,
-                ((yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y) / xDotYcrossZ)
-                        + center.y,
-                ((yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z) / xDotYcrossZ)
-                        + center.z);
-        vectorStore[1].set((-yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)
-                / xDotYcrossZ + center.x,
-                (-yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y) / xDotYcrossZ
-                        + center.y,
-                (-yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z) / xDotYcrossZ
-                        + center.z);
-
-        vectorStore[2].set((yCrossZmulX.x + -zCrossXmulY.x + xCrossYmulZ.x)
-                / xDotYcrossZ + center.x,
-                (yCrossZmulX.y + -zCrossXmulY.y + xCrossYmulZ.y) / xDotYcrossZ
-                        + center.y,
-                (yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z) / xDotYcrossZ
-                        + center.z);
-
-        vectorStore[3].set((yCrossZmulX.x + zCrossXmulY.x + -xCrossYmulZ.x)
-                / xDotYcrossZ + center.x,
-                (yCrossZmulX.y + zCrossXmulY.y + -xCrossYmulZ.y) / xDotYcrossZ
-                        + center.y,
-                (yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z) / xDotYcrossZ
-                        + center.z);
-
-        vectorStore[4].set((-yCrossZmulX.x + -zCrossXmulY.x + xCrossYmulZ.x)
-                / xDotYcrossZ + center.x,
-                (-yCrossZmulX.y + -zCrossXmulY.y + xCrossYmulZ.y) / xDotYcrossZ
-                        + center.y,
-                (-yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z) / xDotYcrossZ
-                        + center.z);
-
-        vectorStore[5].set((-yCrossZmulX.x + zCrossXmulY.x + -xCrossYmulZ.x)
-                / xDotYcrossZ + center.x,
-                (-yCrossZmulX.y + zCrossXmulY.y + -xCrossYmulZ.y) / xDotYcrossZ
-                        + center.y,
-                (-yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z) / xDotYcrossZ
-                        + center.z);
-        vectorStore[6].set((yCrossZmulX.x + -zCrossXmulY.x + -xCrossYmulZ.x)
-                / xDotYcrossZ + center.x,
-                (yCrossZmulX.y + -zCrossXmulY.y + -xCrossYmulZ.y) / xDotYcrossZ
-                        + center.y,
-                (yCrossZmulX.z + -zCrossXmulY.z + -xCrossYmulZ.z) / xDotYcrossZ
-                        + center.z);
-
-        vectorStore[7].set(-(yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)
-                / xDotYcrossZ + center.x,
-                -(yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y) / xDotYcrossZ
-                        + center.y,
-                -(yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z) / xDotYcrossZ
-                        + center.z);
     }
     
     public void computeFromTris(int[] indices, TriMesh mesh, int start, int end) {
