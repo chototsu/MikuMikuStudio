@@ -510,8 +510,7 @@ public class BoundingBox extends BoundingVolume {
             return rVal;
         }
         
-        BoundingBox rVal = new BoundingBox(
-                (center != null ? (Vector3f) center.clone() : null),
+        BoundingBox rVal = new BoundingBox(center.clone(),
                 xExtent, yExtent, zExtent);
         return rVal;        
     }
