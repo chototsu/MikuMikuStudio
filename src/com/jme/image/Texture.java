@@ -779,7 +779,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineFuncRGB(CombinerFunctionRGB combineFuncRGB) {
         if (combineFuncRGB == null) {
-            throw new IllegalArgumentException("invalid CombinerFunctionRGB: " + combineFuncRGB);
+            throw new IllegalArgumentException("invalid CombinerFunctionRGB: null");
         }
         this.combineFuncRGB = combineFuncRGB;
     }
@@ -799,7 +799,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineOp0Alpha(CombinerOperandAlpha combineOp0Alpha) {
         if (combineOp0Alpha == null) {
-            throw new IllegalArgumentException("invalid CombinerOperandAlpha: " + combineOp0Alpha);
+            throw new IllegalArgumentException("invalid CombinerOperandAlpha: null");
         }
 
         this.combineOp0Alpha = combineOp0Alpha;
@@ -820,7 +820,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineOp0RGB(CombinerOperandRGB combineOp0RGB) {
         if (combineOp0RGB == null) {
-            throw new IllegalArgumentException("invalid CombinerOperandRGB: " + combineOp0RGB);
+            throw new IllegalArgumentException("invalid CombinerOperandRGB: null");
         }
         this.combineOp0RGB = combineOp0RGB;
     }
@@ -840,7 +840,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineOp1Alpha(CombinerOperandAlpha combineOp1Alpha) {
         if (combineOp1Alpha == null) {
-            throw new IllegalArgumentException("invalid CombinerOperandAlpha: " + combineOp1Alpha);
+            throw new IllegalArgumentException("invalid CombinerOperandAlpha: null");
         }
         this.combineOp1Alpha = combineOp1Alpha;
     }
@@ -860,7 +860,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineOp1RGB(CombinerOperandRGB combineOp1RGB) {
         if (combineOp1RGB == null) {
-            throw new IllegalArgumentException("invalid CombinerOperandRGB: " + combineOp1RGB);
+            throw new IllegalArgumentException("invalid CombinerOperandRGB: null");
         }
         this.combineOp1RGB = combineOp1RGB;
     }
@@ -880,7 +880,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineOp2Alpha(CombinerOperandAlpha combineOp2Alpha) {
         if (combineOp2Alpha == null) {
-            throw new IllegalArgumentException("invalid CombinerOperandAlpha: " + combineOp2Alpha);
+            throw new IllegalArgumentException("invalid CombinerOperandAlpha: null");
         }
         this.combineOp2Alpha = combineOp2Alpha;
     }
@@ -900,7 +900,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineOp2RGB(CombinerOperandRGB combineOp2RGB) {
         if (combineOp2RGB == null) {
-            throw new IllegalArgumentException("invalid CombinerOperandRGB: " + combineOp2RGB);
+            throw new IllegalArgumentException("invalid CombinerOperandRGB: null");
         }
         this.combineOp2RGB = combineOp2RGB;
     }
@@ -920,7 +920,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineScaleAlpha(CombinerScale combineScaleAlpha) {
         if (combineScaleAlpha == null) {
-            throw new IllegalArgumentException("invalid CombinerScale: " + combineScaleAlpha);
+            throw new IllegalArgumentException("invalid CombinerScale: null");
         }
         this.combineScaleAlpha = combineScaleAlpha;
     }
@@ -940,7 +940,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineScaleRGB(CombinerScale combineScaleRGB) {
         if (combineScaleRGB == null) {
-            throw new IllegalArgumentException("invalid CombinerScale: " + combineScaleRGB);
+            throw new IllegalArgumentException("invalid CombinerScale: null");
         }
         this.combineScaleRGB = combineScaleRGB;
     }
@@ -960,7 +960,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineSrc0Alpha(CombinerSource combineSrc0Alpha) {
         if (combineSrc0Alpha == null) {
-            throw new IllegalArgumentException("invalid CombinerSource: " + combineSrc0Alpha);
+            throw new IllegalArgumentException("invalid CombinerSource: null");
         }
         this.combineSrc0Alpha = combineSrc0Alpha;
     }
@@ -980,7 +980,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineSrc0RGB(CombinerSource combineSrc0RGB) {
         if (combineSrc0RGB == null) {
-            throw new IllegalArgumentException("invalid CombinerSource: " + combineSrc0RGB);
+            throw new IllegalArgumentException("invalid CombinerSource: null");
         }
         this.combineSrc0RGB = combineSrc0RGB;
     }
@@ -1000,7 +1000,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineSrc1Alpha(CombinerSource combineSrc1Alpha) {
         if (combineSrc1Alpha == null) {
-            throw new IllegalArgumentException("invalid CombinerSource: " + combineSrc1Alpha);
+            throw new IllegalArgumentException("invalid CombinerSource: null");
         }
         this.combineSrc1Alpha = combineSrc1Alpha;
     }
@@ -1020,7 +1020,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineSrc1RGB(CombinerSource combineSrc1RGB) {
         if (combineSrc1RGB == null) {
-            throw new IllegalArgumentException("invalid CombinerSource: " + combineSrc1RGB);
+            throw new IllegalArgumentException("invalid CombinerSource: null");
         }
         this.combineSrc1RGB = combineSrc1RGB;
     }
@@ -1040,7 +1040,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineSrc2Alpha(CombinerSource combineSrc2Alpha) {
         if (combineSrc2Alpha == null) {
-            throw new IllegalArgumentException("invalid CombinerSource: " + combineSrc2Alpha);
+            throw new IllegalArgumentException("invalid CombinerSource: null");
         }
         this.combineSrc2Alpha = combineSrc2Alpha;
     }
@@ -1060,7 +1060,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineSrc2RGB(CombinerSource combineSrc2RGB) {
         if (combineSrc2RGB == null) {
-            throw new IllegalArgumentException("invalid CombinerSource: " + combineSrc2RGB);
+            throw new IllegalArgumentException("invalid CombinerSource: null");
         }
         this.combineSrc2RGB = combineSrc2RGB;
     }
@@ -1080,7 +1080,7 @@ public abstract class Texture implements Savable {
      */
     public void setCombineFuncAlpha(CombinerFunctionAlpha combineFuncAlpha) {
         if (combineFuncAlpha == null) {
-            throw new IllegalArgumentException("invalid CombinerFunctionAlpha: " + combineFuncAlpha);
+            throw new IllegalArgumentException("invalid CombinerFunctionAlpha: null");
         }
         this.combineFuncAlpha = combineFuncAlpha;
     }
@@ -1092,7 +1092,7 @@ public abstract class Texture implements Savable {
      */
     public void setEnvironmentalMapMode(EnvironmentalMapMode envMapMode) {
         if (envMapMode == null) {
-            throw new IllegalArgumentException("invalid EnvironmentalMapMode: " + envMapMode);
+            throw new IllegalArgumentException("invalid EnvironmentalMapMode: null");
         }
         this.envMapMode = envMapMode;
     }
@@ -1134,6 +1134,10 @@ public abstract class Texture implements Savable {
         if (other == this) {
             return true;
         }
+        if (!(other instanceof Texture)) {
+            return false;
+        }
+        
         Texture that = (Texture) other;
         if (this.textureId != that.textureId)
             return false;
@@ -1318,7 +1322,7 @@ public abstract class Texture implements Savable {
      */
     public void setRenderToTextureType(RenderToTextureType rttSource) {
         if (rttSource == null) {
-            throw new IllegalArgumentException("invalid RenderToTextureType: " + rttSource);
+            throw new IllegalArgumentException("invalid RenderToTextureType: null");
         }
         this.rttSource = rttSource;
     }
@@ -1474,7 +1478,7 @@ public abstract class Texture implements Savable {
                 CombinerScale.class, CombinerScale.One);
     }
 
-    public Class getClassTag() {
+    public Class<? extends Texture> getClassTag() {
         return this.getClass();
     }
 
