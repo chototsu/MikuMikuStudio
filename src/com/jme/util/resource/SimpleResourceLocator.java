@@ -64,6 +64,14 @@ public class SimpleResourceLocator implements ResourceLocator {
     }
     
     public URL locateResource(String resourceName) {
+        // Trim off any prepended local dir.
+        while (resourceName.startsWith("./") && resourceName.length() > 2) {
+            resourceName = resourceName.substring(2);
+        }
+        while (resourceName.startsWith(".\\") && resourceName.length() > 2) {
+            resourceName = resourceName.substring(2);
+        }
+
         // Try to locate using resourceName as is.
         try {
             String spec = URLEncoder.encode( resourceName, "UTF-8" );
