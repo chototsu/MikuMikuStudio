@@ -32,8 +32,6 @@
 
 package com.jme.renderer.jogl;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
