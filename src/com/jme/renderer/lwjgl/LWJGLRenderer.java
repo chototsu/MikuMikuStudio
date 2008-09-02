@@ -1641,12 +1641,16 @@ public class LWJGLRenderer extends Renderer {
     // inherited documentation
     public void setPolygonOffset(float factor, float offset) {
         GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
+        GL11.glEnable(GL11.GL_POLYGON_OFFSET_LINE);
+        GL11.glEnable(GL11.GL_POLYGON_OFFSET_POINT);
         GL11.glPolygonOffset(factor, offset);
     }
 
     // inherited documentation
     public void clearPolygonOffset() {
         GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
+        GL11.glDisable(GL11.GL_POLYGON_OFFSET_LINE);
+        GL11.glDisable(GL11.GL_POLYGON_OFFSET_POINT);
     }
 
     /**
