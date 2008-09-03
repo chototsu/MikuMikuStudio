@@ -396,21 +396,21 @@ public class TDSFile extends ChunkerClass{
                         calcFacesWithVertexAndSmoothGroup(realNextFaces[vertexIndex],faceNormals,myFace,tempNormal,actuallFace);
                         // Now can I just index this Vertex/tempNormal combination?
                         int l;
-                        Vector3f vertexValue=whatIAm.vertexes[vertexIndex];
-                        for (l=0;l<normals.size();l++) {
-                            if (normals.get(l).equals(tempNormal) && vertexes.get(l).equals(vertexValue)) {
-                                break;
-                            }
-                        }
-                        if (l==normals.size()){ // if new
+//                        Vector3f vertexValue=whatIAm.vertexes[vertexIndex];
+//                        for (l=0;l<normals.size();l++) {
+//                            if (normals.get(l).equals(tempNormal) && vertexes.get(l).equals(vertexValue)) {
+//                                break;
+//                            }
+//                        }
+//                        if (l==normals.size()){ // if new
                             normals.add(new Vector3f(tempNormal));
                             vertexes.add(whatIAm.vertexes[vertexIndex]);
                             if (whatIAm.texCoords!=null)
                                 texCoords.add(whatIAm.texCoords[vertexIndex]);
-                            indexes[curPosition++]=l;
-                        } else { // if old
-                            indexes[curPosition++]=l;
-                        }
+                            indexes[curPosition++]=normals.size()-1;
+//                        } else { // if old
+//                            indexes[curPosition++]=l;
+//                        }
                     }
                 }
                 Vector3f[] newVerts=new Vector3f[vertexes.size()];
