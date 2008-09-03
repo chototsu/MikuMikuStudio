@@ -60,6 +60,7 @@ import com.jme.image.BitmapHeader;
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.image.Texture2D;
+import com.jme.image.TextureCubeMap;
 import com.jme.image.util.DDSLoader;
 import com.jme.image.util.TGALoader;
 import com.jme.renderer.Renderer;
@@ -345,11 +346,6 @@ final public class TextureManager {
             return texture;
         }
 
-        // Default to Texture2D
-        if (texture == null) {
-            texture = new Texture2D();
-        }
-
         if (imageData == null)
             imageData = loadImage(tkey);
 
@@ -358,6 +354,15 @@ final public class TextureManager {
                     + (tkey.getLocation() != null ? tkey.getLocation()
                             .getFile() : tkey.getFileType()));
             return TextureState.getDefaultTexture();
+        }
+
+        // Default to Texture2D
+        if (texture == null) {
+        	if (imageData.getData().size() == 6) {
+        		texture = new TextureCubeMap();
+        	} else {
+        		texture = new Texture2D();
+        	}
         }
 
         // Use a tex state only to determine if S3TC is available.

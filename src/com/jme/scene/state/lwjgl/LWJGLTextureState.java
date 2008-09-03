@@ -611,8 +611,7 @@ public class LWJGLTextureState extends TextureState {
                                 }
                             }
                         } else {
-                            logger
-                                    .warning("This card does not support Cubemaps.");
+                            logger.warning("This card does not support Cubemaps.");
                             return;
                         }
                         break;
@@ -624,157 +623,182 @@ public class LWJGLTextureState extends TextureState {
                 // Get mipmap data sizes and amount of mipmaps to send to
                 // opengl. Then loop through all mipmaps and send them.
                 int[] mipSizes = image.getMipMapSizes();
-                ByteBuffer data = image.getData(0);
-                if (type == Type.ThreeDimensional) {
-                    if (supportsTexture3D) {
-                        // concat data into single buffer:
-                        int dSize = 0;
-                        int count = 0;
-                        for (int x = 0; x < image.getData().size(); x++) {
-                            if (image.getData(x) != null) {
-                                data = image.getData(x);
-                                dSize += data.limit();
-                                count++;
-                            }
-                        }
-                        // reuse buffer if we can.
-                        if (count != 1) {
-                            data = BufferUtils.createByteBuffer(dSize);
-                            for (int x = 0; x < image.getData().size(); x++) {
-                                if (image.getData(x) != null) {
-                                    data.put(image.getData(x));
-                                }
-                            }
-                            // ensure the buffer is ready for reading
-                            data.flip();
-                        }
-                    } else {
-                        logger.warning("This card does not support Texture3D.");
-                        return;
+                ByteBuffer data = null;
+                
+                if (type == Type.CubeMap) {
+                	if (supportsTextureCubeMap) {
+                		for (TextureCubeMap.Face face : TextureCubeMap.Face.values()) {
+                			data = image.getData(face.ordinal());
+                			int pos = 0;
+                			int max = 1;
+
+                			if (mipSizes == null) {
+                				mipSizes = new int[] { data.capacity() };
+                			} else if (texture.getMinificationFilter().usesMipMapLevels()) {
+                				max = mipSizes.length;
+                			}
+
+                			for (int m = 0; m < max; m++) {
+                				int width = Math.max(1, image.getWidth() >> m);
+                				int height = type != Type.OneDimensional ? Math.max(1, image.getHeight() >> m) : 0;
+
+	                            data.position(pos);
+	                            data.limit(pos + mipSizes[m]);
+
+	                            if (TextureStateRecord.isCompressedType(image.getFormat())) {
+	                            	ARBTextureCompression.glCompressedTexImage2DARB(
+	                            			getGLCubeMapFace(face),
+	                            			m,
+	                            			TextureStateRecord
+	                            			.getGLDataFormat(image
+	                            					.getFormat()),
+	                            					width, height,
+	                            					hasBorder ? 1 : 0, data);
+	                            } else {
+	                            	GL11.glTexImage2D(
+	                            			getGLCubeMapFace(face),
+	                            			m,
+	                            			TextureStateRecord
+	                            			.getGLDataFormat(image
+	                            					.getFormat()),
+	                            					width, height,
+	                            					hasBorder ? 1 : 0,
+	                            					TextureStateRecord.getGLPixelFormat(image.getFormat()),
+                   									GL11.GL_UNSIGNED_BYTE, data);
+	                            }
+	                            pos += mipSizes[m];
+                			}
+                		}
+                	} else {
+                		logger.warning("This card does not support CubeMaps.");
+                		return;
+                	}
+                } else {
+                    data = image.getData(0);
+                    int pos = 0;
+                    int max = 1;
+                    
+                    if (mipSizes == null) {
+                        mipSizes = new int[] { data.capacity() };
+                    } else if (texture.getMinificationFilter().usesMipMapLevels()) {
+                        max = mipSizes.length;
                     }
-                }
-                int max = 1;
-                int pos = 0;
-                if (mipSizes == null) {
-                    mipSizes = new int[] { data.capacity() };
-                } else if (texture.getMinificationFilter().usesMipMapLevels()) {
-                    max = mipSizes.length;
-                }
-
-                for (int m = 0; m < max; m++) {
-                    int width = Math.max(1, image.getWidth() >> m);
-                    int height = type != Type.OneDimensional ? Math.max(1,
-                            image.getHeight() >> m) : 0;
-                    int depth = type == Type.ThreeDimensional ? Math.max(1,
-                            image.getDepth() >> m) : 0;
-
-                    data.position(pos);
-                    data.limit(pos + mipSizes[m]);
-
-                    switch (type) {
-                        case TwoDimensional:
-                            if (TextureStateRecord.isCompressedType(image
-                                    .getFormat())) {
-                                ARBTextureCompression
-                                        .glCompressedTexImage2DARB(
-                                                GL11.GL_TEXTURE_2D, m,
-                                                TextureStateRecord
-                                                        .getGLDataFormat(image
-                                                                .getFormat()),
-                                                width, height, hasBorder ? 1
-                                                        : 0, data);
-                            } else {
-                                GL11.glTexImage2D(GL11.GL_TEXTURE_2D, m,
-                                        TextureStateRecord
-                                                .getGLDataFormat(image
-                                                        .getFormat()), width,
-                                        height, hasBorder ? 1 : 0,
-                                        TextureStateRecord
-                                                .getGLPixelFormat(image
-                                                        .getFormat()),
-                                        GL11.GL_UNSIGNED_BYTE, data);
-                            }
-                            break;
-                        case OneDimensional:
-                            if (TextureStateRecord.isCompressedType(image
-                                    .getFormat())) {
-                                ARBTextureCompression
-                                        .glCompressedTexImage1DARB(
-                                                GL11.GL_TEXTURE_1D, m,
-                                                TextureStateRecord
-                                                        .getGLDataFormat(image
-                                                                .getFormat()),
-                                                width, hasBorder ? 1 : 0, data);
-                            } else {
-                                GL11.glTexImage1D(GL11.GL_TEXTURE_1D, m,
-                                        TextureStateRecord
-                                                .getGLDataFormat(image
-                                                        .getFormat()), width,
-                                        hasBorder ? 1 : 0, TextureStateRecord
-                                                .getGLPixelFormat(image
-                                                        .getFormat()),
-                                        GL11.GL_UNSIGNED_BYTE, data);
-                            }
-                            break;
-                        case ThreeDimensional:
-                            // already checked for support above...
-                            if (TextureStateRecord.isCompressedType(image
-                                    .getFormat())) {
-                                ARBTextureCompression
-                                        .glCompressedTexImage3DARB(
-                                                GL12.GL_TEXTURE_3D, m,
-                                                TextureStateRecord
-                                                        .getGLDataFormat(image
-                                                                .getFormat()),
-                                                width, height, depth,
-                                                hasBorder ? 1 : 0, data);
-                            } else {
-                                GL12.glTexImage3D(GL12.GL_TEXTURE_3D, m,
-                                        TextureStateRecord
-                                                .getGLDataFormat(image
-                                                        .getFormat()), width,
-                                        height, depth, hasBorder ? 1 : 0,
-                                        TextureStateRecord
-                                                .getGLPixelFormat(image
-                                                        .getFormat()),
-                                        GL11.GL_UNSIGNED_BYTE, data);
-                            }
-                            break;
-                        case CubeMap:
-                            if (supportsTextureCubeMap) {
-                                for (TextureCubeMap.Face face : TextureCubeMap.Face
-                                        .values()) {
-                                    if (TextureStateRecord
-                                            .isCompressedType(image.getFormat())) {
-                                        ARBTextureCompression
-                                                .glCompressedTexImage2DARB(
-                                                        getGLCubeMapFace(face),
-                                                        m,
-                                                        TextureStateRecord
-                                                                .getGLDataFormat(image
-                                                                        .getFormat()),
-                                                        width, height,
-                                                        hasBorder ? 1 : 0, data);
-                                    } else {
-                                        GL11.glTexImage2D(
-                                                getGLCubeMapFace(face), m,
-                                                TextureStateRecord
-                                                        .getGLDataFormat(image
-                                                                .getFormat()),
-                                                width, height, hasBorder ? 1
-                                                        : 0, TextureStateRecord
-                                                        .getGLPixelFormat(image
-                                                                .getFormat()),
-                                                GL11.GL_UNSIGNED_BYTE, data);
-                                    }
-                                }
-                            }
-                            break;
+                    
+                    if (type == Type.ThreeDimensional) {
+                    	if (supportsTexture3D) {
+                    		// concat data into single buffer:
+                    		int dSize = 0;
+                    		int count = 0;
+                    		for (int x = 0; x < image.getData().size(); x++) {
+                    			if (image.getData(x) != null) {
+                    				data = image.getData(x);
+                    				dSize += data.limit();
+                    				count++;
+                    			}
+                    		}
+                    		// reuse buffer if we can.
+                    		if (count != 1) {
+                    			data = BufferUtils.createByteBuffer(dSize);
+                    			for (int x = 0; x < image.getData().size(); x++) {
+                    				if (image.getData(x) != null) {
+                    					data.put(image.getData(x));
+                    				}
+                    			}
+                    			// ensure the buffer is ready for reading
+                    			data.flip();
+                    		}
+                    	} else {
+                    		logger.warning("This card does not support Texture3D.");
+                    		return;
+                    	}
                     }
 
-                    pos += mipSizes[m];
+                	for (int m = 0; m < max; m++) {
+                		int width = Math.max(1, image.getWidth() >> m);
+                		int height = type != Type.OneDimensional ? Math.max(1,
+                				image.getHeight() >> m) : 0;
+                        int depth = type == Type.ThreeDimensional ? Math.max(1,
+                        		image.getDepth() >> m) : 0;
+
+                                data.position(pos);
+                                data.limit(pos + mipSizes[m]);
+
+                                switch (type) {
+                                case TwoDimensional:
+                                	if (TextureStateRecord.isCompressedType(image
+                                			.getFormat())) {
+                                		ARBTextureCompression
+                                		.glCompressedTexImage2DARB(
+                                				GL11.GL_TEXTURE_2D, m,
+                                				TextureStateRecord
+                                				.getGLDataFormat(image
+                                						.getFormat()),
+                                						width, height, hasBorder ? 1
+                                								: 0, data);
+                                	} else {
+                                		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, m,
+                                				TextureStateRecord
+                                				.getGLDataFormat(image
+                                						.getFormat()), width,
+                                						height, hasBorder ? 1 : 0,
+                                								TextureStateRecord
+                                								.getGLPixelFormat(image
+                                										.getFormat()),
+                                										GL11.GL_UNSIGNED_BYTE, data);
+                                	}
+                                	break;
+                                case OneDimensional:
+                                	if (TextureStateRecord.isCompressedType(image
+                                			.getFormat())) {
+                                		ARBTextureCompression
+                                		.glCompressedTexImage1DARB(
+                                				GL11.GL_TEXTURE_1D, m,
+                                				TextureStateRecord
+                                				.getGLDataFormat(image
+                                						.getFormat()),
+                                						width, hasBorder ? 1 : 0, data);
+                                	} else {
+                                		GL11.glTexImage1D(GL11.GL_TEXTURE_1D, m,
+                                				TextureStateRecord
+                                				.getGLDataFormat(image
+                                						.getFormat()), width,
+                                						hasBorder ? 1 : 0, TextureStateRecord
+                                								.getGLPixelFormat(image
+                                										.getFormat()),
+                                										GL11.GL_UNSIGNED_BYTE, data);
+                                	}
+                                	break;
+                                case ThreeDimensional:
+                                	// already checked for support above...
+                                	if (TextureStateRecord.isCompressedType(image
+                                			.getFormat())) {
+                                		ARBTextureCompression
+                                		.glCompressedTexImage3DARB(
+                                				GL12.GL_TEXTURE_3D, m,
+                                				TextureStateRecord
+                                				.getGLDataFormat(image
+                                						.getFormat()),
+                                						width, height, depth,
+                                						hasBorder ? 1 : 0, data);
+                                	} else {
+                                		GL12.glTexImage3D(GL12.GL_TEXTURE_3D, m,
+                                				TextureStateRecord
+                                				.getGLDataFormat(image
+                                						.getFormat()), width,
+                                						height, depth, hasBorder ? 1 : 0,
+                                								TextureStateRecord
+                                								.getGLPixelFormat(image
+                                										.getFormat()),
+                                										GL11.GL_UNSIGNED_BYTE, data);
+                                	}
+                                	break;
+                                }
+                                pos += mipSizes[m];
+                	}
                 }
-                data.clear();
+                if (data != null) {
+                	data.clear();
+                }
             }
         }
     }
