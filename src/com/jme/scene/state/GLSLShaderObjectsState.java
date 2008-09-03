@@ -32,7 +32,9 @@
 
 package com.jme.scene.state;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -95,6 +97,10 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     
     protected static boolean glslSupported = false;
     protected static boolean glslSupportedDetected = false;
+    
+    protected boolean needSendShader = false;
+    
+    protected String vertShader, fragShader;
     
     /**
      * 
@@ -687,26 +693,55 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     }
 
     /**
+     * Loads shader from URL
+     * 
+     * @param url
+     * @return
+     */
+    private String load(URL url) {
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new InputStreamReader(url.openStream()));
+            StringBuffer buf = new StringBuffer();
+            while (r.ready()) {
+                buf.append(r.readLine()).append('\n');
+            }
+            r.close();
+            return buf.toString();
+        } catch (IOException e) {
+            logger.severe("Could not load shader program: " + e);
+            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
+            return null;
+        }
+    }
+    
+    /**
      * <code>load</code> loads the shader object from the specified file. The
-     * program must be in ASCII format. We delegate the loading to each
-     * implementation because we do not know in what format the underlying API
-     * wants the data.
+     * program must be in ASCII format. The implementation must
+     * convert the String into data compatible with the graphics library.
      *
      * @param vert text file containing the vertex shader object
      * @param frag text file containing the fragment shader object
      */
-    public abstract void load(URL vert, URL frag);
+    public void load(URL vert, URL frag){
+        vertShader = vert != null ? load(vert) : null;
+        fragShader = frag != null ? load(frag) : null;
+        needSendShader = true;
+    }
 
     /**
      * <code>load</code> loads the shader object from the specified file. The
-     * program must be in ASCII format. We delegate the loading to each
-     * implementation because we do not know in what format the underlying API
-     * wants the data.
+     * program must be in ASCII format. The implementation must
+     * convert the String into data compatible with the graphics library.
      *
      * @param vert text file containing the vertex shader object
      * @param frag text file containing the fragment shader object
      */
-    public abstract void load(String vert, String frag);
+    public void load(String vert, String frag){
+        vertShader = vert;
+        fragShader = frag;
+        needSendShader = true;
+    }
 
     public void write(JMEExporter e) throws IOException {
         super.write(e);

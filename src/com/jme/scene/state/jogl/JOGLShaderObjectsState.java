@@ -32,10 +32,6 @@
 
 package com.jme.scene.state.jogl;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -127,49 +123,6 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
             inited = true;
         }
     }
-
-    /**
-     * Load an URL and grab content into a ByteBuffer.
-     *
-     * @param url the url to load
-     * @return the loaded url
-     */
-    private ByteBuffer load(java.net.URL url) {
-        DataInputStream dataStream = null;
-        try {
-            BufferedInputStream bufferedInputStream =
-                    new BufferedInputStream(url.openStream());
-            dataStream =
-                    new DataInputStream(bufferedInputStream);
-            byte shaderCode[] = new byte[bufferedInputStream.available()];
-            dataStream.readFully(shaderCode);
-            bufferedInputStream.close();
-            dataStream.close();
-            ByteBuffer shaderByteBuffer =
-                    BufferUtils.createByteBuffer(shaderCode.length);
-            shaderByteBuffer.put(shaderCode);
-            shaderByteBuffer.rewind();
-
-            return shaderByteBuffer;
-        } catch (Exception e) {
-            logger.severe("Could not load shader object: " + e);
-            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
-            return null;
-        }
-        finally {
-            // Ensure that the stream is closed, even if there is an exception.
-            if (dataStream != null) {
-                try {
-                    dataStream.close();
-                } catch (IOException closeFailure) {
-                    logger.log(Level.WARNING,
-                            "Failed to close the shader object",
-                            closeFailure);
-                }
-            }
-        }
-    }
-
     /**
      * Loads a string into a ByteBuffer
      *
@@ -199,25 +152,10 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
      * @see com.jme.scene.state.GLSLShaderObjectsState#load(java.net.URL,
      *java.net.URL)
      */
-    public void load(URL vert, URL frag) {
+    private void sendToGL(String vert, String frag) {
         ByteBuffer vertexByteBuffer = vert != null ? load(vert) : null;
         ByteBuffer fragmentByteBuffer = frag != null ? load(frag) : null;
-        load(vertexByteBuffer, fragmentByteBuffer);
-    }
-
-    /**
-     * Loads the shader object. Use null for an empty vertex or empty fragment
-     * shader.
-     *
-     * @param vert vertex shader
-     * @param frag fragment shader
-     * @see com.jme.scene.state.GLSLShaderObjectsState#load(java.net.URL,
-     *java.net.URL)
-     */
-    public void load(String vert, String frag) {
-        ByteBuffer vertexByteBuffer = vert != null ? load(vert) : null;
-        ByteBuffer fragmentByteBuffer = frag != null ? load(frag) : null;
-        load(vertexByteBuffer, fragmentByteBuffer);
+        sendToGL(vertexByteBuffer, fragmentByteBuffer);
     }
 
     /**
@@ -229,13 +167,14 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
      * @see com.jme.scene.state.GLSLShaderObjectsState#load(java.net.URL,
      *java.net.URL)
      */
-    private void load(ByteBuffer vertexByteBuffer,
+    private void sendToGL(ByteBuffer vertexByteBuffer,
             ByteBuffer fragmentByteBuffer) {
         final GL gl = GLU.getCurrentGL();
 
         if (vertexByteBuffer == null && fragmentByteBuffer == null) {
             logger.warning("Could not find shader resources!"
                     + "(both inputbuffers are null)");
+            needSendShader = false;
             return;
         }
 
@@ -298,6 +237,7 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
 
         gl.glLinkProgramARB(programID);
         setNeedsRefresh(true);
+        needSendShader = false;
     }
 
     /** Removes the fragment shader */
@@ -365,11 +305,15 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
 
         if (isSupported()) {
             //Ask for the current state record
-            RenderContext context = DisplaySystem.getDisplaySystem()
+            RenderContext<?> context = DisplaySystem.getDisplaySystem()
                     .getCurrentContext();
             ShaderObjectsStateRecord record = (ShaderObjectsStateRecord) context
                     .getStateRecord(RS_GLSL_SHADER_OBJECTS);
             context.currentStates[RS_GLSL_SHADER_OBJECTS] = this;
+
+            if (needSendShader){
+                sendToGL(vertShader, fragShader);
+            }
 
             if (shaderDataLogic != null) {
                 shaderDataLogic.applyData(this, geom);
