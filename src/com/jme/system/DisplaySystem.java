@@ -852,9 +852,9 @@ public abstract class DisplaySystem {
             screenPosition.y = getRenderer().getHeight() - screenPosition.y;
         }
         if (store == null) store = new Ray();
-        DisplaySystem.getDisplaySystem().getWorldCoordinates(screenPosition, 0,
+        getWorldCoordinates(screenPosition, 0,
                 store.origin);
-        DisplaySystem.getDisplaySystem().getWorldCoordinates(screenPosition, 0.3f,
+        getWorldCoordinates(screenPosition, 0.3f,
                 store.direction).subtractLocal(store.origin)
                 .normalizeLocal();
         return store;
