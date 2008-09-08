@@ -101,7 +101,7 @@ public class PropertiesGameSettings extends AbstractGameSettings {
         }
 
         this.filename = personalFilename;
-        isNew = new File(filename).isFile();
+        isNew = !(new File(filename).isFile());
         prop = new Properties();
 
         logger.info("PropertiesGameSettings created");
