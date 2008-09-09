@@ -460,8 +460,8 @@ final public class FastMath {
     }
 
     /**
-     * Converts a point from spherical coordinates to cartesian and stores the
-     * results in the store var.
+     * Converts a point from Spherical coordinates to Cartesian (using positive
+     * Y as up) and stores the results in the store var.
      */
     public static Vector3f sphericalToCartesian(Vector3f sphereCoords,
             Vector3f store) {
@@ -474,8 +474,9 @@ final public class FastMath {
     }
 
     /**
-     * Converts a point from cartesian coordinates to spherical and stores the
-     * results in the store var. (Radius, Azimuth, Polar)
+     * Converts a point from Cartesian coordinates (using positive Y as up) to
+     * Spherical and stores the results in the store var. (Radius, Azimuth,
+     * Polar)
      */
     public static Vector3f cartesianToSpherical(Vector3f cartCoords,
             Vector3f store) {
@@ -493,8 +494,8 @@ final public class FastMath {
     }
 
     /**
-     * Converts a point from spherical coordinates to cartesian and stores the
-     * results in the store var.
+     * Converts a point from Spherical coordinates to Cartesian (using positive
+     * Z as up) and stores the results in the store var.
      */
     public static Vector3f sphericalToCartesianZ(Vector3f sphereCoords,
             Vector3f store) {
@@ -507,8 +508,9 @@ final public class FastMath {
     }
 
     /**
-     * Converts a point from cartesian coordinates to spherical and stores the
-     * results in the store var. (Radius, Azimuth, Polar)
+     * Converts a point from Cartesian coordinates (using positive Z as up) to
+     * Spherical and stores the results in the store var. (Radius, Azimuth,
+     * Polar)
      */
     public static Vector3f cartesianZToSpherical(Vector3f cartCoords,
             Vector3f store) {
