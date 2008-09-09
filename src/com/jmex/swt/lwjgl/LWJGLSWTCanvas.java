@@ -80,6 +80,7 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     private boolean drawWhenDirty = false;
     private boolean dirty = true;
+    private boolean doUpdateOnly = false;
 
     public LWJGLSWTCanvas(Composite parent, int style, GLData data)
             throws LWJGLException {
@@ -146,30 +147,45 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
                         .switchContext(this);
                 GLContext.useContext(this);
 
-                if (updateInput) {
-                    InputSystem.update();
-                }
-
-                GameTaskQueueManager.getManager().getQueue(
-                        GameTaskQueue.UPDATE).execute();
-
-                impl.doUpdate();
-
-                if (!drawWhenDirty || dirty) {
+                if (!doUpdateOnly) {
+                    if (updateInput) {
+                        InputSystem.update();
+                    }
+    
                     GameTaskQueueManager.getManager().getQueue(
-                            GameTaskQueue.RENDER).execute();
-
-                    impl.doRender();
-
-                    swapBuffers();
-
-                    dirty = false;
+                            GameTaskQueue.UPDATE).execute();
+    
+                    impl.doUpdate();
+    
+                    if (!drawWhenDirty || dirty) {
+                        GameTaskQueueManager.getManager().getQueue(
+                                GameTaskQueue.RENDER).execute();
+    
+                        impl.doRender();
+    
+                        swapBuffers();
+                    }
+                } else {
+                    impl.doUpdate();
                 }
+                dirty = false;
             } catch (LWJGLException e) {
                 logger.log(Level.SEVERE, "Exception in render()", e);
             }
             getDisplay().asyncExec(renderRunner);
         }
+    }
+
+    public boolean isDoUpdateOnly() {
+        return doUpdateOnly;
+    }
+
+    /**
+     * Use this to bypass the game task queue and other workings of canvas
+     * @param doUpdateOnly
+     */
+    public void setDoUpdateOnly(boolean doUpdateOnly) {
+        this.doUpdateOnly = doUpdateOnly;
     }
 
     public boolean isUpdateInput() {
@@ -199,5 +215,9 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     public void makeDirty() {
         dirty = true;
+    }
+
+    public boolean isDirty() {
+        return dirty;
     }
 }
