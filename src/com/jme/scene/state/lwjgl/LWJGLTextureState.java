@@ -39,8 +39,10 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import org.lwjgl.opengl.ARBDepthTexture;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBMultitexture;
+import org.lwjgl.opengl.ARBShadow;
 import org.lwjgl.opengl.ARBTextureCompression;
 import org.lwjgl.opengl.ARBTextureCubeMap;
 import org.lwjgl.opengl.ARBTextureEnvCombine;
@@ -132,7 +134,10 @@ public class LWJGLTextureState extends TextureState {
             // Check for support of automatic mipmap generation
             automaticMipMaps = automaticMipMapsDetected = GLContext
                     .getCapabilities().GL_SGIS_generate_mipmap;
-
+            
+            supportsDepthTexture = GLContext.getCapabilities().GL_ARB_depth_texture;
+            supportsShadow = GLContext.getCapabilities().GL_ARB_shadow;
+            
             // If we do support multitexturing, find out how many textures we
             // can handle.
             if (supportsMultiTexture) {
@@ -265,7 +270,7 @@ public class LWJGLTextureState extends TextureState {
         // our texture type:
         Texture.Type type = texture.getType();
 
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         TextureStateRecord record = null;
         if (context != null)
@@ -815,7 +820,7 @@ public class LWJGLTextureState extends TextureState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context
                 .getStateRecord(RS_TEXTURE);
@@ -936,7 +941,8 @@ public class LWJGLTextureState extends TextureState {
                     // texture specific params
                     applyFilter(texture, texRecord, i, record);
                     applyWrap(texture, texRecord, i, record);
-
+                    applyShadow(texture, texRecord, i, record);
+                    
                     // Set our border color, if needed.
                     applyBorderColor(texture, texRecord, i, record);
 
@@ -1731,6 +1737,51 @@ public class LWJGLTextureState extends TextureState {
      *            our record of the last state of the texture in gl
      * @param record
      */
+    public static void applyShadow(Texture texture, TextureRecord texRecord,
+            int unit, TextureStateRecord record) {
+        Type type = texture.getType();
+
+        if (supportsDepthTexture) {
+	        int depthMode = TextureStateRecord.getGLDepthTextureMode(texture.getDepthMode());
+	        // set up magnification filter
+	        if (!texRecord.isValid() || texRecord.depthTextureMode != depthMode) {
+	            checkAndSetUnit(unit, record);
+	            GL11.glTexParameteri(getGLType(type), ARBDepthTexture.GL_DEPTH_TEXTURE_MODE_ARB,
+	            		depthMode);
+	            texRecord.depthTextureMode = depthMode;
+	        }
+        }
+        
+        if (supportsShadow) {
+	        int depthCompareMode = TextureStateRecord.getGLDepthTextureCompareMode(texture.getDepthCompareMode());
+	        // set up magnification filter
+	        if (!texRecord.isValid() || texRecord.depthTextureFunc != depthCompareMode) {
+	            checkAndSetUnit(unit, record);
+	            GL11.glTexParameteri(getGLType(type), ARBShadow.GL_TEXTURE_COMPARE_MODE_ARB,
+	            		depthCompareMode);
+	            texRecord.depthTextureFunc = depthCompareMode;
+	        }
+	        
+	        int depthCompareFunc = TextureStateRecord.getGLDepthTextureCompareFunc(texture.getDepthCompareFunc());
+	        // set up magnification filter
+	        if (!texRecord.isValid() || texRecord.depthTextureFunc != depthCompareFunc) {
+	            checkAndSetUnit(unit, record);
+	            GL11.glTexParameteri(getGLType(type), ARBShadow.GL_TEXTURE_COMPARE_FUNC_ARB,
+	            		depthCompareFunc);
+	            texRecord.depthTextureFunc = depthCompareFunc;
+	        }
+        }
+    }
+    /**
+     * Check if the filter settings of this particular texture have been changed
+     * and apply as needed.
+     * 
+     * @param texture
+     *            our texture object
+     * @param texRecord
+     *            our record of the last state of the texture in gl
+     * @param record
+     */
     public static void applyFilter(Texture texture, TextureRecord texRecord,
             int unit, TextureStateRecord record) {
         Type type = texture.getType();
@@ -1991,7 +2042,7 @@ public class LWJGLTextureState extends TextureState {
             return;
 
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context
                 .getStateRecord(RS_TEXTURE);
@@ -2031,7 +2082,7 @@ public class LWJGLTextureState extends TextureState {
     public void deleteAll(boolean removeFromCache) {
 
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context
                 .getStateRecord(RS_TEXTURE);
@@ -2088,7 +2139,7 @@ public class LWJGLTextureState extends TextureState {
      */
     public static void doTextureBind(int textureId, int unit, Type type) {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context
                 .getStateRecord(RenderState.RS_TEXTURE);

@@ -138,6 +138,11 @@ public abstract class TextureState extends RenderState {
     protected static boolean automaticMipMaps = false;
     protected static boolean automaticMipMapsDetected = false;
 
+    /** True if depth textures are supported */
+    protected static boolean supportsDepthTexture = false;
+    /** True if shadow mapping supported */
+    protected static boolean supportsShadow = false;
+    
     protected transient int firstTexture = 0;
     protected transient int lastTexture = 0;
 
@@ -758,7 +763,7 @@ public abstract class TextureState extends RenderState {
         resetFirstLast();
     }
 
-    public Class getClassTag() {
+    public Class<? extends TextureState> getClassTag() {
         return TextureState.class;
     }
 

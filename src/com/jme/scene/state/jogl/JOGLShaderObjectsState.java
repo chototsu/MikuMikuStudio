@@ -123,6 +123,7 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
             inited = true;
         }
     }
+
     /**
      * Loads a string into a ByteBuffer
      *
@@ -167,7 +168,7 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
      * @see com.jme.scene.state.GLSLShaderObjectsState#load(java.net.URL,
      *java.net.URL)
      */
-    private void sendToGL(ByteBuffer vertexByteBuffer,
+    protected void sendToGL(ByteBuffer vertexByteBuffer,
             ByteBuffer fragmentByteBuffer) {
         final GL gl = GLU.getCurrentGL();
 
@@ -385,6 +386,5 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
     @Override
     public void checkUniformSizeLimits() {
     }
-
 
 }

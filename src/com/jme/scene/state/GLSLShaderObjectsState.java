@@ -32,8 +32,11 @@
 
 package com.jme.scene.state;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -55,6 +58,7 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+import com.jme.util.geom.BufferUtils;
 import com.jme.util.shader.ShaderVariable;
 import com.jme.util.shader.uniformtypes.ShaderVariableFloat;
 import com.jme.util.shader.uniformtypes.ShaderVariableFloat2;
@@ -734,6 +738,21 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      * program must be in ASCII format. The implementation must
      * convert the String into data compatible with the graphics library.
      *
+     * @param vert The input stream from which the vertex shader can be read
+     * @param frag The input stream from which the fragment shader can be read
+     */
+    public void load(InputStream vert, InputStream frag) {
+        ByteBuffer vertexByteBuffer = vert != null ? load(vert) : null;
+        ByteBuffer fragmentByteBuffer = frag != null ? load(frag) : null;
+        sendToGL(vertexByteBuffer, fragmentByteBuffer);
+	}
+    
+    /**
+     * <code>load</code> loads the shader object from the specified file. The
+     * program must be in ASCII format. We delegate the loading to each
+     * implementation because we do not know in what format the underlying API
+     * wants the data.
+     *
      * @param vert text file containing the vertex shader object
      * @param frag text file containing the fragment shader object
      */
@@ -762,7 +781,61 @@ public abstract class GLSLShaderObjectsState extends RenderState {
                 new ArrayList<ShaderVariable>());
     }
 
-    public Class getClassTag() {
+    public Class<? extends GLSLShaderObjectsState> getClassTag() {
         return GLSLShaderObjectsState.class;
+    }
+    
+    /**
+     * Loads the shader object. Use null for an empty vertex or empty fragment
+     * shader.
+     *
+     * @param vertexByteBuffer vertex shader
+     * @param fragmentByteBuffer fragment shader
+     * @see com.jme.scene.state.GLSLShaderObjectsState#load(java.net.URL,
+     *java.net.URL)
+     */
+    protected abstract void sendToGL(ByteBuffer vertexByteBuffer,
+            						 ByteBuffer fragmentByteBuffer); 
+    
+    /**
+     * Load an URL and grab content into a ByteBuffer.
+     *
+     * @param in The input stream to read
+     * @return the loaded url
+     */
+    protected ByteBuffer load(InputStream in) {
+        DataInputStream dataStream = null;
+        try {
+            BufferedInputStream bufferedInputStream =
+                    new BufferedInputStream(in);
+            dataStream =
+                    new DataInputStream(bufferedInputStream);
+            byte shaderCode[] = new byte[bufferedInputStream.available()];
+            dataStream.readFully(shaderCode);
+            bufferedInputStream.close();
+            dataStream.close();
+            ByteBuffer shaderByteBuffer =
+                    BufferUtils.createByteBuffer(shaderCode.length);
+            shaderByteBuffer.put(shaderCode);
+            shaderByteBuffer.rewind();
+
+            return shaderByteBuffer;
+        } catch (Exception e) {
+            logger.severe("Could not load shader object: " + e);
+            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
+            return null;
+        }
+        finally {
+            // Ensure that the stream is closed, even if there is an exception.
+            if (dataStream != null) {
+                try {
+                    dataStream.close();
+                } catch (IOException closeFailure) {
+                    logger.log(Level.WARNING,
+                            "Failed to close the shader object",
+                            closeFailure);
+                }
+            }
+        }
     }
 }

@@ -32,6 +32,7 @@
 
 package com.jme.system.dummy;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -331,6 +332,14 @@ public final class DummyRenderer extends Renderer {
             public StateRecord createStateRecord() {
                 return null;
             }
+
+			@Override
+			public void load(InputStream vert, InputStream frag) {
+			}
+
+			@Override
+			protected void sendToGL(ByteBuffer vertexByteBuffer, ByteBuffer fragmentByteBuffer) {
+			}
         };
     }
 

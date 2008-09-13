@@ -513,7 +513,37 @@ public abstract class Texture implements Savable {
     	
     }
     
+    /**
+     * The shadowing texture compare mode
+     */
+    public enum DepthTextureCompareMode {
+    	/** Perform no shadow based comparsion */
+    	None,
+    	/** Perform a comparison between source depth and texture depth */
+    	RtoTexture,
+    }
+
+    /**
+     * The shadowing texture compare function
+     */
+    public enum DepthTextureCompareFunc {
+    	/** Outputs if the source depth is less than the texture depth */
+    	LessThanEqual,
+    	/** Outputs if the source depth is greater than the texture depth */
+    	GreaterThanEqual
+    }
     
+    /**
+     * The type of depth texture translation to output
+     */
+    public enum DepthTextureMode {
+    	/** Output luminance values based on the depth comparison */
+    	Luminance,
+    	/** Output alpha values based on the depth comparison */
+    	Alpha,
+    	/** Output intensity values based on the depth comparison */
+    	Intensity
+    }
     
     
 
@@ -566,6 +596,10 @@ public abstract class Texture implements Savable {
     private TextureKey key = null;
     private transient boolean storeTexture = DEFAULT_STORE_TEXTURE;
 
+    private DepthTextureCompareMode depthCompareMode = DepthTextureCompareMode.None;
+    private DepthTextureCompareFunc depthCompareFunc = DepthTextureCompareFunc.GreaterThanEqual;
+    private DepthTextureMode depthMode = DepthTextureMode.Intensity;
+    
     /**
      * Constructor instantiates a new <code>Texture</code> object with default
      * attributes.
@@ -573,7 +607,7 @@ public abstract class Texture implements Savable {
     public Texture() {
         memReq = 0;
     }
-
+    
     /**
      * <code>setBlendColor</code> sets a color that is used with
      * CombinerSource.Constant
@@ -1505,5 +1539,59 @@ public abstract class Texture implements Savable {
     public void setHasBorder(boolean hasBorder) {
         this.hasBorder = hasBorder;
     }
+
+    /**
+     * Get the depth texture compare function 
+     * 
+     * @return The depth texture compare function
+     */
+	public DepthTextureCompareFunc getDepthCompareFunc() {
+		return depthCompareFunc;
+	}
+
+    /**
+     * Set the depth texture compare function 
+     * 
+     * param depthCompareFunc The depth texture compare function
+     */
+	public void setDepthCompareFunc(DepthTextureCompareFunc depthCompareFunc) {
+		this.depthCompareFunc = depthCompareFunc;
+	}
+
+	/**
+	 * Get the depth texture apply mode
+	 * 
+	 * @return The depth texture apply mode
+	 */
+	public DepthTextureMode getDepthMode() {
+		return depthMode;
+	}
+
+	/**
+	 * Set the depth texture apply mode
+	 * 
+	 * param depthMode The depth texture apply mode
+	 */
+	public void setDepthMode(DepthTextureMode depthMode) {
+		this.depthMode = depthMode;
+	}
+
+	/**
+	 * Get the depth texture compare mode
+	 * 
+	 * @return The depth texture compare mode
+	 */
+	public DepthTextureCompareMode getDepthCompareMode() {
+		return depthCompareMode;
+	}
+
+	/**
+	 * Set the depth texture compare mode
+	 * 
+	 * @param depthCompareMode The depth texture compare mode
+	 */
+	public void setDepthCompareMode(DepthTextureCompareMode depthCompareMode) {
+		this.depthCompareMode = depthCompareMode;
+	}
 }
 

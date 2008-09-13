@@ -32,6 +32,7 @@
 
 package com.jme.scene.state.lwjgl;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -140,7 +141,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             inited = true;
         }
     }
-    
+
     /**
      * Loads a string into a ByteBuffer
      *
@@ -185,7 +186,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      * @see com.jme.scene.state.GLSLShaderObjectsState#load(java.net.URL,
      *java.net.URL)
      */
-    private void sendToGL(ByteBuffer vertexByteBuffer,
+    protected void sendToGL(ByteBuffer vertexByteBuffer,
             ByteBuffer fragmentByteBuffer) {
 
         if (vertexByteBuffer == null && fragmentByteBuffer == null) {
