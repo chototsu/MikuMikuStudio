@@ -222,7 +222,7 @@ public class Vector2f implements Externalizable, Savable, Cloneable {
      * @return the cross product vector.
      */
     public Vector3f cross(Vector2f v) {
-        return new Vector3f(0, 0, ((x * v.y) - (y * v.x)));
+        return new Vector3f(0, 0, determinant(v));
     }
 
     public float determinant(Vector2f v) {
@@ -236,7 +236,7 @@ public class Vector2f implements Externalizable, Savable, Cloneable {
      * @param finalVec
      *            The final vector to interpolate towards
      * @param changeAmnt
-     *            An amount between 0.0 - 1.0 representing a precentage change
+     *            An amount between 0.0 - 1.0 representing a percentage change
      *            from this towards finalVec
      */
     public void interpolate(Vector2f finalVec, float changeAmnt) {
