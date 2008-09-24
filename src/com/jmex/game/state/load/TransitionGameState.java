@@ -127,6 +127,7 @@ class TransitionFadeIn extends TimedLifeController {
 		super(lifeInSeconds);
 		this.leadIn = leadIn;
 		this.transition = transition;
+		this.transition.setAlpha(0.0f);
 	}
 
 	public void updatePercentage(float percentComplete) {
