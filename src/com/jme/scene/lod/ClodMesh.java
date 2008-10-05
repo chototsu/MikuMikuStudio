@@ -102,7 +102,7 @@ public class ClodMesh extends TriMesh {
         this(name, BufferUtils.clone(data.getVertexBuffer()), 
                 BufferUtils.clone(data.getNormalBuffer()), 
                 BufferUtils.clone(data.getColorBuffer()),
-                new TexCoords(BufferUtils.clone(data.getTextureCoords(0).coords)), 
+                new TexCoords(BufferUtils.clone(data.getTextureCoords(0)==null?null:data.getTextureCoords(0).coords)), 
                 BufferUtils.clone(data.getIndexBuffer()), records);
     }
 
