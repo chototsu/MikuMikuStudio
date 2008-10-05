@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jme.bounding.CollisionTree;
 import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
@@ -194,16 +195,16 @@ public class CollisionTreeManager {
      * @param protect
      *            true to keep these trees from being removed, false otherwise.
      */
-    public void generateCollisionTree(int type, Spatial object, boolean protect) {
-        if (object instanceof Node) {
-            Node n = (Node) object;
-            for (int i = n.getQuantity() - 1; i >= 0; i--) {
-                generateCollisionTree(type, n.getChild(i), protect);
-            }
-        } else if (object instanceof TriMesh) {
-            generateCollisionTree(type, (TriMesh) object, protect);
-        }
-    }
+	public void generateCollisionTree(CollisionTree.Type type,
+            Spatial object, boolean protect) {
+		if (object instanceof TriMesh)
+			generateCollisionTree(type, (TriMesh)object, protect);
+		if (object instanceof Node) {
+			if (((Node)object).getQuantity() > 0)
+				for (Spatial sp : ((Node)object).getChildren())
+					generateCollisionTree(type, sp, protect);
+		}
+	}
 
     /**
      * generates a new tree for the associated mesh. The type is provided and a
