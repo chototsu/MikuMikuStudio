@@ -92,6 +92,8 @@ public class ModelLoader {
     public static void main(String[] args) {
         // Store the texture in the binary file
 //      Texture.DEFAULT_STORE_TEXTURE = true;
+    	// Enable jme to gather statistics, which are used in the StatisticsGameState
+    	System.setProperty("jme.stats", "set");
         
         try {
             JFileChooser chooser = new JFileChooser();

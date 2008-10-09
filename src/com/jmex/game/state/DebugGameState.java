@@ -71,6 +71,7 @@ public class DebugGameState extends TextGameState {
     protected boolean showBounds = false;
     protected boolean showDepth = false;
     protected boolean showNormals = false;
+    protected boolean statisticsCreated = false;
 
     public DebugGameState() {
     	this(true);
@@ -84,9 +85,6 @@ public class DebugGameState extends TextGameState {
     private void init(boolean handleInput) {
         rootNode = new Node("RootNode");
 
-        // create a statistics game state
-        GameStateManager.getInstance().attachChild(new StatisticsGameState("stats", 1f, 0.25f, 0.75f, true));
-        
         // Create a wirestate to toggle on and off. Starts disabled with default
         // width of 1 pixel.
         wireState = DisplaySystem.getDisplaySystem().getRenderer()
@@ -211,6 +209,12 @@ public class DebugGameState extends TextGameState {
 	        /** If toggle_stats is a valid command (via key F4), change depth. */
             if (KeyBindingManager.getKeyBindingManager().isValidCommand(
                     "toggle_stats", false)) {
+            	if (statisticsCreated == false) {
+	                // create a statistics game state
+	                GameStateManager.getInstance().attachChild(
+	                		new StatisticsGameState("stats", 1f, 0.25f, 0.75f, true));
+	                statisticsCreated = true;
+            	}
                 GameStateManager.getInstance().getChild("stats").setActive(
                         !GameStateManager.getInstance().getChild("stats").isActive());
             }
