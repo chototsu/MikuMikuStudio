@@ -637,6 +637,24 @@ public final class BufferUtils {
         }
         return inds;
     }
+    
+    /**
+     * Create a new float[] array and populate it with the given FloatBuffer's
+     * contents.
+     *
+     * @param buff
+     *            the FloatBuffer to read from
+     * @return a new float array populated from the FloatBuffer
+     */
+    public static float[] getFloatArray(FloatBuffer buff) {
+        if (buff == null) return null;
+        buff.clear();
+        float[] inds = new float[buff.limit()];
+        for (int x = 0; x < inds.length; x++) {
+            inds[x] = buff.get();
+        }
+        return inds;
+    }
 
 
     //// -- GENERAL DOUBLE ROUTINES -- ////
