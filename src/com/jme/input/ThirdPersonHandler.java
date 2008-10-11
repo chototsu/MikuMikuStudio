@@ -224,7 +224,7 @@ public class ThirdPersonHandler extends InputHandler {
      *            a hashmap of properties used to set handler characteristics
      *            where the key is one of this class's static PROP_XXXX fields.
      */
-    public ThirdPersonHandler(Spatial target, Camera cam, HashMap props) {
+    public ThirdPersonHandler(Spatial target, Camera cam, HashMap<String, Object> props) {
         this.targetSpatial = target;
         this.camera = cam;
 
@@ -239,7 +239,7 @@ public class ThirdPersonHandler extends InputHandler {
      * 
      * @param props
      */
-    public void updateProperties(HashMap props) {
+    public void updateProperties(HashMap<String, Object> props) {
         turnSpeed = getFloatProp(props, PROP_TURNSPEED, DEFAULT_TURNSPEED);
         doGradualRotation = getBooleanProp(props, PROP_DOGRADUAL, true);
         lockBackwards = getBooleanProp(props, PROP_LOCKBACKWARDS, false);
@@ -257,7 +257,7 @@ public class ThirdPersonHandler extends InputHandler {
      * 
      * @param props
      */
-    public void updateKeyBindings(HashMap props) {
+    public void updateKeyBindings(HashMap<String, Object> props) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         keyboard.set(PROP_KEY_FORWARD, getIntProp(props, PROP_KEY_FORWARD, KeyInput.KEY_W));
         keyboard.set(PROP_KEY_BACKWARD, getIntProp(props, PROP_KEY_BACKWARD, KeyInput.KEY_S));

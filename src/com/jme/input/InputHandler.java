@@ -443,7 +443,7 @@ public class InputHandler {
     }
 
 
-    public static float getFloatProp( HashMap props, String key, float defaultVal ) {
+    public static float getFloatProp( HashMap<String, Object> props, String key, float defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
@@ -451,7 +451,7 @@ public class InputHandler {
         return Float.parseFloat( props.get( key ).toString() );        
     }
 
-    public static int getIntProp( HashMap props, String key, int defaultVal ) {
+    public static int getIntProp( HashMap<String, Object> props, String key, int defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
@@ -459,7 +459,7 @@ public class InputHandler {
         return Integer.parseInt( props.get( key ).toString() );        
     }
 
-    public static boolean getBooleanProp( HashMap props, String key, boolean defaultVal ) {
+    public static boolean getBooleanProp( HashMap<String, Object> props, String key, boolean defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
@@ -467,7 +467,7 @@ public class InputHandler {
         return "true".equalsIgnoreCase( props.get( key ).toString() );        
     }
 
-    public static Object getObjectProp( HashMap props, String key, Object defaultVal ) {
+    public static Object getObjectProp( HashMap<String, Object> props, String key, Object defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }

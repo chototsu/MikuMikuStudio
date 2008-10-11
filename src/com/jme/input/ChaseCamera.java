@@ -133,7 +133,7 @@ public class ChaseCamera extends InputHandler {
      *            from the statics ChaseCamera.PROP_XXXX and
      *            ThirdPersonMouseLook.PROP_XXXX
      */
-    public ChaseCamera(Camera cam, Spatial target, HashMap props) {
+    public ChaseCamera(Camera cam, Spatial target, HashMap<String, Object> props) {
         super();
         this.cam = cam;
         this.target = target;
@@ -163,7 +163,7 @@ public class ChaseCamera extends InputHandler {
      *
      * @param props
      */
-    public void updateProperties(HashMap props) {
+    public void updateProperties(HashMap<String, Object> props) {
         if (mouseLook != null)
             mouseLook.updateProperties(props);
 

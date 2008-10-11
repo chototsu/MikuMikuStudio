@@ -127,7 +127,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * <code>updateProperties</code>
      * @param props
      */
-    public void updateProperties(HashMap props) {
+    public void updateProperties(HashMap<String, Object> props) {
         maxAscent = InputHandler.getFloatProp(props, PROP_MAXASCENT, DEFAULT_MAXASCENT);
         minAscent = InputHandler.getFloatProp(props, PROP_MINASCENT, DEFAULT_MINASCENT);
         maxRollOut = InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MAXROLLOUT);
