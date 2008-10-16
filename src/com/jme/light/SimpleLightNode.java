@@ -131,7 +131,7 @@ public class SimpleLightNode extends Node{
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(light, "Light", null);
+        capsule.write(light, "light", null);
         capsule.write(lightRotate, "lightRotate", new Quaternion());
        
     }
