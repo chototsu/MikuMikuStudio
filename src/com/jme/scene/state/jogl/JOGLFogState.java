@@ -67,6 +67,7 @@ public class JOGLFogState extends FogState {
         if (!inited) {
             // Check for support of fog coords.
             supportsFogCoords = supportsFogCoordsDetected = caps.GL_EXT_fog_coord;
+            inited = true;
         }
     }
 

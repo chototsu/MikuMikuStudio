@@ -66,6 +66,7 @@ public class LWJGLFogState extends FogState {
             // Check for support of fog coords.
             supportsFogCoords = supportsFogCoordsDetected = GLContext
                     .getCapabilities().GL_EXT_fog_coord;
+            inited = true;
         }
     }
 
