@@ -45,7 +45,7 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
 /**
- * The <code> LightStateContraller </code> sorts the from a collection of
+ * The <code> LightStateController </code> sorts the Lights from a collection of
  * lights, the best eight for a particular Spatial. This can be used to create
  * many lights inside a scene with moving objects. All spatials that use this
  * controller are required to have there own light state and have the Light
@@ -54,10 +54,14 @@ import com.jme.util.export.OutputCapsule;
  * LightStateContraller after the controller was created will be ignored. The
  * Controller allows you to set a update Interval that allows you to tell the
  * controller when to update.
- * 
+ * <br>
+ * This class should not be used anymore, use <code>Node.sortLights()</code> instead.
+ * <br>
+ * @see jmetest.util.TestManyLights
  * @author Badmi
  * @author Mark Powell
  */
+@Deprecated
 public class LightStateController extends Controller {
 
     private static final long serialVersionUID = 1L;

@@ -56,10 +56,15 @@ import com.jme.util.export.Savable;
  * The utility allows the user to place multiple lights in a single container and
  * the best eight lights (those lights that most directly affect a Spatial) will be
  * applied.
+ * <br>
+ * This class should not be used anymore, use <code>Node.sortLights()</code> instead.
+ * <br>
+ * @see jmetest.util.TestManyLights
  * 
  * @author Badmi
  * @author Mark Powell (cleaning, savable)
  */
+@Deprecated
 public class LightManagement implements Serializable, Savable {
 
     private static final long serialVersionUID = 1L;

@@ -41,9 +41,13 @@ import com.jme.system.DisplaySystem;
 
 /**
  * <code>LightControllerManager</code>
- * 
+ * <br>
+ * This class should not be used anymore, use <code>Node.sortLights()</code> instead.
+ * <br>
+ * @see jmetest.util.TestManyLights
  * @author Mark Powell
  */
+@Deprecated
 public class LightControllerManager {
     static ArrayList<LightStateController> controllerList = new ArrayList<LightStateController>(1);
     static LightManagement lm = new LightManagement();
