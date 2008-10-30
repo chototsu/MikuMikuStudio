@@ -43,10 +43,13 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>LightNode</code> defines a scene node that contains and maintains a
  * light object. A light node contains a single light, and positions the light
- * based on it's translation vector. If the contained light is a spot light, the
- * rotation of the node determines it's direction. If the contained light is a
- * Directional light rotation determines it's direction. It has no concept of
- * location.
+ * based on it's translation vector.<br>
+ * If the contained light is a spot light, the rotation of the node 
+ * determines it's direction. It has no concept of location.<br>
+ * If the contained light is a Directional light, the direction is relative
+ * to the LightNodes world translation. If the light node is located at
+ * (0,0,0) the DirectionalLight will have no direction and the Light will be
+ * disabled.
  * 
  * @author Mark Powell
  * @version $Id: LightNode.java,v 1.10 2006/07/20 14:23:26 nca Exp $
@@ -57,8 +60,6 @@ public class LightNode extends Node {
 
     private Light light;
 
-//    private LightState lightState;
-    
     public LightNode() {}
 
     /**
@@ -68,8 +69,6 @@ public class LightNode extends Node {
      * @param name
      *            the name of the scene element. This is required for
      *            identification and comparision purposes.
-     * @param lightState
-     *            the lightstate that this node will control.
      */
     public LightNode(String name) {
         super(name);
