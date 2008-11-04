@@ -375,6 +375,7 @@ public class BoneAnimation implements Serializable, Savable {
             if (endFrame >= keyframeTime.length) {
                 endFrame = keyframeTime.length - 1;
             }
+            int oldFrame = currentFrame;
             if (updateCurrentTime(time, repeat, speed)) {
                 if (interpolate) {
                     lastTime += time;
@@ -392,7 +393,7 @@ public class BoneAnimation implements Serializable, Savable {
                                     result);
                         }
                     }
-                } else {
+                } else if (oldFrame != currentFrame) {
                     if(props == null || !props.isAllowTranslation()) {
                         for (int i = 0; i < boneTransforms.size(); i++) {
                             boneTransforms.get(i).setCurrentFrame(currentFrame);
@@ -517,7 +518,7 @@ public class BoneAnimation implements Serializable, Savable {
                         currentTime = keyframeTime[endFrame];
                     }
 
-                    while (currentTime >= keyframeTime[currentFrame]) {
+                    while (currentTime > keyframeTime[currentFrame]) {
                         currentFrame += cycleMode;
                         prevFrame += cycleMode;
                     }
@@ -526,7 +527,7 @@ public class BoneAnimation implements Serializable, Savable {
                         currentTime = keyframeTime[startFrame];
                     }
 
-                    while (currentTime <= keyframeTime[currentFrame]) {
+                    while (currentTime < keyframeTime[currentFrame]) {
                         currentFrame += cycleMode;
                         prevFrame += cycleMode;
                     }
