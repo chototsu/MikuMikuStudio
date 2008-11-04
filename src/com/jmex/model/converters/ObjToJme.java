@@ -60,7 +60,7 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.system.dummy.DummyDisplaySystem;
+import com.jme.system.dummy.DummySystemProvider;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryExporter;
@@ -117,7 +117,7 @@ public class ObjToJme extends FormatConverter {
      *            The array of parameters
      */
     public static void main(String[] args) {
-        new DummyDisplaySystem();
+    	DisplaySystem.getDisplaySystem(DummySystemProvider.DUMMY_SYSTEM_IDENTIFIER);
         new ObjToJme().attemptFileConvert(args);
     }
     

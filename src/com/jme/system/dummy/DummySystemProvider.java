@@ -51,7 +51,7 @@ public class DummySystemProvider implements SystemProvider {
     /**
      * The DummySystemProvider identifier
      */
-    private static final String DUMMY_SYSTEM_IDENTIFIER = "dummy";
+    public static final String DUMMY_SYSTEM_IDENTIFIER = "dummy";
 
     /**
      * The timer hold by this SystemProvider.

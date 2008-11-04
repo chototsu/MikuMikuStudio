@@ -54,6 +54,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.dummy.DummyDisplaySystem;
+import com.jme.system.dummy.DummySystemProvider;
 import com.jme.util.LittleEndien;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
@@ -93,7 +94,7 @@ public class MilkToJme extends FormatConverter{
      * @param args The array of parameters
      */
     public static void main(String[] args){
-        new DummyDisplaySystem();
+    	DisplaySystem.getDisplaySystem(DummySystemProvider.DUMMY_SYSTEM_IDENTIFIER);
         new MilkToJme().attemptFileConvert(args);
     }
 

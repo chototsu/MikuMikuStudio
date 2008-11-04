@@ -46,8 +46,9 @@ import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
+import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.system.dummy.DummyDisplaySystem;
+import com.jme.system.dummy.DummySystemProvider;
 import com.jme.util.BinaryFileReader;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
@@ -73,7 +74,7 @@ public class Md2ToJme extends FormatConverter {
      *            The array of parameters
      */
     public static void main(String[] args) {
-        new DummyDisplaySystem();
+    	DisplaySystem.getDisplaySystem(DummySystemProvider.DUMMY_SYSTEM_IDENTIFIER);
         new Md2ToJme().attemptFileConvert(args);
     }
 

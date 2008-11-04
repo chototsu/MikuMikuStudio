@@ -38,7 +38,8 @@ import java.io.OutputStream;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.scene.Node;
-import com.jme.system.dummy.DummyDisplaySystem;
+import com.jme.system.DisplaySystem;
+import com.jme.system.dummy.DummySystemProvider;
 import com.jme.util.LittleEndien;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jmex.model.converters.maxutils.TDSFile;
@@ -60,7 +61,7 @@ public class MaxToJme extends FormatConverter {
      * @param args The array of parameters.  args="file1.3ds file2.jme" will convert file1.3ds to jme and save it to file2.jme.
      */
     public static void main(String[] args){
-        new DummyDisplaySystem();
+    	DisplaySystem.getDisplaySystem(DummySystemProvider.DUMMY_SYSTEM_IDENTIFIER);
         new MaxToJme().attemptFileConvert(args);
     }
 

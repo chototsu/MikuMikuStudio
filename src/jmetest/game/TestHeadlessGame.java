@@ -31,6 +31,8 @@
  */
 package jmetest.game;
 
+import com.jme.scene.state.MaterialState;
+import com.jme.system.DisplaySystem;
 import com.jmex.game.StandardGame;
 
 /**
@@ -40,5 +42,7 @@ public class TestHeadlessGame {
 	public static void main(String[] args) throws Exception {
 		StandardGame game = new StandardGame("Test Headless", StandardGame.GameType.HEADLESS);
 		game.start();
+		// try to greate a MaterialState
+		MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
 	}
 }

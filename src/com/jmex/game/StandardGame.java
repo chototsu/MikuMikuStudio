@@ -54,7 +54,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.system.DisplaySystem;
 import com.jme.system.GameSettings;
 import com.jme.system.PreferencesGameSettings;
-import com.jme.system.dummy.DummyDisplaySystem;
+import com.jme.system.dummy.DummySystemProvider;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.NanoTimer;
@@ -292,7 +292,7 @@ public final class StandardGame extends AbstractGame implements Runnable {
                 initSound();
             }
         } else {
-            display = new DummyDisplaySystem();
+        	display = DisplaySystem.getDisplaySystem(DummySystemProvider.DUMMY_SYSTEM_IDENTIFIER);
         }
     }
 
