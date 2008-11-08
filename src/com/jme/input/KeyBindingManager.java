@@ -217,6 +217,13 @@ public class KeyBindingManager {
 	public void remove(String command) {
 		keyMap.remove(command);
 	}
+	
+	/**
+     * <code>removeAll</code> deletes all key mappings from the list.
+     */
+    public void removeAll() {
+        keyMap.clear();
+    }
 
     /**
      * <code>getInstance</code> gets the static singleton instance of
