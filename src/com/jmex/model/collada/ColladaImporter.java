@@ -4259,7 +4259,7 @@ public class ColladaImporter {
      * @param b
      */
     public static void squelchErrors(boolean b) {
-        squelch = true;
+        squelch = b;
     }
 
     public static ColladaImporter getInstance() {
