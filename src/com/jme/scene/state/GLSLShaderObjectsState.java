@@ -107,6 +107,22 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     protected String vertShader, fragShader;
     
     /**
+     * Gets the currently loaded vertex shader.
+     * @return
+     */
+    public	String	getVertexShader() {
+    	return vertShader;
+    }
+    
+    /**
+     * Gets the currently loaded fragment shader.
+     * @return
+     */
+    public	String	getFragmentShader() {
+    	return fragShader;
+    }
+    
+    /**
      * 
      * @param geom
      */
