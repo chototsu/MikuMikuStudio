@@ -1012,9 +1012,6 @@ public class BoneAnimation implements Serializable, Savable {
             }
         }
 
-        //TODO: hack to enable interpolation - rherlitz
-        interpolationRate = 0.0f;
-        interpolate = true;
         // Update the method Javadoc when non-interpolation is supported again.
         interpolationType = new int[keyframeTime.length];
         for (int i = 0; i < keyframeTime.length; i++) {
