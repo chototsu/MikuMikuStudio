@@ -123,6 +123,52 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     }
     
     /**
+     * Gets all shader uniforms variables.
+     * @return
+     */
+    public	ArrayList<ShaderVariable>	getShaderUniforms() {
+    	return shaderUniforms;
+    }
+    
+    /**
+     * Retrieves a shader uniform by name.
+     * @param uniformName
+     * @return
+     */
+    public	ShaderVariable		getUniformByName(String uniformName) {
+    	for(ShaderVariable shaderVar : shaderUniforms) {
+    		if(shaderVar.name.equals(uniformName)) {
+    			return shaderVar;
+    		}
+    	}
+    	
+    	return null;
+    }
+    
+    /**
+     * Gets all shader attribute variables.
+     * @return
+     */
+    public	ArrayList<ShaderVariable>	getShaderAttributes() {
+    	return shaderAttributes;
+    }
+    
+    /**
+     * Retrieves a shader attribute by name.
+     * @param uniformName
+     * @return
+     */
+    public	ShaderVariable		getAttributeByName(String attributeName) {
+    	for(ShaderVariable shaderVar : shaderAttributes) {
+    		if(shaderVar.name.equals(attributeName)) {
+    			return shaderVar;
+    		}
+    	}
+    	
+    	return null;
+    }
+    
+    /**
      * 
      * @param geom
      */
