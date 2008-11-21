@@ -62,6 +62,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import com.jme.system.GameSettings;
+import com.jme.system.jogl.JOGLSystemProvider;
+import com.jme.system.lwjgl.LWJGLSystemProvider;
 
 /**
  * @author Matthew D. Hicks
@@ -193,7 +195,8 @@ public class GameSettingsPanel extends JPanel {
 	}
 
 	protected Component createRenderer() {
-		renderer = new JComboBox(new Object[] { "LWJGL" });
+		renderer = new JComboBox(new Object[] { LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER,
+		                                        JOGLSystemProvider.SYSTEM_IDENTIFIER});
 		renderer.setName("Renderer");
 		return renderer;
 	}

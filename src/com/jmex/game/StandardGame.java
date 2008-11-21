@@ -55,12 +55,14 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.GameSettings;
 import com.jme.system.PreferencesGameSettings;
 import com.jme.system.dummy.DummySystemProvider;
+import com.jme.system.jogl.JOGLSystemProvider;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.NanoTimer;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jmex.audio.AudioSystem;
+import com.jmex.awt.jogl.JOGLAWTCanvasConstructor;
 import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 import com.jmex.game.state.GameStateManager;
 
@@ -273,7 +275,10 @@ public final class StandardGame extends AbstractGame implements Runnable {
             } else if (DISPLAY_MODE == DISPLAY_CANVAS) {
             	// XXX: included to preserve current functionality. Probably
 				// want to move this to prefs or the user of StandardGame.
-            	display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
+                if(JOGLSystemProvider.SYSTEM_IDENTIFIER.equals(settings.getRenderer()))
+                    display.registerCanvasConstructor("AWT", JOGLAWTCanvasConstructor.class);
+                else
+                    display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
                 canvas = (Canvas)display.createCanvas(settings.getWidth(), settings.getHeight());
             }
             camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());

@@ -34,6 +34,7 @@ package com.jme.system.jogl;
 
 import java.awt.Canvas;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
@@ -139,35 +140,125 @@ public class JOGLDisplaySystem extends DisplaySystem {
         // GLContext glContext = glCanvas.getContext();
         // glContext.makeCurrent();
         frame.add(glCanvas);
-
+        final boolean isDisplayModeModified;
+        final GraphicsDevice gd = GraphicsEnvironment
+                .getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        // Get the current display mode
+        final DisplayMode previousDisplayMode=gd.getDisplayMode();
         // Handle full screen mode if requested.
         if (fs) {
             frame.setUndecorated(true);
-
-            final GraphicsDevice gd = GraphicsEnvironment
-                    .getLocalGraphicsEnvironment().getDefaultScreenDevice();
-            gd.setFullScreenWindow(frame);
-
-            DisplayMode displayMode = new DisplayMode(width, height, bpp, frq);
-            gd.setDisplayMode(displayMode);
+            // Check if the full-screen mode is supported by the OS
+            boolean isFullScreenSupported = gd.isFullScreenSupported();
+            if (isFullScreenSupported) {
+            	gd.setFullScreenWindow(frame);
+                // Check if display mode changes are supported by the OS
+                if (gd.isDisplayChangeSupported()) {
+                    // Get all available display modes
+                    DisplayMode[] displayModes = gd.getDisplayModes();
+                    DisplayMode multiBitsDepthSupportedDisplayMode = null;
+                    DisplayMode refreshRateUnknownDisplayMode = null;
+                    DisplayMode multiBitsDepthSupportedAndRefreshRateUnknownDisplayMode = null;
+                    DisplayMode matchingDisplayMode = null;
+                    DisplayMode currentDisplayMode;
+                    // Look for the display mode that matches with our parameters
+                    // Look for some display modes that are close to these parameters
+                    // and that could be used as substitutes
+                    // On some machines, the refresh rate is unknown and/or multi bit
+                    // depths are supported. If you try to force a particular refresh 
+                    // rate or a bit depth, you might find no available display mode
+                    // that matches exactly with your parameters
+                    for (int i = 0; i < displayModes.length && matchingDisplayMode == null; i++) {
+                        currentDisplayMode = displayModes[i];
+                        if (currentDisplayMode.getWidth()  == width &&
+                            currentDisplayMode.getHeight() == height) {
+                            if (currentDisplayMode.getBitDepth() == bpp) {
+                                if (currentDisplayMode.getRefreshRate() == frq) {
+                                    matchingDisplayMode = currentDisplayMode;
+                                } else if (currentDisplayMode.getRefreshRate() == DisplayMode.REFRESH_RATE_UNKNOWN) {
+                                    refreshRateUnknownDisplayMode = currentDisplayMode;
+                                }
+                            } else if (currentDisplayMode.getBitDepth() == DisplayMode.BIT_DEPTH_MULTI) {
+                                if (currentDisplayMode.getRefreshRate() == frq) {
+                                    multiBitsDepthSupportedDisplayMode = currentDisplayMode;
+                                } else if (currentDisplayMode.getRefreshRate() == DisplayMode.REFRESH_RATE_UNKNOWN) {
+                                    multiBitsDepthSupportedAndRefreshRateUnknownDisplayMode = currentDisplayMode;
+                                }
+                            }
+                        }
+                    }
+                    DisplayMode nextDisplayMode = null;
+                    if (matchingDisplayMode != null) {
+                        nextDisplayMode = matchingDisplayMode;                    
+                    } else if (multiBitsDepthSupportedDisplayMode != null) {
+                        nextDisplayMode = multiBitsDepthSupportedDisplayMode;
+                    } else if (refreshRateUnknownDisplayMode != null) {
+                        nextDisplayMode = refreshRateUnknownDisplayMode;
+                    } else if (multiBitsDepthSupportedAndRefreshRateUnknownDisplayMode != null) {
+                        nextDisplayMode = multiBitsDepthSupportedAndRefreshRateUnknownDisplayMode;
+                    } else {
+                        isFullScreenSupported = false;
+                    }
+                    // If we have found a display mode that approximatively matches
+                    // with the input parameters, use it
+                    if (nextDisplayMode != null) {
+                        gd.setDisplayMode(nextDisplayMode);
+                        isDisplayModeModified = true;
+                    } else { 
+                        isDisplayModeModified = false;
+                    }
+                 } else {
+                     isDisplayModeModified = false;
+                     // Resize the canvas if the display mode cannot be changed
+                     // and the screen size is not equal to the canvas size
+                     Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+                     if (screenSize.width != width || screenSize.height != height) {
+                         this.width = screenSize.width;
+                         this.height = screenSize.height;
+                         glCanvas.setSize(screenSize);
+                     }
+                 }
+            } else {
+                isDisplayModeModified = false;
+            }
+                
+            // Software windowed full-screen mode
+            if (!isFullScreenSupported) {
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                // Resize the canvas
+                glCanvas.setSize(screenSize);
+                this.width = screenSize.width;
+                this.height = screenSize.height;
+                // Resize the frame so that it occupies the whole screen
+                frame.setSize(screenSize);
+                // Set its location at the top left corner
+                frame.setLocation(0, 0);
+            }
         }
         // Otherwise, center the window on the screen.
         else {
+            isDisplayModeModified = false;
             frame.pack();
 
             int x, y;
-            x = (Toolkit.getDefaultToolkit().getScreenSize().width - width) >> 1;
-            y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) >> 1;
+            x = (Toolkit.getDefaultToolkit().getScreenSize().width - width) / 2;
+            y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) / 2;
             frame.setLocation(x, y);
         }
-
+       
         frame.addWindowListener(new WindowAdapter() {
-
             @Override
-            public void windowClosing(WindowEvent e) {
+            public final void windowClosing(WindowEvent e) {
                 isClosing = true;
+                // If required, restore the previous display mode
+                if (isDisplayModeModified) {
+                    gd.setDisplayMode(previousDisplayMode);
+                }
+                // If required, get back to the windowed mode
+                if (gd.getFullScreenWindow() == frame) {
+                    gd.setFullScreenWindow(null);
+                }
             }
-
         });
 
         // Make the window visible to realize the OpenGL surface.
