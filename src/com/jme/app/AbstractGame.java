@@ -29,7 +29,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
+// $Id$
 package com.jme.app;
 
 import java.awt.EventQueue;
@@ -45,12 +46,31 @@ import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 
 /**
- * <code>AbstractGame</code> defines a common method for implementing game
- * functionality. Client applications should not subclass
- * <code>AbstractGame</code> directly.
+ * Functionality common to all game types.
+ * <p>
+ * This class provides a basic API for gmes and also holds some implementation
+ * details common to all game types. In particular it defines the various steps
+ * in the game life-cycle:
+ * 
+ * <ol>
+ * <li>{@link #initSystem()} - initialise the system (e.g. the display system);</li>
+ * <li>{@link #initGame()} - initialise the game (e.g. warm up caches);</li>
+ * <li>The game loop, repeat until {@link #finish()} is called:
+ *   <ol>
+ *   <li>{@link #update(float)} - update the game data;</li>
+ *   <li>{@link #render(float)} - render the updated data;</li>
+ *   </ol>
+ * </li>
+ * <li>{@link #cleanup()} - free up any resources.</li>
+ * </ol>
+ * 
+ * Note that the actual definition of the lifecycle is not defined here, this
+ * is to allow subclasses to insert specialised timing code into the loop.
+ * <p>
+ * This class is not intended to be directly extended by client applications.
  * 
  * @author Eric Woroshow
- * @version $Revision$
+ * @version $Revision$, $Date$
  */
 public abstract class AbstractGame {
     private static final Logger logger = Logger.getLogger(AbstractGame.class
@@ -131,12 +151,13 @@ public abstract class AbstractGame {
     }
 
     /**
-     * <code>setConfigShowMode</code> defines if and when the display
-     * properties dialog should be shown. Setting the behaviour after
-     * <code>start</code> has been called has no effect.
+     * Defines if and when the display properties dialog should be shown.
+     * <p>
+     * Setting the behaviour after {@link #start()} has been called has no
+     * effect.
      * 
-     * @param mode properties dialog behaviour
-     * @see #@setConfigShowMode(ConfigShowMode, URL)
+     * @param mode the properties dialog behaviour.
+     * @see #setConfigShowMode(ConfigShowMode, URL)
      */
     public void setConfigShowMode(ConfigShowMode mode) {
         setConfigShowMode(mode, null);
@@ -280,50 +301,77 @@ public abstract class AbstractGame {
     //
 
     /**
-     * <code>update</code> updates the game state. Physics, AI, networking,
-     * score checking and like should be completed in this method. How often and
-     * when this method is called depends on the main loop implementation.
+     * Update the game state.
+     * <p>
+     * Any user input checks, changes to game physics, AI, networking, score
+     * table updates, and so on, should happen in this method. The rate at
+     * which this method is called will depend on the specific game
+     * implementation in use.
+     * <p>
+     * Note that this method should <strong>not</strong> update the screen.
      * 
      * @param interpolation
      *            definition varies on implementation, -1.0f if unused
+     * @see #render(float)
      */
     protected abstract void update(float interpolation);
 
     /**
-     * <code>render</code> displays the game information to the OpenGL
-     * context. Nothing altering the game state should be run during a render.
-     * How often and when this method is called depends on the main loop
-     * implementation.
-     * 
+     * Display the updated game information.
+     * <p>
+     * This method normally involves clearing the display and rendering the
+     * scene graph, although subclasses are free to do any screen related work
+     * here. The rate at which this method is called will depend on the
+     * specific game implementation in use.
+     * <p>
+     * Note that this method is run on the OpenGL thread, it should
+     * <strong>not</strong> alter the game state in any way.
+     *
      * @param interpolation
      *            definition varies on implementation, -1.0f if unused
+     * @see #update(float)
      */
     protected abstract void render(float interpolation);
 
     /**
-     * <code>initSystem</code> creates all the necessary system components for
-     * the client application. It is is called once after <code>start</code>
-     * is called. The display <b>must</b> be initialized within this method.
+     * Initialise the display system.
+     * <p>
+     * This includes not just the {@link DisplaySystem} but also any other
+     * input and display related elements such as windows, cameras, and the
+     * input system.
+     * <p>
+     * Note that the display <strong>must</strong> be initialised in this
+     * method.
      */
     protected abstract void initSystem();
 
     /**
-     * <code>initGame</code> creates and initializes all game data required
-     * for startup. It is suggested that caching of frequently used resources is
-     * done within this method. It is called once after <code>initSystem</code>
-     * has completed.
+     * Create and initialise all game data.
+     * <p>
+     * What happens here is purely application dependent; it is where, for
+     * example, the initial scene graph and the starting environment could be
+     * loaded. It is suggested that any frequently used resources are loaded
+     * and cached in this method.
+     * <p>
+     * This method is called once after {@link #initSystem()} has completed.
      */
     protected abstract void initGame();
 
     /**
-     * <code>reinit</code> rebuilds the subsystems. It may be called at any
-     * time by the client application.
+     * Rebuild the system.
+     * <p>
+     * This method is called when the system requires rebuilding, for example
+     * is the screen resolution is altered. This method may be called at any
+     * time by client code.
      */
     protected abstract void reinit();
 
     /**
-     * <code>cleanup</code> cleans up any created objects before exiting the
-     * application. It is called once after <code>finish</code> is called.
+     * Called once the game loop has finished.
+     * <p>
+     * Subclasses should use this method to release any resources, for example
+     * data that was loaded in the {@code initXXX()} methods.
      */
     protected abstract void cleanup();
+
 }

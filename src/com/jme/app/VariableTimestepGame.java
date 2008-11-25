@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.app;
 
 import java.util.logging.Level;
@@ -40,14 +40,15 @@ import com.jme.util.Timer;
 import com.jme.system.GameSettings;
 
 /**
- * <code>VariableTimestepGame</code> implements a very simple loop, updating
- * game logic and rendering as fast as hardware permits. To compensate for the
- * variable framerate, every frame the update method is passed the amount of
- * elapsed time, in seconds, since the previous update. The game should execute
- * the logic based on the time elapsed.
+ * A game that tracks time between frames.
+ * <p>
+ * This is identical to {@link BaseGame} except that it also maintains a timer
+ * which is used to pass frame timing information to the render and update
+ * methods. This is useful if a game needs to execute a different amount of
+ * logic based upon the elapsed time.
  * 
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.19 2007/08/02 21:36:19 nca Exp $
+ * @version $Revision$, $Date$
  */
 public abstract class VariableTimestepGame extends AbstractGame {
     private static final Logger logger = Logger

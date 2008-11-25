@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.app;
 
 import java.util.logging.Level;
@@ -41,13 +41,16 @@ import com.jme.system.GameSettings;
 import com.jme.system.PropertiesGameSettings;
 
 /**
- * <code>BaseGame</code> provides the simplest possible implementation of a
- * main game loop. Both logic and graphics are updated as quickly as possible,
- * with no interpolation to account for shifting frame rates. It is suggested
- * that a more complex variant of AbstractGame be used in almost all cases.
+ * The simplest possible implementation of a game loop.
+ * <p>
+ * This class defines a pure high speed game loop that runs as fast as CPU/GPU
+ * will allow. No handling of variable frame rates is included and, as a
+ * result, this class is unsuitable for most production applications; it is
+ * useful as a base for applications which require more specialised behaviour
+ * as it includes basic game configuration code.
  * 
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.16 2007/08/02 21:36:19 nca Exp $
+ * @version $Revision$, $Date$
  */
 public abstract class BaseGame extends AbstractGame {
     private static final Logger logger = Logger.getLogger(BaseGame.class
@@ -59,7 +62,7 @@ public abstract class BaseGame extends AbstractGame {
      * possible.
      */
     public final void start() {
-        logger.info( "Application started.");
+        logger.info("Application started.");
         try {
             getAttributes();
 
@@ -114,10 +117,11 @@ public abstract class BaseGame extends AbstractGame {
             display.close();
     }
 
-	/**
-	 *
-	 * @return
-	 */
+    /**
+     * Get the exception handler if one hs been set.
+     * 
+     * @return the exception handler, or {@code null} if not set.
+     */
 	protected ThrowableHandler getThrowableHandler() {
 		return throwableHandler;
 	}

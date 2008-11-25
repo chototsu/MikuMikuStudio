@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.app;
 
 import java.util.logging.Level;
@@ -39,14 +39,14 @@ import com.jme.renderer.Renderer;
 import com.jme.system.GameSettings;
 
 /**
- * <code>BaseHeadlessApp</code> provides the simplest possible implementation
- * of a main game loop for headless apps. Logic is updated as quickly as
- * possible, with no interpolation to account for shifting frame rates.
- * Rendering occurs "as needed".  To make this more interesting, might need
- * to add a finer control over the timer.
+ * A game implementation suitable for use in 'headless' applications.
+ * <p>
+ * This is basically identical to {@link BaseGame} expect for the fact that it
+ * does not update the user input or call {@code Thread#yield()} on each pass
+ * through the main loop.
  *
  * @author Joshua Slack, Mark Powell, Eric Woroshow
- * @version $Id: BaseHeadlessApp.java,v 1.9 2007/10/05 22:43:48 nca Exp $
+ * @version $Revision$, $Date$
  */
 public abstract class BaseHeadlessApp extends AbstractGame {
     private static final Logger logger = Logger.getLogger(BaseHeadlessApp.class

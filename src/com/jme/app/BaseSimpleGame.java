@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.app;
 
 import java.util.logging.Level;
@@ -70,11 +70,28 @@ import com.jme.util.stat.graph.LineGrapher;
 import com.jme.util.stat.graph.TabledLabelGrapher;
 
 /**
- * <code>BaseSimpleGame</code> provides the simplest possible implementation of a
- * main game loop. Interpolation is used between frames for varying framerates.
- *
+ * A game implementation that handles numerous common tasks.
+ * <p>
+ * This class implements all of the abstract methods and provides some default
+ * input handlers and code to report on memory usage and to display simple
+ * performance metrics on the screen.
+ * <p>
+ * All that is required to use this class is to build your scene graph (in
+ * {@link #simpleInitGame()}) and add it to the {@link #rootNode}.
+ * <p>
+ * A light state is provided with a single point light, (you can easily add
+ * more by accessing the {@link #lightState} field) and there is an FPS and
+ * statistics display. The depth buffer compare function is automatically set
+ * to {@code CF_LEQUAL}. Wireframe mode and the lights may be toggled via T
+ * and L respectively.
+ * <p>
+ * Note that this class does <strong>not</strong> automatically render the
+ * root node, you need to do this yourself by overriding {@link #simpleRender()}.
+ * If you need to update your game state then a corresponding
+ * {@link #simpleUpdate()} hook is also provided.
+ * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.28 2007/09/21 15:45:33 nca Exp $
+ * @version $Revision$, $Date$
  */
 public abstract class BaseSimpleGame extends BaseGame {
     private static final Logger logger = Logger.getLogger(BaseSimpleGame.class

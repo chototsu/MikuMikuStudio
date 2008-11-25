@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.app;
 
 import com.jme.image.Texture;
@@ -38,11 +38,10 @@ import com.jme.renderer.pass.BasicPassManager;
 import com.jme.util.geom.Debugger;
 
 /**
- * <code>SimpleGame</code> provides the simplest possible implementation of a
- * main game loop. Interpolation is used between frames for varying framerates.
+ * Adds multi-pass rendering management to {@link BaseSimpleGame}.
  * 
- * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimplePassGame.java,v 1.6 2007/10/24 15:09:33 nca Exp $
+ * @author Joshua Slack
+ * @version $Revision$, $Date$
  */
 public abstract class SimplePassGame extends BaseSimpleGame {
 

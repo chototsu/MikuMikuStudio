@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.app;
 
 import java.util.logging.Level;
@@ -52,11 +52,10 @@ import com.jme.system.JmeException;
 import com.jme.util.Timer;
 
 /**
- * <code>SimpleHeadlessApp</code> provides the simplest possible implementation
- * of a main game loop. Interpolation is used between frames for varying framerates.
+ * Similar to {@link BaseSimpleGame} but without the FPS and stats rendering.
  *
- * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.18 2007/10/05 22:43:48 nca Exp $
+ * @author Joshua Slack
+ * @version $Revision$, $Date$
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
     private static final Logger logger = Logger

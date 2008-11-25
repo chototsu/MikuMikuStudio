@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.app;
 
 import java.util.logging.Level;
@@ -39,31 +39,37 @@ import com.jme.input.InputSystem;
 import com.jme.util.Timer;
 
 /**
- * <code>FixedLogicrateGame</code> implements a main-loop designed to acheive
- * frame rate independence. The goal is to keep a consistent gameplay speed
- * regardless of the framerate acheived by the visuals. The game renders as fast
- * as the hardware permits, while running the game logic at a fixed rate. The
- * concept behind this is forcing every game logic tick to represent a fixed
- * amount of real-time. For example, if the logic is updated at a rate of 15
- * times per second, and we have a person moving at 30 pixels per second, each
- * update the person should move 2 pixels. <br>
- * To compensate for the non-constant frame rate, we smooth the visuals using
- * interpolation. So, if the scene is rendered twice without the game logic
- * being updated, we do not render the same thing twice. <br>
- * Using a fixed-timestep model has a number of benefits. Game logic is
- * simplified as there is no longer any need to add "*deltaTime" to acheive
- * frame rate independence. There is also a gain in efficiency: the logic can be
- * run at a lower frequency than the rendering, meaning that the logic may be
- * updated only once every second game - a net save in time. In addition,
+ * A game that attempts to run at a fixed logic rate.
+ * <p>
+ * The main loop makes every effort to update at the specified rate. The goal
+ * is to keep a consistent game-play speed regardless of the frame rate
+ * achieved by the visuals (i.e. the game will render as fast as the hardware
+ * permits, while running it's logic at a fixed rate). This gives tighter
+ * control on how the game state is processed, including such things as AI and
+ * physics.
+ * <p>
+ * The concept behind this is forcing every game logic tick to represent a
+ * fixed amount of real-time. For example, if the logic is updated at a rate
+ * of 15 times per second, and we have a person moving at 30 pixels per second,
+ * each update the person should move 2 pixels. To compensate for the
+ * non-constant frame rate, we smooth the visuals using interpolation. So, if
+ * the scene is rendered twice without the game logic being updated, we do not
+ * render the same thing twice.
+ * <p>
+ * Using a fixed time-step model has a number of benefits: game logic is
+ * simplified as there is no longer any need to add time deltas to achieve
+ * frame rate independence. There is also a gain in efficiency as the logic can
+ * be run at a lower frequency than the rendering, meaning that the logic may
+ * be updated only once every second game - a net save in time. Finally,
  * because the exact same sequence of game logic code is executed every time,
  * the game becomes deterministic (that is to say, it will run the exact same
- * way every time). <br>
+ * way every time).
+ * <p>
  * Further extension of this class could be used to integrate both a fixed logic
  * rate and a fixed frame rate.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedLogicrateGame.java,v 1.6 2004/04/26 18:56:01 mojomonkey
- *          Exp $
+ * @version $Revision$, $Date$
  */
 public abstract class FixedLogicrateGame extends AbstractGame {
     private static final Logger logger = Logger

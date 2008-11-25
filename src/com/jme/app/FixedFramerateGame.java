@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.app;
 
 import java.util.logging.Level;
@@ -39,20 +39,27 @@ import com.jme.input.InputSystem;
 import com.jme.util.Timer;
 
 /**
- * <code>FixedFramerateGame</code> attempts to run the game at a fixed frame
- * rate. The main loop makes every effort to render at the specified rate,
- * however it is not guaranteed that the frame rate will not dip below the
- * desired value. Game logic is updated at the same rate as the rendering. For
- * example, if the rendering is running at 60 frames per second, the logic will
- * also be updated 60 times per second.
- * 
- * Note that <code>setFrameRate(int)</code> cannot be called prior to calling
- * <code>start()</code> or a <code>NullPointerException</code> will be
- * thrown. If no frame rate is specified, the game will run at 60 frames per
- * second.
+ * A game that attempts to run at a fixed frame rate.
+ * <p>
+ * The main loop makes every effort to render at the specified rate, however
+ * this is not guaranteed and the frame rate may dip below the desired value.
+ * The game logic is updated at the same rate as the rendering; for example,
+ * if the rendering is running at 60 frames per second, the logic will also
+ * be updated 60 times per second.
+ * <p>
+ * Limiting the frame rate of the game is useful for playing nice with the
+ * underlying operating system. That is, if the game loop is left unchecked,
+ * it tends to use up 100% of the CPU cycles; while this may be fine for
+ * fullscreen applications (as it will yield to important processes) it can
+ * cause issues with applications running in a normal window.
+ * <p>
+ * If no frame rate is specified, the game will run at 60 frames per second.
+ * <p>
+ * Note that {@link #setFrameRate(int)} cannot be called prior to calling
+ * {@link #start()} or a {@code NullPointerException} will be thrown.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.15 2007/08/02 21:36:19 nca Exp $
+ * @version $Revision$, $Date$
  */
 public abstract class FixedFramerateGame extends AbstractGame {
     private static final Logger logger = Logger

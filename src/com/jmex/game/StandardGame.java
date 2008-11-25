@@ -29,6 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+// $Id$
 package com.jmex.game;
 
 import java.awt.Canvas;
@@ -67,11 +68,33 @@ import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 import com.jmex.game.state.GameStateManager;
 
 /**
- * <code>StandardGame</code> intends to be a basic implementation of a game that can be
- * utilized in games as a logical next step from <code>SimpleGame</code> and can be utilized
- * in production games.
+ * A game that implements all of the basic functionality that you will need.
+ * <p>
+ * This is intended to be the next logical step up from {@link com.jme.app.SimpleGame
+ * SimpleGame} and can be utilised in production games.
+ * <p>
+ * {@code StandardGame} provides the following features to ease game development:
+ * 
+ * <ul>
+ * <li>client/server division without needing any code changes;</li>
+ * <li>an alternative settings to replace the PropertiesIO system;</li>
+ * <li>built-in (forced) multithreading as the OpenGL thread is managed for you;</li>
+ * <li>the ability to inject additional work into the OpenGL thread using a task queue;</li>
+ * <li>shadow support;</li>
+ * </ul>
+ * 
+ * as well as re-initialisation of the graphical context (if settings change
+ * for example) and everything else a typical game requires.
+ * <p>
+ * However, even with all of the extras that {@code StandardGame} provides it
+ * does not force anything extra on you as the non-necessary items should be
+ * put into your {@link com.jmex.game.state.GameState GameState}s and managed
+ * there. This process helps to organise the different aspects of your game and
+ * get the game process started ASAP to kill the long-standing problem of
+ * start-up lag.
  * 
  * @author Matthew D. Hicks
+ * @version $Revision$, $Date$
  */
 public final class StandardGame extends AbstractGame implements Runnable {
     private static final Logger logger = Logger.getLogger(StandardGame.class
@@ -115,7 +138,7 @@ public final class StandardGame extends AbstractGame implements Runnable {
     }
 
     /**
-     * @see AbstractGame.getNewSettings()
+     * @see AbstractGame#getNewSettings()
      */
     protected GameSettings getNewSettings() {
         boolean newNode = true;
