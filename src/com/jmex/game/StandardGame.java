@@ -409,27 +409,29 @@ public final class StandardGame extends AbstractGame implements Runnable {
             AudioSystem.getSystem().cleanup();
         }
     }
-    
-    public void reinitVideo() {
-        displayMins();
-        
-        display.recreateWindow(settings.getWidth(), settings.getHeight(), settings.getDepth(), settings.getFrequency(),
-                        settings.isFullscreen());
-        camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
-        display.getRenderer().setBackgroundColor(backgroundColor);
-        if ((settings.isMusic()) || (settings.isSFX())) {
-            initSound();
-        }
-    }
 
-    public void recreateGraphicalContext() {
-        GameTaskQueueManager.getManager().update(new Callable<Object>() {
-            public Object call() throws Exception {
-                reinit();
-                return null;
-            }
-        });
-    }
+	public void reinitVideo() {
+		GameTaskQueueManager.getManager().update(new Callable<Object>() {
+			public Object call() throws Exception {
+				displayMins();
+
+				display.recreateWindow(settings.getWidth(), settings
+						.getHeight(), settings.getDepth(), settings
+						.getFrequency(), settings.isFullscreen());
+				camera = display.getRenderer().createCamera(display.getWidth(),
+						display.getHeight());
+				display.getRenderer().setBackgroundColor(backgroundColor);
+				if ((settings.isMusic()) || (settings.isSFX())) {
+					initSound();
+				}
+				return null;
+			}
+		});
+	}
+
+	public void recreateGraphicalContext() {
+		reinit();
+	}
 
     protected void cleanup() {
         GameStateManager.getInstance().cleanup();
