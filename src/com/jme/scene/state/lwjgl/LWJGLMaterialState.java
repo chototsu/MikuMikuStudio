@@ -73,24 +73,45 @@ public class LWJGLMaterialState extends MaterialState {
                 .getStateRecord(RS_MATERIAL);
         context.currentStates[RS_MATERIAL] = this;
 
-        int face = getGLMaterialFace(getMaterialFace());
-
-        // setup colormaterial, if changed.
-        applyColorMaterial(getColorMaterial(), face, record);
-        
-        // apply colors, if needed and not what is currently set.
-        applyColor(GL11.GL_AMBIENT, getAmbient(), face, record);
-        applyColor(GL11.GL_DIFFUSE, getDiffuse(), face, record);
-        applyColor(GL11.GL_EMISSION, getEmissive(), face, record);
-        applyColor(GL11.GL_SPECULAR, getSpecular(), face, record);
-
-        // set our shine
-        if (!record.isValid() || face != record.face || record.shininess != shininess) {
-            GL11.glMaterialf(face, GL11.GL_SHININESS, shininess);
-            record.shininess = shininess;
+        if(isEnabled()) {
+	        int face = getGLMaterialFace(getMaterialFace());
+	
+	        // setup colormaterial, if changed.
+	        applyColorMaterial(getColorMaterial(), face, record);
+	        
+	        // apply colors, if needed and not what is currently set.
+	        applyColor(GL11.GL_AMBIENT, getAmbient(), face, record);
+	        applyColor(GL11.GL_DIFFUSE, getDiffuse(), face, record);
+	        applyColor(GL11.GL_EMISSION, getEmissive(), face, record);
+	        applyColor(GL11.GL_SPECULAR, getSpecular(), face, record);
+	
+	        // set our shine
+	        if (!record.isValid() || face != record.face || record.shininess != shininess) {
+	            GL11.glMaterialf(face, GL11.GL_SHININESS, shininess);
+	            record.shininess = shininess;
+	        }
+	        
+	        record.face = face;
         }
-        
-        record.face = face;
+        else {
+        	// apply defaults
+        	int face = getGLMaterialFace(defaultMaterialFace);
+        	
+	        applyColorMaterial(defaultColorMaterial, face, record);
+	        
+	        applyColor(GL11.GL_AMBIENT, defaultAmbient, face, record);
+	        applyColor(GL11.GL_DIFFUSE, defaultDiffuse, face, record);
+	        applyColor(GL11.GL_EMISSION, defaultEmissive, face, record);
+	        applyColor(GL11.GL_SPECULAR, defaultSpecular, face, record);
+	
+	        // set our shine
+	        if (!record.isValid() || face != record.face || record.shininess != defaultShininess) {
+	            GL11.glMaterialf(face, GL11.GL_SHININESS, defaultShininess);
+	            record.shininess = defaultShininess;
+	        }
+	        
+	        record.face = face;
+        }
         
         if (!record.isValid())
             record.validate();
