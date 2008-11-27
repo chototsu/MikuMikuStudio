@@ -32,11 +32,13 @@
 
 package com.jme.input.lwjgl;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,16 +55,32 @@ import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
+ * Mouse input handler that uses the LWJGL input API.
  *
+ * @see Cursor
+ * @see Mouse
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.28 2007/10/29 16:54:53 nca Exp $
+ * @version $Revision$, $Date$
  */
 public class LWJGLMouseInput extends MouseInput {
     private static final Logger logger = Logger.getLogger(LWJGLMouseInput.class.getName());
 
-    private static Hashtable<URL, Cursor> loadedCursors;
+    // The URIs are stored in string form because the URL class makes a call
+    // out to the network every time equals() is called - not good far map keys!
+    /** A map of URIs to cached cursor instances. */
+    private static Map<String, Cursor> loadedCursors;
 
+    private static String urlToString(URL url) {
+        try {
+            return url.toURI().normalize().toString();
+        } catch (URISyntaxException e) {
+            // Fall back to using the externalized URL, this will be fine if client
+            // code uses the same URL each time but issue a warning anyway.
+            logger.log(Level.WARNING, "URL does not comply with RFC2396 - " + url, e);
+            return url.toExternalForm();
+        }
+    }
+    
 	private int dx, dy;
 	private int lastX, lastY;
 	private boolean virgin = true;
@@ -276,20 +294,16 @@ public class LWJGLMouseInput extends MouseInput {
         * @param xHotspot from image left
         * @param yHotspot from image bottom
         */
-	public void setHardwareCursor(URL file, int xHotspot, int yHotspot) {
-		if (loadedCursors == null) {
-			loadedCursors = new Hashtable<URL, Cursor>();
-		}
+	public synchronized void setHardwareCursor(URL file, int xHotspot, int yHotspot) {
+        if (loadedCursors == null) {
+            loadedCursors = new HashMap<String, Cursor>();
+        }
+        final String fileURI = urlToString(file);
 
-		org.lwjgl.input.Cursor cursor = null;
-		if (loadedCursors.containsKey(file)) {
-			cursor = loadedCursors.get(file);
-		}
-		else {
-            boolean eightBitAlpha = true;
-            if ((Cursor.getCapabilities() & Cursor.CURSOR_8_BIT_ALPHA) == 0) {
-                eightBitAlpha = false;
-            }
+        Cursor cursor = loadedCursors.get(fileURI);
+		if (cursor == null) {
+            boolean eightBitAlpha =
+                (Cursor.getCapabilities() & Cursor.CURSOR_8_BIT_ALPHA) != 0;
 
             Image image = TextureManager.loadImage(file, true);
             boolean isRgba = image.getFormat() == Image.Format.RGBA8;
@@ -326,13 +340,15 @@ public class LWJGLMouseInput extends MouseInput {
 				}
 			}
 
-			if (xHotspot < 0 || yHotspot < 0 || xHotspot >= imageWidth || yHotspot >= imageHeight) {
-				//Revert to a hotspot position of top-left
-				xHotspot = 0;
-				yHotspot = imageHeight - 1;
-
-				logger.info("Hotspot positions are outside image bounds.");
-			}
+            if (xHotspot < 0 || yHotspot < 0
+                    || xHotspot >= imageWidth
+                    || yHotspot >= imageHeight) {
+                // Revert to a hotspot position of top-left
+                xHotspot = 0;
+                yHotspot = imageHeight - 1;
+                logger.log(Level.WARNING,
+                        "Hotspot positions are outside image bounds!");
+            }
 
 			try {
 				cursor = new Cursor(imageWidth, imageHeight, xHotspot, yHotspot, 1, imageDataCopy, null);
@@ -340,7 +356,7 @@ public class LWJGLMouseInput extends MouseInput {
 				logger.log(Level.WARNING, "Failed creating native cursor!", e);
 			}
 
-			loadedCursors.put(file, cursor);
+			loadedCursors.put(fileURI, cursor);
 		}
 		try {
 		    if (!cursor.equals(Mouse.getNativeCursor())) {
@@ -360,22 +376,17 @@ public class LWJGLMouseInput extends MouseInput {
     * @param xHotspot from image left
     * @param yHotspot from image bottom
     */
-    public void setHardwareCursor(URL file, Image[] images, int[] delays,
+    public synchronized void setHardwareCursor(URL file, Image[] images, int[] delays,
             int xHotspot, int yHotspot) {
         if (loadedCursors == null) {
-            loadedCursors = new Hashtable<URL, Cursor>();
+            loadedCursors = new HashMap<String, Cursor>();
         }
+        final String fileURI = urlToString(file);
 
-        Cursor cursor = null;
-        if (loadedCursors.containsKey(file)) {
-            cursor = loadedCursors.get(file);
-        } else {
-
-            boolean eightBitAlpha = true;
-
-            if ((Cursor.getCapabilities() & Cursor.CURSOR_8_BIT_ALPHA) == 0) {
-                eightBitAlpha = false;
-            }
+        Cursor cursor = loadedCursors.get(fileURI);
+        if (cursor == null) {
+            boolean eightBitAlpha =
+                (Cursor.getCapabilities() & Cursor.CURSOR_8_BIT_ALPHA) != 0;
 
             Image image = images[0];
             int imageWidth = image.getWidth();
@@ -417,12 +428,12 @@ public class LWJGLMouseInput extends MouseInput {
 
             }
 
-            if (xHotspot < 0 || yHotspot < 0 || xHotspot >= imageWidth
+            if (xHotspot < 0 || yHotspot < 0
+                    || xHotspot >= imageWidth
                     || yHotspot >= imageHeight) {
                 // Revert to a hotspot position of top-left
                 xHotspot = 0;
                 yHotspot = imageHeight - 1;
-
                 logger.log(Level.WARNING,
                         "Hotspot positions are outside image bounds!");
             }
@@ -441,7 +452,7 @@ public class LWJGLMouseInput extends MouseInput {
                 logger.log(Level.WARNING, "Failed creating native cursor!", e);
             }
 
-            loadedCursors.put(file, cursor);
+            loadedCursors.put(fileURI, cursor);
         }
 
         try {
