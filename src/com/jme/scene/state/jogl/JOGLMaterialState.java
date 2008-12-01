@@ -35,8 +35,6 @@ package com.jme.scene.state.jogl;
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
-import org.lwjgl.opengl.GL11;
-
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderContext;
 import com.jme.scene.state.MaterialState;
@@ -105,14 +103,14 @@ public class JOGLMaterialState extends MaterialState {
         	
 	        applyColorMaterial(defaultColorMaterial, face, record);
 	        
-	        applyColor(GL11.GL_AMBIENT, defaultAmbient, face, record);
-	        applyColor(GL11.GL_DIFFUSE, defaultDiffuse, face, record);
-	        applyColor(GL11.GL_EMISSION, defaultEmissive, face, record);
-	        applyColor(GL11.GL_SPECULAR, defaultSpecular, face, record);
+	        applyColor(GL.GL_AMBIENT, defaultAmbient, face, record);
+	        applyColor(GL.GL_DIFFUSE, defaultDiffuse, face, record);
+	        applyColor(GL.GL_EMISSION, defaultEmissive, face, record);
+	        applyColor(GL.GL_SPECULAR, defaultSpecular, face, record);
 	
 	        // set our shine
 	        if (!record.isValid() || face != record.face || record.shininess != defaultShininess) {
-	            GL11.glMaterialf(face, GL11.GL_SHININESS, defaultShininess);
+	            gl.glMaterialf(face, GL.GL_SHININESS, defaultShininess);
 	            record.shininess = defaultShininess;
 	        }
 	        
