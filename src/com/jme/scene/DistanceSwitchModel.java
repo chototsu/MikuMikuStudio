@@ -90,6 +90,32 @@ public class DistanceSwitchModel implements SwitchModel {
 	}
 
 	/**
+	 * Returns the number of children that distances exist for.
+	 * @return
+	 */
+	public	int		getNumChildren() {
+		return numChildren;
+	}
+	
+	/**
+	 * Gets the minimum distance for this spatial index.
+	 * @param index
+	 * @return
+	 */
+	public	float		getModelMinDistance(int index) {
+		return modelMin[index];
+	}
+	
+	/**
+	 * Gets the maximum distance for this spatial index.
+	 * @param index
+	 * @return
+	 */
+	public	float		getModelMaxDistance(int index) {
+		return modelMax[index];
+	}
+	
+	/**
 	 * 
 	 * <code>setModelMinDistance</code> sets the minimum distance that a
 	 * particular child should be used.
@@ -100,10 +126,39 @@ public class DistanceSwitchModel implements SwitchModel {
 	 *            the minimum of this child.
 	 */
 	public void setModelMinDistance(int index, float minDist) {
-
+		if(index >= numChildren) {
+			reallocateArrays(index + 1);
+		}
+		
 		modelMin[index] = minDist;
 	}
 
+	/**
+	 * Creates larger arrays for the max and mins while copying existing data.
+	 * @param newLength
+	 */
+	private	void	reallocateArrays(int newLength) {
+		// create the new arrays
+		float	modelMinNew[] = new float[newLength];
+		float	modelMaxNew[] = new float[newLength];
+		float	worldMinNew[] = new float[newLength];
+		float	worldMaxNew[] = new float[newLength];
+		
+		// copy in existing
+		for(int i = 0; i < numChildren; i++) {
+			modelMinNew[i] = modelMin[i];
+			modelMaxNew[i] = modelMax[i];
+			worldMinNew[i] = worldMin[i];
+			worldMaxNew[i] = worldMax[i];
+		}
+		
+		// reassign
+		modelMin = modelMinNew;
+		modelMax = modelMaxNew;
+		worldMin = worldMinNew;
+		worldMax = worldMaxNew;
+		numChildren = newLength;
+	}
 	/**
 	 * 
 	 * <code>setModelMaxDistance</code> sets the maximum distance that a
@@ -115,6 +170,10 @@ public class DistanceSwitchModel implements SwitchModel {
 	 *            the maximum of this child.
 	 */
 	public void setModelMaxDistance(int index, float maxDist) {
+		if(index >= numChildren) {
+			reallocateArrays(index + 1);
+		}
+		
 		modelMax[index] = maxDist;
 	}
 
@@ -131,7 +190,10 @@ public class DistanceSwitchModel implements SwitchModel {
 	 *            the maximum of this child.
 	 */
 	public void setModelDistance(int index, float minDist, float maxDist) {
-
+		if(index >= numChildren) {
+			reallocateArrays(index + 1);
+		}
+		
 		modelMin[index] = minDist;
 		modelMax[index] = maxDist;
 	}

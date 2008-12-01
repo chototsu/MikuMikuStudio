@@ -68,6 +68,14 @@ public class DiscreteLodNode extends SwitchNode implements Savable {
 		modelCenter = new Vector3f();
 
 	}
+	
+	/**
+	 * Gets the switch model associated with this node.
+	 * @return
+	 */
+	public	SwitchModel		getSwitchModel() {
+		return model;
+	}
 
 	public void selectLevelOfDetail (Camera camera) {
         if(model == null) {
