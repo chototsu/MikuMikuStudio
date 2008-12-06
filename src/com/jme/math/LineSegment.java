@@ -41,8 +41,16 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
 /**
- * <code>LineSegment</code>
- * 
+ * <p>LineSegment represents a segment in the space. This is a portion of a Line
+ * that has a limited start and end points.</p>
+ * <p>A LineSegment is defined by an origin, a direction and an extent (or length).
+ * Direction should be a normalized vector. It is not internally normalized.</p>
+ * <p>This class provides methods to calculate distances between LineSegments, Rays and Vectors.
+ * It is also possible to retrieve both end points of the segment {@link LineSegment#getPositiveEnd(Vector3f)}
+ * and {@link LineSegment#getNegativeEnd(Vector3f)}. There are also methods to check whether
+ * a point is within the segment bounds.</p>
+ *
+ * @see Ray
  * @author Mark Powell
  * @author Joshua Slack
  */
@@ -69,10 +77,25 @@ public class LineSegment implements Serializable, Cloneable, Savable {
 		this.extent = ls.getExtent();
 	}
 
+	/**
+	 * <p>Creates a new LineSegment with the given origin, direction and extent.</p>
+	 * <p>Note that the origin is not one of the ends of the LineSegment, but its center.</p>
+	 */
 	public LineSegment(Vector3f origin, Vector3f direction, float extent) {
 		this.origin = origin;
 		this.direction = direction;
 		this.extent = extent;
+	}
+
+	/**
+	 * <p>Creates a new LineSegment with a given origin and end. This constructor will calculate the
+	 * center, the direction and the extent.</p>
+	 */
+	public LineSegment(Vector3f start, Vector3f end) {
+		this.origin = new Vector3f(0.5f * (start.x + end.x), 0.5f * (start.y + end.y), 0.5f * (start.z + end.z));
+		this.direction = end.subtract(start);
+		this.extent = direction.length();
+		direction.normalizeLocal();
 	}
 
 	public void set(LineSegment ls) {
@@ -566,7 +589,7 @@ public class LineSegment implements Serializable, Cloneable, Savable {
         direction = (Vector3f)capsule.readSavable("direction", Vector3f.ZERO.clone());
         extent = capsule.readFloat("extent", 0);
     }
-    
+
     public Class<? extends LineSegment> getClassTag() {
         return this.getClass();
     }
@@ -582,4 +605,27 @@ public class LineSegment implements Serializable, Cloneable, Savable {
             throw new AssertionError();
         }
     }
+
+    /**
+     * <p>Evaluates whether a given point is contained within the axis aligned bounding box
+     * that contains this LineSegment.</p><p>This function is float error aware.</p>
+     */
+    public boolean isPointInsideBounds(Vector3f point) {
+    	return isPointInsideBounds(point, Float.MIN_VALUE);
+    }
+
+    /**
+     * <p>Evaluates whether a given point is contained within the axis aligned bounding box
+     * that contains this LineSegment.</p><p>This function accepts an error parameter, which
+     * is added to the extent of the bounding box.</p>
+     */
+    public boolean isPointInsideBounds(Vector3f point, float error) {
+
+    	if (FastMath.abs(point.x - origin.x) > FastMath.abs(direction.x * extent) + error) return false;
+    	if (FastMath.abs(point.y - origin.y) > FastMath.abs(direction.y * extent) + error) return false;
+    	if (FastMath.abs(point.z - origin.z) > FastMath.abs(direction.z * extent) + error) return false;
+
+    	return true;
+    }
+
 }
