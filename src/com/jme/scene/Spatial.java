@@ -64,6 +64,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
+ * @version $Revision$, $Data$
  */
 public abstract class Spatial implements Serializable, Savable {
 
@@ -1274,6 +1275,7 @@ public abstract class Spatial implements Serializable, Savable {
      */
     public void lock(Renderer r) {
         lockBounds();
+        lockBranch();
         lockTransforms();
         lockMeshes(r);
         lockShadows();
@@ -1291,6 +1293,7 @@ public abstract class Spatial implements Serializable, Savable {
      */
     public void lock() {
         lockBounds();
+        lockBranch();
         lockTransforms();
         lockMeshes();
         lockShadows();
@@ -1372,6 +1375,7 @@ public abstract class Spatial implements Serializable, Savable {
      */
     public void unlock(Renderer r) {
         unlockBounds();
+        unlockBranch();
         unlockTransforms();
         unlockMeshes(r);
         unlockShadows();
@@ -1391,6 +1395,7 @@ public abstract class Spatial implements Serializable, Savable {
      */
     public void unlock() {
         unlockBounds();
+        unlockBranch();
         unlockTransforms();
         unlockMeshes();
         unlockShadows();
@@ -1413,15 +1418,32 @@ public abstract class Spatial implements Serializable, Savable {
      *            a bitwise combination of the locks to establish on this
      *            Spatial.
      */
-    public void setLocks(int locks) {
-        if ((lockedMode & Spatial.LOCKED_BOUNDS) != 0)
+    public void setLocks(int lockedMode) {
+        if ((lockedMode & Spatial.LOCKED_BOUNDS) != 0) {
             lockBounds();
-        if ((lockedMode & Spatial.LOCKED_MESH_DATA) != 0)
+        } else {
+            unlockBounds();
+        }
+        if ((lockedMode & Spatial.LOCKED_BRANCH) != 0) {
+            lockBranch();
+        } else {
+            unlockBranch();
+        }
+        if ((lockedMode & Spatial.LOCKED_MESH_DATA) != 0) {
             lockMeshes();
-        if ((lockedMode & Spatial.LOCKED_SHADOWS) != 0)
+        } else {
+            unlockMeshes();
+        }
+        if ((lockedMode & Spatial.LOCKED_SHADOWS) != 0) {
             lockShadows();
-        if ((lockedMode & Spatial.LOCKED_TRANSFORMS) != 0)
+        } else {
+            unlockShadows();
+        }
+        if ((lockedMode & Spatial.LOCKED_TRANSFORMS) != 0) {
             lockTransforms();
+        } else {
+            unlockTransforms();
+        }
     }
 
     /**
