@@ -165,6 +165,8 @@
                         <exclude>jmetest/**/Test*.java</exclude>
                         <exclude>**/JMESwingTest.java</exclude>
                         <exclude>**/JMESWTTest.java</exclude>
+                        <exclude>**/JMEAppletTest.java</exclude>
+                        <exclude>**/JMEJOGLAWTTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
