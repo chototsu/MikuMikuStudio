@@ -100,6 +100,15 @@ public class JOGLDisplaySystem extends DisplaySystem {
     private GLAutoDrawable autoDrawable;
 
     private boolean isClosing = false;
+    
+    private final DisplayMode[] availableDisplayModes;
+    
+    
+    JOGLDisplaySystem() {
+        super();
+        final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        availableDisplayModes = gd.getDisplayModes();
+    }
 
     @Override
     public synchronized void createWindow(int width, int height, int bpp,
@@ -273,6 +282,10 @@ public class JOGLDisplaySystem extends DisplaySystem {
                 logger.warning("Interruped while waiting for makeCurrent()");
             }
         }
+        // Now it is time to request the focus because the canvas
+        // is displayable, focusable, visible and its ancestor is
+        // visible too
+        glCanvas.requestFocusInWindow();
 
         // Store singleton OpenGL canvas.
         autoDrawable = glCanvas;
@@ -387,7 +400,8 @@ public class JOGLDisplaySystem extends DisplaySystem {
         glCanvas.addMouseMotionListener((MouseMotionListener) MouseInput.get());
         glCanvas.addMouseWheelListener((MouseWheelListener) MouseInput.get());
 
-        glCanvas.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // Setting a custom cursor when hidden does not change its visibility
+        ((AWTMouseInput) MouseInput.get()).setHardwareCursor(new Cursor(Cursor.HAND_CURSOR));
 
         KeyInput.setProvider(KeyInput.INPUT_AWT);
         final KeyListener keyListener = (KeyListener) KeyInput.get();
@@ -556,14 +570,20 @@ public class JOGLDisplaySystem extends DisplaySystem {
 
     @Override
     public boolean isValidDisplayMode(int width, int height, int bpp, int freq) {
-        // TODO Auto-generated method stub
-        return true;
+        boolean isValid = false;
+        for(DisplayMode dm : availableDisplayModes) {
+            if( dm.getWidth() == width && dm.getHeight() == height && 
+                    dm.getBitDepth() == bpp && dm.getRefreshRate() == freq ){
+                 isValid = true; 
+                 break;
+            }
+        }
+        return( isValid );
     }
 
     @Override
     public void moveWindowTo(int locX, int locY) {
-        // TODO Auto-generated method stub
-
+        frame.setLocation(locX,locY);
     }
 
     @Override
