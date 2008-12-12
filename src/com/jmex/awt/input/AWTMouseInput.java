@@ -34,16 +34,23 @@ package com.jmex.awt.input;
 
 import java.awt.Canvas;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.swing.ImageIcon;
 
 import com.jme.image.Image;
 import com.jme.input.InputSystem;
@@ -73,6 +80,10 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     private Point deltaPoint = new Point(0,0);
 
     private Component deltaRelative;
+    
+    private boolean isCursorVisible = true;      
+    private static Cursor transparentCursor = null;   
+    private Cursor opaqueCursor = null;
 
     protected AWTMouseInput() {
         // Nothing to do
@@ -225,23 +236,60 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
 	@Override
     public void setCursorVisible(boolean v) {
-		// Ignored.
+        Frame[] framesArray = Frame.getFrames( );
+        //FIXME: get only the ownerless windows?        
+        this.isCursorVisible = v;
+        for( Frame applicationFrame : framesArray ) {
+             setCursorRecursively( applicationFrame );
+        } 
     }
+	
+	/**
+	 * Sets the cursor of the component and its subcomponents
+	 * @param component
+	 */
+	private final void setCursorRecursively( Component component ) {
+	    component.setCursor( isCursorVisible ? opaqueCursor : getTransparentCursor() );
+	    if( component instanceof Container ) {
+	        for( Component subComponent : ( ( Container ) component ).getComponents() ) {
+	            setCursorRecursively( subComponent );
+	        }
+	    }
+	} 
+	   
+	private static final Cursor getTransparentCursor() {
+	    if( transparentCursor == null ) {
+	        BufferedImage cursorImage=new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
+	        cursorImage.setRGB(0,0,0);
+	        transparentCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImage,new Point(0,0),"empty cursor");      
+	    }
+	    return( transparentCursor );
+	}
+	   
+	
 
 	@Override
     public boolean isCursorVisible() {
-        // always true
-        return true;
+        return( isCursorVisible );
     }
 
     @Override
 	public void setHardwareCursor(URL file) {
-		// Ignored.
+	    setHardwareCursor( file , 0 , 0 );
 	}
 
+    public void setHardwareCursor( Cursor cursor ) {
+        opaqueCursor = cursor;
+    }
+    
     @Override
 	public void setHardwareCursor(URL file, int xHotspot, int yHotspot) {
-		// Ignored.
+	    //Create the image from the provided url
+	    java.awt.Image cursorImage = new ImageIcon( file ).getImage( );
+	    //Create a custom cursor with this image
+	    opaqueCursor = Toolkit.getDefaultToolkit().createCustomCursor( cursorImage , new Point( xHotspot , yHotspot ) , "custom cursor" );
+	    //Use this cursor
+	    setCursorVisible( isCursorVisible );
 	}
 
     @Override
