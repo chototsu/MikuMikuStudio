@@ -75,6 +75,8 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     private long lastRender = 0;
 
+    private boolean shouldAutoKillContext = true;
+    private boolean glInitialized = false;
     private boolean drawWhenDirty = false;
     private boolean dirty = true;
 
@@ -93,6 +95,12 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     @Override
     protected void initGL() {
+        
+        if( glInitialized ){
+            return;
+        }
+        glInitialized = true;
+                
         try {
             LWJGLDisplaySystem display = (LWJGLDisplaySystem) DisplaySystem
                     .getDisplaySystem();
@@ -192,6 +200,7 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
         return syncRate;
     }
 
+
     public void setDrawWhenDirty(boolean whenDirty) {
         this.drawWhenDirty = whenDirty;
     }
@@ -202,5 +211,26 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     public void makeDirty() {
         dirty = true;
+    }
+    
+    @Override
+    public void removeNotify() {
+        if ( shouldAutoKillContext ) {
+            glInitialized = false;
+            super.removeNotify();
+}
+    }
+
+    public void setAutoKillGfxContext( boolean shouldAutoKillGfxContext ) {
+        this.shouldAutoKillContext = shouldAutoKillGfxContext;
+    }
+
+    public boolean shouldAutoKillGfxContext() {
+        return shouldAutoKillContext;
+    }
+
+    public void killGfxContext() {
+        glInitialized = false;
+        super.removeNotify();
     }
 }

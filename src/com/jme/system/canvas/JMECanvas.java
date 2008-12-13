@@ -63,6 +63,26 @@ public interface JMECanvas {
      */
     void setUpdateInput(boolean doUpdate);
 
+    
+    /**
+     * @param shouldAutoKillGfxContext 
+     *          true(default) if the GFX Context should be destroyed
+     *          as soon as the canvas is removed from it's parent container
+     */
+    void setAutoKillGfxContext( boolean shouldAutoKillGfxContext );
+    
+    /**
+     * @return 
+     *      true(default) if the GFX Context should be destroyed
+     *      as soon as the canvas is removed from it's parent container
+     */
+    boolean shouldAutoKillGfxContext();
+    
+    /**
+     *  Destroy GFX context
+     */
+    void killGfxContext();
+
     /**
      * Set the desired update/redraw frequency of this canvas. If
      * setDrawWhenDirty was called with true, this frequency is just a cap to

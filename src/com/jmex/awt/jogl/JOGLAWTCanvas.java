@@ -80,6 +80,8 @@ public class JOGLAWTCanvas extends GLCanvas implements JMECanvas,
 
     private long lastRender = 0;
 
+    private boolean shouldAutoKillContext = true;
+    private boolean glInitialized = false;
     private boolean drawWhenDirty = false;
     private boolean dirty = true;
     private boolean updateInput = false;
@@ -145,6 +147,12 @@ public class JOGLAWTCanvas extends GLCanvas implements JMECanvas,
     /* GLEventListener Methods -------------------------------------------- */
 
     public void init(final GLAutoDrawable drawable) {
+        
+        if( glInitialized ){
+            return;
+        }
+        glInitialized = true;
+        
         logger.info("init " + drawable);
 
         // Switching the context is not necessary, since this is handled by the
@@ -242,5 +250,26 @@ public class JOGLAWTCanvas extends GLCanvas implements JMECanvas,
 
     public void makeDirty() {
         dirty = true;
+    }
+    
+    @Override
+    public void removeNotify() {
+        if ( shouldAutoKillContext ) {
+            glInitialized = false;
+            super.removeNotify();
+}
+    }
+
+    public void setAutoKillGfxContext( boolean shouldAutoKillGfxContext ) {
+        this.shouldAutoKillContext = shouldAutoKillGfxContext;
+    }
+
+    public boolean shouldAutoKillGfxContext() {
+        return shouldAutoKillContext;
+    }
+
+    public void killGfxContext() {
+        glInitialized = false;
+        super.removeNotify();
     }
 }

@@ -78,6 +78,8 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     private long lastRender = 0;
 
+    private boolean shouldAutoKillContext = true;
+    private boolean glInitialized = false;
     private boolean drawWhenDirty = false;
     private boolean dirty = true;
     private boolean doUpdateOnly = false;
@@ -112,6 +114,13 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
     }
 
     public void init() {
+        
+        if( glInitialized ){
+            return;
+        }
+        glInitialized = true;
+        
+        
         try {
             LWJGLDisplaySystem display = (LWJGLDisplaySystem) DisplaySystem
                     .getDisplaySystem();
@@ -219,5 +228,26 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     public boolean isDirty() {
         return dirty;
+    }
+    
+    @Override
+    public void dispose() {
+                if ( shouldAutoKillContext ) {
+            glInitialized = false;
+            super.dispose();
+}
+    }
+
+    public void setAutoKillGfxContext( boolean shouldAutoKillGfxContext ) {
+        this.shouldAutoKillContext = shouldAutoKillGfxContext;
+    }
+
+    public boolean shouldAutoKillGfxContext() {
+        return shouldAutoKillContext;
+    }
+    
+    public void killGfxContext() {
+        glInitialized = false;
+        super.dispose();
     }
 }
