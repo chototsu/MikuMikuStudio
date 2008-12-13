@@ -59,8 +59,6 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
 
     protected Camera cam;
 
-    protected int width, height;
-
     /**
      * This class should be subclasses - not directly instantiated.
      * @param width canvas width

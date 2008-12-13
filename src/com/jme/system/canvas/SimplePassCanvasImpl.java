@@ -57,7 +57,6 @@ public class SimplePassCanvasImpl extends JMECanvasImplementor {
     protected Timer timer;
     protected float tpf;
     protected Camera cam;
-    protected int width, height;
 
     /**
      * This class should be subclasses - not directly instantiated.

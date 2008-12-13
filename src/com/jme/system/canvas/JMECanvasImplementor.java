@@ -51,6 +51,8 @@ public abstract class JMECanvasImplementor {
     
     protected Renderer renderer;
 
+    protected int width, height;
+    
     public void doSetup() {
         setup = true;
     }
@@ -71,13 +73,16 @@ public abstract class JMECanvasImplementor {
         this.renderer = renderer;
     }
 
-    public void resizeCanvas(int width, int height) {
-        final int fWidth = width <= 0 ? 1 : width;
-        final int fHeight = height <= 0 ? 1 : height;
+    public void resizeCanvas(int newWidth, int newHeight) {
+        final int fWidth = newWidth <= 0 ? 1 : newWidth;
+        final int fHeight = newHeight <= 0 ? 1 : newHeight;
         Callable<?> exe = new Callable<Object>() {
             public Object call() {
-                if (renderer != null)
+                if (renderer != null) {
                     renderer.reinit(fWidth, fHeight);
+                    height = fHeight;
+                    width = fWidth;
+                }
                 return null;
             }
         };
