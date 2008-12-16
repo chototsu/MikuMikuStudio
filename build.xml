@@ -63,7 +63,7 @@
 	<!-- Jar files for different parts of the jME API -->
 
 	<target name="dist-core" depends="compile" description="generate jme jar file">
-		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="true" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf" />
+		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="true" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf, **/com/jme/**/*.vert, **/com/jme/**/*.frag" />
 	</target>
 	<target name="dist-audio" depends="compile" description="generate jme jar file (audio)">
 		<jar jarfile="${jars}/jme-audio.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/audio/**/*.class" />
