@@ -108,6 +108,18 @@ public abstract class Pass implements Serializable {
     }
 
     /**
+     * Returns the requested RenderState that this Pass currently has set or
+     * null if none is set.
+     * 
+     * @param type
+     *            the renderstate type to retrieve
+     * @return a renderstate at the given position or null
+     */
+    public RenderState getRenderState(int type) {
+        return passStates != null ? passStates[type] : null;
+    }
+
+    /**
      * Clears an enforced render state index by setting it to null. This allows
      * object specific states to be used.
      * 
