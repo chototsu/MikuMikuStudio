@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -45,13 +45,15 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Torus</code> is um ... a Torus :) The center is by default the
- * origin.
+ * An ordinary (single holed) torus.
+ * <p>
+ * The center is by default the origin.
  * 
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.12 2007/09/21 15:45:28 nca Exp $
+ * @version $Revision$, $Date$
  */
 public class Torus extends TriMesh {
+
     private static final long serialVersionUID = 1L;
 
     private int circleSamples;
@@ -62,9 +64,7 @@ public class Torus extends TriMesh {
 
     private float outerRadius;
 
-    public Torus() {
-
-    }
+    public Torus() {}
 
     /**
      * Constructs a new Torus. Center is the origin, but the Torus may be
@@ -83,16 +83,33 @@ public class Torus extends TriMesh {
      */
     public Torus(String name, int circleSamples, int radialSamples,
             float innerRadius, float outerRadius) {
-
         super(name);
-        this.circleSamples = circleSamples;
-        this.radialSamples = radialSamples;
-        this.innerRadius = innerRadius;
-        this.outerRadius = outerRadius;
+        updateGeometry(circleSamples, radialSamples, innerRadius, outerRadius);
+    }
 
-        setGeometryData();
-        setIndexData();
+    public int getCircleSamples() {
+        return circleSamples;
+    }
 
+    public float getInnerRadius() {
+        return innerRadius;
+    }
+
+    public float getOuterRadius() {
+        return outerRadius;
+    }
+
+    public int getRadialSamples() {
+        return radialSamples;
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        circleSamples = capsule.readInt("circleSamples", 0);
+        radialSamples = capsule.readInt("radialSamples", 0);
+        innerRadius = capsule.readFloat("innerRadius", 0);
+        outerRadius = capsule.readFloat("outerRaidus", 0);
     }
 
     private void setGeometryData() {
@@ -199,6 +216,23 @@ public class Torus extends TriMesh {
         }
     }
 
+    /**
+     * Rebuilds this torus based on a new set of parameters.
+     * 
+     * @param circleSamples the number of samples along the circles.
+     * @param radialSamples the number of samples along the radial.
+     * @param innerRadius the radius of the inner begining of the Torus.
+     * @param outerRadius the radius of the outter end of the Torus.
+     */
+    public void updateGeometry(int circleSamples, int radialSamples, float innerRadius, float outerRadius) {
+        this.circleSamples = circleSamples;
+        this.radialSamples = radialSamples;
+        this.innerRadius = innerRadius;
+        this.outerRadius = outerRadius;
+        setGeometryData();
+        setIndexData();
+    }
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
@@ -206,15 +240,6 @@ public class Torus extends TriMesh {
         capsule.write(radialSamples, "radialSamples", 0);
         capsule.write(innerRadius, "innerRadius", 0);
         capsule.write(outerRadius, "outerRadius", 0);
-    }
-
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        circleSamples = capsule.readInt("circleSamples", 0);
-        radialSamples = capsule.readInt("radialSamples", 0);
-        innerRadius = capsule.readFloat("innerRadius", 0);
-        outerRadius = capsule.readFloat("outerRaidus", 0);
     }
 
 }

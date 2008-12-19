@@ -29,14 +29,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
 
 import com.jme.math.Vector3f;
 import com.jme.scene.TexCoords;
-import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -49,16 +48,15 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.13 2007/09/21 15:45:27 nca Exp $
+ * @version $Revision$, $Date$
  */
-public class Hexagon extends TriMesh {
+public class Hexagon extends RegularPolyhedron {
+
     private static final long serialVersionUID = 1L;
 
     private static final int NUM_POINTS = 7;
 
     private static final int NUM_TRIS = 6;
-
-    private float sideLength;
 
     /**
      * Hexagon Constructor instantiates a new Hexagon. This element is center on
@@ -73,42 +71,27 @@ public class Hexagon extends TriMesh {
      */
     public Hexagon(String name, float sideLength) {
         super(name);
-        this.sideLength = sideLength;
-        // allocate vertices
+        updateGeometry(sideLength);
+    }
+
+    protected void doUpdateGeometry() {
         setVertexCount(NUM_POINTS);
         setVertexBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
         setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
         getTextureCoords().set(0,
                 new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
-
         setTriangleQuantity(NUM_TRIS);
         setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
-
         setVertexData();
         setIndexData();
         setTextureData();
         setNormalData();
-
     }
 
-    /**
-     * Vertexes are set up like this: 0__1 / \ / \ 5/__\6/__\2 \ / \ / \ /___\ /
-     * 4 3 All lines on this diagram are sideLength long. Therefore, the width
-     * of the hexagon is sideLength * 2, and the height is 2 * the height of one
-     * equalateral triangle with all side = sideLength which is .866
-     */
-    private void setVertexData() {
-        getVertexBuffer().put(-(sideLength / 2)).put(sideLength * 0.866f).put(
-                0.0f);
-        getVertexBuffer().put(sideLength / 2).put(sideLength * 0.866f)
-                .put(0.0f);
-        getVertexBuffer().put(sideLength).put(0.0f).put(0.0f);
-        getVertexBuffer().put(sideLength / 2).put(-sideLength * 0.866f).put(
-                0.0f);
-        getVertexBuffer().put(-(sideLength / 2)).put(-sideLength * 0.866f).put(
-                0.0f);
-        getVertexBuffer().put(-sideLength).put(0.0f).put(0.0f);
-        getVertexBuffer().put(0.0f).put(0.0f).put(0.0f);
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        sideLength = capsule.readInt("sideLength", 0);
     }
 
     /**
@@ -145,6 +128,15 @@ public class Hexagon extends TriMesh {
         getIndexBuffer().put(0);
     }
 
+    /**
+     * Sets all the default vertex normals to 'up', +1 in the Z direction.
+     */
+    private void setNormalData() {
+        Vector3f zAxis = new Vector3f(0, 0, 1);
+        for (int i = 0; i < NUM_POINTS; i++)
+            BufferUtils.setInBuffer(zAxis, getNormalBuffer(), i);
+    }
+
     private void setTextureData() {
         getTextureCoords().get(0).coords.put(0.25f).put(0);
         getTextureCoords().get(0).coords.put(0.75f).put(0);
@@ -156,25 +148,29 @@ public class Hexagon extends TriMesh {
     }
 
     /**
-     * Sets all the default vertex normals to 'up', +1 in the Z direction.
+     * Vertexes are set up like this: 0__1 / \ / \ 5/__\6/__\2 \ / \ / \ /___\ /
+     * 4 3 All lines on this diagram are sideLength long. Therefore, the width
+     * of the hexagon is sideLength * 2, and the height is 2 * the height of one
+     * equalateral triangle with all side = sideLength which is .866
      */
-    private void setNormalData() {
-        Vector3f zAxis = new Vector3f(0, 0, 1);
-        for (int i = 0; i < NUM_POINTS; i++)
-            BufferUtils.setInBuffer(zAxis, getNormalBuffer(), i);
+    private void setVertexData() {
+        getVertexBuffer().put(-(sideLength / 2)).put(sideLength * 0.866f).put(
+                0.0f);
+        getVertexBuffer().put(sideLength / 2).put(sideLength * 0.866f)
+                .put(0.0f);
+        getVertexBuffer().put(sideLength).put(0.0f).put(0.0f);
+        getVertexBuffer().put(sideLength / 2).put(-sideLength * 0.866f).put(
+                0.0f);
+        getVertexBuffer().put(-(sideLength / 2)).put(-sideLength * 0.866f).put(
+                0.0f);
+        getVertexBuffer().put(-sideLength).put(0.0f).put(0.0f);
+        getVertexBuffer().put(0.0f).put(0.0f).put(0.0f);
     }
 
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(sideLength, "sideLength", 0);
-
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        sideLength = capsule.readInt("sideLength", 0);
-
-    }
 }

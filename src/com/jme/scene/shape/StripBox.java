@@ -29,43 +29,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
-import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
 import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
-import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>StripBox</code> provides an extension of <code>TriMesh</code>. A
- * <code>StripBox</code> is defined by a minimal point and a maximum point. The
- * eight vertices that make the box are then computed. They are computed in such
- * a way as to generate an axis-aligned box.
+ * A box made from a strip mode tri-mesh.
  * 
  * @author Mark Powell
  * @author Joshua Slack (conversion from Box to StripBox)
- * @version $Id: StripBox.java,v 1.3 2007/09/21 15:45:27 nca Exp $
+ * @version $Revision$, $Date$
  */
-public class StripBox extends TriMesh implements Savable {
-	private static final long serialVersionUID = 1L;
+public class StripBox extends AbstractBox {
 
-	public float xExtent, yExtent, zExtent;
+    private static final long serialVersionUID = 1L;
 
-	public final Vector3f center = new Vector3f(0f, 0f, 0f);
-
-	/**
-	 * instantiates a new <code>StripBox</code> object. All information must be
-	 * applies later. For internal usage only
-	 */
+    /** <strong>NOT API:</strong> for internal use, do not call from user code. */
 	public StripBox() {
 		super("temp");
 	}
@@ -99,7 +84,7 @@ public class StripBox extends TriMesh implements Savable {
 	 */
 	public StripBox(String name, Vector3f min, Vector3f max) {
 		super(name);
-		setData(min, max);
+		updateGeometry(min, max);
 	}
 
 	/**
@@ -121,68 +106,10 @@ public class StripBox extends TriMesh implements Savable {
 	public StripBox(String name, Vector3f center, float xExtent, float yExtent,
 			float zExtent) {
 		super(name);
-		setData(center, xExtent, yExtent, zExtent);
+		updateGeometry(center, xExtent, yExtent, zExtent);
 	}
 
-	/**
-	 * Changes the data of the box so that the two opposite corners are minPoint
-	 * and maxPoint. The other corners are created from those two poitns. If
-	 * update buffers is flagged as true, the vertex/normal/texture/color/index
-	 * buffers are updated when the data is changed.
-	 * 
-	 * @param minPoint
-	 *            The new minPoint of the box.
-	 * @param maxPoint
-	 *            The new maxPoint of the box.
-	 */
-	public void setData(Vector3f minPoint, Vector3f maxPoint) {
-		center.set(maxPoint).addLocal(minPoint).multLocal(0.5f);
-
-		float x = maxPoint.x - center.x;
-		float y = maxPoint.y - center.y;
-		float z = maxPoint.z - center.z;
-		setData(center, x, y, z);
-	}
-
-	/**
-	 * Changes the data of the box so that its center is <code>center</code>
-	 * and it extends in the x, y, and z directions by the given extent. Note
-	 * that the actual sides will be 2x the given extent values because the box
-	 * extends in + & - from the center for each extent.
-	 * 
-	 * @param center
-	 *            The center of the box.
-	 * @param xExtent
-	 *            x extent of the box, in both directions.
-	 * @param yExtent
-	 *            y extent of the box, in both directions.
-	 * @param zExtent
-	 *            z extent of the box, in both directions.
-	 */
-	public void setData(Vector3f center, float xExtent, float yExtent,
-			float zExtent) {
-		if (center != null)
-			this.center.set(center);
-
-		this.xExtent = xExtent;
-		this.yExtent = yExtent;
-		this.zExtent = zExtent;
-
-		setVertexData();
-		setNormalData();
-		setTextureData();
-		setIndexData();
-
-	}
-
-	/**
-	 * 
-	 * <code>setVertexData</code> sets the vertex positions that define the
-	 * box. These eight points are determined from the minimum and maximum
-	 * point.
-	 *  
-	 */
-	private void setVertexData() {
+	protected void duUpdateGeometryVertices() {
         setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(), 8));
 		Vector3f[] vert = computeVertices(); // returns 8
         getVertexBuffer().clear();
@@ -196,14 +123,7 @@ public class StripBox extends TriMesh implements Savable {
         getVertexBuffer().put(vert[7].x).put(vert[7].y).put(vert[7].z);
 	}
 
-	/**
-	 * 
-	 * <code>setNormalData</code> sets the normals of each of the box's
-	 * planes.
-	 * 
-	 *  
-	 */
-	private void setNormalData() {
+	protected void duUpdateGeometryNormals() {
         Vector3f[] vert = computeVertices(); // returns 8
         setNormalBuffer(BufferUtils.createVector3Buffer(getNormalBuffer(), 8));
         Vector3f norm = new Vector3f();
@@ -215,15 +135,7 @@ public class StripBox extends TriMesh implements Savable {
         }
 	}
 
-	/**
-	 * 
-	 * <code>setTextureData</code> sets the points that define the texture of
-	 * the box. It's a one-to-one ratio, where each plane of the box has it's
-	 * own copy of the texture. That is, the texture is repeated one time for
-	 * each six faces.
-	 *  
-	 */
-	private void setTextureData() {
+	protected void duUpdateGeometryTextures() {
 	    if (getTextureCoords().get(0) == null) {
 		    getTextureCoords().set(0,new TexCoords(BufferUtils.createVector2Buffer(24)));
 		    FloatBuffer tex = getTextureCoords().get(0).coords;
@@ -238,13 +150,7 @@ public class StripBox extends TriMesh implements Savable {
 	    }
 	}
 
-	/**
-	 * 
-	 * <code>setIndexData</code> sets the indices into the list of vertices,
-	 * defining all triangles that constitute the box.
-	 *  
-	 */
-	private void setIndexData() {
+	protected void duUpdateGeometryIndices() {
         setMode(TriMesh.Mode.Strip);
 	    if (getIndexBuffer() == null) {
 			int[] indices = { 1, 0, 4, 5, 7, 0, 3, 1, 2, 4, 6, 7, 2, 3 };
@@ -253,83 +159,14 @@ public class StripBox extends TriMesh implements Savable {
 	}
 
 	/**
-	 * <code>clone</code> creates a new StripBox object containing the same data as
-	 * this one.
+	 * Creates a new StripBox object containing the same data as this one.
 	 * 
 	 * @return the new StripBox
 	 */
-	public Object clone() {
-		StripBox rVal = new StripBox(getName() + "_clone", (Vector3f) center.clone(), xExtent,
-				yExtent, zExtent);
-		return rVal;
+	public StripBox clone() {
+		return new StripBox(getName() + "_clone",
+		        (Vector3f) center.clone(),
+		        xExtent, yExtent, zExtent);
 	}
 
-	/**
-	 * 
-	 * @return a size 8 array of Vectors representing the 8 points of the box.
-	 */
-	public Vector3f[] computeVertices() {
-
-		Vector3f akEAxis[] = { Vector3f.UNIT_X.mult(xExtent), Vector3f.UNIT_Y.mult(yExtent),
-		        Vector3f.UNIT_Z.mult(zExtent) };
-
-		Vector3f rVal[] = new Vector3f[8];
-		rVal[0] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1])
-				.subtractLocal(akEAxis[2]);
-		rVal[1] = center.add(akEAxis[0]).subtractLocal(akEAxis[1])
-				.subtractLocal(akEAxis[2]);
-		rVal[2] = center.add(akEAxis[0]).addLocal(akEAxis[1]).subtractLocal(
-				akEAxis[2]);
-		rVal[3] = center.subtract(akEAxis[0]).addLocal(akEAxis[1])
-				.subtractLocal(akEAxis[2]);
-		rVal[4] = center.add(akEAxis[0]).subtractLocal(akEAxis[1]).addLocal(
-				akEAxis[2]);
-		rVal[5] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1])
-				.addLocal(akEAxis[2]);
-		rVal[6] = center.add(akEAxis[0]).addLocal(akEAxis[1]).addLocal(
-				akEAxis[2]);
-		rVal[7] = center.subtract(akEAxis[0]).addLocal(akEAxis[1]).addLocal(
-				akEAxis[2]);
-		return rVal;
-	}
-
-	/**
-	 * Returns the current center of the box.
-	 * 
-	 * @return The box's center.
-	 */
-	public Vector3f getCenter() {
-		return center;
-	}
-
-	/**
-	 * Sets the center of the box. Note that even though the center is set,
-	 * Geometry information is not updated. In most cases, you'll want to use
-	 * setData()
-	 * 
-	 * @param aCenter
-	 *            The new center.
-	 */
-	public void setCenter(Vector3f aCenter) {
-		center.set(aCenter);
-	}
-
-    public void write(JMEExporter e) throws IOException {
-        super.write(e);
-        OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(xExtent, "xExtent", 0);
-        capsule.write(yExtent, "yExtent", 0);
-        capsule.write(zExtent, "zExtent", 0);
-        capsule.write(center, "center", Vector3f.ZERO);
-
-    }
-
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        xExtent = capsule.readFloat("xExtent", 0);
-        yExtent = capsule.readFloat("yExtent", 0);
-        zExtent = capsule.readFloat("zExtent", 0);
-        center.set((Vector3f) capsule.readSavable("center", Vector3f.ZERO.clone()));
-    }
 }

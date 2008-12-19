@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -45,52 +45,40 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
 /**
- * <code>Arrow</code> is basically a cylinder with a pyramid on top.
+ * A cylinder with a pyramid at one end.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.3 $, $Date$
  */
 public class Arrow extends Node {
+
     private static final long serialVersionUID = 1L;
 
-    protected float length = 1;
-    protected float width = .25f;
+    private float length = 1;
+    private float width = .25f;
 
-    protected static final Quaternion rotator = new Quaternion();
+    private transient Cylinder shaft;
+    private transient Pyramid tip;
 
     public Arrow() {
+        this(null, 1.0f, 0.25f);
     }
 
     public Arrow(String name) {
-        super(name);
+        this(name, 1.0f, 0.25f);
     }
 
     public Arrow(String name, float length, float width) {
         super(name);
-        this.length = length;
-        this.width = width;
-
-        buildArrow();
+        updateGeometry(length, width);
     }
 
-    protected void buildArrow() {
-        // Start with cylinders:
-        Cylinder base = new Cylinder("base", 4, 16, width * .75f, length);
-        rotator.fromAngles(90 * FastMath.DEG_TO_RAD, 0, 0);
-        base.rotatePoints(rotator);
-        base.rotateNormals(rotator);
-        attachChild(base);
-
-        Pyramid tip = new Pyramid("tip", 2 * width, length / 2f);
-        tip.translatePoints(0, length * .75f, 0);
-        attachChild(tip);
+    public float getLength() {
+        return length;
     }
 
-    public void write(JMEExporter e) throws IOException {
-        super.write(e);
-        OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(length, "length", 1);
-        capsule.write(width, "width", .25f);
+    public float getWidth() {
+        return width;
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -98,37 +86,69 @@ public class Arrow extends Node {
         InputCapsule capsule = e.getCapsule(this);
         length = capsule.readFloat("length", 1);
         width = capsule.readFloat("width", .25f);
-
-    }
-
-    public float getLength() {
-        return length;
-    }
-
-    public void setLength(float length) {
-        this.length = length;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
-    public void setSolidColor(ColorRGBA color) {
-        for (int x = 0; x < getQuantity(); x++) {
-            if (getChild(x) instanceof Geometry)
-                ((Geometry)getChild(x)).setSolidColor(color);
-        }
+        updateGeometry(length, width);
     }
 
     public void setDefaultColor(ColorRGBA color) {
         for (int x = 0; x < getQuantity(); x++) {
-            if (getChild(x) instanceof Geometry)
-                ((Geometry)getChild(x)).setDefaultColor(color);
+            if (getChild(x) instanceof Geometry) {
+                ((Geometry) getChild(x)).setDefaultColor(color);
+            }
         }
+    }
+
+    /**
+     * @deprecated use {@link #updateGeometry(float, float)}.
+     */
+    public void setLength(float length) {
+        this.length = length;
+    }
+
+    public void setSolidColor(ColorRGBA color) {
+        if (shaft != null) {
+            shaft.setSolidColor(color);
+            tip.setSolidColor(color);
+        }
+    }
+
+    /**
+     * @deprecated use {@link #updateGeometry(float, float)}.
+     */
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    /**
+     * Rebuild this arrow based on a new set of parameters.
+     * 
+     * @param length
+     * @param width
+     */
+    public void updateGeometry(float length, float width) {
+        this.length = length;
+        this.width = width;
+        if (shaft == null) {
+            shaft = new Cylinder("base", 4, 16, width * .75f, length);
+            Quaternion q = new Quaternion();
+            q.fromAngles(90 * FastMath.DEG_TO_RAD, 0, 0);
+            shaft.rotatePoints(q);
+            shaft.rotateNormals(q);
+            attachChild(shaft);
+            tip = new Pyramid("tip", 2 * width, length / 2f);
+            tip.translatePoints(0, length * .75f, 0);
+            attachChild(tip);
+        } else {
+            shaft.updateGeometry(4, 16, width * .75f, width * .75f, length,
+                    false, false);
+            tip.updateGeometry(2 * width, length / 2f);
+        }
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(length, "length", 1);
+        capsule.write(width, "width", .25f);
     }
 
 }

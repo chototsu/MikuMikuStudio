@@ -68,7 +68,7 @@ public class TestBillboardNode extends SimpleGame {
     lightState.setEnabled(false); // we don't want lighting by default.
 
     Quad q = new Quad("Quad");
-    q.initialize(3, 3);
+    q.updateGeometry(3, 3);
 
     TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);

@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -46,11 +46,10 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Disk</code> is a flat circle. It is simply defined with a radius. It
- * starts out flat along the Z, with center at the origin.
+ * A flat discus, defined by it's radius.
  * 
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.12 2007/09/21 15:45:27 nca Exp $
+ * @version $Revision$, $Date$
  */
 public class Disk extends TriMesh {
 
@@ -81,38 +80,59 @@ public class Disk extends TriMesh {
      */
     public Disk(String name, int shellSamples, int radialSamples, float radius) {
         super(name);
+        updateGeometry(shellSamples, radialSamples, radius);
+    }
 
+    public int getRadialSamples() {
+        return radialSamples;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public int getShellSamples() {
+        return shellSamples;
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        shellSamples = capsule.readInt("shellSamples", 0);
+        radialSamples = capsule.readInt("radialSamples", 0);
+        radius = capsule.readFloat("raidus", 0);
+    }
+
+    /**
+     * Rebuild this disk based on a new set of parameters.
+     * 
+     * @param shellSamples the number of shell samples.
+     * @param radialSamples the number of radial samples.
+     * @param radius the radius of the disk.
+     */
+    public void updateGeometry(int shellSamples, int radialSamples, float radius) {
         this.shellSamples = shellSamples;
         this.radialSamples = radialSamples;
         this.radius = radius;
-
         int radialless = radialSamples - 1;
         int shellLess = shellSamples - 1;
-        // allocate vertices
+        // Allocate vertices
         setVertexCount(1 + radialSamples * shellLess);
         setVertexBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
         setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
-        getTextureCoords().set(0,
-                new TexCoords(BufferUtils.createVector3Buffer(getVertexCount())));
-
+        getTextureCoords().set(0, new TexCoords(BufferUtils.createVector3Buffer(getVertexCount())));
         setTriangleQuantity(radialSamples * (2 * shellLess - 1));
         setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
-
-        setGeometryData(shellLess);
-        setIndexData(radialless, shellLess);
-
-    }
-
-    private void setGeometryData(int shellLess) {
+        
         // generate geometry
         // center of disk
         getVertexBuffer().put(0).put(0).put(0);
-
-        for (int x = 0; x < getVertexCount(); x++)
+        
+        for (int x = 0; x < getVertexCount(); x++) {
             getNormalBuffer().put(0).put(0).put(1);
-
+        }
+        
         getTextureCoords().get(0).coords.put(.5f).put(.5f);
-
         float inverseShellLess = 1.0f / shellLess;
         float inverseRadial = 1.0f / radialSamples;
         Vector3f radialFraction = new Vector3f();
@@ -122,24 +142,20 @@ public class Disk extends TriMesh {
             float cos = FastMath.cos(angle);
             float sin = FastMath.sin(angle);
             Vector3f radial = new Vector3f(cos, sin, 0);
-
+        
             for (int shellCount = 1; shellCount < shellSamples; shellCount++) {
                 float fraction = inverseShellLess * shellCount; // in (0,R]
                 radialFraction.set(radial).multLocal(fraction);
                 int i = shellCount + shellLess * radialCount;
                 texCoord.x = 0.5f * (1.0f + radialFraction.x);
                 texCoord.y = 0.5f * (1.0f + radialFraction.y);
-                BufferUtils
-                        .setInBuffer(texCoord, getTextureCoords().get(0).coords, i);
-
+                BufferUtils.setInBuffer(texCoord, getTextureCoords().get(0).coords, i);
                 radialFraction.multLocal(radius);
                 BufferUtils.setInBuffer(radialFraction, getVertexBuffer(), i);
             }
         }
-    }
-
-    private void setIndexData(int radialless, int shellLess) {
-        // generate connectivity
+        
+        // Generate connectivity
         int index = 0;
         for (int radialCount0 = radialless, radialCount1 = 0; radialCount1 < radialSamples; radialCount0 = radialCount1++) {
             getIndexBuffer().put(0);
@@ -169,11 +185,4 @@ public class Disk extends TriMesh {
         capsule.write(radius, "radius", 0);
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        shellSamples = capsule.readInt("shellSamples", 0);
-        radialSamples = capsule.readInt("radialSamples", 0);
-        radius = capsule.readFloat("raidus", 0);
-    }
 }

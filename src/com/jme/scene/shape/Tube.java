@@ -52,6 +52,7 @@ public class Tube extends TriMesh implements Savable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Deprecated
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
 	}
@@ -69,81 +70,54 @@ public class Tube extends TriMesh implements Savable {
 	public Tube() {
 	}
 
-	public Tube(String name, float outerRadius, float innerRadius,
-			float height, int axisSamples, int radialSamples) {
-		super(name);
-		this.outerRadius = outerRadius;
-		this.innerRadius = innerRadius;
-		this.height = height;
-		this.axisSamples = axisSamples;
-		this.radialSamples = radialSamples;
-		allocateVertices();
-	}
-
 	public Tube(String name, float outerRadius, float innerRadius, float height) {
 		this(name, outerRadius, innerRadius, height, 2, 20);
 	}
 
-	private void allocateVertices() {
-		setVertexCount(2 * (axisSamples + 1) * (radialSamples + 1)
-				+ radialSamples * 4);
-		setVertexBuffer(BufferUtils.createVector3Buffer(
-				getVertexBuffer(), getVertexCount()));
-		setNormalBuffer(BufferUtils.createVector3Buffer(
-				getNormalBuffer(), getVertexCount()));
-        getTextureCoords().set(0,
-                new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
-		setTriangleQuantity(4 * radialSamples * (1 + axisSamples));
-		setIndexBuffer(BufferUtils.createIntBuffer(
-				getIndexBuffer(), 3 * getTriangleCount()));
-
-		setGeometryData();
-		setIndexData();
+	public Tube(String name, float outerRadius, float innerRadius,
+			float height, int axisSamples, int radialSamples) {
+		super(name);
+		updateGeometry(outerRadius, innerRadius, height, axisSamples, radialSamples);
 	}
 
 	public int getAxisSamples() {
 		return axisSamples;
 	}
 
-	public void setAxisSamples(int axisSamples) {
-		this.axisSamples = axisSamples;
-		allocateVertices();
-	}
-
-	public int getRadialSamples() {
-		return radialSamples;
-	}
-
-	public void setRadialSamples(int radialSamples) {
-		this.radialSamples = radialSamples;
-		allocateVertices();
-	}
-
-	public float getOuterRadius() {
-		return outerRadius;
-	}
-
-	public void setOuterRadius(float outerRadius) {
-		this.outerRadius = outerRadius;
-		allocateVertices();
+	public float getHeight() {
+		return height;
 	}
 
 	public float getInnerRadius() {
 		return innerRadius;
 	}
 
-	public void setInnerRadius(float innerRadius) {
-		this.innerRadius = innerRadius;
-		allocateVertices();
+	public float getOuterRadius() {
+		return outerRadius;
 	}
 
-	public float getHeight() {
-		return height;
+	public int getRadialSamples() {
+		return radialSamples;
 	}
 
-	public void setHeight(float height) {
-		this.height = height;
-		allocateVertices();
+	@Override
+	public void read(JMEImporter e) throws IOException {
+		super.read(e);
+		InputCapsule capsule = e.getCapsule(this);
+		int axisSamples = capsule.readInt("axisSamples", 0);
+		int radialSamples = capsule.readInt("radialSamples", 0);
+		float outerRadius = capsule.readFloat("outerRadius", 0);
+		float innerRadius = capsule.readFloat("innerRadius", 0);
+		float height = capsule.readFloat("height", 0);
+        updateGeometry(outerRadius, innerRadius, height, axisSamples, radialSamples);
+	}
+
+    /**
+     * @deprecated Use {@link #updateGeometry(float, float, float, int, int)} instead.
+     */
+	public void setAxisSamples(int axisSamples) {
+		this.axisSamples = axisSamples;
+        updateGeometry(outerRadius, innerRadius, height, axisSamples, radialSamples);
 	}
 
 	private void setGeometryData() {
@@ -164,58 +138,76 @@ public class Tube extends TriMesh implements Savable {
 		// outer cylinder
 		for (int radialCount = 0; radialCount < radialSamples + 1; radialCount++) {
 			for (int axisCount = 0; axisCount < axisSamples + 1; axisCount++) {
-				getVertexBuffer().put(
-						cos[radialCount % radialSamples] * outerRadius).put(
-						axisStep * axisCount - halfHeight).put(
-						sin[radialCount % radialSamples] * outerRadius);
-				getNormalBuffer().put(cos[radialCount % radialSamples])
+				getVertexBuffer()
+				        .put(cos[radialCount % radialSamples] * outerRadius)
+				        .put(axisStep * axisCount - halfHeight)
+				        .put(sin[radialCount % radialSamples] * outerRadius);
+				getNormalBuffer()
+				        .put(cos[radialCount % radialSamples])
 						.put(0).put(sin[radialCount % radialSamples]);
-				getTextureCoords(0).coords.put(radialCount * inverseRadial).put(
-						axisTextureStep * axisCount);
+				getTextureCoords(0).coords
+				        .put(radialCount * inverseRadial)
+				        .put(axisTextureStep * axisCount);
 			}
 		}
 		// inner cylinder
 		for (int radialCount = 0; radialCount < radialSamples + 1; radialCount++) {
 			for (int axisCount = 0; axisCount < axisSamples + 1; axisCount++) {
-				getVertexBuffer().put(
-						cos[radialCount % radialSamples] * innerRadius).put(
-						axisStep * axisCount - halfHeight).put(
-						sin[radialCount % radialSamples] * innerRadius);
-				getNormalBuffer().put(-cos[radialCount % radialSamples])
+				getVertexBuffer()
+				        .put(cos[radialCount % radialSamples] * innerRadius)
+				        .put(axisStep * axisCount - halfHeight)
+				        .put(sin[radialCount % radialSamples] * innerRadius);
+				getNormalBuffer()
+				        .put(-cos[radialCount % radialSamples])
 						.put(0).put(-sin[radialCount % radialSamples]);
-				getTextureCoords(0).coords.put(radialCount * inverseRadial).put(
-						axisTextureStep * axisCount);
+				getTextureCoords(0).coords
+				        .put(radialCount * inverseRadial)
+				        .put(axisTextureStep * axisCount);
 			}
 		}
 		// bottom edge
 		for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
-			getVertexBuffer().put(cos[radialCount] * outerRadius).put(
-					-halfHeight).put(sin[radialCount] * outerRadius);
-			getVertexBuffer().put(cos[radialCount] * innerRadius).put(
-					-halfHeight).put(sin[radialCount] * innerRadius);
+			getVertexBuffer()
+			        .put(cos[radialCount] * outerRadius)
+			        .put(-halfHeight).put(sin[radialCount] * outerRadius);
+			getVertexBuffer()
+			        .put(cos[radialCount] * innerRadius)
+			        .put(-halfHeight).put(sin[radialCount] * innerRadius);
 			getNormalBuffer().put(0).put(-1).put(0);
 			getNormalBuffer().put(0).put(-1).put(0);
-			getTextureCoords(0).coords.put(0.5f + 0.5f * cos[radialCount]).put(
-					0.5f + 0.5f * sin[radialCount]);
-			getTextureCoords(0).coords.put(
-					0.5f + innerOuterRatio * 0.5f * cos[radialCount]).put(
-					0.5f + innerOuterRatio * 0.5f * sin[radialCount]);
+			getTextureCoords(0).coords
+			        .put(0.5f + 0.5f * cos[radialCount])
+			        .put(0.5f + 0.5f * sin[radialCount]);
+			getTextureCoords(0).coords
+			        .put(0.5f + innerOuterRatio * 0.5f * cos[radialCount])
+			        .put(0.5f + innerOuterRatio * 0.5f * sin[radialCount]);
 		}
 		// top edge
 		for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
-			getVertexBuffer().put(cos[radialCount] * outerRadius).put(
-					halfHeight).put(sin[radialCount] * outerRadius);
-			getVertexBuffer().put(cos[radialCount] * innerRadius).put(
-					halfHeight).put(sin[radialCount] * innerRadius);
+			getVertexBuffer()
+			        .put(cos[radialCount] * outerRadius)
+			        .put(halfHeight).put(sin[radialCount] * outerRadius);
+			getVertexBuffer()
+			        .put(cos[radialCount] * innerRadius)
+			        .put(halfHeight).put(sin[radialCount] * innerRadius);
 			getNormalBuffer().put(0).put(1).put(0);
 			getNormalBuffer().put(0).put(1).put(0);
-			getTextureCoords(0).coords.put(0.5f + 0.5f * cos[radialCount]).put(
-					0.5f + 0.5f * sin[radialCount]);
-			getTextureCoords(0).coords.put(
-					0.5f + innerOuterRatio * 0.5f * cos[radialCount]).put(
-					0.5f + innerOuterRatio * 0.5f * sin[radialCount]);
+			getTextureCoords(0).coords
+			        .put(0.5f + 0.5f * cos[radialCount])
+			        .put(0.5f + 0.5f * sin[radialCount]);
+			getTextureCoords(0).coords
+			        .put(0.5f + innerOuterRatio * 0.5f * cos[radialCount])
+			        .put(0.5f + innerOuterRatio * 0.5f * sin[radialCount]);
 		}
 
+	}
+
+    /**
+	 * @deprecated Use {@link #updateGeometry(float, float, float, int, int)} instead.
+	 */
+	public void setHeight(float height) {
+		this.height = height;
+        updateGeometry(outerRadius, innerRadius, height, axisSamples, radialSamples);
 	}
 
 	private void setIndexData() {
@@ -268,6 +260,53 @@ public class Tube extends TriMesh implements Savable {
 		}
 	}
 
+	/**
+     * @deprecated Use {@link #updateGeometry(float, float, float, int, int)} instead.
+     */
+	public void setInnerRadius(float innerRadius) {
+		this.innerRadius = innerRadius;
+        updateGeometry(outerRadius, innerRadius, height, axisSamples, radialSamples);
+	}
+
+    /**
+     * @deprecated Use {@link #updateGeometry(float, float, float, int, int)} instead.
+     */
+	public void setOuterRadius(float outerRadius) {
+		this.outerRadius = outerRadius;
+        updateGeometry(outerRadius, innerRadius, height, axisSamples, radialSamples);
+	}
+
+    /**
+     * @deprecated Use {@link #updateGeometry(float, float, float, int, int)} instead.
+     */
+	public void setRadialSamples(int radialSamples) {
+		this.radialSamples = radialSamples;
+        updateGeometry(outerRadius, innerRadius, height, axisSamples, radialSamples);
+	}
+
+	public void updateGeometry(float outerRadius, float innerRadius,
+            float height, int axisSamples, int radialSamples) {
+        this.outerRadius = outerRadius;
+        this.innerRadius = innerRadius;
+        this.height = height;
+        this.axisSamples = axisSamples;
+        this.radialSamples = radialSamples;
+		setVertexCount(2 * (axisSamples + 1) * (radialSamples + 1)
+				+ radialSamples * 4);
+		setVertexBuffer(BufferUtils.createVector3Buffer(
+				getVertexBuffer(), getVertexCount()));
+		setNormalBuffer(BufferUtils.createVector3Buffer(
+				getNormalBuffer(), getVertexCount()));
+        getTextureCoords().set(0,
+                new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
+		setTriangleQuantity(4 * radialSamples * (1 + axisSamples));
+		setIndexBuffer(BufferUtils.createIntBuffer(
+				getIndexBuffer(), 3 * getTriangleCount()));
+
+		setGeometryData();
+		setIndexData();
+	}
+
 	@Override
 	public void write(JMEExporter e) throws IOException {
 		super.write(e);
@@ -277,16 +316,5 @@ public class Tube extends TriMesh implements Savable {
 		capsule.write(getOuterRadius(), "outerRadius", 0);
 		capsule.write(getInnerRadius(), "innerRadius", 0);
 		capsule.write(getHeight(), "height", 0);
-	}
-
-	@Override
-	public void read(JMEImporter e) throws IOException {
-		super.read(e);
-		InputCapsule capsule = e.getCapsule(this);
-		setAxisSamples(capsule.readInt("axisSamples", 0));
-		setRadialSamples(capsule.readInt("radialSamples", 0));
-		setOuterRadius(capsule.readFloat("outerRadius", 0));
-		setInnerRadius(capsule.readFloat("innerRadius", 0));
-		setHeight(capsule.readFloat("height", 0));
 	}
 }

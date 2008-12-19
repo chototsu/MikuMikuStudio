@@ -78,23 +78,15 @@ public final class Debugger {
 
     // -- **** METHODS FOR DRAWING BOUNDING VOLUMES **** -- //
 
-    private static final Sphere boundingSphere = new Sphere("bsphere", 10, 10,
-            1);
+    private static final Sphere boundingSphere = new Sphere("bsphere", 10, 10, 1);
+    private static final Box boundingBox = new Box("bbox", new Vector3f(), 1, 1, 1);
+    private static final OrientedBox boundingOB = new OrientedBox("bobox");
+    private static final Capsule boundingCapsule = new Capsule("bcap", 3, 10, 10, 1, 1);
+
     static {
         boundingSphere.setRenderQueueMode(Renderer.QUEUE_SKIP);
-    }
-    private static final Box boundingBox = new Box("bbox", new Vector3f(), 1,
-            1, 1);
-    static {
         boundingBox.setRenderQueueMode(Renderer.QUEUE_SKIP);
-    }
-    private static final OrientedBox boundingOB = new OrientedBox("bobox");
-    static {
         boundingOB.setRenderQueueMode(Renderer.QUEUE_SKIP);
-    }
-    private static final Capsule boundingCapsule = new Capsule("bcap", 3, 10,
-            10, 1, 1);
-    static {
         boundingCapsule.setRenderQueueMode(Renderer.QUEUE_SKIP);
     }
 
@@ -194,7 +186,7 @@ public final class Debugger {
 
     private static void drawBoundingSphere(BoundingSphere sphere, Renderer r) {
         boundingSphere.getCenter().set(sphere.getCenter());
-        boundingSphere.setData(boundingSphere.getCenter(), 10, 10, sphere
+        boundingSphere.updateGeometry(boundingSphere.getCenter(), 10, 10, sphere
                 .getRadius()); // pass back bs center to prevent accidently
         // data access.
         boundingSphere.draw(r);
@@ -202,18 +194,20 @@ public final class Debugger {
 
     private static void drawBoundingBox(BoundingBox box, Renderer r) {
         boundingBox.getCenter().set(box.getCenter());
-        boundingBox.setData(boundingBox.getCenter(), box.xExtent, box.yExtent,
+        boundingBox.updateGeometry(boundingBox.getCenter(),
+                box.xExtent,
+                box.yExtent,
                 box.zExtent);
         boundingBox.draw(r);
     }
 
     private static void drawOBB(OrientedBoundingBox box, Renderer r) {
         boundingOB.getCenter().set(box.getCenter());
-        boundingOB.getxAxis().set(box.getXAxis());
-        boundingOB.getyAxis().set(box.getYAxis());
-        boundingOB.getzAxis().set(box.getZAxis());
+        boundingOB.getXAxis().set(box.getXAxis());
+        boundingOB.getYAxis().set(box.getYAxis());
+        boundingOB.getZAxis().set(box.getZAxis());
         boundingOB.getExtent().set(box.getExtent());
-        boundingOB.computeInformation();
+        boundingOB.updateGeometry();
         boundingOB.draw(r);
     }
 
@@ -221,8 +215,10 @@ public final class Debugger {
     private static final Vector3f end = new Vector3f();
 
     private static void drawBoundingCapsule(BoundingCapsule cap, Renderer r) {
-        boundingCapsule.reconstruct(cap.getLineSegment().getNegativeEnd(start),
-                cap.getLineSegment().getPositiveEnd(end), cap.getRadius());
+        boundingCapsule.updateGeometry(
+                cap.getLineSegment().getNegativeEnd(start),
+                cap.getLineSegment().getPositiveEnd(end),
+                cap.getRadius());
         boundingCapsule.draw(r);
     }
 

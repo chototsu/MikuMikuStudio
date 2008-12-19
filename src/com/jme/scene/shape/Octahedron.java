@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -39,7 +39,6 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.TexCoords;
-import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -47,20 +46,21 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Octahedron</code> is an eight faced polyhedron. It looks somewhat
- * like two pyramids placed bottom to bottom.
+ * A regular polyhedron with 8 faces.
+ * <p>
+ * It looks somewhat like two pyramids placed bottom to bottom (or a 8-sided
+ * die for all you D&D fans!).
  * 
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.12 2007/09/21 15:45:27 nca Exp $
+ * @version $Revision$, $Date$
  */
-public class Octahedron extends TriMesh {
+public class Octahedron extends RegularPolyhedron {
+
     private static final long serialVersionUID = 1L;
 
     private static final int NUM_POINTS = 6;
 
     private static final int NUM_TRIS = 8;
-
-    private float sideLength;
 
     public Octahedron() {
     }
@@ -76,22 +76,26 @@ public class Octahedron extends TriMesh {
      */
     public Octahedron(String name, float sideLength) {
         super(name);
-        this.sideLength = sideLength;
+        updateGeometry(sideLength);
+    }
 
-        // allocate vertices
+    protected void doUpdateGeometry() {
         setVertexCount(NUM_POINTS);
         setVertexBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
         setNormalBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
         setTextureCoords(new TexCoords(BufferUtils.createVector2Buffer(NUM_POINTS)), 0);
-
         setTriangleQuantity(NUM_TRIS);
         setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
-
         setVertexData();
         setNormalData();
         setTextureData();
         setIndexData();
+    }
 
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        sideLength = capsule.readInt("sideLength", 0);
     }
 
     private void setIndexData() {
@@ -116,6 +120,15 @@ public class Octahedron extends TriMesh {
         }
     }
 
+    private void setNormalData() {
+        Vector3f norm = new Vector3f();
+        for (int i = 0; i < NUM_POINTS; i++) {
+            BufferUtils.populateFromBuffer(norm, getVertexBuffer(), i);
+            norm.normalizeLocal();
+            BufferUtils.setInBuffer(norm, getNormalBuffer(), i);
+        }
+    }
+
     private void setTextureData() {
         Vector2f tex = new Vector2f();
         Vector3f vert = new Vector3f();
@@ -132,15 +145,6 @@ public class Octahedron extends TriMesh {
         }
     }
 
-    private void setNormalData() {
-        Vector3f norm = new Vector3f();
-        for (int i = 0; i < NUM_POINTS; i++) {
-            BufferUtils.populateFromBuffer(norm, getVertexBuffer(), i);
-            norm.normalizeLocal();
-            BufferUtils.setInBuffer(norm, getNormalBuffer(), i);
-        }
-    }
-
     private void setVertexData() {
         getVertexBuffer().put(sideLength).put(0.0f).put(0.0f);
         getVertexBuffer().put(-sideLength).put(0.0f).put(0.0f);
@@ -154,13 +158,6 @@ public class Octahedron extends TriMesh {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(sideLength, "sideLength", 0);
-
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        sideLength = capsule.readInt("sideLength", 0);
-
-    }
 }

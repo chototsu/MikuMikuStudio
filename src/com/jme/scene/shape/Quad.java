@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.nio.FloatBuffer;
@@ -40,21 +40,23 @@ import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Quad</code> defines a four sided, two dimensional shape. The local
- * height of the <code>Quad</code> defines it's size about the y-axis, while
- * the width defines the x-axis. The z-axis will always be 0.
+ * A four sided, two dimensional shape (a quadrilateral).
+ * <p>
+ * The local height of the {@code Quad} defines it's size about the y-axis,
+ * while the width defines the x-axis. The z-axis will always be 0.
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.13 2007/09/21 15:45:27 nca Exp $
+ * @version $Revision$, $Date$
  */
 public class Quad extends TriMesh {
 
     private static final long serialVersionUID = 1L;
+
     protected float width = 0;
+    
     protected float height = 0;
 
     public Quad() {
-
     }
 
     /**
@@ -82,7 +84,38 @@ public class Quad extends TriMesh {
      */
     public Quad(String name, float width, float height) {
         super(name);
-        initialize(width, height);
+        updateGeometry(width, height);
+    }
+
+    /**
+     * <code>getCenter</code> returns the center of the <code>Quad</code>.
+     * 
+     * @return Vector3f the center of the <code>Quad</code>.
+     */
+    public Vector3f getCenter() {
+        return worldTranslation;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    /**
+     * <code>initialize</code> builds the data for the <code>Quad</code>
+     * object.
+     * 
+     * @param width
+     *            the width of the <code>Quad</code>.
+     * @param height
+     *            the height of the <code>Quad</code>.
+     * @deprecated Use {@link #updateGeometry(float,float)} instead
+     */
+    public void initialize(float width, float height) {
+        updateGeometry(width, height);
     }
 
     /**
@@ -105,15 +138,12 @@ public class Quad extends TriMesh {
     }
 
     /**
-     * <code>initialize</code> builds the data for the <code>Quad</code>
-     * object.
+     * Rebuild this quad based on a new set of parameters.
      * 
-     * @param width
-     *            the width of the <code>Quad</code>.
-     * @param height
-     *            the height of the <code>Quad</code>.
+     * @param width the width of the quad.
+     * @param height the height of the quad.
      */
-    public void initialize(float width, float height) {
+    public void updateGeometry(float width, float height) {
         this.width = width;
         this.height = height;
         setVertexCount(4);
@@ -123,44 +153,10 @@ public class Quad extends TriMesh {
         setTextureCoords(new TexCoords(tbuf));
         setTriangleQuantity(2);
         setIndexBuffer(BufferUtils.createIntBuffer(getTriangleCount() * 3));
-
-        getVertexBuffer().put(-width / 2f).put(height / 2f).put(0);
-        getVertexBuffer().put(-width / 2f).put(-height / 2f).put(0);
-        getVertexBuffer().put(width / 2f).put(-height / 2f).put(0);
-        getVertexBuffer().put(width / 2f).put(height / 2f).put(0);
-
-        getNormalBuffer().put(0).put(0).put(1);
-        getNormalBuffer().put(0).put(0).put(1);
-        getNormalBuffer().put(0).put(0).put(1);
-        getNormalBuffer().put(0).put(0).put(1);
-
-        tbuf.put(0).put(1);
-        tbuf.put(0).put(0);
-        tbuf.put(1).put(0);
-        tbuf.put(1).put(1);
-
-        getIndexBuffer().put(0);
-        getIndexBuffer().put(1);
-        getIndexBuffer().put(2);
-        getIndexBuffer().put(0);
-        getIndexBuffer().put(2);
-        getIndexBuffer().put(3);
+        resize(width, height);
+        getNormalBuffer().put(new float[] { 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1 });
+        tbuf.put(new float[] { 0, 1, 0, 0, 1, 0, 1, 1 });
+        getIndexBuffer().put(new int[] { 0, 1, 2, 0, 2, 3 });
     }
 
-    /**
-     * <code>getCenter</code> returns the center of the <code>Quad</code>.
-     * 
-     * @return Vector3f the center of the <code>Quad</code>.
-     */
-    public Vector3f getCenter() {
-        return worldTranslation;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public float getHeight() {
-        return height;
-    }
 }

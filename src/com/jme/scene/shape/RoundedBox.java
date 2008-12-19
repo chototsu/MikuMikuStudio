@@ -29,6 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -46,48 +47,163 @@ import com.jme.util.geom.BufferUtils;
 
 /**
  * @author Pirx
+ * @version $Revision$, $Date$
  */
 public class RoundedBox extends TriMesh implements Savable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
-    private Vector3f extent = new Vector3f(0.5f, 0.5f, 0.5f);
-    private Vector3f border = new Vector3f(0.05f, 0.05f, 0.05f);
-    private Vector3f slope = new Vector3f(0.02f, 0.02f, 0.02f);
+
+    private static final Vector3f EXTENT = new Vector3f(0.52f, 0.52f, 0.52f);
+    private static final Vector3f BORDER = new Vector3f(0.05f, 0.05f, 0.05f);
+    private static final Vector3f SLOPE  = new Vector3f(0.02f, 0.02f, 0.02f);
+
+    private Vector3f extent;
+    private Vector3f border;
+    private Vector3f slope;
 
     /** Creates a new instance of RoundedBox */
     public RoundedBox(String name) {
         super(name);
-        setData();
+        updateGeometry(EXTENT.clone(), BORDER.clone(), SLOPE.clone());
     }
 
     public RoundedBox(String name, Vector3f extent) {
         super(name);
-        this.extent = extent.subtract(slope);
-        setData();
+        updateGeometry(extent, BORDER.clone(), SLOPE.clone());
     }
 
-    public RoundedBox(String name, Vector3f extent, Vector3f border,
-            Vector3f slope) {
+    public RoundedBox(String name, Vector3f extent, Vector3f border, Vector3f slope) {
         super(name);
-        this.extent = extent.subtract(slope);
-        this.border = border;
-        this.slope = slope;
-        setData();
+        updateGeometry(extent, border, slope);
     }
 
-    private void setData() {
-        setVertexAndNormalData();
-        setTextureData();
-        setIndexData();
+    /** Creates a deep copy of this rounded box. */
+    public RoundedBox clone() {
+        return new RoundedBox(getName() + "_clone", (Vector3f) extent.clone(),
+                (Vector3f) border.clone(), (Vector3f) slope.clone());
     }
 
-    private void put(FloatBuffer fb, FloatBuffer nb, Vector3f vec) {
-        fb.put(vec.x).put(vec.y).put(vec.z);
-        Vector3f v = vec.normalize();
-        nb.put(v.x).put(v.y).put(v.z);
+    // XXX: can this be made private? I think that it's is only used in the
+    // setVertexAndNormalData method in this class.
+    /**
+     * @deprecated this method will be made private.
+     */
+    public Vector3f[] computeVertices() {
+        float nebx = -extent.x + border.x, nesy = -extent.y - slope.y,
+              neby = -extent.y + border.y, nesz = -extent.z - slope.z,
+              nebz = -extent.z + border.z, nesx = -extent.x - slope.x, 
+              pebz =  extent.z - border.z, pesy =  extent.y + slope.y,
+              peby =  extent.y - border.y, pesz =  extent.z + slope.z,
+              pebx =  extent.x - border.x, pesx =  extent.x + slope.x;
+        return new Vector3f[] {
+                // Cube
+                new Vector3f(-extent.x, -extent.y,  extent.z), // 0
+                new Vector3f( extent.x, -extent.y,  extent.z), // 1
+                new Vector3f(-extent.x, -extent.y, -extent.z), // 2
+                new Vector3f( extent.x, -extent.y, -extent.z), // 3
+                new Vector3f(-extent.x,  extent.y,  extent.z), // 4
+                new Vector3f( extent.x,  extent.y,  extent.z), // 5
+                new Vector3f(-extent.x,  extent.y, -extent.z), // 6
+                new Vector3f( extent.x,  extent.y, -extent.z), // 7
+
+                // Bottom
+                new Vector3f(nebx, nesy, pebz), //  8 (0)
+                new Vector3f(pebx, nesy, pebz), //  9 (1)
+                new Vector3f(nebx, nesy, nebz), // 10 (2)
+                new Vector3f(pebx, nesy, nebz), // 11 (3)
+
+                // Front
+                new Vector3f(nebx, neby, pesz), // 12 (0)
+                new Vector3f(pebx, neby, pesz), // 13 (1)
+                new Vector3f(nebx, peby, pesz), // 14 (4)
+                new Vector3f(pebx, peby, pesz), // 15 (5)
+
+                // Right
+                new Vector3f(pesx, neby, pebz), // 16 (1)
+                new Vector3f(pesx, neby, nebz), // 17 (3)
+                new Vector3f(pesx, peby, pebz), // 18 (5)
+                new Vector3f(pesx, peby, nebz), // 19 (7)
+
+                // Back
+                new Vector3f(nebx, neby, nesz), // 20 (2)
+                new Vector3f(pebx, neby, nesz), // 21 (3)
+                new Vector3f(nebx, peby, nesz), // 22 (6)
+                new Vector3f(pebx, peby, nesz), // 23 (7)
+
+                // Left
+                new Vector3f(nesx, neby, pebz), // 24 (0)
+                new Vector3f(nesx, neby, nebz), // 25 (2)
+                new Vector3f(nesx, peby, pebz), // 26 (4)
+                new Vector3f(nesx, peby, nebz), // 27 (6)
+
+                // Top
+                new Vector3f(nebx, pesy, pebz), // 28 (4)
+                new Vector3f(pebx, pesy, pebz), // 29 (5)
+                new Vector3f(nebx, pesy, nebz), // 30 (6)
+                new Vector3f(pebx, pesy, nebz), // 31 (7)
+        };
+    }
+
+    public Vector3f getBorder() {
+        return border;
+    }
+
+    public Vector3f getExtent() {
+        return extent;
+    }
+
+    public Vector3f getSlope() {
+        return slope;
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        extent.set((Vector3f) capsule.readSavable("extent", Vector3f.ZERO.clone()));
+        border.set((Vector3f) capsule.readSavable("border", Vector3f.ZERO.clone()));
+        slope.set((Vector3f) capsule.readSavable("slope", Vector3f.ZERO.clone()));
+    }
+
+    private void setIndexData() {
+        if (getIndexBuffer() == null) {
+            int[] indices = new int[180];
+            int[] data = new int[] {
+                    0, 4, 1, 1, 4, 5, 1, 5, 3, 3, 5, 7, 3, 7, 2,
+                    2, 7, 6, 2, 6, 0, 0, 6, 4, 4, 6, 5, 5, 6, 7
+            };
+            for (int i = 0; i < 6; i++) {
+                for (int n = 0; n < 30; n++) {
+                    indices[30 * i + n] = 8 * i + data[n];
+                }
+            }
+            setIndexBuffer(BufferUtils.createIntBuffer(indices));
+        }
+    }
+
+    private void setTextureData() {
+        if (getTextureCoords().get(0) == null) {
+            getTextureCoords().set(0, new TexCoords(BufferUtils.createVector2Buffer(48)));
+            FloatBuffer tex = getTextureCoords().get(0).coords;
+
+            float x = extent.x + slope.x, y = extent.y + slope.y, z = extent.z + slope.z;
+            float[][] ratio = new float[][] {
+                    { 0.5f * border.x / x, 0.5f * border.z / z },
+                    { 0.5f * border.x / x, 0.5f * border.y / y },
+                    { 0.5f * border.z / z, 0.5f * border.y / y },
+                    { 0.5f * border.x / x, 0.5f * border.y / y },
+                    { 0.5f * border.z / z, 0.5f * border.y / y },
+                    { 0.5f * border.x / x, 0.5f * border.z / z }
+            };
+
+            final float[] floats = { 1, 0, 0, 0, 1, 1, 0, 1 };
+            for (float[] r : ratio) {
+                tex.put(floats);
+                tex.put(new float[] {
+                        1 - r[0], 0 + r[1], 0 + r[0], 0 + r[1],
+                        1 - r[0], 1 - r[1], 0 + r[0], 1 - r[1]
+                });
+            }
+        }
     }
 
     private void setVertexAndNormalData() {
@@ -98,190 +214,30 @@ public class RoundedBox extends TriMesh implements Savable {
         FloatBuffer vb = getVertexBuffer();
         FloatBuffer nb = getNormalBuffer();
 
-        // bottom
-        put(vb, nb, vert[0]);
-        put(vb, nb, vert[1]);
-        put(vb, nb, vert[2]);
-        put(vb, nb, vert[3]);
-        put(vb, nb, vert[8]);
-        put(vb, nb, vert[9]);
-        put(vb, nb, vert[10]);
-        put(vb, nb, vert[11]);
-
-        // front
-        put(vb, nb, vert[1]);
-        put(vb, nb, vert[0]);
-        put(vb, nb, vert[5]);
-        put(vb, nb, vert[4]);
-        put(vb, nb, vert[13]);
-        put(vb, nb, vert[12]);
-        put(vb, nb, vert[15]);
-        put(vb, nb, vert[14]);
-
-        // right
-        put(vb, nb, vert[3]);
-        put(vb, nb, vert[1]);
-        put(vb, nb, vert[7]);
-        put(vb, nb, vert[5]);
-        put(vb, nb, vert[17]);
-        put(vb, nb, vert[16]);
-        put(vb, nb, vert[19]);
-        put(vb, nb, vert[18]);
-
-        // back
-        put(vb, nb, vert[2]);
-        put(vb, nb, vert[3]);
-        put(vb, nb, vert[6]);
-        put(vb, nb, vert[7]);
-        put(vb, nb, vert[20]);
-        put(vb, nb, vert[21]);
-        put(vb, nb, vert[22]);
-        put(vb, nb, vert[23]);
-
-        // left
-        put(vb, nb, vert[0]);
-        put(vb, nb, vert[2]);
-        put(vb, nb, vert[4]);
-        put(vb, nb, vert[6]);
-        put(vb, nb, vert[24]);
-        put(vb, nb, vert[25]);
-        put(vb, nb, vert[26]);
-        put(vb, nb, vert[27]);
-
-        // top
-        put(vb, nb, vert[5]);
-        put(vb, nb, vert[4]);
-        put(vb, nb, vert[7]);
-        put(vb, nb, vert[6]);
-        put(vb, nb, vert[29]);
-        put(vb, nb, vert[28]);
-        put(vb, nb, vert[31]);
-        put(vb, nb, vert[30]);
-    }
-
-    private void setTextureData() {
-        if (getTextureCoords().get(0) == null) {
-            getTextureCoords().set(0, new TexCoords(BufferUtils.createVector2Buffer(48)));
-            FloatBuffer tex = getTextureCoords().get(0).coords;
-
-            float[][] ratio = new float[][] {
-                    { 0.5f * border.x / (extent.x + slope.x),
-                            0.5f * border.z / (extent.z + slope.z) },
-                    { 0.5f * border.x / (extent.x + slope.x),
-                            0.5f * border.y / (extent.y + slope.y) },
-                    { 0.5f * border.z / (extent.z + slope.z),
-                            0.5f * border.y / (extent.y + slope.y) },
-                    { 0.5f * border.x / (extent.x + slope.x),
-                            0.5f * border.y / (extent.y + slope.y) },
-                    { 0.5f * border.z / (extent.z + slope.z),
-                            0.5f * border.y / (extent.y + slope.y) },
-                    { 0.5f * border.x / (extent.x + slope.x),
-                            0.5f * border.z / (extent.z + slope.z) }, };
-
-            for (int i = 0; i < 6; i++) {
-                tex.put(1).put(0);
-                tex.put(0).put(0);
-                tex.put(1).put(1);
-                tex.put(0).put(1);
-                tex.put(1 - ratio[i][0]).put(0 + ratio[i][1]);
-                tex.put(0 + ratio[i][0]).put(0 + ratio[i][1]);
-                tex.put(1 - ratio[i][0]).put(1 - ratio[i][1]);
-                tex.put(0 + ratio[i][0]).put(1 - ratio[i][1]);
-            }
-        }
-    }
-
-    private void setIndexData() {
-        if (getIndexBuffer() == null) {
-            int[] indices = new int[180];
-            int[] data = new int[] { 0, 4, 1, 1, 4, 5, 1, 5, 3, 3, 5, 7, 3, 7,
-                    2, 2, 7, 6, 2, 6, 0, 0, 6, 4, 4, 6, 5, 5, 6, 7 };
-            for (int i = 0; i < 6; i++) {
-                for (int n = 0; n < 30; n++) {
-                    indices[30 * i + n] = 8 * i + data[n];
-                }
-            }
-            setIndexBuffer(BufferUtils.createIntBuffer(indices));
-        }
-    }
-
-    public Vector3f[] computeVertices() {
-        return new Vector3f[] {
-                // Cube
-                new Vector3f(-extent.x, -extent.y, extent.z), // 0
-                new Vector3f(extent.x, -extent.y, extent.z), // 1
-                new Vector3f(-extent.x, -extent.y, -extent.z), // 2
-                new Vector3f(extent.x, -extent.y, -extent.z), // 3
-                new Vector3f(-extent.x, extent.y, extent.z), // 4
-                new Vector3f(extent.x, extent.y, extent.z), // 5
-                new Vector3f(-extent.x, extent.y, -extent.z), // 6
-                new Vector3f(extent.x, extent.y, -extent.z), // 7
-                // bottom
-                new Vector3f(-extent.x + border.x, -extent.y - slope.y,
-                        extent.z - border.z), // 8 (0)
-                new Vector3f(extent.x - border.x, -extent.y - slope.y, extent.z
-                        - border.z), // 9 (1)
-                new Vector3f(-extent.x + border.x, -extent.y - slope.y,
-                        -extent.z + border.z), // 10 (2)
-                new Vector3f(extent.x - border.x, -extent.y - slope.y,
-                        -extent.z + border.z), // 11 (3)
-                // front
-                new Vector3f(-extent.x + border.x, -extent.y + border.y,
-                        extent.z + slope.z), // 12 (0)
-                new Vector3f(extent.x - border.x, -extent.y + border.y,
-                        extent.z + slope.z), // 13 (1)
-                new Vector3f(-extent.x + border.x, extent.y - border.y,
-                        extent.z + slope.z), // 14 (4)
-                new Vector3f(extent.x - border.x, extent.y - border.y, extent.z
-                        + slope.z), // 15 (5)
-                // right
-                new Vector3f(extent.x + slope.x, -extent.y + border.y, extent.z
-                        - border.z), // 16 (1)
-                new Vector3f(extent.x + slope.x, -extent.y + border.y,
-                        -extent.z + border.z), // 17 (3)
-                new Vector3f(extent.x + slope.x, extent.y - border.y, extent.z
-                        - border.z), // 18 (5)
-                new Vector3f(extent.x + slope.x, extent.y - border.y, -extent.z
-                        + border.z), // 19 (7)
-                // back
-                new Vector3f(-extent.x + border.x, -extent.y + border.y,
-                        -extent.z - slope.z), // 20 (2)
-                new Vector3f(extent.x - border.x, -extent.y + border.y,
-                        -extent.z - slope.z), // 21 (3)
-                new Vector3f(-extent.x + border.x, extent.y - border.y,
-                        -extent.z - slope.z), // 22 (6)
-                new Vector3f(extent.x - border.x, extent.y - border.y,
-                        -extent.z - slope.z), // 23 (7)
-                // left
-                new Vector3f(-extent.x - slope.x, -extent.y + border.y,
-                        extent.z - border.z), // 24 (0)
-                new Vector3f(-extent.x - slope.x, -extent.y + border.y,
-                        -extent.z + border.z), // 25 (2)
-                new Vector3f(-extent.x - slope.x, extent.y - border.y, extent.z
-                        - border.z), // 26 (4)
-                new Vector3f(-extent.x - slope.x, extent.y - border.y,
-                        -extent.z + border.z), // 27 (6)
-                // top
-                new Vector3f(-extent.x + border.x, extent.y + slope.y, extent.z
-                        - border.z), // 28 (4)
-                new Vector3f(extent.x - border.x, extent.y + slope.y, extent.z
-                        - border.z), // 29 (5)
-                new Vector3f(-extent.x + border.x, extent.y + slope.y,
-                        -extent.z + border.z), // 30 (6)
-                new Vector3f(extent.x - border.x, extent.y + slope.y, -extent.z
-                        + border.z), // 31 (7)
+        int[] order = {
+                0, 1, 2, 3, 8, 9, 10, 11, // bottom
+                1, 0, 5, 4, 13, 12, 15, 14, //front
+                3, 1, 7, 5, 17, 16, 19, 18, // right
+                2, 3, 6, 7, 20, 21, 22, 23, // back
+                0, 2, 4, 6, 24, 25, 26, 27,  // left
+                5, 4, 7, 6, 29, 28, 31, 30 // top
         };
+        for (int i : order) {
+            Vector3f vec = vert[i];
+            vb.put(vec.x).put(vec.y).put(vec.z);
+            Vector3f v = vec.normalize();
+            nb.put(v.x).put(v.y).put(v.z);
+
+        }
     }
 
-    /**
-     * <code>clone</code> creates a new RoundedBox object containing the same
-     * data as this one.
-     * 
-     * @return the new Box
-     */
-    public Object clone() {
-        return new RoundedBox(getName() + "_clone", (Vector3f) extent.clone(),
-                (Vector3f) border.clone(), (Vector3f) slope.clone());
+    public void updateGeometry(Vector3f extent, Vector3f border, Vector3f slope) {
+        this.extent = extent.subtract(slope);
+        this.border = border;
+        this.slope = slope;
+        setVertexAndNormalData();
+        setTextureData();
+        setIndexData();
     }
 
     public void write(JMEExporter e) throws IOException {
@@ -292,14 +248,4 @@ public class RoundedBox extends TriMesh implements Savable {
         capsule.write(slope, "slope", Vector3f.ZERO);
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        extent.set((Vector3f) capsule.readSavable("extent", Vector3f.ZERO
-                .clone()));
-        border.set((Vector3f) capsule.readSavable("border", Vector3f.ZERO
-                .clone()));
-        slope.set((Vector3f) capsule
-                .readSavable("slope", Vector3f.ZERO.clone()));
-    }
 }

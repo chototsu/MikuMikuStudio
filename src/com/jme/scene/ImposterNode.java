@@ -108,7 +108,7 @@ public class ImposterNode extends Node {
 		quadScene.setCullHint(Spatial.CullHint.Never);
 
 		standIn = new Quad("imposter_quad_" + inode_val);
-		standIn.initialize(size, size);
+		standIn.updateGeometry(size, size);
 		standIn.setModelBound(new BoundingBox());
 		standIn.updateModelBound();
 		standIn.setParent(this);

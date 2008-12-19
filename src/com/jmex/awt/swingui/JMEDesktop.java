@@ -343,7 +343,7 @@ public class JMEDesktop extends Quad {
         if ( initialized ) {
             throw new IllegalStateException( "may be called only once" );
         }
-        initialize( powerOf2SizeIfNeeded( width, mipMapping ), powerOf2SizeIfNeeded( height, mipMapping ) );
+        updateGeometry( powerOf2SizeIfNeeded( width, mipMapping ), powerOf2SizeIfNeeded( height, mipMapping ) );
 
         this.width = powerOf2SizeIfNeeded( width, mipMapping );
         this.height = powerOf2SizeIfNeeded( height, mipMapping );

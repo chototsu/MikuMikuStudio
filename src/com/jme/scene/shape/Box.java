@@ -29,344 +29,145 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
-import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
 import com.jme.scene.TexCoords;
-import com.jme.scene.TriMesh;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
-import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Box</code> provides an extension of <code>TriMesh</code>. A
- * <code>Box</code> is defined by a minimal point and a maximum point. The
- * eight vertices that make the box are then computed. They are computed in such
- * a way as to generate an axis-aligned box.
+ * A box with solid (filled) faces.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.23 2007/09/21 15:45:27 nca Exp $
+ * @version $Revision$, $Date$
  */
-public class Box extends TriMesh implements Savable {
+public class Box extends AbstractBox {
+    
+    private static final int[] GEOMETRY_INDICES_DATA = {
+         2,  1,  0,  3,  2,  0, // back
+         6,  5,  4,  7,  6,  4, // right
+        10,  9,  8, 11, 10,  8, // front
+        14, 13, 12, 15, 14, 12, // left
+        18, 17, 16, 19, 18, 16, // top
+        22, 21, 20, 23, 22, 20  // bottom
+    };
+
+    private static final float[] GEOMETRY_NORMALS_DATA = {
+        0,  0, -1,  0,  0, -1,  0,  0, -1,  0,  0, -1, // back
+        1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0, // right
+        0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1, // front
+       -1,  0,  0, -1,  0,  0, -1,  0,  0, -1,  0,  0, // left
+        0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0, // top
+        0, -1,  0,  0, -1,  0,  0, -1,  0,  0, -1,  0  // bottom
+    };
+
+    private static final float[] GEOMETRY_TEXTURE_DATA = {
+        1, 0, 0, 0, 0, 1, 1, 1, // back
+        1, 0, 0, 0, 0, 1, 1, 1, // right
+        1, 0, 0, 0, 0, 1, 1, 1, // front
+        1, 0, 0, 0, 0, 1, 1, 1, // left
+        1, 0, 0, 0, 0, 1, 1, 1, // top
+        1, 0, 0, 0, 0, 1, 1, 1  // bottom
+    };
+
     private static final long serialVersionUID = 1L;
 
-    public float xExtent, yExtent, zExtent;
-
-    public final Vector3f center = new Vector3f(0f, 0f, 0f);
-
-    /**
-     * instantiates a new <code>Box</code> object. All information must be
-     * applies later. For internal usage only
-     */
     public Box() {
-        super("temp");
+        this(null);
     }
 
     /**
-     * Constructor instantiates a new <code>Box</code> object. Center and
-     * vertice information must be supplied later.
+     * Creates a new box.
+     * <p>
+     * Center and vertices information must be supplied later.
      * 
-     * @param name
-     *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     * @param name the name of the box.
      */
     public Box(String name) {
         super(name);
     }
 
     /**
-     * Constructor instantiates a new <code>Box</code> object. The minimum and
-     * maximum point are provided. These two points define the shape and size of
-     * the box, but not it's orientation or position. You should use the
-     * <code>setLocalTranslation</code> and <code>setLocalRotation</code>
-     * for those attributes.
+     * Creates a new box.
+     * <p>
+     * The box has the given center and extends in the out from the center by
+     * the given amount in <em>each</em> direction. So, for example, a box
+     * with extent of 0.5 would be the unit cube.
      * 
-     * @param name
-     *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
-     * @param min
-     *            the minimum point that defines the box.
-     * @param max
-     *            the maximum point that defines the box.
+     * @param name the name of the box.
+     * @param center the center of the box.
+     * @param x the size of the box along the x axis, in both directions.
+     * @param y the size of the box along the y axis, in both directions.
+     * @param z the size of the box along the z axis, in both directions.
+     */
+    public Box(String name, Vector3f center, float x, float y, float z) {
+        super(name);
+        updateGeometry(center, x, y, z);
+    }
+
+    /**
+     * Constructor instantiates a new <code>Box</code> object.
+     * <p>
+     * The minimum and maximum point are provided, these two points define the
+     * shape and size of the box but not it’s orientation or position. You should
+     * use the {@link #setLocalTranslation()} and {@link #setLocalRotation()}
+     * methods to define those properties.
+     * 
+     * @param name the name of the box.
+     * @param min the minimum point that defines the box.
+     * @param max the maximum point that defines the box.
      */
     public Box(String name, Vector3f min, Vector3f max) {
         super(name);
-        setData(min, max);
+        updateGeometry(min, max);
     }
 
     /**
-     * Constructs a new box. The box has the given center and extends in the x,
-     * y, and z out from the center (+ and -) by the given amounts. So, for
-     * example, a box with extent of .5 would be the unit cube.
-     * 
-     * @param name
-     *            Name of the box.
-     * @param center
-     *            Center of the box.
-     * @param xExtent
-     *            x extent of the box, in both directions.
-     * @param yExtent
-     *            y extent of the box, in both directions.
-     * @param zExtent
-     *            z extent of the box, in both directions.
+     * Creates a clone of this box.
+     * <p>
+     * The cloned box will have ‘_clone’ appended to it’s name, but all other
+     * properties will be the same as this box.
      */
-    public Box(String name, Vector3f center, float xExtent, float yExtent,
-            float zExtent) {
-        super(name);
-        setData(center, xExtent, yExtent, zExtent);
+    public Box clone() {
+        return new Box(getName() + "_clone", center.clone(), xExtent, yExtent, zExtent);
     }
 
-    /**
-     * Changes the data of the box so that the two opposite corners are minPoint
-     * and maxPoint. The other corners are created from those two poitns. If
-     * update buffers is flagged as true, the vertex/normal/texture/color/index
-     * buffers are updated when the data is changed.
-     * 
-     * @param minPoint
-     *            The new minPoint of the box.
-     * @param maxPoint
-     *            The new maxPoint of the box.
-     */
-    public void setData(Vector3f minPoint, Vector3f maxPoint) {
-        center.set(maxPoint).addLocal(minPoint).multLocal(0.5f);
-
-        float x = maxPoint.x - center.x;
-        float y = maxPoint.y - center.y;
-        float z = maxPoint.z - center.z;
-        setData(center, x, y, z);
-    }
-
-    /**
-     * Changes the data of the box so that its center is <code>center</code>
-     * and it extends in the x, y, and z directions by the given extent. Note
-     * that the actual sides will be 2x the given extent values because the box
-     * extends in + & - from the center for each extent.
-     * 
-     * @param center
-     *            The center of the box.
-     * @param xExtent
-     *            x extent of the box, in both directions.
-     * @param yExtent
-     *            y extent of the box, in both directions.
-     * @param zExtent
-     *            z extent of the box, in both directions.
-     */
-    public void setData(Vector3f center, float xExtent, float yExtent,
-            float zExtent) {
-        if (center != null)
-            this.center.set(center);
-
-        this.xExtent = xExtent;
-        this.yExtent = yExtent;
-        this.zExtent = zExtent;
-
-        setVertexData();
-        setNormalData();
-        setTextureData();
-        setIndexData();
-
-    }
-
-    /**
-     * <code>setVertexData</code> sets the vertex positions that define the
-     * box. These eight points are determined from the minimum and maximum
-     * point.
-     */
-    private void setVertexData() {
-        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(), 24));
-        setVertexCount(24);
-        Vector3f[] vert = computeVertices(); // returns 8
-
-        // Back
-        getVertexBuffer().put(vert[0].x).put(vert[0].y).put(vert[0].z);
-        getVertexBuffer().put(vert[1].x).put(vert[1].y).put(vert[1].z);
-        getVertexBuffer().put(vert[2].x).put(vert[2].y).put(vert[2].z);
-        getVertexBuffer().put(vert[3].x).put(vert[3].y).put(vert[3].z);
-
-        // Right
-        getVertexBuffer().put(vert[1].x).put(vert[1].y).put(vert[1].z);
-        getVertexBuffer().put(vert[4].x).put(vert[4].y).put(vert[4].z);
-        getVertexBuffer().put(vert[6].x).put(vert[6].y).put(vert[6].z);
-        getVertexBuffer().put(vert[2].x).put(vert[2].y).put(vert[2].z);
-
-        // Front
-        getVertexBuffer().put(vert[4].x).put(vert[4].y).put(vert[4].z);
-        getVertexBuffer().put(vert[5].x).put(vert[5].y).put(vert[5].z);
-        getVertexBuffer().put(vert[7].x).put(vert[7].y).put(vert[7].z);
-        getVertexBuffer().put(vert[6].x).put(vert[6].y).put(vert[6].z);
-
-        // Left
-        getVertexBuffer().put(vert[5].x).put(vert[5].y).put(vert[5].z);
-        getVertexBuffer().put(vert[0].x).put(vert[0].y).put(vert[0].z);
-        getVertexBuffer().put(vert[3].x).put(vert[3].y).put(vert[3].z);
-        getVertexBuffer().put(vert[7].x).put(vert[7].y).put(vert[7].z);
-
-        // Top
-        getVertexBuffer().put(vert[2].x).put(vert[2].y).put(vert[2].z);
-        getVertexBuffer().put(vert[6].x).put(vert[6].y).put(vert[6].z);
-        getVertexBuffer().put(vert[7].x).put(vert[7].y).put(vert[7].z);
-        getVertexBuffer().put(vert[3].x).put(vert[3].y).put(vert[3].z);
-
-        // Bottom
-        getVertexBuffer().put(vert[0].x).put(vert[0].y).put(vert[0].z);
-        getVertexBuffer().put(vert[5].x).put(vert[5].y).put(vert[5].z);
-        getVertexBuffer().put(vert[4].x).put(vert[4].y).put(vert[4].z);
-        getVertexBuffer().put(vert[1].x).put(vert[1].y).put(vert[1].z);
-
-    }
-
-    /**
-     * <code>setNormalData</code> sets the normals of each of the box's
-     * planes.
-     */
-    private void setNormalData() {
-        if (getNormalBuffer() == null) {
-            setNormalBuffer(BufferUtils.createVector3Buffer(24));
-
-            // back
-            for (int i = 0; i < 4; i++)
-                getNormalBuffer().put(0).put(0).put(-1);
-
-            // right
-            for (int i = 0; i < 4; i++)
-                getNormalBuffer().put(1).put(0).put(0);
-
-            // front
-            for (int i = 0; i < 4; i++)
-                getNormalBuffer().put(0).put(0).put(1);
-
-            // left
-            for (int i = 0; i < 4; i++)
-                getNormalBuffer().put(-1).put(0).put(0);
-
-            // top
-            for (int i = 0; i < 4; i++)
-                getNormalBuffer().put(0).put(1).put(0);
-
-            // bottom
-            for (int i = 0; i < 4; i++)
-                getNormalBuffer().put(0).put(-1).put(0);
+    protected void duUpdateGeometryIndices() {
+        if (getIndexBuffer() == null) {
+            setIndexBuffer(BufferUtils.createIntBuffer(GEOMETRY_INDICES_DATA));
         }
     }
 
-    /**
-     * <code>setTextureData</code> sets the points that define the texture of
-     * the box. It's a one-to-one ratio, where each plane of the box has it's
-     * own copy of the texture. That is, the texture is repeated one time for
-     * each six faces.
-     */
-    private void setTextureData() {
+    protected void duUpdateGeometryNormals() {
+        if (getNormalBuffer() == null) {
+            setNormalBuffer(BufferUtils.createVector3Buffer(24));
+            getNormalBuffer().put(GEOMETRY_NORMALS_DATA);
+        }
+    }
+
+    protected void duUpdateGeometryTextures() {
         if (getTextureCoords().get(0) == null) {
             getTextureCoords().set(0, new TexCoords(BufferUtils.createVector2Buffer(24)));
             FloatBuffer tex = getTextureCoords().get(0).coords;
-
-            for (int i = 0; i < 6; i++) {
-                tex.put(1).put(0);
-                tex.put(0).put(0);
-                tex.put(0).put(1);
-                tex.put(1).put(1);
-            }
+            tex.put(GEOMETRY_TEXTURE_DATA);
         }
     }
 
-    /**
-     * <code>setIndexData</code> sets the indices into the list of vertices,
-     * defining all triangles that constitute the box.
-     */
-    private void setIndexData() {
-        if (getIndexBuffer() == null) {
-            int[] indices = { 2, 1, 0, 3, 2, 0, 6, 5, 4, 7, 6, 4, 10, 9, 8, 11,
-                    10, 8, 14, 13, 12, 15, 14, 12, 18, 17, 16, 19, 18, 16, 22,
-                    21, 20, 23, 22, 20 };
-            setIndexBuffer(BufferUtils.createIntBuffer(indices));
-        }
+    protected void duUpdateGeometryVertices() {
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(), 24));
+        setVertexCount(24);
+        Vector3f[] v = computeVertices();
+        getVertexBuffer().put(new float[] {
+                v[0].x, v[0].y, v[0].z, v[1].x, v[1].y, v[1].z, v[2].x, v[2].y, v[2].z, v[3].x, v[3].y, v[3].z, // back
+                v[1].x, v[1].y, v[1].z, v[4].x, v[4].y, v[4].z, v[6].x, v[6].y, v[6].z, v[2].x, v[2].y, v[2].z, // right
+                v[4].x, v[4].y, v[4].z, v[5].x, v[5].y, v[5].z, v[7].x, v[7].y, v[7].z, v[6].x, v[6].y, v[6].z, // front
+                v[5].x, v[5].y, v[5].z, v[0].x, v[0].y, v[0].z, v[3].x, v[3].y, v[3].z, v[7].x, v[7].y, v[7].z, // left
+                v[2].x, v[2].y, v[2].z, v[6].x, v[6].y, v[6].z, v[7].x, v[7].y, v[7].z, v[3].x, v[3].y, v[3].z, // top
+                v[0].x, v[0].y, v[0].z, v[5].x, v[5].y, v[5].z, v[4].x, v[4].y, v[4].z, v[1].x, v[1].y, v[1].z  // bottom
+        });
     }
 
-    /**
-     * <code>clone</code> creates a new Box object containing the same data as
-     * this one.
-     * 
-     * @return the new Box
-     */
-    public Object clone() {
-        Box rVal = new Box(getName() + "_clone", (Vector3f) center.clone(),
-                xExtent, yExtent, zExtent);
-        return rVal;
-    }
-
-    /**
-     * @return a size 8 array of Vectors representing the 8 points of the box.
-     */
-    public Vector3f[] computeVertices() {
-
-        Vector3f akEAxis[] = { Vector3f.UNIT_X.mult(xExtent),
-                Vector3f.UNIT_Y.mult(yExtent), Vector3f.UNIT_Z.mult(zExtent) };
-
-        Vector3f rVal[] = new Vector3f[8];
-        rVal[0] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1])
-                .subtractLocal(akEAxis[2]);
-        rVal[1] = center.add(akEAxis[0]).subtractLocal(akEAxis[1])
-                .subtractLocal(akEAxis[2]);
-        rVal[2] = center.add(akEAxis[0]).addLocal(akEAxis[1]).subtractLocal(
-                akEAxis[2]);
-        rVal[3] = center.subtract(akEAxis[0]).addLocal(akEAxis[1])
-                .subtractLocal(akEAxis[2]);
-        rVal[4] = center.add(akEAxis[0]).subtractLocal(akEAxis[1]).addLocal(
-                akEAxis[2]);
-        rVal[5] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1])
-                .addLocal(akEAxis[2]);
-        rVal[6] = center.add(akEAxis[0]).addLocal(akEAxis[1]).addLocal(
-                akEAxis[2]);
-        rVal[7] = center.subtract(akEAxis[0]).addLocal(akEAxis[1]).addLocal(
-                akEAxis[2]);
-        return rVal;
-    }
-
-    /**
-     * Returns the current center of the box.
-     * 
-     * @return The box's center.
-     */
-    public Vector3f getCenter() {
-        return center;
-    }
-
-    /**
-     * Sets the center of the box. Note that even though the center is set,
-     * Geometry information is not updated. In most cases, you'll want to use
-     * setData()
-     * 
-     * @param aCenter
-     *            The new center.
-     */
-    public void setCenter(Vector3f aCenter) {
-        center.set(aCenter);
-    }
-
-    public void write(JMEExporter e) throws IOException {
-        super.write(e);
-        OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(xExtent, "xExtent", 0);
-        capsule.write(yExtent, "yExtent", 0);
-        capsule.write(zExtent, "zExtent", 0);
-        capsule.write(center, "center", Vector3f.ZERO);
-
-    }
-
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        xExtent = capsule.readFloat("xExtent", 0);
-        yExtent = capsule.readFloat("yExtent", 0);
-        zExtent = capsule.readFloat("zExtent", 0);
-        center.set((Vector3f) capsule.readSavable("center", Vector3f.ZERO
-                .clone()));
-    }
 }

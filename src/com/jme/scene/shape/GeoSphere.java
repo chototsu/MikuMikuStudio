@@ -1,3 +1,6 @@
+// Copyright © 2008 JMonkeyEngine, all rights reserved.
+// See the accompanying LICENSE file for terms and conditions of use.
+// $Id$
 package com.jme.scene.shape;
 
 import java.nio.FloatBuffer;
@@ -10,30 +13,33 @@ import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * GeoSphere - generate a polygon mesh approximating a sphere by recursive
- * subdivision. First approximation is an octahedron; each level of refinement
- * increases the number of polygons by a factor of 4.
+ * A polygon mesh approximating a sphere by recursive subdivision.
  * <p>
- * todo: texture coordinates could be nicer
- * </p>
- * <p/> Shared vertices are not retained, so numerical errors may produce cracks
- * between polygons at high subdivision levels. <p/> Initial idea and text from
- * C-Sourcecode by Jon Leech 3/24/89 Translated to Java and tuned for jME by
- * Irrisor
+ * First approximation is an octahedron; each level of refinement increases the
+ * number of polygons by a factor of 4.
+ * <p>
+ * Shared vertices are not retained, so numerical errors may produce cracks
+ * between polygons at high subdivision levels.
+ * <p>
+ * TODO: texture co-ordinates could be nicer
+ * 
+ * @author John Leech - initial idea and original C implementation
+ * @author Irrisor - Java port and JME optimisation
+ * @version $Revision$, $Date$
  */
-
 public class GeoSphere extends TriMesh {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
-    private int maxlevels;
-    private boolean useIkosa = true;
+
+    private int numLevels;
+
+    private boolean usingIcosahedron = true;
+
+    /** <strong>NOT API:</strong> for internal use, do not call from user code. */
+    public GeoSphere() {}
 
     /**
-     * @param name
-     *            name of the spatial
+     * @param name the name of the spatial
      * @param ikosa
      *            true to start with an 20 triangles, false to start with 8
      *            triangles
@@ -43,15 +49,25 @@ public class GeoSphere extends TriMesh {
      */
     public GeoSphere(String name, boolean ikosa, int maxlevels) {
         super(name);
-        this.maxlevels = maxlevels;
-        this.useIkosa = ikosa;
-        setGeometry();
+        updateGeometry(maxlevels, ikosa);
     }
 
     /**
-     * Default ctor for restoring.
+     * Compute the average of two vectors.
+     * 
+     * @param a
+     *            first vector
+     * @param b
+     *            second vector
+     * @return the average of two points
      */
-    public GeoSphere() {
+    private Vector3f createMidpoint(Vector3f a, Vector3f b) {
+        return new Vector3f((a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f,
+                (a.z + b.z) * 0.5f);
+    }
+
+    public int getNumLevels() {
+        return numLevels;
     }
 
     /**
@@ -63,32 +79,44 @@ public class GeoSphere extends TriMesh {
         return 1;
     }
 
-    static class Triangle {
-        int[] pt = new int[3]; /* Vertices of triangle */
-
-        public Triangle() {
-        }
-
-        public Triangle(int pt0, int pt1, int pt2) {
-            pt[0] = pt0;
-            pt[1] = pt1;
-            pt[2] = pt2;
-        }
+    public boolean isUsingIcosahedron() {
+        return usingIcosahedron;
     }
 
-    private void setGeometry() {
-        boolean useIkosa = this.useIkosa;
-        int initialTriangleCount = useIkosa ? 20 : 8;
-        int initialVertexCount = useIkosa ? 12 : 6;
+    private void put(Vector3f vec) {
+        FloatBuffer vertBuf = getVertexBuffer();
+        vertBuf.put(vec.x);
+        vertBuf.put(vec.y);
+        vertBuf.put(vec.z);
+
+        float length = vec.length();
+        FloatBuffer normBuf = getNormalBuffer();
+        float xNorm = vec.x / length;
+        normBuf.put(xNorm);
+        float yNorm = vec.y / length;
+        normBuf.put(yNorm);
+        float zNorm = vec.z / length;
+        normBuf.put(zNorm);
+
+        FloatBuffer texBuf = getTextureCoords(0).coords;
+        texBuf.put((FastMath.atan2(yNorm, xNorm) / (2 * FastMath.PI) + 1) % 1);
+        texBuf.put(zNorm / 2 + 0.5f);
+    }
+
+    private void updateGeometry(int maxLevels, boolean icosahedron) {
+        this.numLevels = maxLevels;
+        this.usingIcosahedron = icosahedron;
+        int initialTriangleCount = icosahedron ? 20 : 8;
+        int initialVertexCount = icosahedron ? 12 : 6;
         // number of triangles = initialTriangleCount * 4^(maxlevels-1)
-        int triangleQuantity = initialTriangleCount << ((maxlevels - 1) * 2);
+        int triangleQuantity = initialTriangleCount << ((numLevels - 1) * 2);
         setTriangleQuantity(triangleQuantity);
         // number of vertBuf = (initialVertexCount + initialTriangleCount*4 +
         // initialTriangleCount*4*4 + ...)
         // = initialTriangleCount*(((4^maxlevels)-1)/(4-1)-1) +
         // initialVertexCount
         int vertQuantity = initialTriangleCount
-                * (((1 << (maxlevels * 2)) - 1) / (4 - 1) - 1)
+                * (((1 << (numLevels * 2)) - 1) / (4 - 1) - 1)
                 + initialVertexCount;
         setVertexCount(vertQuantity);
 
@@ -104,48 +132,33 @@ public class GeoSphere extends TriMesh {
         int pos = 0;
 
         Triangle[] old;
-        if (useIkosa) {
-            int[] indices = new int[] { pos + 0, pos + 1, pos + 2, pos + 0,
-                    pos + 2, pos + 3, pos + 0, pos + 3, pos + 4, pos + 0,
-                    pos + 4, pos + 5, pos + 0, pos + 5, pos + 1, pos + 1,
-                    pos + 10, pos + 6, pos + 2, pos + 6, pos + 7, pos + 3,
-                    pos + 7, pos + 8, pos + 4, pos + 8, pos + 9, pos + 5,
-                    pos + 9, pos + 10, pos + 6, pos + 2, pos + 1, pos + 7,
-                    pos + 3, pos + 2, pos + 8, pos + 4, pos + 3, pos + 9,
-                    pos + 5, pos + 4, pos + 10, pos + 1, pos + 5, pos + 11,
-                    pos + 7, pos + 6, pos + 11, pos + 8, pos + 7, pos + 11,
-                    pos + 9, pos + 8, pos + 11, pos + 10, pos + 9, pos + 11,
-                    pos + 6, pos + 10 };
+        if (icosahedron) {
+            int[] indices = new int[] {
+                    0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 1, 1, 10, 6, 2, 6,
+                    7, 3, 7, 8, 4, 8, 9, 5, 9, 10, 6, 2, 1, 7, 3, 2, 8, 4, 3, 9,
+                    5, 4, 10, 1, 5, 11, 7, 6, 11, 8, 7, 11, 9, 8, 11, 10, 9, 11,
+                    6, 10
+            };
             float y = 0.4472f;
             float a = 0.8944f;
             float b = 0.2764f;
             float c = 0.7236f;
             float d = 0.8507f;
             float e = 0.5257f;
-            pos++;
             put(new Vector3f(0, 1, 0));
-            pos++;
             put(new Vector3f(a, y, 0));
-            pos++;
             put(new Vector3f(b, y, -d));
-            pos++;
             put(new Vector3f(-c, y, -e));
-            pos++;
             put(new Vector3f(-c, y, e));
-            pos++;
             put(new Vector3f(b, y, d));
-            pos++;
             put(new Vector3f(c, -y, -e));
-            pos++;
             put(new Vector3f(-b, -y, -d));
-            pos++;
             put(new Vector3f(-a, -y, 0));
-            pos++;
             put(new Vector3f(-b, -y, d));
-            pos++;
             put(new Vector3f(c, -y, e));
-            pos++;
             put(new Vector3f(0, -1, 0));
+            pos += 12;
+            
             Triangle[] ikosaedron = new Triangle[indices.length / 3];
             for (int i = 0; i < ikosaedron.length; i++) {
                 Triangle triangle = ikosaedron[i] = new Triangle();
@@ -190,23 +203,12 @@ public class GeoSphere extends TriMesh {
             old = octahedron;
         }
 
-        // if ( CLOCKWISE )
-        // /* Reverse order of points in each triangle */
-        // for ( int i = 0; i < old.length; i++ ) {
-        // int tmp;
-        // tmp = old[i].pt[0];
-        // old[i].pt[0] = old[i].pt[2];
-        // old[i].pt[2] = tmp;
-        // }
-
         Vector3f pt0 = new Vector3f();
         Vector3f pt1 = new Vector3f();
         Vector3f pt2 = new Vector3f();
 
         /* Subdivide each starting triangle (maxlevels - 1) times */
-        for (int level = 1; level < maxlevels; level++)
-
-        {
+        for (int level = 1; level < numLevels; level++) {
             /* Allocate a next triangle[] */
             Triangle[] next = new Triangle[old.length * 4];
             for (int i = 0; i < next.length; i++) {
@@ -217,10 +219,23 @@ public class GeoSphere extends TriMesh {
              * Subdivide each polygon in the old approximation and normalize the
              * next points thus generated to lie on the surface of the unit
              * sphere. Each input triangle with vertBuf labelled [0,1,2] as
-             * shown below will be turned into four next triangles: Make next
-             * points a = (0+2)/2 b = (0+1)/2 c = (1+2)/2 1 /\ Normalize a, b, c / \
-             * b/____\ c Construct next triangles /\ /\ [0,b,a] / \ / \ [b,1,c]
-             * /____\/____\ [a,b,c] 0 a 2 [a,c,2]
+             * shown below will be turned into four next triangles:
+             * 
+             * Make next points
+             *   a = (0+2)/2
+             *   b = (0+1)/2
+             *   c = (1+2)/2
+             *   
+             * 1   /\   Normalize a, b, c
+             *    /  \
+             * b /____\ c
+             * 
+             * Construct next triangles
+             * 
+             *    /\    /\   [0,b,a] 
+             *   /  \  /  \  [b,1,c]
+             *  /____\/____\ [a,b,c]
+             *  0 a 2 [a,c,2]
              */
             for (int i = 0; i < old.length; i++) {
                 int newi = i * 4;
@@ -274,37 +289,16 @@ public class GeoSphere extends TriMesh {
         }
     }
 
-    private void put(Vector3f vec) {
-        FloatBuffer vertBuf = getVertexBuffer();
-        vertBuf.put(vec.x);
-        vertBuf.put(vec.y);
-        vertBuf.put(vec.z);
+    static class Triangle {
+        int[] pt = new int[3]; /* Vertices of triangle */
 
-        float length = vec.length();
-        FloatBuffer normBuf = getNormalBuffer();
-        float xNorm = vec.x / length;
-        normBuf.put(xNorm);
-        float yNorm = vec.y / length;
-        normBuf.put(yNorm);
-        float zNorm = vec.z / length;
-        normBuf.put(zNorm);
+        public Triangle() {}
 
-        FloatBuffer texBuf = getTextureCoords(0).coords;
-        texBuf.put((FastMath.atan2(yNorm, xNorm) / (2 * FastMath.PI) + 1) % 1);
-        texBuf.put(zNorm / 2 + 0.5f);
+        public Triangle(int pt0, int pt1, int pt2) {
+            pt[0] = pt0;
+            pt[1] = pt1;
+            pt[2] = pt2;
+        }
     }
 
-    /**
-     * Compute the average of two vectors.
-     * 
-     * @param a
-     *            first vector
-     * @param b
-     *            second vector
-     * @return the average of two points
-     */
-    Vector3f createMidpoint(Vector3f a, Vector3f b) {
-        return new Vector3f((a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f,
-                (a.z + b.z) * 0.5f);
-    }
 }

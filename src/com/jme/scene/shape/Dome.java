@@ -29,8 +29,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
+
+import static com.jme.util.geom.BufferUtils.*;
 
 import java.io.IOException;
 
@@ -45,13 +47,14 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * A <code>dome</code> is a half sphere.
+ * A hemisphere.
  * 
  * @author Peter Andersson
  * @author Joshua Slack (Original sphere code that was adapted)
- * @version $Id:
+ * @version $Revision$, $Date$
  */
 public class Dome extends TriMesh {
+
     private static final long serialVersionUID = 1L;
 
     private int planes;
@@ -59,10 +62,12 @@ public class Dome extends TriMesh {
     private int radialSamples;
 
     /** The radius of the dome */
-    public float radius;
+    private float radius;
 
     /** The center of the dome */
-    public Vector3f center;
+    private Vector3f center;
+    
+    private boolean outsideView = true;
 
     private static Vector3f tempVa = new Vector3f();
 
@@ -70,8 +75,8 @@ public class Dome extends TriMesh {
 
     private static Vector3f tempVc = new Vector3f();
 
-    public Dome() {
-    }
+    /** <strong>NOT API:</strong> for internal use, do not call from user code. */
+    public Dome() {}
 
     /**
      * Constructs a dome. By default the dome has not geometry data or center.
@@ -118,9 +123,8 @@ public class Dome extends TriMesh {
      */
     public Dome(String name, Vector3f center, int planes, int radialSamples,
             float radius) {
-
         super(name);
-        setData(center, planes, radialSamples, radius, true, true);
+        updateGeometry(center, planes, radialSamples, radius, true);
     }
 
     /**
@@ -144,63 +148,81 @@ public class Dome extends TriMesh {
     public Dome(String name, Vector3f center, int planes, int radialSamples,
             float radius, boolean outsideView) {
         super(name);
-        setData(center, planes, radialSamples, radius, true, outsideView);
+        updateGeometry(center, planes, radialSamples, radius, outsideView);
+    }
+
+    public Vector3f getCenter() {
+        return center;
+    }
+
+    /** Get the number of planar segments along the z-axis of the dome. */
+    public int getPlanes() {
+        return planes;
+    }
+
+    /** Get the number of samples radially around the main axis of the dome. */
+    public int getRadialSamples() {
+        return radialSamples;
+    }
+
+    /** Get the radius of the dome. */
+    public float getRadius() {
+        return radius;
     }
 
     /**
-     * Changes the information of the dome into the given values. The boolean at
-     * the end signals if buffer data should be updated as well. If the dome is
-     * to be rendered, then that value should be true.
+     * Are the triangles connected in such a way as to present aview out from the dome or not.
      * 
-     * @param center
-     *            The new center of the dome.
-     * @param planes
-     *            The number of planes along the Z-axis.
-     * @param radialSamples
-     *            The new number of radial samples of the dome.
-     * @param radius
-     *            The new radius of the dome.
-     * @param updateBuffers
-     *            If true, buffer information is updated as well.
-     * @param outsideView
-     *            If true, the triangles will be connected for a view outside of
-     *            the dome.
+     * @return
+     */
+    public boolean isOutsideView() {
+        return outsideView;
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        planes = capsule.readInt("planes", 0);
+        radialSamples = capsule.readInt("radialSamples", 0);
+        radius = capsule.readFloat("radius", 0);
+        center = (Vector3f) capsule.readSavable("center", Vector3f.ZERO.clone());
+    }
+
+    /**
+     * @deprecated use {@link #updateGeometry(Vector3f, int, int, float, boolean)}.
      */
     public void setData(Vector3f center, int planes, int radialSamples,
             float radius, boolean updateBuffers, boolean outsideView) {
-        if (center != null)
-            this.center = center;
-        else
-            this.center = new Vector3f(0, 0, 0);
+        updateGeometry(center, planes, radialSamples, radius, outsideView);
+    }
+
+    /**
+     * Rebuilds the dome with a new set of parameters.
+     * 
+     * @param center the new center of the dome.
+     * @param planes the number of planes along the Z-axis.
+     * @param radialSamples the new number of radial samples of the dome.
+     * @param radius the new radius of the dome.
+     * @param outsideView should the dome be set up to be viewed from the inside looking out.
+     */
+    public void updateGeometry(Vector3f center, int planes,
+            int radialSamples, float radius, boolean outsideView) {
+        this.outsideView = outsideView;
+        this.center = center != null ? center : new Vector3f(0, 0, 0);
         this.planes = planes;
         this.radialSamples = radialSamples;
         this.radius = radius;
 
-        if (updateBuffers) {
-            setGeometryData(outsideView);
-            setIndexData();
-        }
-    }
-
-    /**
-     * Generates the vertices of the dome
-     * 
-     * @param outsideView
-     *            If the dome should be viewed from the outside (if not zbuffer
-     *            is used)
-     */
-    private void setGeometryData(boolean outsideView) {
-        // allocate vertices, we need one extra in each radial to get the
+        // Allocate vertices, allocating one extra in each radial to get the
         // correct texture coordinates
         setVertexCount(((planes - 1) * (radialSamples + 1)) + 1);
-        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
+        setVertexBuffer(createVector3Buffer(getVertexCount()));
 
         // allocate normals
-        setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
+        setNormalBuffer(createVector3Buffer(getVertexCount()));
 
         // allocate texture coordinates
-        getTextureCoords().set(0,
-                new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
+        getTextureCoords().set(0, new TexCoords(createVector2Buffer(getVertexCount())));
 
         // generate geometry
         float fInvRS = 1.0f / radialSamples;
@@ -218,7 +240,7 @@ public class Dome extends TriMesh {
 
         // generate the dome itself
         int i = 0;
-        for (int iY = 0; iY < (planes - 1); iY++) {
+        for (int iY = 0; iY < (planes - 1); iY++, i++) {
             float fYFraction = fYFactor * iY; // in (0,1)
             float fY = radius * fYFraction;
             // compute center of slice
@@ -226,13 +248,12 @@ public class Dome extends TriMesh {
             kSliceCenter.y += fY;
 
             // compute radius of slice
-            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius
-                    - fY * fY));
+            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius - fY * fY));
 
             // compute slice vertices
             Vector3f kNormal;
             int iSave = i;
-            for (int iR = 0; iR < radialSamples; iR++) {
+            for (int iR = 0; iR < radialSamples; iR++, i++) {
                 float fRadialFraction = iR * fInvRS; // in [0,1)
                 Vector3f kRadial = tempVc.set(afCos[iR], 0, afSin[iR]);
                 kRadial.mult(fSliceRadius, tempVa);
@@ -240,44 +261,26 @@ public class Dome extends TriMesh {
                         kSliceCenter.y + tempVa.y).put(
                         kSliceCenter.z + tempVa.z);
 
-                BufferUtils.populateFromBuffer(tempVa, getVertexBuffer(), i);
+                populateFromBuffer(tempVa, getVertexBuffer(), i);
                 kNormal = tempVa.subtractLocal(center);
                 kNormal.normalizeLocal();
                 if (outsideView)
-                    getNormalBuffer().put(kNormal.x).put(kNormal.y).put(
-                            kNormal.z);
+                    getNormalBuffer().put(kNormal.x).put(kNormal.y).put(kNormal.z);
                 else
-                    getNormalBuffer().put(-kNormal.x).put(-kNormal.y).put(
-                            -kNormal.z);
+                    getNormalBuffer().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
                 getTextureCoords().get(0).coords.put(fRadialFraction).put(fYFraction);
-
-                i++;
             }
-
             BufferUtils.copyInternalVector3(getVertexBuffer(), iSave, i);
             BufferUtils.copyInternalVector3(getNormalBuffer(), iSave, i);
-
             getTextureCoords().get(0).coords.put(1.0f).put(fYFraction);
-
-            i++;
         }
 
         // pole
         getVertexBuffer().put(center.x).put(center.y + radius).put(center.z);
-
-        if (outsideView)
-            getNormalBuffer().put(0).put(1).put(0);
-        else
-            getNormalBuffer().put(0).put(-1).put(0);
-
+        getNormalBuffer().put(0).put(outsideView ? 1 : -1).put(0);
         getTextureCoords().get(0).coords.put(0.5f).put(1.0f);
-    }
 
-    /**
-     * Generates the connections
-     */
-    private void setIndexData() {
         // allocate connectivity
         setTriangleQuantity((planes - 2) * radialSamples * 2 + radialSamples);
         setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
@@ -307,6 +310,9 @@ public class Dome extends TriMesh {
         }
     }
 
+    /**
+     * Generates the connections
+     */
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
@@ -314,17 +320,6 @@ public class Dome extends TriMesh {
         capsule.write(radialSamples, "radialSamples", 0);
         capsule.write(radius, "radius", 0);
         capsule.write(center, "center", Vector3f.ZERO);
-
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        planes = capsule.readInt("planes", 0);
-        radialSamples = capsule.readInt("radialSamples", 0);
-        radius = capsule.readFloat("radius", 0);
-        center = (Vector3f) capsule
-                .readSavable("center", Vector3f.ZERO.clone());
-
-    }
 }

@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -40,7 +40,6 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.TexCoords;
-import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -48,21 +47,20 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Dodecahedron</code>
+ * A regular polyhedron with 12 faces.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision$, $Date$
  */
-public class Dodecahedron extends TriMesh {
+public class Dodecahedron extends RegularPolyhedron {
+
     private static final long serialVersionUID = 1L;
 
     private static final int NUM_POINTS = 20;
     private static final int NUM_TRIS = 36;
 
-    private float sideLength;
-
-    public Dodecahedron() {
-    }
+    /** <strong>NOT API:</strong> for internal use, do not call from user code. */
+    public Dodecahedron() {}
 
     /**
      * Creates an Dodecahedron (think of 12-sided dice) with center at the
@@ -75,24 +73,29 @@ public class Dodecahedron extends TriMesh {
      */
     public Dodecahedron(String name, float sideLength) {
         super(name);
-        this.sideLength = sideLength;
-        // allocate vertices
+        updateGeometry(sideLength);
+    }
+
+    protected void doUpdateGeometry() {
         setVertexCount(NUM_POINTS);
         setVertexBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
         setNormalBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
         setTextureCoords(new TexCoords(BufferUtils.createVector2Buffer(NUM_POINTS)), 0);
-
         setTriangleQuantity(NUM_TRIS);
         setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
-
-        setVertexData();
-        setNormalData();
-        setTextureData();
-        setIndexData();
-
+        updateGeometryVertices();
+        updateGeometryNormals();
+        updateGeometryTextures();
+        updateGeometryIndices();
     }
 
-    private void setIndexData() {
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        sideLength = capsule.readInt("sideLength", 0);
+    }
+
+    private void updateGeometryIndices() {
         IntBuffer indices = getIndexBuffer();
         indices.rewind();
         indices.put(0).put(8).put(9);
@@ -143,7 +146,16 @@ public class Dodecahedron extends TriMesh {
 
     }
 
-    private void setTextureData() {
+    private void updateGeometryNormals() {
+        Vector3f norm = new Vector3f();
+        for (int i = 0; i < NUM_POINTS; i++) {
+            BufferUtils.populateFromBuffer(norm, getVertexBuffer(), i);
+            norm.normalizeLocal();
+            BufferUtils.setInBuffer(norm, getNormalBuffer(), i);
+        }
+    }
+
+    private void updateGeometryTextures() {
         Vector2f tex = new Vector2f();
         Vector3f vert = new Vector3f();
         for (int i = 0; i < NUM_POINTS; i++) {
@@ -159,16 +171,7 @@ public class Dodecahedron extends TriMesh {
         }
     }
 
-    private void setNormalData() {
-        Vector3f norm = new Vector3f();
-        for (int i = 0; i < NUM_POINTS; i++) {
-            BufferUtils.populateFromBuffer(norm, getVertexBuffer(), i);
-            norm.normalizeLocal();
-            BufferUtils.setInBuffer(norm, getNormalBuffer(), i);
-        }
-    }
-
-    private void setVertexData() {
+    private void updateGeometryVertices() {
         float fA = 1.0f / FastMath.sqrt(3.0f);
         float fB = FastMath.sqrt((3.0f - FastMath.sqrt(5.0f)) / 6.0f);
         float fC = FastMath.sqrt((3.0f + FastMath.sqrt(5.0f)) / 6.0f);
@@ -206,12 +209,5 @@ public class Dodecahedron extends TriMesh {
         capsule.write(sideLength, "sideLength", 0);
 
     }
-
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        sideLength = capsule.readInt("sideLength", 0);
-
-    }
-
+    
 }

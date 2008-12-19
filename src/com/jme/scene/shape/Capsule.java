@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -47,12 +47,12 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Capsule</code> provides an extension of <code>TriMesh</code>. A
- * <code>Capsule</code> is defined by a height and a radius. The center of the
- * Cylinder is the origin.
+ * A capsule is a cylindrical section capped with a dome at either end.
+ * <p>
+ * Capsules are defined by their height and radius, and the sampling granularity.
  * 
  * @author Joshua Slack
- * @version $Id: Capsule.java,v 1.2 2007/09/21 15:45:28 nca Exp $
+ * @version $Revision$, $Date$
  */
 public class Capsule extends TriMesh {
 
@@ -65,103 +65,31 @@ public class Capsule extends TriMesh {
     }
 
     /**
-     * Creates a new Cylinder. By default its center is the origin. Usually, a
+     * Creates a new capsule.
+     * <p>
+     * By default its center is the origin. Usually, a
      * higher sample number creates a better looking cylinder, but at the cost
-     * of more vertex information. <br>
+     * of more vertex information.
+     * <p>
      * If the cylinder is closed the texture is split into axisSamples parts:
      * top most and bottom most part is used for top and bottom of the cylinder,
      * rest of the texture for the cylinder wall. The middle of the top is
      * mapped to texture coordinates (0.5, 1), bottom to (0.5, 0). Thus you need
      * a suited distorted texture.
      * 
-     * @param name
-     *            The name of this Cylinder.
-     * @param axisSamples
-     *            Number of triangle samples along the axis.
-     * @param radialSamples
-     *            Number of triangle samples along the radial.
-     * @param radius
-     *            The radius of the cylinder.
-     * @param height
-     *            The cylinder's height.
+     * @param name the name of this capsule.
+     * @param axisSamples the number of samples along the axis.
+     * @param radialSamples the number of samples sround the radial.
+     * @param radius the radius of the cylinder.
+     * @param height the cylinder’s height.
      */
     public Capsule(String name, int axisSamples, int radialSamples,
             int sphereSamples, float radius, float height) {
-
         super(name);
-
-        this.axisSamples = axisSamples;
-        this.sphereSamples = sphereSamples;
-        this.radialSamples = radialSamples;
-        this.radius = radius;
-        this.height = height;
-
-        recreateBuffers();
+        updateGeometry(axisSamples, radialSamples, sphereSamples, radius, height);
     }
 
-    /**
-     * @return Returns the height.
-     */
-    public float getHeight() {
-        return height;
-    }
-
-    /**
-     * @param height
-     *            The height to set.
-     */
-    public void setHeight(float height) {
-        this.height = height;
-        recreateBuffers();
-    }
-
-    /**
-     * @return Returns the radius.
-     */
-    public float getRadius() {
-        return radius;
-    }
-
-    /**
-     * Change the radius of this cylinder.
-     * 
-     * @param radius
-     *            The radius to set.
-     */
-    public void setRadius(float radius) {
-        this.radius = radius;
-        setGeometryData();
-    }
-
-    private void recreateBuffers() {
-        // determine vert quantity - first the sphere caps
-        int sampleLines = (2 * sphereSamples - 1 + axisSamples);
-        int verts = (radialSamples + 1) * sampleLines + 2;
-
-        setVertexCount(verts);
-        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(),
-                getVertexCount()));
-
-        // allocate normals
-        setNormalBuffer(BufferUtils.createVector3Buffer(getNormalBuffer(),
-                getVertexCount()));
-
-        // allocate texture coordinates
-        getTextureCoords().set(0,
-                new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
-
-        // determine tri quantity
-        int tris = 2 * radialSamples * sampleLines;
-
-        setTriangleQuantity(tris);
-        setIndexBuffer(BufferUtils.createIntBuffer(getIndexBuffer(),
-                3 * getTriangleCount()));
-
-        setGeometryData();
-        setIndexData();
-    }
-
-    private void setGeometryData() {
+    private void doUpdateGeometry() {
         FloatBuffer verts = getVertexBuffer();
         FloatBuffer norms = getNormalBuffer();
         FloatBuffer texs = getTextureCoords(0).coords;
@@ -197,12 +125,10 @@ public class Capsule extends TriMesh {
         // generating the top dome.
         for (int i = 0; i < sphereSamples; i++) {
             float center = radius * (1 - (i + 1) * (inverseSphere));
-            float lengthFraction = (center + height + radius)
-                    / (height + 2 * radius);
+            float lengthFraction = (center + height + radius) / (height + 2 * radius);
 
             // compute radius of slice
-            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius
-                    - center * center));
+            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius - center * center));
 
             for (int j = 0; j <= radialSamples; j++) {
                 Vector3f kRadial = tempA.set(cos[j], 0, sin[j]);
@@ -263,7 +189,7 @@ public class Capsule extends TriMesh {
 
     }
 
-    private void setIndexData() {
+    private void doUpdateIndexData() {
         // start with top of top dome.
         for (int samples = 1; samples <= radialSamples; samples++) {
             getIndexBuffer().put(samples + 1);
@@ -271,7 +197,7 @@ public class Capsule extends TriMesh {
             getIndexBuffer().put(0);
         }
 
-        for (int plane = 1; plane < (sphereSamples); plane++) {
+        for (int plane = 1; plane < sphereSamples; plane++) {
             int topPlaneStart = plane * (radialSamples + 1);
             int bottomPlaneStart = (plane - 1) * (radialSamples + 1);
             for (int sample = 1; sample <= radialSamples; sample++) {
@@ -325,11 +251,106 @@ public class Capsule extends TriMesh {
         }
     }
 
+    /** Get the sampling frequency lengthwise along the capsules main axis. */
+    public int getAxisSamples() {
+        return axisSamples;
+    }
+
+    /**
+     * @return Returns the height.
+     */
+    public float getHeight() {
+        return height;
+    }
+
+    /** Get the sampling frequency radially around the capsules main axis. */
+    public int getRadialSamples() {
+        return radialSamples;
+    }
+
+    /**
+     * @return Returns the radius.
+     */
+    public float getRadius() {
+        return radius;
+    }
+
+    /** Get the sampling frequency used for the domes at either end of the capsule. */
+    public int getSphereSamples() {
+        return sphereSamples;
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        axisSamples = capsule.readInt("circleSamples", 0);
+        radialSamples = capsule.readInt("radialSamples", 0);
+        sphereSamples = capsule.readInt("sphereSamples", 0);
+        radius = capsule.readFloat("radius", 0);
+        height = capsule.readFloat("height", 0);
+    }
+
+    /**
+     * @deprecated use @{link {@link #updateGeometry(Vector3f, Vector3f, float)}.
+     */
     public void reconstruct(Vector3f top, Vector3f bottom, float radius) {
+        updateGeometry(top, bottom, radius);
+    }
+
+    /**
+     * Rebuilds this capsule based on a new set of parameters.
+     * 
+     * @param axisSamples the number of samples along the axis.
+     * @param radialSamples the number of samples along the radial.
+     * @param sphereSamples the number of samples for the dom end caps.
+     * @param radius the radius of the cylinder.
+     * @param height the cylinder's height.
+     */
+    public void updateGeometry(int axisSamples, int radialSamples, int sphereSamples, float radius, float height) {
+        this.axisSamples = axisSamples;
+        this.sphereSamples = sphereSamples;
+        this.radialSamples = radialSamples;
+        this.radius = radius;
+        this.height = height;
+        // determine vert quantity - first the sphere caps
+        int sampleLines = (2 * sphereSamples - 1 + axisSamples);
+        int verts = (radialSamples + 1) * sampleLines + 2;
+        
+        setVertexCount(verts);
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(),
+                getVertexCount()));
+        
+        // allocate normals
+        setNormalBuffer(BufferUtils.createVector3Buffer(getNormalBuffer(),
+                getVertexCount()));
+        
+        // allocate texture coordinates
+        getTextureCoords().set(0,
+                new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
+        
+        // determine tri quantity
+        int tris = 2 * radialSamples * sampleLines;
+        
+        setTriangleQuantity(tris);
+        setIndexBuffer(BufferUtils.createIntBuffer(getIndexBuffer(),
+                3 * getTriangleCount()));
+        
+        doUpdateGeometry();
+        doUpdateIndexData();
+    }
+
+    /**
+     * Rebuilds this capsule based on a new set of parameters.
+     * 
+     * @param top the top of the casule.
+     * @param bottom the bottom of the capsule.
+     * @param radius the radius of the cylinder.
+     */
+    public void updateGeometry(Vector3f top, Vector3f bottom, float radius) {
         // first make the capsule the right shape
         this.height = top.distance(bottom);
         this.radius = radius;
-        setGeometryData();
+        doUpdateGeometry();
 
         // now orient it in space.
         top.add(bottom, localTranslation).multLocal(.5f); // ok we got
@@ -354,13 +375,4 @@ public class Capsule extends TriMesh {
         capsule.write(height, "height", 0);
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        axisSamples = capsule.readInt("circleSamples", 0);
-        radialSamples = capsule.readInt("radialSamples", 0);
-        sphereSamples = capsule.readInt("sphereSamples", 0);
-        radius = capsule.readFloat("radius", 0);
-        height = capsule.readFloat("height", 0);
-    }
 }

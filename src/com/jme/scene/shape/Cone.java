@@ -29,30 +29,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+// $Id$
 package com.jme.scene.shape;
 
-import com.jme.math.FastMath;
-
 /**
- * A cone.
  * @author Irrisor
+ * @version $Revision$, $Date$
+ * @deprecated use {@link Cylinder}.
  */
 public class Cone extends Cylinder {
+
     private static final long serialVersionUID = 1L;
 
-    public Cone() {}
+    public Cone() {
+    }
     
     public Cone( String name, int axisSamples, int radialSamples, float radius, float height ) {
         this( name, axisSamples, radialSamples, radius, height, true );
     }
 
     public Cone( String name, int axisSamples, int radialSamples, float radius, float height, boolean closed ) {
-        super( name, axisSamples, radialSamples, radius, height, closed );
-        setRadius2( 0 );
+        super(name, axisSamples, radialSamples, radius, 0, height, closed, false);
     }
 
-    public void setHalfAngle(float radians) {
-        setRadius1(FastMath.tan(radians));
-    }
 }
 

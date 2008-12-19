@@ -85,7 +85,7 @@ public class TestExporter extends SimpleGame {
         Torus torus = new Torus( torusName, 50, 50, 10, 20 );
 
         Quad background = new Quad("Background");
-        background.initialize(150, 120);
+        background.updateGeometry(150, 120);
         background.setLocalTranslation(new Vector3f(0, 0, -30));
 
         Texture bg = TextureManager.loadTexture(TestEnvMap.class

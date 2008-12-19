@@ -208,12 +208,12 @@ public class TestCameraMan extends SimpleGame {
 
     monitorNode = new Node("Monitor Node");
     Quad quad = new Quad("Monitor");
-    quad.initialize(3, 3);
+    quad.updateGeometry(3, 3);
     quad.setLocalTranslation(new Vector3f(3.75f, 52.5f, 90));
     monitorNode.attachChild(quad);
 
     Quad quad2 = new Quad("Monitor");
-    quad2.initialize(3.4f, 3.4f);
+    quad2.updateGeometry(3.4f, 3.4f);
     quad2.setLocalTranslation(new Vector3f(3.95f, 52.6f, 89.5f));
     monitorNode.attachChild(quad2);
 

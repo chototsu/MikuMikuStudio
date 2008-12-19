@@ -113,7 +113,7 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
         setFadeInNode();
 
         Quad fadeQ = new Quad("Fade Quad");
-        fadeQ.initialize(5, 5);
+        fadeQ.updateGeometry(5, 5);
         fadeQ.setColorBuffer(null);
         fadeQ.getLocalTranslation().z = 1;
 

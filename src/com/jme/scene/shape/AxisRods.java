@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -45,28 +45,29 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
 /**
- * <code>AxisRods</code> is a convenience shape representing three axis in
- * space.
+ * Three coloured arrows, one pointing along each axis.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.4 $, $Date$
  */
 public class AxisRods extends Node {
+
     private static final long serialVersionUID = 1L;
 
-    protected static final ColorRGBA xAxisColor = new ColorRGBA(1, 0, 0, .4f);
-    protected static final ColorRGBA yAxisColor = new ColorRGBA(0, 1, 0, .25f);
-    protected static final ColorRGBA zAxisColor = new ColorRGBA(0, 0, 1, .4f);
+    private static final ColorRGBA X_AXIS_COLOUR = new ColorRGBA(1, 0, 0, .4f);
+    private static final ColorRGBA Y_AXIS_COLOUR = new ColorRGBA(0, 1, 0, .25f);
+    private static final ColorRGBA Z_AXIS_COLOUR = new ColorRGBA(0, 0, 1, .4f);
 
-    protected float length;
-    protected float width;
-    protected boolean rightHanded;
+    private float length;
+    private float width;
+    private boolean rightHanded;
 
-    protected Arrow xAxis;
-    protected Arrow yAxis;
-    protected Arrow zAxis;
+    private Arrow xAxis;
+    private Arrow yAxis;
+    private Arrow zAxis;
 
-    public AxisRods() {}
+    public AxisRods() {
+    }
     
     public AxisRods(String name) {
         this(name, true, 1);
@@ -78,58 +79,17 @@ public class AxisRods extends Node {
 
     public AxisRods(String name, boolean rightHanded, float length, float width) {
         super(name);
-        this.length = length;
-        this.width = width;
-        this.rightHanded = rightHanded;
         setLightCombineMode(Spatial.LightCombineMode.Off);
         setTextureCombineMode(Spatial.TextureCombineMode.Off);
-        
-        buildAxis();
+        updateGeometry(length, width, rightHanded);
     }
 
-    protected void buildAxis() {
-        xAxis = new Arrow("xAxis", length, width);
-        xAxis.setSolidColor(xAxisColor);
-        xAxis.getLocalRotation().fromAngles(0,0,-90*FastMath.DEG_TO_RAD);
-        xAxis.getLocalTranslation().addLocal(length*.5f, 0, 0);
-        attachChild(xAxis);
-
-        yAxis = new Arrow("yAxis", length, width);
-        yAxis.setSolidColor(yAxisColor);
-        yAxis.getLocalTranslation().addLocal(0, length*.5f, 0);
-        attachChild(yAxis);
-        
-        zAxis = new Arrow("zAxis", length, width);
-        zAxis.setSolidColor(zAxisColor);
-        if (rightHanded) {
-            zAxis.getLocalRotation().fromAngles(90*FastMath.DEG_TO_RAD,0,0);
-            zAxis.getLocalTranslation().addLocal(0, 0, length*.5f);
-        } else {
-            zAxis.getLocalRotation().fromAngles(-90*FastMath.DEG_TO_RAD,0,0);
-            zAxis.getLocalTranslation().addLocal(0, 0, -length*.5f);
-        }
-        attachChild(zAxis);
+    public float getLength() {
+        return length;
     }
 
-    public void setModelBound(BoundingVolume bound) {
-        xAxis.setModelBound(bound);
-        yAxis.setModelBound(bound);
-        zAxis.setModelBound(bound);
-    }
-
-    public void updateModelBound() {
-        xAxis.updateModelBound();
-        yAxis.updateModelBound();
-        zAxis.updateModelBound();
-    }
-    
-    public void write(JMEExporter e) throws IOException {
-        super.write(e);
-        OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(length, "length", 1);
-        capsule.write(width, "width", 0.125f);
-        capsule.write(rightHanded, "rightHanded", true);
-        
+    public float getWidth() {
+        return width;
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -138,22 +98,68 @@ public class AxisRods extends Node {
         length = capsule.readFloat("length", 1);
         width = capsule.readFloat("width", 0.125f);
         rightHanded = capsule.readBoolean("rightHanded", true);
-        buildAxis();
+        updateGeometry(length, width, rightHanded);
     }
 
-    public float getLength() {
-        return length;
-    }
-
+    /**
+     * @deprecated use {@link #updateGeometry(float, float, boolean)}.
+     */
     public void setLength(float length) {
         this.length = length;
     }
 
-    public float getWidth() {
-        return width;
+    public void setModelBound(BoundingVolume bound) {
+        xAxis.setModelBound(bound);
+        yAxis.setModelBound(bound);
+        zAxis.setModelBound(bound);
     }
 
+    /**
+     * @deprecated use {@link #updateGeometry(float, float, boolean)}.
+     */
     public void setWidth(float width) {
         this.width = width;
     }
+
+    public void updateGeometry(float length, float width, boolean rightHanded) {
+        this.length = length;
+        this.width = width;
+        this.rightHanded = rightHanded;
+        if (xAxis == null) {
+            xAxis = new Arrow("xAxis", length, width);
+            xAxis.setSolidColor(X_AXIS_COLOUR);
+            xAxis.getLocalRotation().fromAngles(0,0,-90*FastMath.DEG_TO_RAD);
+            xAxis.getLocalTranslation().addLocal(length*.5f, 0, 0);
+            attachChild(xAxis);
+            yAxis = new Arrow("yAxis", length, width);
+            yAxis.setSolidColor(Y_AXIS_COLOUR);
+            yAxis.getLocalTranslation().addLocal(0, length*.5f, 0);
+            attachChild(yAxis);
+            zAxis = new Arrow("zAxis", length, width);
+            zAxis.setSolidColor(Z_AXIS_COLOUR);
+            int dir = rightHanded ? 1 : -1;
+            zAxis.getLocalRotation().fromAngles(dir * 90 * FastMath.DEG_TO_RAD, 0, 0);
+            zAxis.getLocalTranslation().addLocal(0, 0, dir * length * 0.5f);
+            attachChild(zAxis);
+        } else {
+            xAxis.updateGeometry(length, width);
+            yAxis.updateGeometry(length, width);
+            zAxis.updateGeometry(length, width);
+        }
+    }
+
+    public void updateModelBound() {
+        xAxis.updateModelBound();
+        yAxis.updateModelBound();
+        zAxis.updateModelBound();
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(length, "length", 1);
+        capsule.write(width, "width", 0.125f);
+        capsule.write(rightHanded, "rightHanded", true);
+    }
+
 }

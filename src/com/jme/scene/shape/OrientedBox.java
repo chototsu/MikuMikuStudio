@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -52,21 +52,24 @@ import com.jme.util.geom.BufferUtils;
  * X/Y/Z axis. It is used to create an OrientedBoundingBox mostly.
  * 
  * @author Jack Lindamood
+ * @version $Revision$, $Date$
  */
 public class OrientedBox extends TriMesh {
+
     private static final long serialVersionUID = 1L;
+
+    private static final Vector3f tempVa = new Vector3f();
+    private static final Vector3f tempVb = new Vector3f();
+    private static final Vector3f tempVc = new Vector3f();
 
     /** Center of the Oriented Box. */
     protected Vector3f center;
 
-    /** X axis of the Oriented Box. */
-    protected Vector3f xAxis = new Vector3f(1, 0, 0);
-
-    /** Y axis of the Oriented Box. */
-    protected Vector3f yAxis = new Vector3f(0, 1, 0);
-
-    /** Z axis of the Oriented Box. */
-    protected Vector3f zAxis = new Vector3f(0, 0, 1);
+    /**
+     * Have the corners of the box (as stored in the {@code #vectorStore} array)
+     * been set to correctly represent the box’s corners or not.
+     */
+    public boolean correctCorners;
 
     /** Extents of the box along the x,y,z axis. */
     protected Vector3f extent = new Vector3f(0, 0, 0);
@@ -77,17 +80,14 @@ public class OrientedBox extends TriMesh {
     /** Vector array used to store the array of 8 corners the box has. */
     public Vector3f[] vectorStore;
 
-    /**
-     * If true, the box's vectorStore array correctly represnts the box's
-     * corners.
-     */
-    public boolean correctCorners;
+    /** X axis of the Oriented Box. */
+    protected Vector3f xAxis = new Vector3f(1, 0, 0);
 
-    private static final Vector3f tempVa = new Vector3f();
+    /** Y axis of the Oriented Box. */
+    protected Vector3f yAxis = new Vector3f(0, 1, 0);
 
-    private static final Vector3f tempVb = new Vector3f();
-
-    private static final Vector3f tempVc = new Vector3f();
+    /** Z axis of the Oriented Box. */
+    protected Vector3f zAxis = new Vector3f(0, 0, 1);
 
     /**
      * Creates a new OrientedBox with the given name.
@@ -96,181 +96,29 @@ public class OrientedBox extends TriMesh {
      *            The name of the new box.
      */
     public OrientedBox(String name) {
+        this(name, new Vector3f(), new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 1), new Vector2f(0, 0));
+    }
+
+    /**
+     * Create a new oriented box.
+     * <p>
+     * The box is initially configured based on the supplied texture co-ordinate points.
+     * 
+     * @param name the name of the box.
+     * @param center point at the center of the box.
+     * @param topRight the top right hand corner of the box.
+     * @param topLeft the top left hand corner of the box.
+     * @param bottomRight the bottom right hand corner of the box.
+     * @param bottomLeft the bottom left hand corner of the box.
+     */
+    public OrientedBox(String name, Vector3f center, Vector2f topRight, Vector2f topLeft, Vector2f bottomRight, Vector2f bottomLeft) {
         super(name);
-        vectorStore = new Vector3f[8];
-        for (int i = 0; i < vectorStore.length; i++) {
-            vectorStore[i] = new Vector3f();
-        }
-        texTopRight = new Vector2f(1, 1);
-        texTopLeft = new Vector2f(1, 0);
-        texBotRight = new Vector2f(0, 1);
-        texBotLeft = new Vector2f(0, 0);
-        center = new Vector3f(0, 0, 0);
-        correctCorners = false;
-        computeInformation();
+        updateGeometry(center, topRight, topLeft, bottomRight, bottomLeft);
     }
-
-    /**
-     * Takes the plane and center information and creates the correct
-     * vertex,normal,color,texture,index information to represent the
-     * OrientedBox.
-     */
-    public void computeInformation() {
-        setVertexData();
-        setNormalData();
-        setTextureData();
-        setIndexData();
-    }
-
-    /**
-     * Sets the correct indices array for the box.
-     */
-    private void setIndexData() {
-        setIndexBuffer(BufferUtils.createIntBuffer(getIndexBuffer(), 36));
-        setTriangleQuantity(12);
-
-        for (int i = 0; i < 6; i++) {
-            getIndexBuffer().put(i * 4 + 0);
-            getIndexBuffer().put(i * 4 + 1);
-            getIndexBuffer().put(i * 4 + 3);
-            getIndexBuffer().put(i * 4 + 1);
-            getIndexBuffer().put(i * 4 + 2);
-            getIndexBuffer().put(i * 4 + 3);
-        }
-    }
-
-    /**
-     * Sets the correct texture array for the box.
-     */
-    private void setTextureData() {
-        if (getTextureCoords().get(0) == null) {
-            getTextureCoords().set(0, new TexCoords(BufferUtils.createVector2Buffer(24)));
-
-            for (int x = 0; x < 6; x++) {
-                getTextureCoords().get(0).coords.put(texTopRight.x)
-                        .put(texTopRight.y);
-                getTextureCoords().get(0).coords.put(texTopLeft.x).put(texTopLeft.y);
-                getTextureCoords().get(0).coords.put(texBotLeft.x).put(texBotLeft.y);
-                getTextureCoords().get(0).coords.put(texBotRight.x)
-                        .put(texBotRight.y);
-            }
-        }
-    }
-
-    /**
-     * Sets the correct normal array for the box.
-     */
-    private void setNormalData() {
-        setNormalBuffer(BufferUtils.createVector3Buffer(getNormalBuffer(), 24));
-
-        // top
-        getNormalBuffer().put(yAxis.x).put(yAxis.y).put(yAxis.z);
-        getNormalBuffer().put(yAxis.x).put(yAxis.y).put(yAxis.z);
-        getNormalBuffer().put(yAxis.x).put(yAxis.y).put(yAxis.z);
-        getNormalBuffer().put(yAxis.x).put(yAxis.y).put(yAxis.z);
-
-        // right
-        getNormalBuffer().put(xAxis.x).put(xAxis.y).put(xAxis.z);
-        getNormalBuffer().put(xAxis.x).put(xAxis.y).put(xAxis.z);
-        getNormalBuffer().put(xAxis.x).put(xAxis.y).put(xAxis.z);
-        getNormalBuffer().put(xAxis.x).put(xAxis.y).put(xAxis.z);
-
-        // left
-        getNormalBuffer().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
-        getNormalBuffer().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
-        getNormalBuffer().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
-        getNormalBuffer().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
-
-        // bottom
-        getNormalBuffer().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
-        getNormalBuffer().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
-        getNormalBuffer().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
-        getNormalBuffer().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
-
-        // back
-        getNormalBuffer().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
-        getNormalBuffer().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
-        getNormalBuffer().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
-        getNormalBuffer().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
-
-        // front
-        getNormalBuffer().put(zAxis.x).put(zAxis.y).put(zAxis.z);
-        getNormalBuffer().put(zAxis.x).put(zAxis.y).put(zAxis.z);
-        getNormalBuffer().put(zAxis.x).put(zAxis.y).put(zAxis.z);
-        getNormalBuffer().put(zAxis.x).put(zAxis.y).put(zAxis.z);
-    }
-
-    /**
-     * Sets the correct vertex information for the box.
-     */
-    private void setVertexData() {
-        computeCorners();
-        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(), 24));
-        setVertexCount(24);
-
-        // Top
-        getVertexBuffer().put(vectorStore[0].x).put(vectorStore[0].y).put(
-                vectorStore[0].z);
-        getVertexBuffer().put(vectorStore[1].x).put(vectorStore[1].y).put(
-                vectorStore[1].z);
-        getVertexBuffer().put(vectorStore[5].x).put(vectorStore[5].y).put(
-                vectorStore[5].z);
-        getVertexBuffer().put(vectorStore[3].x).put(vectorStore[3].y).put(
-                vectorStore[3].z);
-
-        // Right
-        getVertexBuffer().put(vectorStore[0].x).put(vectorStore[0].y).put(
-                vectorStore[0].z);
-        getVertexBuffer().put(vectorStore[3].x).put(vectorStore[3].y).put(
-                vectorStore[3].z);
-        getVertexBuffer().put(vectorStore[6].x).put(vectorStore[6].y).put(
-                vectorStore[6].z);
-        getVertexBuffer().put(vectorStore[2].x).put(vectorStore[2].y).put(
-                vectorStore[2].z);
-
-        // Left
-        getVertexBuffer().put(vectorStore[5].x).put(vectorStore[5].y).put(
-                vectorStore[5].z);
-        getVertexBuffer().put(vectorStore[1].x).put(vectorStore[1].y).put(
-                vectorStore[1].z);
-        getVertexBuffer().put(vectorStore[4].x).put(vectorStore[4].y).put(
-                vectorStore[4].z);
-        getVertexBuffer().put(vectorStore[7].x).put(vectorStore[7].y).put(
-                vectorStore[7].z);
-
-        // Bottom
-        getVertexBuffer().put(vectorStore[6].x).put(vectorStore[6].y).put(
-                vectorStore[6].z);
-        getVertexBuffer().put(vectorStore[7].x).put(vectorStore[7].y).put(
-                vectorStore[7].z);
-        getVertexBuffer().put(vectorStore[4].x).put(vectorStore[4].y).put(
-                vectorStore[4].z);
-        getVertexBuffer().put(vectorStore[2].x).put(vectorStore[2].y).put(
-                vectorStore[2].z);
-
-        // Back
-        getVertexBuffer().put(vectorStore[3].x).put(vectorStore[3].y).put(
-                vectorStore[3].z);
-        getVertexBuffer().put(vectorStore[5].x).put(vectorStore[5].y).put(
-                vectorStore[5].z);
-        getVertexBuffer().put(vectorStore[7].x).put(vectorStore[7].y).put(
-                vectorStore[7].z);
-        getVertexBuffer().put(vectorStore[6].x).put(vectorStore[6].y).put(
-                vectorStore[6].z);
-
-        // Front
-        getVertexBuffer().put(vectorStore[1].x).put(vectorStore[1].y).put(
-                vectorStore[1].z);
-        getVertexBuffer().put(vectorStore[4].x).put(vectorStore[4].y).put(
-                vectorStore[4].z);
-        getVertexBuffer().put(vectorStore[2].x).put(vectorStore[2].y).put(
-                vectorStore[2].z);
-        getVertexBuffer().put(vectorStore[0].x).put(vectorStore[0].y).put(
-                vectorStore[0].z);
-    }
-
+    
     /**
      * Sets the vectorStore information to the 8 corners of the box.
+     * @deprecated will be made private.
      */
     public void computeCorners() {
         correctCorners = true;
@@ -279,94 +127,27 @@ public class OrientedBox extends TriMesh {
         tempVb.set(yAxis).multLocal(extent.y);
         tempVc.set(zAxis).multLocal(extent.z);
 
-        vectorStore[0].set(center).addLocal(tempVa).addLocal(tempVb).addLocal(
-                tempVc);
-        vectorStore[1].set(center).addLocal(tempVa).subtractLocal(tempVb)
-                .addLocal(tempVc);
-        vectorStore[2].set(center).addLocal(tempVa).addLocal(tempVb)
-                .subtractLocal(tempVc);
-        vectorStore[3].set(center).subtractLocal(tempVa).addLocal(tempVb)
-                .addLocal(tempVc);
-        vectorStore[4].set(center).addLocal(tempVa).subtractLocal(tempVb)
-                .subtractLocal(tempVc);
-        vectorStore[5].set(center).subtractLocal(tempVa).subtractLocal(tempVb)
-                .addLocal(tempVc);
-        vectorStore[6].set(center).subtractLocal(tempVa).addLocal(tempVb)
-                .subtractLocal(tempVc);
-        vectorStore[7].set(center).subtractLocal(tempVa).subtractLocal(tempVb)
-                .subtractLocal(tempVc);
+        vectorStore[0].set(center).addLocal(tempVa).addLocal(tempVb).addLocal(tempVc);
+        vectorStore[1].set(center).addLocal(tempVa).subtractLocal(tempVb).addLocal(tempVc);
+        vectorStore[2].set(center).addLocal(tempVa).addLocal(tempVb).subtractLocal(tempVc);
+        vectorStore[3].set(center).subtractLocal(tempVa).addLocal(tempVb).addLocal(tempVc);
+        vectorStore[4].set(center).addLocal(tempVa).subtractLocal(tempVb).subtractLocal(tempVc);
+        vectorStore[5].set(center).subtractLocal(tempVa).subtractLocal(tempVb).addLocal(tempVc);
+        vectorStore[6].set(center).subtractLocal(tempVa).addLocal(tempVb).subtractLocal(tempVc);
+        vectorStore[7].set(center).subtractLocal(tempVa).subtractLocal(tempVb).subtractLocal(tempVc);
+    }
 
-        // float xDotYcrossZ=xAxis.dot(yAxis.cross(zAxis,tempVa));
-        // Vector3f yCrossZmulX=yAxis.cross(zAxis,tempVa).multLocal(extent.x);
-        // Vector3f zCrossXmulY=zAxis.cross(xAxis,tempVb).multLocal(extent.y);
-        // Vector3f xCrossYmulZ=xAxis.cross(yAxis,tempVc).multLocal(extent.z);
-        //
-        // vectorStore[0].set(
-        // ((yCrossZmulX.x + zCrossXmulY.x +
-        // xCrossYmulZ.x)/xDotYcrossZ)+center.x,
-        // ((yCrossZmulX.y + zCrossXmulY.y +
-        // xCrossYmulZ.y)/xDotYcrossZ)+center.y,
-        // ((yCrossZmulX.z + zCrossXmulY.z +
-        // xCrossYmulZ.z)/xDotYcrossZ)+center.z
-        // );
-        // vectorStore[1].set(
-        // (-yCrossZmulX.x + zCrossXmulY.x +
-        // xCrossYmulZ.x)/xDotYcrossZ+center.x,
-        // (-yCrossZmulX.y + zCrossXmulY.y +
-        // xCrossYmulZ.y)/xDotYcrossZ+center.y,
-        // (-yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
-        // );
-        //
-        // vectorStore[2].set(
-        // (yCrossZmulX.x + -zCrossXmulY.x +
-        // xCrossYmulZ.x)/xDotYcrossZ+center.x,
-        // (yCrossZmulX.y + -zCrossXmulY.y +
-        // xCrossYmulZ.y)/xDotYcrossZ+center.y,
-        // (yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
-        // );
-        //
-        // vectorStore[3].set(
-        // (yCrossZmulX.x + zCrossXmulY.x +
-        // -xCrossYmulZ.x)/xDotYcrossZ+center.x,
-        // (yCrossZmulX.y + zCrossXmulY.y +
-        // -xCrossYmulZ.y)/xDotYcrossZ+center.y,
-        // (yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
-        // );
-        //
-        // vectorStore[4].set(
-        // (-yCrossZmulX.x + -zCrossXmulY.x +
-        // xCrossYmulZ.x)/xDotYcrossZ+center.x,
-        // (-yCrossZmulX.y + -zCrossXmulY.y +
-        // xCrossYmulZ.y)/xDotYcrossZ+center.y,
-        // (-yCrossZmulX.z + -zCrossXmulY.z +
-        // xCrossYmulZ.z)/xDotYcrossZ+center.z
-        // );
-        //
-        // vectorStore[5].set(
-        // (-yCrossZmulX.x + zCrossXmulY.x +
-        // -xCrossYmulZ.x)/xDotYcrossZ+center.x,
-        // (-yCrossZmulX.y + zCrossXmulY.y +
-        // -xCrossYmulZ.y)/xDotYcrossZ+center.y,
-        // (-yCrossZmulX.z + zCrossXmulY.z +
-        // -xCrossYmulZ.z)/xDotYcrossZ+center.z
-        // );
-        // vectorStore[6].set(
-        // (yCrossZmulX.x + -zCrossXmulY.x +
-        // -xCrossYmulZ.x)/xDotYcrossZ+center.x,
-        // (yCrossZmulX.y + -zCrossXmulY.y +
-        // -xCrossYmulZ.y)/xDotYcrossZ+center.y,
-        // (yCrossZmulX.z + -zCrossXmulY.z +
-        // -xCrossYmulZ.z)/xDotYcrossZ+center.z
-        // );
-        //
-        // vectorStore[7].set(
-        // -(yCrossZmulX.x + zCrossXmulY.x +
-        // xCrossYmulZ.x)/xDotYcrossZ+center.x,
-        // -(yCrossZmulX.y + zCrossXmulY.y +
-        // xCrossYmulZ.y)/xDotYcrossZ+center.y,
-        // -(yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
-        // );
-
+    /**
+     * Takes the plane and center information and creates the correct
+     * vertex,normal,color,texture,index information to represent the
+     * OrientedBox.
+     * @deprecated will be made private.
+     */
+    public void computeInformation() {
+        updateGeometryVertices();
+        updateGeometryNormals();
+        updateGeometryTextures();
+        updateGeometryIndices();
     }
 
     /**
@@ -379,16 +160,6 @@ public class OrientedBox extends TriMesh {
     }
 
     /**
-     * Sets the box's center to the given value. Shallow copy only.
-     * 
-     * @param center
-     *            The box's new center.
-     */
-    public void setCenter(Vector3f center) {
-        this.center = center;
-    }
-
-    /**
      * Returns the box's extent vector along the x,y,z.
      * 
      * @return The box's extent vector.
@@ -397,82 +168,176 @@ public class OrientedBox extends TriMesh {
         return extent;
     }
 
-    /**
-     * Sets the box's extent vector to the given value. Shallow copy only.
-     * 
-     * @param extent
-     *            The box's new extent.
-     */
-    public void setExtent(Vector3f extent) {
-        this.extent = extent;
+    /** @deprecated Use {@link #getXAxis()} instead */
+    public Vector3f getxAxis() {
+        return getXAxis();
     }
 
-    /**
-     * Returns the x axis of this box.
-     * 
-     * @return This OB's x axis.
-     */
-    public Vector3f getxAxis() {
+    public Vector3f getXAxis() {
         return xAxis;
     }
 
-    /**
-     * Sets the x axis of this OB. Shallow copy.
-     * 
-     * @param xAxis
-     *            The new x axis.
-     */
-    public void setxAxis(Vector3f xAxis) {
-        this.xAxis = xAxis;
+    /** @deprecated Use {@link #getYAxis()} instead */
+    public Vector3f getyAxis() {
+        return getYAxis();
     }
 
-    /**
-     * Gets the Y axis of this OB.
-     * 
-     * @return This OB's Y axis.
-     */
-    public Vector3f getyAxis() {
+    public Vector3f getYAxis() {
         return yAxis;
     }
 
-    /**
-     * Sets the Y axis of this OB. Shallow copy.
-     * 
-     * @param yAxis
-     *            The new Y axis.
-     */
-    public void setyAxis(Vector3f yAxis) {
-        this.yAxis = yAxis;
+    /** @deprecated Use {@link #getZAxis()} instead */
+    public Vector3f getzAxis() {
+        return getZAxis();
     }
 
-    /**
-     * Returns the Z axis of this OB.
-     * 
-     * @return The Z axis.
-     */
-    public Vector3f getzAxis() {
+    public Vector3f getZAxis() {
         return zAxis;
     }
 
     /**
-     * Sets the Z axis of this OB. Shallow copy.
+     * Have the corners of the box been set correctly.
      * 
-     * @param zAxis
-     *            The new Z axis.
-     */
-    public void setzAxis(Vector3f zAxis) {
-        this.zAxis = zAxis;
-    }
-
-    /**
-     * Returns if the corners are set corectly.
-     * 
-     * @return True if the vectorStore is correct.
+     * @return {@code true} if the vector store is correct,
+     *      {@code false} otherwise.
      */
     public boolean isCorrectCorners() {
         return correctCorners;
     }
 
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+
+        center = (Vector3f) capsule.readSavable("center", Vector3f.ZERO.clone());
+        xAxis = (Vector3f) capsule.readSavable("xAxis", Vector3f.UNIT_X.clone());
+        yAxis = (Vector3f) capsule.readSavable("yAxis", Vector3f.UNIT_Y.clone());
+        zAxis = (Vector3f) capsule.readSavable("zAxis", Vector3f.UNIT_Z.clone());
+        extent = (Vector3f) capsule.readSavable("extent", Vector3f.ZERO.clone());
+        texTopRight = (Vector2f) capsule.readSavable("texTopRight", new Vector2f(1, 1));
+        texTopLeft = (Vector2f) capsule.readSavable("texTopLeft", new Vector2f(1, 0));
+        texBotRight = (Vector2f) capsule.readSavable("texBotRight", new Vector2f(0, 1));
+        texBotLeft = (Vector2f) capsule.readSavable("texBotLeft", new Vector2f(0, 0));
+
+        Savable[] savs = capsule.readSavableArray("vectorStore", new Vector3f[8]);
+        if (savs == null) {
+            vectorStore = null;
+        } else {
+            vectorStore = new Vector3f[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                vectorStore[x] = (Vector3f) savs[x];
+            }
+        }
+
+        correctCorners = capsule.readBoolean("correctCorners", false);
+    }
+
+    /** @deprecated use {@link #updateGeometry(Vector3f, Vector2f, Vector2f, Vector2f, Vector2f, boolean)} instead. */
+    public void setCenter(Vector3f center) {
+        this.center = center;
+    }
+
+    /** @deprecated use {@link #updateGeometry(Vector3f, Vector2f, Vector2f, Vector2f, Vector2f, boolean)} instead. */
+    public void setExtent(Vector3f extent) {
+        this.extent = extent;
+    }
+
+    /** @deprecated use {@link #updateGeometry(Vector3f, Vector2f, Vector2f, Vector2f, Vector2f, boolean)} instead. */
+    public void setxAxis(Vector3f xAxis) {
+        this.xAxis = xAxis;
+    }
+
+    /** @deprecated use {@link #updateGeometry(Vector3f, Vector2f, Vector2f, Vector2f, Vector2f, boolean)} instead. */
+    public void setyAxis(Vector3f yAxis) {
+        this.yAxis = yAxis;
+    }
+
+    /** @deprecated use {@link #updateGeometry(Vector3f, Vector2f, Vector2f, Vector2f, Vector2f, boolean)} instead. */
+    public void setzAxis(Vector3f zAxis) {
+        this.zAxis = zAxis;
+    }
+
+    /** Update the box’s geometry after a property has been altered directly. */
+    public void updateGeometry() {
+        updateGeometryVertices();
+        updateGeometryNormals();
+        updateGeometryTextures();
+        updateGeometryIndices();
+    }
+    
+    public void updateGeometry(Vector3f center, Vector2f topRight, Vector2f topLeft, Vector2f bottomRight, Vector2f bottomLeft) {
+        this.center = center;
+        this.texTopRight = topRight;
+        this.texTopLeft = topLeft;
+        this.texBotRight = bottomRight;
+        this.texBotLeft = bottomLeft;
+        this.correctCorners = false;
+        vectorStore = new Vector3f[8];
+        for (int i = 0; i < vectorStore.length; i++) {
+            vectorStore[i] = new Vector3f();
+        }
+        updateGeometry();
+   }
+
+    /** Sets the correct indices array for the box. */
+    private void updateGeometryIndices() {
+        setIndexBuffer(BufferUtils.createIntBuffer(getIndexBuffer(), 36));
+        setTriangleQuantity(12);
+        int[] ints = new int[6];
+        for (int i = 0; i < 6; i++) {
+            ints[0] = i * 4 + 0;
+            ints[1] = i * 4 + 1;
+            ints[2] = i * 4 + 3;
+            ints[3] = i * 4 + 1;
+            ints[4] = i * 4 + 2;
+            ints[5] = i * 4 + 3;
+            getIndexBuffer().put(ints);
+        }
+    }
+
+    /** Sets the correct normal array for the box. */
+    private void updateGeometryNormals() {
+        setNormalBuffer(BufferUtils.createVector3Buffer(getNormalBuffer(), 24));
+        getNormalBuffer().put(new float[] {
+                 yAxis.x,  yAxis.y,  yAxis.z,  yAxis.x,  yAxis.y,  yAxis.z,  yAxis.x,  yAxis.y,  yAxis.z,  yAxis.x,  yAxis.y,  yAxis.z, // top
+                 xAxis.x,  xAxis.y,  xAxis.z,  xAxis.x,  xAxis.y,  xAxis.z,  xAxis.x,  xAxis.y,  xAxis.z,  xAxis.x,  xAxis.y,  xAxis.z, // right
+                -xAxis.x, -xAxis.y, -xAxis.z, -xAxis.x, -xAxis.y, -xAxis.z, -xAxis.x, -xAxis.y, -xAxis.z, -xAxis.x, -xAxis.y, -xAxis.z, // left
+                -yAxis.x, -yAxis.y, -yAxis.z, -yAxis.x, -yAxis.y, -yAxis.z, -yAxis.x, -yAxis.y, -yAxis.z, -yAxis.x, -yAxis.y, -yAxis.z, // bottom
+                -zAxis.x, -zAxis.y, -zAxis.z, -zAxis.x, -zAxis.y, -zAxis.z, -zAxis.x, -zAxis.y, -zAxis.z, -zAxis.x, -zAxis.y, -zAxis.z, // back
+                 zAxis.x,  zAxis.y,  zAxis.z,  zAxis.x,  zAxis.y,  zAxis.z,  zAxis.x,  zAxis.y,  zAxis.z,  zAxis.x,  zAxis.y,  zAxis.z, //front
+        });
+    }
+
+    /** Sets the correct texture array for the box. */
+    private void updateGeometryTextures() {
+        if (getTextureCoords().get(0) == null) {
+            getTextureCoords().set(0, new TexCoords(BufferUtils.createFloatBuffer(new float[] {
+                    texTopRight.x, texTopRight.y, texTopLeft.x, texTopLeft.y, texBotLeft.x, texBotLeft.y, texBotRight.x, texBotRight.y,
+                    texTopRight.x, texTopRight.y, texTopLeft.x, texTopLeft.y, texBotLeft.x, texBotLeft.y, texBotRight.x, texBotRight.y,
+                    texTopRight.x, texTopRight.y, texTopLeft.x, texTopLeft.y, texBotLeft.x, texBotLeft.y, texBotRight.x, texBotRight.y,
+                    texTopRight.x, texTopRight.y, texTopLeft.x, texTopLeft.y, texBotLeft.x, texBotLeft.y, texBotRight.x, texBotRight.y,
+                    texTopRight.x, texTopRight.y, texTopLeft.x, texTopLeft.y, texBotLeft.x, texBotLeft.y, texBotRight.x, texBotRight.y,
+                    texTopRight.x, texTopRight.y, texTopLeft.x, texTopLeft.y, texBotLeft.x, texBotLeft.y, texBotRight.x, texBotRight.y
+            })));
+        }
+    }
+
+    /** Sets the correct vertex information for the box. */
+    private void updateGeometryVertices() {
+        computeCorners();
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(), 24));
+        setVertexCount(24);
+        Vector3f[] v = vectorStore; // use an alias to save typring ;-)
+        getVertexBuffer().put(new float[] {
+                v[0].x, v[0].y, v[0].z, v[1].x, v[1].y, v[1].z, v[5].x, v[5].y, v[5].z, v[3].x, v[3].y, v[3].z, // top
+                v[0].x, v[0].y, v[0].z, v[3].x, v[3].y, v[3].z, v[6].x, v[6].y, v[6].z, v[2].x, v[2].y, v[2].z, // right
+                v[5].x, v[5].y, v[5].z, v[1].x, v[1].y, v[1].z, v[4].x, v[4].y, v[4].z, v[7].x, v[7].y, v[7].z, // left
+                v[6].x, v[6].y, v[6].z, v[7].x, v[7].y, v[7].z, v[4].x, v[4].y, v[4].z, v[2].x, v[2].y, v[2].z, // bottom
+                v[3].x, v[3].y, v[3].z, v[5].x, v[5].y, v[5].z, v[7].x, v[7].y, v[7].z, v[6].x, v[6].y, v[6].z, // back
+                v[1].x, v[1].y, v[1].z, v[4].x, v[4].y, v[4].z, v[2].x, v[2].y, v[2].z, v[0].x, v[0].y, v[0].z  // front
+        });
+    }
+    
     public void write(JMEExporter e) throws IOException {
         super.write(e);
 
@@ -488,42 +353,5 @@ public class OrientedBox extends TriMesh {
         capsule.write(texBotLeft, "texBotLeft", new Vector2f(0, 0));
         capsule.write(vectorStore, "vectorStore", new Vector3f[8]);
         capsule.write(correctCorners, "correctCorners", false);
-    }
-
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-
-        center = (Vector3f) capsule
-                .readSavable("center", Vector3f.ZERO.clone());
-        xAxis = (Vector3f) capsule
-                .readSavable("xAxis", Vector3f.UNIT_X.clone());
-        yAxis = (Vector3f) capsule
-                .readSavable("yAxis", Vector3f.UNIT_Y.clone());
-        zAxis = (Vector3f) capsule
-                .readSavable("zAxis", Vector3f.UNIT_Z.clone());
-        extent = (Vector3f) capsule
-                .readSavable("extent", Vector3f.ZERO.clone());
-        texTopRight = (Vector2f) capsule.readSavable("texTopRight",
-                new Vector2f(1, 1));
-        texTopLeft = (Vector2f) capsule.readSavable("texTopLeft", new Vector2f(
-                1, 0));
-        texBotRight = (Vector2f) capsule.readSavable("texBotRight",
-                new Vector2f(0, 1));
-        texBotLeft = (Vector2f) capsule.readSavable("texBotLeft", new Vector2f(
-                0, 0));
-
-        Savable[] savs = capsule.readSavableArray("vectorStore",
-                new Vector3f[8]);
-        if (savs == null)
-            vectorStore = null;
-        else {
-            vectorStore = new Vector3f[savs.length];
-            for (int x = 0; x < savs.length; x++) {
-                vectorStore[x] = (Vector3f) savs[x];
-            }
-        }
-
-        correctCorners = capsule.readBoolean("correctCorners", false);
     }
 }

@@ -182,13 +182,13 @@ public class TestSpatialLookAt extends SimpleGame {
         monitorNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         Quad quad = new Quad("Monitor");
         quad.setZOrder(1);
-        quad.initialize(150, 150);
+        quad.updateGeometry(150, 150);
         quad.setLocalTranslation(new Vector3f(90f, 110f, 0));
         monitorNode.attachChild(quad);
 
         Quad quad2 = new Quad("Monitor");
         quad2.setZOrder(2);
-        quad2.initialize(160f, 160f);
+        quad2.updateGeometry(160f, 160f);
         quad2.getLocalTranslation().set(quad.getLocalTranslation());
         monitorNode.attachChild(quad2);
 

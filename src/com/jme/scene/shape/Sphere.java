@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+// $Id$
 package com.jme.scene.shape;
 
 import java.io.IOException;
@@ -49,9 +49,10 @@ import com.jme.util.geom.BufferUtils;
  * from a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.20 2007/09/21 15:45:27 nca Exp $
+ * @version $Revision$, $Date$
  */
 public class Sphere extends TriMesh {
+
     private static final long serialVersionUID = 1L;
 
     public static final int TEX_ORIGINAL = 0;
@@ -74,6 +75,7 @@ public class Sphere extends TriMesh {
 
     private static Vector3f tempVc = new Vector3f();
 
+    // TODO: replace with a boolean property
     protected int textureMode = TEX_ORIGINAL;
 
     public Sphere() {
@@ -127,33 +129,60 @@ public class Sphere extends TriMesh {
     public Sphere(String name, Vector3f center, int zSamples,
             int radialSamples, float radius) {
         super(name);
-        setData(center, zSamples, radialSamples, radius);
+        updateGeometry(center, zSamples, radialSamples, radius);
     }
 
     /**
-     * Changes the information of the sphere into the given values.
+     * Returns the center of this sphere.
      * 
-     * @param center
-     *            The new center of the sphere.
-     * @param zSamples
-     *            The new number of zSamples of the sphere.
-     * @param radialSamples
-     *            The new number of radial samples of the sphere.
-     * @param radius
-     *            The new radius of the sphere.
+     * @return The sphere's center.
      */
-    public void setData(Vector3f center, int zSamples, int radialSamples,
-            float radius) {
-        if (center != null)
-            this.center = center;
-        else
-            this.center = new Vector3f(0, 0, 0);
-        this.zSamples = zSamples;
-        this.radialSamples = radialSamples;
-        this.radius = radius;
+    public Vector3f getCenter() {
+        return center;
+    }
 
-        setGeometryData();
-        setIndexData();
+    public int getRadialSamples() {
+        return radialSamples;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    /**
+     * @return Returns the textureMode.
+     */
+    public int getTextureMode() {
+        return textureMode;
+    }
+
+    public int getZSamples() {
+        return zSamples;
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        zSamples = capsule.readInt("zSamples", 0);
+        radialSamples = capsule.readInt("radialSamples", 0);
+        radius = capsule.readFloat("radius", 0);
+        center = (Vector3f) capsule
+                .readSavable("center", Vector3f.ZERO.clone());
+        textureMode = capsule.readInt("textureMode", TEX_ORIGINAL);
+    }
+
+    /**
+     * @deprecated Use {@link #updateGeometry(Vector3f,int,int,float)} instead
+     */
+    public void setCenter(Vector3f aCenter) {
+        center = aCenter;
+    }
+    
+    /**
+     * @deprecated Use {@link #updateGeometry(Vector3f,int,int,float)} instead
+     */
+    public void setData(Vector3f center, int zSamples, int radialSamples, float radius) {
+        updateGeometry(center, zSamples, radialSamples, radius);
     }
 
     /**
@@ -321,8 +350,7 @@ public class Sphere extends TriMesh {
                 getIndexBuffer().put(i);
                 getIndexBuffer().put(getVertexCount() - 2);
                 getIndexBuffer().put(i + 1);
-            } else // inside view
-            {
+            } else { // inside view
                 getIndexBuffer().put(i);
                 getIndexBuffer().put(i + 1);
                 getIndexBuffer().put(getVertexCount() - 2);
@@ -336,42 +364,12 @@ public class Sphere extends TriMesh {
                 getIndexBuffer().put(i + iOffset);
                 getIndexBuffer().put(i + 1 + iOffset);
                 getIndexBuffer().put(getVertexCount() - 1);
-            } else // inside view
-            {
+            } else { // inside view
                 getIndexBuffer().put(i + iOffset);
                 getIndexBuffer().put(getVertexCount() - 1);
                 getIndexBuffer().put(i + 1 + iOffset);
             }
         }
-    }
-
-    /**
-     * Returns the center of this sphere.
-     * 
-     * @return The sphere's center.
-     */
-    public Vector3f getCenter() {
-        return center;
-    }
-
-    /**
-     * Sets the center of this sphere. Note that other information (such as
-     * geometry buffers and actual vertex information) is not changed. In most
-     * cases, you'll want to use setData()
-     * 
-     * @param aCenter
-     *            The new center.
-     * @see #setData
-     */
-    public void setCenter(Vector3f aCenter) {
-        center = aCenter;
-    }
-
-    /**
-     * @return Returns the textureMode.
-     */
-    public int getTextureMode() {
-        return textureMode;
     }
 
     /**
@@ -382,9 +380,22 @@ public class Sphere extends TriMesh {
         this.textureMode = textureMode;
         setGeometryData();
     }
-    
-    public float getRadius() {
-        return radius;
+
+    /**
+     * Changes the information of the sphere into the given values.
+     * 
+     * @param center the center of the sphere.
+     * @param zSamples the number of zSamples of the sphere.
+     * @param radialSamples the number of radial samples of the sphere.
+     * @param radius the radius of the sphere.
+     */
+    public void updateGeometry(Vector3f center, int zSamples, int radialSamples, float radius) {
+        this.center = center != null ? center : new Vector3f();
+        this.zSamples = zSamples;
+        this.radialSamples = radialSamples;
+        this.radius = radius;
+        setGeometryData();
+        setIndexData();
     }
 
     public void write(JMEExporter e) throws IOException {
@@ -397,14 +408,4 @@ public class Sphere extends TriMesh {
         capsule.write(textureMode, "textureMode", TEX_ORIGINAL);
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        zSamples = capsule.readInt("zSamples", 0);
-        radialSamples = capsule.readInt("radialSamples", 0);
-        radius = capsule.readFloat("radius", 0);
-        center = (Vector3f) capsule
-                .readSavable("center", Vector3f.ZERO.clone());
-        textureMode = capsule.readInt("textureMode", TEX_ORIGINAL);
-    }
 }

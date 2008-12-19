@@ -96,7 +96,7 @@ public abstract class Mouse extends Quad {
         setLightCombineMode(Spatial.LightCombineMode.Off);
         setTextureCombineMode(TextureCombineMode.Replace);
         
-        initialize(0, 0);
+        updateGeometry(0, 0);
     }
 
     /**

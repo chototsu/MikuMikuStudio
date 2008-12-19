@@ -112,13 +112,13 @@ public class TestMipMaps extends SimpleGame {
         monitorNode = new Node("Monitor Node");
         monitorNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         Quad quad = new Quad("Monitor");
-        quad.initialize(100, 100);
+        quad.updateGeometry(100, 100);
         quad.setLocalTranslation(new Vector3f(110, 110, 0));
         quad.setZOrder(1);
         monitorNode.attachChild(quad);
 
         Quad quad2 = new Quad("Monitor Back");
-        quad2.initialize(110, 110);
+        quad2.updateGeometry(110, 110);
         quad2.setLocalTranslation(new Vector3f(110, 110, 0));
         quad2.setZOrder(2);
         monitorNode.attachChild(quad2);
