@@ -92,7 +92,7 @@ public class TestClipState extends SimpleGame {
         
         ClipState clipState = display.getRenderer().createClipState();
         clipState.setEnableClipPlane(ClipState.CLIP_PLANE0, true);
-        clipState.setClipPlaneEquation(0, 0.5f, 0.5f, 0,0);
+        clipState.setClipPlaneEquation(ClipState.CLIP_PLANE0, 0.5, 0.5, 0.0, 0.0);
         rootNode.setRenderState(clipState);
     }
 }
