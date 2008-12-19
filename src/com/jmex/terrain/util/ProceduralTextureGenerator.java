@@ -236,6 +236,13 @@ public class ProceduralTextureGenerator {
     textureList.add(tile);
   }
 
+  public void clearTextures() {
+      for ( TextureTile tile : textureList ) {
+          tile.imageData = null;
+      }
+      textureList.clear();
+  }
+  
   /**
    * <code>setHeightMap</code> sets the input heightmap to use
    * for the texture generation.

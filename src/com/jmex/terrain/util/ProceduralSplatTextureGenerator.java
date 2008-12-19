@@ -197,4 +197,10 @@ public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator 
 	public BufferedImage getSplatTexture(int index) {
 		return splatTextures.get(index);
 	}
+        
+        public void clearTextures() {
+            super.clearTextures();
+            splatMaps.clear();
+            splatTextures.clear();
+}
 }

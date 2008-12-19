@@ -56,7 +56,7 @@
 
 	<target name="run-testchooser" depends="compile-test" description="Runs the TestChooser">
 		<java classname="jmetest.TestChooser" fork="true" classpathref="classpath">
-			<jvmarg value=  "-Djava.library.path=${libs}/jogl/native/windows_i586;${libs}/lwjgl/native/linux;${libs}/lwjgl/native/macosx;${libs}/lwjgl/native/win32;${libs}/swt/linux;${libs}/swt/macosx-carbon;${libs}/swt/macosx-cocoa;${libs}/swt/windows"/>
+			<jvmarg value=  "-Djava.library.path=${libs}/jogl/native/windows_amd64;${libs}/jogl/native/macosx;${libs}/jogl/native/linux_i586;${libs}/jogl/native/linux_amd64;${libs}/jogl/native/windows_i586;${libs}/lwjgl/native/linux;${libs}/lwjgl/native/macosx;${libs}/lwjgl/native/win32;${libs}/swt/linux;${libs}/swt/macosx-carbon;${libs}/swt/macosx-cocoa;${libs}/swt/windows"/>
 		</java>
 	</target>
 
