@@ -99,6 +99,8 @@ public class ObjToJme extends FormatConverter {
     private MaterialGrouping curGroup;
     /** Last 'Object' name in the file */
     private String curObjectName = null;
+    /** Last 'Group' name in the file */
+    private String curGroupName = null;
     /** Default material group for groups without a material */
     private MaterialGrouping defaultMaterialGroup;
     /** Maps material names to the actual material object * */
@@ -187,8 +189,7 @@ public class ObjToJme extends FormatConverter {
             ArraySet thisSet = materialSets.get(thisGroup);
             if (thisSet.indexes.size() < 3)
                 continue;
-            TriMesh thisMesh = new TriMesh(thisSet.objName == null ? "temp" + i
-                    : thisSet.objName);
+            TriMesh thisMesh = new TriMesh(thisSet.objName == null ? "temp" + i : thisSet.objName);
             Vector3f[] vert = new Vector3f[thisSet.sets.size()];
             Vector3f[] norm = new Vector3f[vert.length];
             Vector2f[] text = new Vector2f[vert.length];
@@ -269,9 +270,10 @@ public class ObjToJme extends FormatConverter {
         } else if ("g".equals(parts[0])) {
             // see what the material name is if there isn't a name, assume its
             // the default group
-            if (parts.length >= 2 && materialNames.get(parts[1]) != null
-                    && materialNames.get(parts[1]) != null)
+            if (parts.length >= 2 && materialNames.get(parts[1]) != null) {
+                curGroupName = parts[1];
                 curGroup = materialNames.get(parts[1]);
+            }
             else
                 setDefaultGroup();
             return;
@@ -395,8 +397,14 @@ public class ObjToJme extends FormatConverter {
 
     private void addFaces(String[] parts) {
         ArraySet thisMat = materialSets.get(curGroup);
-        if (thisMat.objName == null && curObjectName != null)
-            thisMat.objName = curObjectName;
+        if (thisMat.objName == null) {
+            if (curObjectName != null) {
+                thisMat.objName = curObjectName;
+            }
+            else if (curGroupName != null) {
+                thisMat.objName = curGroupName;
+            }   
+        }
         IndexSet first = new IndexSet(parts[1]);
         int firstIndex = thisMat.findSet(first);
         IndexSet second = new IndexSet(parts[2]);
