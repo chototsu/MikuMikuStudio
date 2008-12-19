@@ -44,6 +44,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
+import com.jmex.effects.particles.Particle.Status;
 
 /**
  * ParticleMesh is a particle system that uses TriMesh as its underlying
@@ -188,6 +189,19 @@ public class ParticleMesh extends ParticleSystem {
         }
         updateRenderState();
         particleGeom.setCastsShadows(false);
+    }
+    
+    /**
+    * Stop emiting particles
+    * Kill all available particles. (status=dead) 
+    * @author clovis teixeira
+    */
+    public void stopEmitting()
+    {
+    	for (int k = 0; k < numParticles; k++) {
+    		if(particles[k].getStatus() == Status.Available)
+    			particles[k].setStatus(Status.Dead);
+    	}
     }
 
     public void draw(Renderer r) {
