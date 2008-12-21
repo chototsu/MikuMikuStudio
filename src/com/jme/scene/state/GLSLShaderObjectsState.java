@@ -810,13 +810,13 @@ public abstract class GLSLShaderObjectsState extends RenderState {
 	}
     
     /**
-     * <code>load</code> loads the shader object from the specified file. The
+     * <code>load</code> loads the shader object from the specified string. The
      * program must be in ASCII format. We delegate the loading to each
      * implementation because we do not know in what format the underlying API
      * wants the data.
      *
-     * @param vert text file containing the vertex shader object
-     * @param frag text file containing the fragment shader object
+     * @param vert string containing the vertex shader object
+     * @param frag string containing the fragment shader object
      */
     public void load(String vert, String frag){
         vertShader = vert;
