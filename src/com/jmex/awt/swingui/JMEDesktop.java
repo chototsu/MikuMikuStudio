@@ -1360,12 +1360,12 @@ public class JMEDesktop extends Quad {
     }
 
     /**
-     * not supported.
+     * Resizing jMEDesktop is not supported.
      * @param width -
      * @param height -
      */
+    @Deprecated
     public void resize( float width, float height ) {
-        //TODO: implement resizing?
-        throw new UnsupportedOperationException( "resizing JMEDesktop not yet implemented!" );
+        super.resize(width, height);
     }
 }
