@@ -220,7 +220,7 @@ public class Ray  implements Serializable, Savable, Cloneable {
         }
 
         float dirDotDiffxEdge2 = sign * direction.dot(diff.cross(edge2, edge2));
-        if (dirDotDiffxEdge2 > 0.0f) {
+        if (dirDotDiffxEdge2 >= 0.0f) {
             float dirDotEdge1xDiff = sign
                     * direction.dot(edge1.crossLocal(diff));
             if (dirDotEdge1xDiff >= 0.0f) {
