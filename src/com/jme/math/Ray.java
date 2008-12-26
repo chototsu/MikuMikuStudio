@@ -295,7 +295,7 @@ public class Ray  implements Serializable, Savable, Cloneable {
         if (denominator > -FastMath.FLT_EPSILON && denominator < FastMath.FLT_EPSILON)
             return false; // coplanar
 
-        float numerator = -(p.getNormal().dot(origin) + p.getConstant());
+        float numerator = -(p.getNormal().dot(origin) - p.getConstant());
         float ratio = numerator / denominator;
 
         if (ratio < FastMath.FLT_EPSILON)
