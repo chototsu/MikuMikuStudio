@@ -85,6 +85,8 @@ public abstract class SimplePassGame extends BaseSimpleGame {
         /** Call simpleRender() in any derived classes. */
         simpleRender();
         
+        display.getRenderer().draw(statNode);
+        
         doDebug(display.getRenderer());
     }
 
