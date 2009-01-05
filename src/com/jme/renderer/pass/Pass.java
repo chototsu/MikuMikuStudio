@@ -185,6 +185,11 @@ public abstract class Pass implements Serializable {
         return spatials.remove(toRemove);
     }
     
+    
+    public void removeAll() {
+    	spatials.clear();
+    }
+    
     public int size() {
         return spatials.size();
     }
