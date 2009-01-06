@@ -864,6 +864,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
         capsule.write(castsShadows, "castsShadows", true);
         capsule.write(bound, "bound", null);
         capsule.write(defaultColor, "defaultColor", ColorRGBA.white);
+        capsule.write(vboInfo, "vboInfo", null);
     }
 
     @SuppressWarnings("unchecked")
@@ -889,6 +890,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
             worldBound = bound.clone(null);
         defaultColor = (ColorRGBA) capsule.readSavable("defaultColor",
                 ColorRGBA.white.clone());
+        vboInfo = (VBOInfo) capsule.readSavable("vboInfo", null);
     }
 
     /**

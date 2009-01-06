@@ -268,6 +268,9 @@ public class VBOInfo implements Serializable, Savable {
 	}
 
 	public void setVBOTextureID(int index, int id) {
+		if (index >= vboTextureIDs.length) {
+			resizeTextureIds(index+1);
+		}
 		vboTextureIDs[index] = id;
 	}
 
