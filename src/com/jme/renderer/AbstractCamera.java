@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.math.Plane.Side;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -776,19 +777,17 @@ public abstract class AbstractCamera implements Camera {
 
             mask = 1 << ( planeId );
             if ( ( planeState & mask ) == 0 ) {
-                int side = bound.whichSide( worldPlane[planeId] );
+                Side side = bound.whichSide( worldPlane[planeId] );
 
-                if ( side == Plane.NEGATIVE_SIDE ) {
+                if (side == Side.NEGATIVE) {
                     //object is outside of frustum
                     bound.setCheckPlane( planeId );
                     return FrustumIntersect.Outside;
-                }
-                else if ( side == Plane.POSITIVE_SIDE ) {
+                } else if (side == Side.POSITIVE) {
                     //object is visible on *this* plane, so mark this plane
                     //so that we don't check it for sub nodes.
                     planeState |= mask;
-                }
-                else {
+                } else {
                     rVal = FrustumIntersect.Intersects;
                 }
             }

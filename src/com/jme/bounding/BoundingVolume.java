@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
+import com.jme.math.Plane.Side;
 import com.jme.scene.TriMesh;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -142,7 +143,7 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	 *            the plane to check against this bounding volume.
 	 * @return the side on which this bounding volume lies.
 	 */
-	public abstract int whichSide(Plane plane);
+	public abstract Side whichSide(Plane plane);
 
 	/**
 	 * 

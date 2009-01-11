@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
+import com.jme.math.Plane.Side;
 import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -164,17 +165,14 @@ public class OrientedBoundingBox extends BoundingVolume {
         return toReturn;
     }
 
-    public int whichSide(Plane plane) {
+    public Side whichSide(Plane plane) {
         float fRadius = FastMath.abs(extent.x * (plane.getNormal().dot(xAxis)))
                 + FastMath.abs(extent.y * (plane.getNormal().dot(yAxis)))
                 + FastMath.abs(extent.z * (plane.getNormal().dot(zAxis)));
         float fDistance = plane.pseudoDistance(center);
-        if (fDistance <= -fRadius)
-            return Plane.NEGATIVE_SIDE;
-        else if (fDistance >= fRadius)
-            return Plane.POSITIVE_SIDE;
-        else
-           return Plane.NO_SIDE;
+        if (fDistance <= -fRadius) { return Side.NEGATIVE; }
+        if (fDistance >=  fRadius) { return Side.POSITIVE; }
+        return Side.NONE;
     }
 
     public void computeFromPoints(FloatBuffer points) {

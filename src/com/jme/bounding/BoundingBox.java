@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@ import com.jme.intersection.IntersectionRecord;
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
+import com.jme.math.Plane.Side;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
@@ -290,7 +291,7 @@ public class BoundingBox extends BoundingVolume {
      * @param plane
      *            the plane to check against.
      */
-    public int whichSide(Plane plane) {
+    public Side whichSide(Plane plane) {
         float radius = FastMath.abs(xExtent * plane.normal.x)
                 + FastMath.abs(yExtent * plane.normal.y)
                 + FastMath.abs(zExtent * plane.normal.z);
@@ -298,13 +299,9 @@ public class BoundingBox extends BoundingVolume {
         float distance = plane.pseudoDistance(center);
 
         //changed to < and > to prevent floating point precision problems
-        if (distance < -radius) {
-            return Plane.NEGATIVE_SIDE;
-        } else if (distance > radius) {
-            return Plane.POSITIVE_SIDE;
-        } else {
-            return Plane.NO_SIDE;
-        }
+        if (distance < -radius) { return Side.NEGATIVE; }
+        if (distance >  radius) { return Side.POSITIVE; }
+        return Side.NONE;
     }
 
     /**

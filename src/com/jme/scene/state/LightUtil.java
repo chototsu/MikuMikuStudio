@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
 import com.jme.math.FastMath;
 import com.jme.math.Plane;
+import com.jme.math.Plane.Side;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Geometry;
 import com.jme.scene.Spatial;
@@ -110,7 +111,7 @@ public class LightUtil {
         }
         Plane p = new Plane(l.getDirection(), l.getDirection().dot(
                 l.getLocation()));
-        if (val.whichSide(p) != Plane.NEGATIVE_SIDE)
+        if (val.whichSide(p) != Side.NEGATIVE)
                 return getValueFor((PointLight) l, val);
 
         return 0;

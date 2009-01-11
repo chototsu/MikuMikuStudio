@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ import java.util.Comparator;
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.FastMath;
 import com.jme.math.Plane;
+import com.jme.math.Plane.Side;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
 import com.jme.scene.Spatial.LightCombineMode;
@@ -254,7 +255,7 @@ public class LightManagement implements Serializable, Savable {
         }
         Plane p = new Plane(l.getDirection(), l.getDirection().dot(
                 l.getLocation()));
-        if (val.whichSide(p) != Plane.NEGATIVE_SIDE)
+        if (val.whichSide(p) != Side.NEGATIVE)
                 return getValueFor((PointLight) l, val);
 
         return 0;

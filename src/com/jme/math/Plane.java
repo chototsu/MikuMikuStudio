@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright © 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,35 +43,26 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
 /**
- * <code>Plane</code> defines a plane where Normal dot (x,y,z) = Constant.
- * This provides methods for calculating a "distance" of a point from this
- * plane. The distance is pseudo due to the fact that it can be negative if the
- * point is on the non-normal side of the plane.
- * 
+ * A plane in 3D space.
+ * <p>
+ * The plane is defined by a vector, <i>N</i> which is normal to the plane; and
+ * a constant, <i>C</i>, representing the distance of the plane from the
+ * origin. The plane can be represented by the equation <i>C = Nâˆ™p</i> where
+ * <i>p</p> is a point on the plane.
+ *
  * @author Mark Powell
  * @author Joshua Slack
+ * @version $Revision$, $Date$
  */
 public class Plane implements Serializable, Savable, Cloneable {
-    private static final Logger logger = Logger
-            .getLogger(Plane.class.getName());
+
+    private static final Logger logger = Logger.getLogger(Plane.class.getName());
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * NO_SIDE represents the plane itself.
-     */
-    public static final int NO_SIDE = 0;
-    /**
-     * POSITIVE_SIDE represents a point on the side the normal points.
-     */
-    public static final int POSITIVE_SIDE = 1;
-    /**
-     * NEGATIVE_SIDE represents a point on the opposite side the normal points.
-     */
-    public static final int NEGATIVE_SIDE = 2;
-
     /** Vector normal to the plane. */
     public Vector3f normal;
+
     /** Constant of the plane. See formula in class definition. */
     public float constant;
 
@@ -159,23 +150,16 @@ public class Plane implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * <code>whichSide</code> returns the side at which a point lies on the
-     * plane. The positive values returned are: NEGATIVE_SIDE, POSITIVE_SIDE and
-     * NO_SIDE.
+     * Determine on which side of this plane the point {@code p} lies.
      * 
-     * @param point
-     *            the point to check.
+     * @param p the point to check.
      * @return the side at which the point lies.
      */
-    public int whichSide(Vector3f point) {
-        float dis = pseudoDistance(point);
-        if (dis < 0) {
-            return NEGATIVE_SIDE;
-        } else if (dis > 0) {
-            return POSITIVE_SIDE;
-        } else {
-            return NO_SIDE;
-        }
+    public Side whichSide(Vector3f p) {
+        float dis = pseudoDistance(p);
+        if (dis < 0) { return Side.NEGATIVE; }
+        if (dis > 0) { return Side.POSITIVE; }
+        return Side.NONE;
     }
 
     /**
@@ -245,4 +229,14 @@ public class Plane implements Serializable, Savable, Cloneable {
             throw new AssertionError();
         }
     }
+
+    public static enum Side {
+        /** A point on the side opposite the normal to the plane. */
+        NEGATIVE,
+        /** A point on the plane itself. */
+        NONE,
+        /** A point on the side of the normal to the plane. */
+        POSITIVE
+    }
+
 }

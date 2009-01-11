@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
+import com.jme.math.Plane.Side;
 import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
@@ -621,22 +622,17 @@ public class BoundingCapsule extends BoundingVolume {
     }
 
     @Override
-    public int whichSide(Plane plane) {
+    public Side whichSide(Plane plane) {
         float distance = plane.pseudoDistance(ls.getNegativeEnd(compVec1));
-
         if (distance <= -radius) {
             distance = plane.pseudoDistance(ls.getPositiveEnd(compVec1));
-            if (distance <= -radius) {
-                return Plane.NEGATIVE_SIDE;
-            } else if (distance >= radius) {
-                return Plane.POSITIVE_SIDE;
-            } else {
-                return Plane.NO_SIDE;
-            }
+            if (distance <= -radius) { return Side.NEGATIVE; }
+            if (distance >=  radius) { return Side.POSITIVE; }
+            return Side.NONE;
         } else if (distance >= radius) {
-            return Plane.POSITIVE_SIDE;
+            return Side.POSITIVE;
         } else {
-            return Plane.NO_SIDE;
+            return Side.NONE;
         }
     }
 
