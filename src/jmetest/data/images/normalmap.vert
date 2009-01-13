@@ -20,7 +20,7 @@ void main(void)
 	/* Calculate tangent info - stored in colorbuffer */
 	vec3 normal = gl_NormalMatrix * gl_Normal;
 	vec3 tangent = gl_NormalMatrix * (gl_Color.xyz*2.0-1.0);
-	vec3 binormal = cross( tangent, normal );
+	vec3 binormal = cross( normal, tangent );
 
 	/* Calculate tangent info - stored in attributes */
 //	vec3 normal = gl_NormalMatrix * gl_Normal;
