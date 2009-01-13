@@ -70,9 +70,21 @@ public abstract class ClipState extends RenderState {
      * 
      * @return RenderState.RS_CLIP
      * @see RenderState#getType()
+     * @deprecated As of 2.0, use {@link #getStateType()} instead.
      */
     public int getType() {
         return RS_CLIP;
+    }
+
+    /**
+     * <code>getStateType</code> returns {@link RenderState.StateType#Clip}
+     * 
+     * @return {@link RenderState.StateType#Clip}
+     * @see RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+    	return StateType.Clip;
     }
 
     /**

@@ -121,8 +121,8 @@ public class SharedMesh extends TriMesh {
             this.setRenderQueueMode(target.renderQueueMode);
             this.setTextureCombineMode(target.textureCombineMode);
             this.setZOrder(target.getZOrder());
-            for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-                RenderState state = target.getRenderState( i );
+            for (RenderState.StateType type : RenderState.StateType.values()) {
+                RenderState state = target.getRenderState( type );
                 if (state != null) {
                     this.setRenderState(state );
                 }
@@ -145,10 +145,10 @@ public class SharedMesh extends TriMesh {
     public void setTarget(TriMesh target) {
         this.target = target;
         UserDataManager.getInstance().bind(this, target);
-        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            RenderState renderState = this.target.getRenderState(i);
-            if (renderState != null) {
-                setRenderState(renderState);
+        for (RenderState.StateType type : RenderState.StateType.values()) {
+            RenderState state = this.target.getRenderState( type );
+            if (state != null) {
+                setRenderState(state);
             }
         }
 

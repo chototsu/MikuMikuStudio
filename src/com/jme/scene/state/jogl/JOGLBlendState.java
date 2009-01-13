@@ -83,11 +83,10 @@ public class JOGLBlendState extends BlendState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
-        BlendStateRecord record = (BlendStateRecord) context
-                .getStateRecord(RS_BLEND);
-        context.currentStates[RS_BLEND] = this;
+        BlendStateRecord record = (BlendStateRecord) context.getStateRecord(StateType.Blend);
+        context.currentStates[StateType.Blend.ordinal()] = this;
 
         if (isEnabled()) {
             applyBlendEquations(isBlendEnabled(), record);

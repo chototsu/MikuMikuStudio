@@ -70,11 +70,9 @@ public class JOGLShadeState extends ShadeState {
         final GL gl = GLU.getCurrentGL();
 
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        ShadeStateRecord record = (ShadeStateRecord) context
-                .getStateRecord(RS_SHADE);
-        context.currentStates[RS_SHADE] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        ShadeStateRecord record = (ShadeStateRecord) context.getStateRecord(StateType.Shade);
+        context.currentStates[StateType.Shade.ordinal()] = this;
 
         // If not enabled, we'll use smooth
         int toApply = isEnabled() ? getGLShade() : GL.GL_SMOOTH;

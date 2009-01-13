@@ -60,11 +60,9 @@ public class LWJGLStencilState extends StencilState {
     @Override
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        StencilStateRecord record = (StencilStateRecord) context
-                .getStateRecord(RS_STENCIL);
-        context.currentStates[RS_STENCIL] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        StencilStateRecord record = (StencilStateRecord) context.getStateRecord(StateType.Stencil);
+        context.currentStates[StateType.Stencil.ordinal()] = this;
 
         setEnabled(isEnabled(), twoSidedSupport ? isUseTwoSided() : false,
                 record);

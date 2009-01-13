@@ -130,7 +130,7 @@ public class LightStateController extends Controller {
                 if (timePass >= updateInterval || time < 0) {
                     timePass = 0;
                     LightControllerManager.lm.resortLightsFor((LightState) parent
-                            .getRenderState(RenderState.RS_LIGHT), parent);
+                            .getRenderState(RenderState.StateType.Light), parent);
                 }
         }
     }

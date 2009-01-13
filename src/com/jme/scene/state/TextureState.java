@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.TextureManager;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -178,9 +179,21 @@ public abstract class TextureState extends RenderState {
      * <code>getType</code> returns this type of render state. (RS_TEXTURE).
      * 
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_TEXTURE;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#Texture}
+     * 
+     * @return {@link RenderState.StateType#Texture}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.Texture;
     }
 
     /**

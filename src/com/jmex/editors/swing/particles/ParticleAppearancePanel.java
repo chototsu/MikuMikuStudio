@@ -420,9 +420,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
             private static final long serialVersionUID = 1L;
 
             public void actionPerformed(ActionEvent e) {
-                ((TextureState) getEdittedParticles()
-                        .getRenderState(RenderState.RS_TEXTURE))
-                        .setTexture(null);
+                ((TextureState) getEdittedParticles().getRenderState(RenderState.StateType.Texture)).setTexture(null);
                 imageLabel.setIcon(null);
             }
         });
@@ -600,8 +598,8 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         }
         
         // copy render states
-        for (int ii = 0; ii < RenderState.RS_MAX_STATE; ii++) {
-            RenderState rs = oldGeom.getRenderState(ii);
+        for (RenderState.StateType type : RenderState.StateType.values()) {
+            RenderState rs = oldGeom.getRenderState(type);
             if (rs != null) {
                 newGeom.setRenderState(rs);
             }
@@ -648,7 +646,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
     }
 
     private void loadApplyTexture() throws MalformedURLException {
-        TextureState ts = (TextureState)getEdittedParticles().getRenderState(RenderState.RS_TEXTURE);
+        TextureState ts = (TextureState)getEdittedParticles().getRenderState(RenderState.StateType.Texture);
         TextureManager.clearCache();
         ts.setTexture(
                 TextureManager.loadTexture(
@@ -662,8 +660,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
     }
 
     private void updateBlendState(boolean additive) {
-        BlendState as = (BlendState)getEdittedParticles().getRenderState(
-            RenderState.RS_BLEND);
+        BlendState as = (BlendState)getEdittedParticles().getRenderState(RenderState.StateType.Blend);
         if (as == null) {
             as = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
             as.setBlendEnabled(true);
@@ -687,15 +684,13 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         texPanel.setValue(system.getTexQuantity());
         startTexPanel.setValue(system.getStartTexIndex());
 
-        BlendState as = (BlendState)system.getRenderState(
-            RenderState.RS_BLEND);
+        BlendState as = (BlendState)system.getRenderState(RenderState.StateType.Blend);
         additiveBlendingBox.setSelected(as == null ||
             as.getDestinationFunctionRGB() == BlendState.DestinationFunction.One);
         if (getTexturePanel().isVisible()) {
             Texture tex = null;
             try {
-                tex = ((TextureState)system.getRenderState(
-                        RenderState.RS_TEXTURE)).getTexture();
+                tex = ((TextureState)system.getRenderState(RenderState.StateType.Texture)).getTexture();
                 if (tex != null) {
                     if (tex.getTextureKey() != null && tex.getTextureKey().getLocation() != null)
                         imageLabel.setIcon(

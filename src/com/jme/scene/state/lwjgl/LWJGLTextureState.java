@@ -270,11 +270,10 @@ public class LWJGLTextureState extends TextureState {
         // our texture type:
         Texture.Type type = texture.getType();
 
-        RenderContext<?> context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
         TextureStateRecord record = null;
         if (context != null)
-            record = (TextureStateRecord) context.getStateRecord(RS_TEXTURE);
+            record = (TextureStateRecord) context.getStateRecord(StateType.Texture);
 
         // Check we are in the right unit
         if (record != null)
@@ -820,11 +819,9 @@ public class LWJGLTextureState extends TextureState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext<?> context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        TextureStateRecord record = (TextureStateRecord) context
-                .getStateRecord(RS_TEXTURE);
-        context.currentStates[RS_TEXTURE] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        TextureStateRecord record = (TextureStateRecord) context.getStateRecord(StateType.Texture);
+        context.currentStates[StateType.Texture.ordinal()] = this;
 
         if (isEnabled()) {
 
@@ -1977,7 +1974,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    public RenderState extract(Stack stack, Spatial spat) {
+    public RenderState extract(Stack<? extends RenderState> stack, Spatial spat) {
         TextureCombineMode mode = spat.getTextureCombineMode();
         if (mode == TextureCombineMode.Replace
                 || (mode != TextureCombineMode.Off && stack.size() == 1)) {
@@ -2042,10 +2039,8 @@ public class LWJGLTextureState extends TextureState {
             return;
 
         // ask for the current state record
-        RenderContext<?> context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        TextureStateRecord record = (TextureStateRecord) context
-                .getStateRecord(RS_TEXTURE);
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        TextureStateRecord record = (TextureStateRecord) context.getStateRecord(StateType.Texture);
 
         Texture tex = texture.get(unit);
         int texId = tex.getTextureId();
@@ -2082,10 +2077,8 @@ public class LWJGLTextureState extends TextureState {
     public void deleteAll(boolean removeFromCache) {
 
         // ask for the current state record
-        RenderContext<?> context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        TextureStateRecord record = (TextureStateRecord) context
-                .getStateRecord(RS_TEXTURE);
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        TextureStateRecord record = (TextureStateRecord) context.getStateRecord(StateType.Texture);
 
         IntBuffer id = BufferUtils.createIntBuffer(texture.size());
 
@@ -2115,10 +2108,8 @@ public class LWJGLTextureState extends TextureState {
     public void deleteTextureId(int textureId) {
 
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        TextureStateRecord record = (TextureStateRecord) context
-                .getStateRecord(RS_TEXTURE);
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        TextureStateRecord record = (TextureStateRecord) context.getStateRecord(StateType.Texture);
 
         IntBuffer id = BufferUtils.createIntBuffer(1);
         id.clear();
@@ -2139,11 +2130,9 @@ public class LWJGLTextureState extends TextureState {
      */
     public static void doTextureBind(int textureId, int unit, Type type) {
         // ask for the current state record
-        RenderContext<?> context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        TextureStateRecord record = (TextureStateRecord) context
-                .getStateRecord(RenderState.RS_TEXTURE);
-        context.currentStates[RenderState.RS_TEXTURE] = null;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        TextureStateRecord record = (TextureStateRecord) context.getStateRecord(StateType.Texture);
+        context.currentStates[StateType.Texture.ordinal()] = null;
         checkAndSetUnit(unit, record);
 
         GL11.glBindTexture(getGLType(type), textureId);

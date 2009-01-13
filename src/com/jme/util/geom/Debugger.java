@@ -610,7 +610,7 @@ public final class Debugger {
         r.flush();
         float locationX = r.getWidth(), locationY = r.getHeight();
         bQuad.resize(size, (r.getHeight() / (float) r.getWidth()) * size);
-        if (bQuad.getRenderState(RenderState.RS_TEXTURE) == null) {
+        if (bQuad.getRenderState(RenderState.StateType.Texture) == null) {
             TextureState ts = r.createTextureState();
             bufTexture = new Texture2D();
             ts.setTexture(bufTexture);

@@ -107,9 +107,7 @@ public class TestBoundingCapsule extends SimpleGame {
 		
 		BoundingCapsule cap1 = (BoundingCapsule)t.getWorldBound();
 		BoundingCapsule cap2 = (BoundingCapsule)s.getWorldBound();
-		c.reconstruct(cap1.getLineSegment().getOrigin(), cap2.getLineSegment().getOrigin(), 1);
-        
-		
+		c.updateGeometry(cap1.getLineSegment().getOrigin(), cap2.getLineSegment().getOrigin(), 1);
 	}
 
 	/**
@@ -143,7 +141,7 @@ public class TestBoundingCapsule extends SimpleGame {
 		WireframeState ws = display.getRenderer().createWireframeState();
 		ws.setEnabled(true);
 		c.setRenderState(ws);
-		c.clearRenderState(RenderState.RS_TEXTURE);
+		c.clearRenderState(RenderState.StateType.Texture);
 		c.setTextureCombineMode(Spatial.TextureCombineMode.Off);
 		c.setLightCombineMode(Spatial.LightCombineMode.Off);
 		c.setDefaultColor(new ColorRGBA(1,0,0,1));

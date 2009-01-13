@@ -1721,7 +1721,7 @@ public class ColladaImporter {
         // XXX to a single pass. If the same render state is defined in
         // XXX different passes, the last pass will override the previous.
         if (pass.hasclip_plane()) {
-            ClipState cs = (ClipState) mat.getState(RenderState.RS_CLIP);
+            ClipState cs = (ClipState) mat.getState(RenderState.StateType.Clip);
             if (cs == null) {
                 cs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createClipState();
@@ -1741,7 +1741,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasclip_plane_enable()) {
-            ClipState cs = (ClipState) mat.getState(RenderState.RS_CLIP);
+            ClipState cs = (ClipState) mat.getState(RenderState.StateType.Clip);
             if (cs == null) {
                 cs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createClipState();
@@ -1756,7 +1756,7 @@ public class ColladaImporter {
         }
         if (pass.hascolor_mask()) {
             ColorMaskState cms = (ColorMaskState) mat
-                    .getState(RenderState.RS_COLORMASK_STATE);
+                    .getState(RenderState.StateType.ColorMask);
             if (cms == null) {
                 cms = DisplaySystem.getDisplaySystem().getRenderer()
                         .createColorMaskState();
@@ -1777,7 +1777,7 @@ public class ColladaImporter {
         }
         if (pass.hasdepth_func()) {
             ZBufferState zbs = (ZBufferState) mat
-                    .getState(RenderState.RS_ZBUFFER);
+                    .getState(RenderState.StateType.ZBuffer);
             if (zbs == null) {
                 zbs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createZBufferState();
@@ -1806,7 +1806,7 @@ public class ColladaImporter {
         }
         if (pass.hasdepth_mask()) {
             ZBufferState zbs = (ZBufferState) mat
-                    .getState(RenderState.RS_ZBUFFER);
+                    .getState(RenderState.StateType.ZBuffer);
             if (zbs == null) {
                 zbs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createZBufferState();
@@ -1820,7 +1820,7 @@ public class ColladaImporter {
         }
         if (pass.hasdepth_test_enable()) {
             ZBufferState zbs = (ZBufferState) mat
-                    .getState(RenderState.RS_ZBUFFER);
+                    .getState(RenderState.StateType.ZBuffer);
             if (zbs == null) {
                 zbs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createZBufferState();
@@ -1833,7 +1833,7 @@ public class ColladaImporter {
         }
         if (pass.hascolor_material()) {
             MaterialState ms = (MaterialState) mat
-                    .getState(RenderState.RS_MATERIAL);
+                    .getState(RenderState.StateType.Material);
             if (ms == null) {
                 ms = DisplaySystem.getDisplaySystem().getRenderer()
                         .createMaterialState();
@@ -1867,7 +1867,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasfog_color()) {
-            FogState fs = (FogState) mat.getState(RenderState.RS_FOG);
+            FogState fs = (FogState) mat.getState(RenderState.StateType.Fog);
             if (fs == null) {
                 fs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createFogState();
@@ -1885,7 +1885,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasfog_density()) {
-            FogState fs = (FogState) mat.getState(RenderState.RS_FOG);
+            FogState fs = (FogState) mat.getState(RenderState.StateType.Fog);
             if (fs == null) {
                 fs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createFogState();
@@ -1896,7 +1896,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasfog_enable()) {
-            FogState fs = (FogState) mat.getState(RenderState.RS_FOG);
+            FogState fs = (FogState) mat.getState(RenderState.StateType.Fog);
             if (fs == null) {
                 fs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createFogState();
@@ -1907,7 +1907,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasfog_end()) {
-            FogState fs = (FogState) mat.getState(RenderState.RS_FOG);
+            FogState fs = (FogState) mat.getState(RenderState.StateType.Fog);
             if (fs == null) {
                 fs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createFogState();
@@ -1918,7 +1918,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasfog_mode()) {
-            FogState fs = (FogState) mat.getState(RenderState.RS_FOG);
+            FogState fs = (FogState) mat.getState(RenderState.StateType.Fog);
             if (fs == null) {
                 fs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createFogState();
@@ -1936,7 +1936,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasfog_start()) {
-            FogState fs = (FogState) mat.getState(RenderState.RS_FOG);
+            FogState fs = (FogState) mat.getState(RenderState.StateType.Fog);
             if (fs == null) {
                 fs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createFogState();
@@ -1947,7 +1947,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasalpha_test_enable()) {
-            BlendState as = (BlendState) mat.getState(RenderState.RS_BLEND);
+            BlendState as = (BlendState) mat.getState(RenderState.StateType.Blend);
             if (as == null) {
                 as = DisplaySystem.getDisplaySystem().getRenderer()
                         .createBlendState();
@@ -1957,7 +1957,7 @@ public class ColladaImporter {
                     .booleanValue());
         }
         if (pass.hasalpha_func()) {
-            BlendState as = (BlendState) mat.getState(RenderState.RS_BLEND);
+            BlendState as = (BlendState) mat.getState(RenderState.StateType.Blend);
             if (as == null) {
                 as = DisplaySystem.getDisplaySystem().getRenderer()
                         .createBlendState();
@@ -1990,7 +1990,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hasblend_enable()) {
-            BlendState as = (BlendState) mat.getState(RenderState.RS_BLEND);
+            BlendState as = (BlendState) mat.getState(RenderState.StateType.Blend);
             if (as == null) {
                 as = DisplaySystem.getDisplaySystem().getRenderer()
                         .createBlendState();
@@ -2000,7 +2000,7 @@ public class ColladaImporter {
                     .booleanValue());
         }
         if (pass.hasblend_func()) {
-            BlendState as = (BlendState) mat.getState(RenderState.RS_BLEND);
+            BlendState as = (BlendState) mat.getState(RenderState.StateType.Blend);
             if (as == null) {
                 as = DisplaySystem.getDisplaySystem().getRenderer()
                         .createBlendState();
@@ -2068,7 +2068,7 @@ public class ColladaImporter {
             }
         }
         if (pass.hascull_face_enable()) {
-            CullState cs = (CullState) mat.getState(RenderState.RS_CULL);
+            CullState cs = (CullState) mat.getState(RenderState.StateType.Cull);
             if (cs == null) {
                 cs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createCullState();
@@ -2079,7 +2079,7 @@ public class ColladaImporter {
                             .booleanValue());
         }
         if (pass.hascull_face()) {
-            CullState cs = (CullState) mat.getState(RenderState.RS_CULL);
+            CullState cs = (CullState) mat.getState(RenderState.StateType.Cull);
             if (cs == null) {
                 cs = DisplaySystem.getDisplaySystem().getRenderer()
                         .createCullState();
@@ -2098,7 +2098,7 @@ public class ColladaImporter {
         }
         // Define the ShadeState (FLAT OR SMOOTH);
         if (pass.hasshade_model()) {
-            ShadeState ss = (ShadeState) mat.getState(RenderState.RS_SHADE);
+            ShadeState ss = (ShadeState) mat.getState(RenderState.StateType.Shade);
             if (ss == null) {
                 ss = DisplaySystem.getDisplaySystem().getRenderer()
                         .createShadeState();
@@ -2115,7 +2115,7 @@ public class ColladaImporter {
         }
         if (pass.hasmaterial_ambient()) {
             MaterialState ms = (MaterialState) mat
-                    .getState(RenderState.RS_MATERIAL);
+                    .getState(RenderState.StateType.Material);
             if (ms == null) {
                 ms = DisplaySystem.getDisplaySystem().getRenderer()
                         .createMaterialState();
@@ -2134,7 +2134,7 @@ public class ColladaImporter {
         }
         if (pass.hasmaterial_diffuse()) {
             MaterialState ms = (MaterialState) mat
-                    .getState(RenderState.RS_MATERIAL);
+                    .getState(RenderState.StateType.Material);
             if (ms == null) {
                 ms = DisplaySystem.getDisplaySystem().getRenderer()
                         .createMaterialState();
@@ -2153,7 +2153,7 @@ public class ColladaImporter {
         }
         if (pass.hasmaterial_emission()) {
             MaterialState ms = (MaterialState) mat
-                    .getState(RenderState.RS_MATERIAL);
+                    .getState(RenderState.StateType.Material);
             if (ms == null) {
                 ms = DisplaySystem.getDisplaySystem().getRenderer()
                         .createMaterialState();
@@ -2172,7 +2172,7 @@ public class ColladaImporter {
         }
         if (pass.hasmaterial_shininess()) {
             MaterialState ms = (MaterialState) mat
-                    .getState(RenderState.RS_MATERIAL);
+                    .getState(RenderState.StateType.Material);
             if (ms == null) {
                 ms = DisplaySystem.getDisplaySystem().getRenderer()
                         .createMaterialState();
@@ -2185,7 +2185,7 @@ public class ColladaImporter {
         }
         if (pass.hasmaterial_specular()) {
             MaterialState ms = (MaterialState) mat
-                    .getState(RenderState.RS_MATERIAL);
+                    .getState(RenderState.StateType.Material);
             if (ms == null) {
                 ms = DisplaySystem.getDisplaySystem().getRenderer()
                         .createMaterialState();
@@ -2204,7 +2204,7 @@ public class ColladaImporter {
         }
         if (pass.hasstencil_func()) {
             StencilState ss = (StencilState) mat
-                    .getState(RenderState.RS_STENCIL);
+                    .getState(RenderState.StateType.Stencil);
             if (ss == null) {
                 ss = DisplaySystem.getDisplaySystem().getRenderer()
                         .createStencilState();
@@ -2241,7 +2241,7 @@ public class ColladaImporter {
         }
         if (pass.hasstencil_op()) {
             StencilState ss = (StencilState) mat
-                    .getState(RenderState.RS_STENCIL);
+                    .getState(RenderState.StateType.Stencil);
             if (ss == null) {
                 ss = DisplaySystem.getDisplaySystem().getRenderer()
                         .createStencilState();
@@ -2261,7 +2261,7 @@ public class ColladaImporter {
         }
         if (pass.hasstencil_test_enable()) {
             StencilState ss = (StencilState) mat
-                    .getState(RenderState.RS_STENCIL);
+                    .getState(RenderState.StateType.Stencil);
             if (ss == null) {
                 ss = DisplaySystem.getDisplaySystem().getRenderer()
                         .createStencilState();
@@ -2463,7 +2463,7 @@ public class ColladaImporter {
     
     public TextureState processTexture(String key, ColladaMaterial mat,
             int index) throws Exception {
-        TextureState ts = (TextureState) mat.getState(RenderState.RS_TEXTURE);
+        TextureState ts = (TextureState) mat.getState(RenderState.StateType.Texture);
         if (ts == null) {
             ts = DisplaySystem.getDisplaySystem().getRenderer()
                     .createTextureState();
@@ -2959,11 +2959,10 @@ public class ColladaImporter {
                     .get(matKey);
 
                 if (cm != null) {
-                    for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-                        if (cm.getState(i) != null) {
-                            if (cm.getState(i).getType() == RenderState.RS_BLEND) {
-                                triMesh
-                                        .setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+                	for (RenderState.StateType type : RenderState.StateType.values()) {
+                        if (cm.getState(type) != null) {
+                            if (type == RenderState.StateType.Blend) {
+                                triMesh.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
                             }
                             // clone the state as different mesh's may have
                             // different
@@ -2971,7 +2970,7 @@ public class ColladaImporter {
                             try {
                                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                                 BinaryExporter.getInstance().save(
-                                        cm.getState(i), out);
+                                        cm.getState(type), out);
                                 ByteArrayInputStream in = new ByteArrayInputStream(
                                         out.toByteArray());
                                 RenderState rs = (RenderState) BinaryImporter
@@ -2991,7 +2990,7 @@ public class ColladaImporter {
                         for (int c = 0; c < cList.size(); c++) {
                             if (cList.get(c) instanceof TextureKeyframeController) {
                                 TextureState ts = (TextureState) triMesh
-                                        .getRenderState(RenderState.RS_TEXTURE);
+                                        .getRenderState(RenderState.StateType.Texture);
                                 if (ts != null) {
                                     // allow wrapping, as animated textures will
                                     // almost always need it.
@@ -3352,11 +3351,10 @@ public class ColladaImporter {
                 ColladaMaterial cm = (ColladaMaterial) resourceLibrary
                         .get(matKey);
                 if (cm != null) {
-                    for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-                        if (cm.getState(i) != null) {
-                            if (cm.getState(i).getType() == RenderState.RS_BLEND) {
-                                triMesh
-                                        .setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+                    for (RenderState.StateType type : RenderState.StateType.values()) {
+                        if (cm.getState(type) != null) {
+                            if (type == RenderState.StateType.Blend) {
+                                triMesh.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
                             }
                             // clone the state as different mesh's may have
                             // different
@@ -3364,7 +3362,7 @@ public class ColladaImporter {
                             try {
                                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                                 BinaryExporter.getInstance().save(
-                                        cm.getState(i), out);
+                                        cm.getState(type), out);
                                 ByteArrayInputStream in = new ByteArrayInputStream(
                                         out.toByteArray());
                                 RenderState rs = (RenderState) BinaryImporter
@@ -3384,7 +3382,7 @@ public class ColladaImporter {
                         for (int c = 0; c < cList.size(); c++) {
                             if (cList.get(c) instanceof TextureKeyframeController) {
                                 TextureState ts = (TextureState) triMesh
-                                        .getRenderState(RenderState.RS_TEXTURE);
+                                        .getRenderState(RenderState.StateType.Texture);
                                 if (ts != null) {
                                     // allow wrapping, as animated textures will
                                     // almost always need it.
@@ -4191,9 +4189,9 @@ public class ColladaImporter {
         }
 
         if (cm != null) {
-            for (int i = 0; i < RenderState.RS_MAX_STATE; ++i) {
-                if (cm.getState(i) != null) {
-                    if (cm.getState(i).getType() == RenderState.RS_BLEND) {
+            for (RenderState.StateType type : RenderState.StateType.values()) {
+                if (cm.getState(type) != null) {
+                    if (type == RenderState.StateType.Blend) {
                         target.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
                     }
                     // clone the state as different mesh's may have
@@ -4201,7 +4199,7 @@ public class ColladaImporter {
                     // attributes
                     try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        BinaryExporter.getInstance().save(cm.getState(i), out);
+                        BinaryExporter.getInstance().save(cm.getState(type), out);
                         ByteArrayInputStream in = new ByteArrayInputStream(out
                                 .toByteArray());
                         RenderState rs = (RenderState) BinaryImporter

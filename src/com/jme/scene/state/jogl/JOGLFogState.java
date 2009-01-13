@@ -82,9 +82,8 @@ public class JOGLFogState extends FogState {
         // ask for the current state record
         RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
-        FogStateRecord record = (FogStateRecord) context
-                .getStateRecord(RS_FOG);
-        context.currentStates[RS_FOG] = this;
+        FogStateRecord record = (FogStateRecord) context.getStateRecord(StateType.Fog);
+        context.currentStates[StateType.Fog.ordinal()] = this;
 
         if (isEnabled()) {
             enableFog(true, record);

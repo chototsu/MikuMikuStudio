@@ -35,6 +35,7 @@ package com.jme.scene.state;
 import java.io.IOException;
 
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -206,9 +207,21 @@ public abstract class FogState extends RenderState {
      * (RS_FOG).
      * 
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_FOG;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#Fog}
+     * 
+     * @return {@link RenderState.StateType#Fog}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.Fog;
     }
 
     public Quality getQuality() {

@@ -528,7 +528,7 @@ public class WaterRenderPass extends Pass {
         if (isUseFadeToFogColor()) {
             context.enforceState(noFog);
             tRenderer.render( renderList, texArray );
-            context.clearEnforcedState(RenderState.RS_FOG);
+            context.clearEnforcedState(RenderState.StateType.Fog);
         } else {
             tRenderer.render( renderList, texArray );
         }
@@ -566,7 +566,7 @@ public class WaterRenderPass extends Pass {
         if (isUseFadeToFogColor()) {
             context.enforceState(noFog);
             tRenderer.render( renderList, texArray );
-            context.clearEnforcedState(RenderState.RS_FOG);
+            context.clearEnforcedState(RenderState.StateType.Fog);
         } else {
             tRenderer.render( renderList, texArray );
         }

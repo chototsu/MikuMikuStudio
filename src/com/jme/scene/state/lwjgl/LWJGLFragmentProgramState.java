@@ -191,12 +191,10 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
 
     public void apply() {
         if (isSupported()) {
-            RenderContext context = DisplaySystem.getDisplaySystem()
-                    .getCurrentContext();
-            FragmentProgramStateRecord record = (FragmentProgramStateRecord) context
-                    .getStateRecord(RS_FRAGMENT_PROGRAM);
+            RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+            FragmentProgramStateRecord record = (FragmentProgramStateRecord) context.getStateRecord(StateType.FragmentProgram);
             
-            context.currentStates[RS_FRAGMENT_PROGRAM] = this;
+            context.currentStates[StateType.FragmentProgram.ordinal()] = this;
 
             if (!record.isValid() || record.getReference() != this) {
                 record.setReference(this);

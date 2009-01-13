@@ -73,7 +73,7 @@ public class LightMaskedRenderPass extends Pass {
     private void maskLightStates(Spatial s) {
         if (s instanceof Geometry) {
             Geometry g = (Geometry) s;
-            LightState ls = (LightState) g.states[RenderState.RS_LIGHT];
+            LightState ls = (LightState) g.states[RenderState.StateType.Light.ordinal()];
             if (ls != null && !lightStates.contains(ls)) {
                 lightStates.add(ls);
                 ls.pushLightMask();

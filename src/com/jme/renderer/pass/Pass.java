@@ -60,7 +60,9 @@ import com.jme.system.DisplaySystem;
  */
 public abstract class Pass implements Serializable {
 
-    /** list of spatials registered with this pass. */
+	private static final long serialVersionUID = -2608939114161492853L;
+
+	/** list of spatials registered with this pass. */
     protected ArrayList<Spatial> spatials = new ArrayList<Spatial>();
     
     /** if false, pass will not be updated or rendered. */
@@ -74,12 +76,12 @@ public abstract class Pass implements Serializable {
      * RenderStates registered with this pass - if a given state is not null it
      * overrides the corresponding state set during rendering.
      */
-    protected RenderState[] passStates = new RenderState[RenderState.RS_MAX_STATE];
+    protected RenderState[] passStates = new RenderState[RenderState.StateType.values().length];
 
     /** a place to internally save previous states setup before rendering this pass */
-    protected RenderState[] savedStates = new RenderState[RenderState.RS_MAX_STATE];
+    protected RenderState[] savedStates = new RenderState[RenderState.StateType.values().length];
 
-    protected RenderContext context = null;
+    protected RenderContext<?> context = null;
     
     /** if enabled, set the states for this pass and then render. */
     public final void renderPass(Renderer r) {
@@ -104,7 +106,21 @@ public abstract class Pass implements Serializable {
      *            state to enforce
      */
     public void setPassState(RenderState state) {
-        passStates[state.getType()] = state;
+    	
+        passStates[state.getStateType().ordinal()] = state;
+    }
+
+    /**
+     * Returns the requested RenderState that this Pass currently has set or
+     * null if none is set.
+     * 
+     * @param type
+     *            the renderstate type to retrieve
+     * @return a renderstate at the given position or null
+     * @deprecated As of 2.0, use {@link #getRenderState(com.jme.scene.state.RenderState.StateType)} instead.
+     */
+    public RenderState getRenderState(int type) {
+        return passStates != null ? passStates[type] : null;
     }
 
     /**
@@ -115,8 +131,9 @@ public abstract class Pass implements Serializable {
      *            the renderstate type to retrieve
      * @return a renderstate at the given position or null
      */
-    public RenderState getRenderState(int type) {
-        return passStates != null ? passStates[type] : null;
+    public RenderState getRenderState(RenderState.StateType type) {
+    	
+        return passStates != null ? passStates[type.ordinal()] : null;
     }
 
     /**
@@ -125,9 +142,21 @@ public abstract class Pass implements Serializable {
      * 
      * @param renderStateType
      *            The type of RenderState to clear enforcement on.
+     * @deprecated As of 2.0, use {@link #clearPassState(com.jme.scene.state.RenderState.StateType)} instead.
      */
     public void clearPassState(int renderStateType) {
         passStates[renderStateType] = null;
+    }
+
+    /**
+     * Clears an enforced render state by setting it to null. This allows
+     * object specific states to be used.
+     * 
+     * @param type
+     *            The type of RenderState to clear enforcement on.
+     */
+    public void clearPassState(RenderState.StateType type) {
+        passStates[type.ordinal()] = null;
     }
 
     /**
@@ -141,7 +170,7 @@ public abstract class Pass implements Serializable {
     }
 
     protected void applyPassStates() {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+        for (int x = RenderState.StateType.values().length; --x >= 0;) {
             if (passStates[x] != null) {
                 savedStates[x] = context.enforcedStateList[x];
                 context.enforcedStateList[x] = passStates[x];
@@ -152,7 +181,7 @@ public abstract class Pass implements Serializable {
     protected abstract void doRender(Renderer r);
 
     protected void resetOldStates() {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+        for (int x = RenderState.StateType.values().length; --x >= 0;) {
             if (passStates[x] != null) {
                 context.enforcedStateList[x] = savedStates[x];
             }

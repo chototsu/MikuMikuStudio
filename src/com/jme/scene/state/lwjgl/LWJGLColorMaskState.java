@@ -51,11 +51,9 @@ public class LWJGLColorMaskState extends ColorMaskState {
 
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        ColorMaskStateRecord record = (ColorMaskStateRecord) context
-                .getStateRecord(RS_COLORMASK_STATE);
-        context.currentStates[RS_COLORMASK_STATE] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        ColorMaskStateRecord record = (ColorMaskStateRecord) context.getStateRecord(StateType.ColorMask);
+        context.currentStates[StateType.ColorMask.ordinal()] = this;
 
         if (isEnabled()) {
             if (!record.isValid() || !record.is(red, green, blue, alpha)) {

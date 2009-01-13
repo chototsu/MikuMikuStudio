@@ -220,11 +220,10 @@ public class JOGLVertexProgramState extends VertexProgramState {
 
         if (isSupported()) {
             //ask for the current state record
-            RenderContext context = DisplaySystem.getDisplaySystem()
+            RenderContext<?> context = DisplaySystem.getDisplaySystem()
                     .getCurrentContext();
-            VertexProgramStateRecord record = (VertexProgramStateRecord) context
-                    .getStateRecord(RS_VERTEX_PROGRAM);
-            context.currentStates[RS_VERTEX_PROGRAM] = this;
+            VertexProgramStateRecord record = (VertexProgramStateRecord) context.getStateRecord(StateType.VertexProgram);
+            context.currentStates[StateType.VertexProgram.ordinal()] = this;
 
             if (!record.isValid() || record.getReference() != this) {
                 record.setReference(this);

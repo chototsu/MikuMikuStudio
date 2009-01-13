@@ -287,9 +287,9 @@ public class MotionBlurRenderPass extends Pass {
 			r.renderQueue();
 		}
 
-        context.clearEnforcedState( RenderState.RS_GLSL_SHADER_OBJECTS );
-        context.clearEnforcedState( RenderState.RS_TEXTURE );
-        context.clearEnforcedState( RenderState.RS_CULL );
+        context.clearEnforcedState( RenderState.StateType.GLSLShaderObjects );
+        context.clearEnforcedState( RenderState.StateType.Texture );
+        context.clearEnforcedState( RenderState.StateType.Cull );
 
 		if( !freeze ) {
 			for( int i = 0; i < dynamicObjects.size(); i++ ) {

@@ -44,12 +44,12 @@ import com.jme.scene.state.StateRecord;
 public class RenderContext<ContextHolder> {
 
     /** List of states that override any set states on a spatial if not null. */
-    public RenderState[] enforcedStateList = new RenderState[RenderState.RS_MAX_STATE];
+    public RenderState[] enforcedStateList = new RenderState[RenderState.StateType.values().length];
 
     /** RenderStates a Spatial contains during rendering. */
-    public RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
+    public RenderState[] currentStates = new RenderState[RenderState.StateType.values().length];
 
-    private StateRecord[] stateRecords = new StateRecord[RenderState.RS_MAX_STATE];
+    private StateRecord[] stateRecords = new StateRecord[RenderState.StateType.values().length];
     private StateRecord lineRecord = null;
     private StateRecord rendererRecord = null;
     
@@ -60,15 +60,16 @@ public class RenderContext<ContextHolder> {
     }
     
     public void setupRecords(Renderer r) {
-        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            stateRecords[i] = r.createState(i).createStateRecord();
-        }
+    	
+    	for(RenderState.StateType type : RenderState.StateType.values()) {
+    		stateRecords[type.ordinal()] = r.createState(type).createStateRecord();
+    	}
         lineRecord = r.createLineRecord();
         rendererRecord = r.createRendererRecord();
     }
     
     public void invalidateStates() {
-        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
+        for (int i = 0; i < stateRecords.length; i++) {
             stateRecords[i].invalidate();
         }
         lineRecord.invalidate();
@@ -77,8 +78,23 @@ public class RenderContext<ContextHolder> {
         clearCurrentStates();
     }
     
+    /**
+     * @deprecated As of 2.0, use {@link #getStateRecord(com.jme.scene.state.RenderState.StateType)} instead.
+     */
     public StateRecord getStateRecord(int state) {
+    	
         return stateRecords[state];
+    }
+    
+    /**
+     * Returns the {@link StateRecord} of the given {@link RenderState.StateType}.
+     * 
+     * @param type {@link RenderState.StateType}
+     * @return {@link StateRecord}
+     */
+    public StateRecord getStateRecord(RenderState.StateType type) {
+    	
+        return stateRecords[type.ordinal()];
     }
 
     public StateRecord getLineRecord() {
@@ -100,7 +116,7 @@ public class RenderContext<ContextHolder> {
      *            state to enforce
      */
     public void enforceState(RenderState state) {
-        enforcedStateList[state.getType()] = state;
+        enforcedStateList[state.getStateType().ordinal()] = state;
     }
 
     /**
@@ -109,10 +125,24 @@ public class RenderContext<ContextHolder> {
      * 
      * @param renderStateType
      *            The type of RenderState to clear enforcement on.
+     * @deprecated As of 2.0, use {@link #clearEnforcedState(com.jme.scene.state.RenderState.StateType)} instead.
      */
     public void clearEnforcedState(int renderStateType) {
         if (enforcedStateList != null) {
             enforcedStateList[renderStateType] = null;
+        }
+    }
+
+    /**
+     * Clears an enforced render state by setting it to null. This allows
+     * object specific states to be used.
+     * 
+     * @param type
+     *            The type of {@link RenderState} to clear enforcement on.
+     */
+    public void clearEnforcedState(RenderState.StateType type) {
+        if (enforcedStateList != null) {
+            enforcedStateList[type.ordinal()] = null;
         }
     }
 
@@ -143,13 +173,37 @@ public class RenderContext<ContextHolder> {
      *
      * @param state
      *            the state to clear.
+     * @deprecated As of 2.0, use {@link #clearCurrentState(com.jme.scene.state.RenderState.StateType)} instead.
      */
     public void clearCurrentState(int state) {
         currentStates[state] = null;
     }
 
+    /**
+     * Clears the specified state. The state is referenced by it's {@link RenderState.StateType} value.
+     *
+     * @param state
+     *            the state to clear.
+     */
+    public void clearCurrentState(RenderState.StateType type) {
+        currentStates[type.ordinal()] = null;
+    }
+
+    /**
+     * @deprecated As of 2.0, use {@link #getCurrentState(com.jme.scene.state.RenderState.StateType)} instead.
+     */
     public RenderState getCurrentState(int state) {
         return currentStates[state];
+    }
+
+    /**
+     * Returns the specified {@link RenderState}.
+     * 
+     * @param type {@link RenderState.StateType}
+     * @return {@link RenderState}
+     */
+    public RenderState getCurrentState(RenderState.StateType type) {
+        return currentStates[type.ordinal()];
     }
 
     public ContextHolder getContextHolder() {

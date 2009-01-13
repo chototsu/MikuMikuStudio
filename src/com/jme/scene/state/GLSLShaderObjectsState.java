@@ -54,6 +54,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Geometry;
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -675,9 +676,21 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     /**
      * @return RS_SHADER_OBJECTS
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_GLSL_SHADER_OBJECTS;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#GLSLShaderObjects}
+     * 
+     * @return {@link RenderState.StateType#GLSLShaderObjects}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.GLSLShaderObjects;
     }
 
     /**

@@ -139,8 +139,9 @@ public class SharedNode extends Node {
         copy.setTextureCombineMode(original.getLocalTextureCombineMode());
         copy.setZOrder(original.getZOrder());
         
-        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            RenderState state = original.getRenderState( i );
+        
+        for (RenderState.StateType type : RenderState.StateType.values()) {
+            RenderState state = original.getRenderState( type );
             if (state != null) {
                 copy.setRenderState(state );
             }

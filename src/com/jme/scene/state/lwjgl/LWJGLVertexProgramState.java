@@ -204,11 +204,9 @@ public class LWJGLVertexProgramState extends VertexProgramState {
     public void apply() {
         if (isSupported()) {
             //ask for the current state record
-            RenderContext context = DisplaySystem.getDisplaySystem()
-                    .getCurrentContext();
-            VertexProgramStateRecord record = (VertexProgramStateRecord) context
-                    .getStateRecord(RS_VERTEX_PROGRAM);
-            context.currentStates[RS_VERTEX_PROGRAM] = this;
+            RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+            VertexProgramStateRecord record = (VertexProgramStateRecord) context.getStateRecord(StateType.VertexProgram);
+            context.currentStates[StateType.VertexProgram.ordinal()] = this;
 
             if (!record.isValid() || record.getReference() != this) {
                 record.setReference(this);

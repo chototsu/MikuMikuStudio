@@ -264,23 +264,23 @@ public class RenderQueue {
 
                 if (twoPassTransparent
                     && obj instanceof Geometry
-                    && (((Geometry) obj).states[RenderState.RS_CULL] != null && !((Geometry) obj).states[RenderState.RS_CULL]
-                            .isEnabled())) {
+                    && (((Geometry) obj).states[RenderState.StateType.Cull.ordinal()] != null 
+                    		&& !((Geometry) obj).states[RenderState.StateType.Cull.ordinal()].isEnabled())) {
                     Geometry geom = (Geometry)obj;
-                    RenderState oldCullState = geom.states[RenderState.RS_CULL];
-                    geom.states[RenderState.RS_CULL] = tranCull;
-                    ZBufferState oldZState = (ZBufferState)geom.states[RenderState.RS_ZBUFFER];
-                    geom.states[RenderState.RS_ZBUFFER] = tranZBuff;
+                    RenderState oldCullState = geom.states[RenderState.StateType.Cull.ordinal()];
+                    geom.states[RenderState.StateType.Cull.ordinal()] = tranCull;
+                    ZBufferState oldZState = (ZBufferState)geom.states[RenderState.StateType.ZBuffer.ordinal()];
+                    geom.states[RenderState.StateType.ZBuffer.ordinal()] = tranZBuff;
 
                     // first render back-facing tris only
                     tranCull.setCullFace(CullState.Face.Front);
                     obj.draw(renderer);
                     
                     // then render front-facing tris only
-                    geom.states[RenderState.RS_ZBUFFER] = oldZState;
+                    geom.states[RenderState.StateType.ZBuffer.ordinal()] = oldZState;
                     tranCull.setCullFace(CullState.Face.Back);
                     obj.draw(renderer);
-                    geom.states[RenderState.RS_CULL] = oldCullState;
+                    geom.states[RenderState.StateType.Cull.ordinal()] = oldCullState;
                 } else {
                     // draw as usual
                     obj.draw(renderer);
@@ -395,8 +395,8 @@ public class RenderQueue {
          * states as well, such as lighting or material.
          */
         private int compareByStates(Geometry g1, Geometry g2) {
-            TextureState ts1 = (TextureState)g1.states[RenderState.RS_TEXTURE];
-            TextureState ts2 = (TextureState)g2.states[RenderState.RS_TEXTURE];
+            TextureState ts1 = (TextureState)g1.states[RenderState.StateType.Texture.ordinal()];
+            TextureState ts2 = (TextureState)g2.states[RenderState.StateType.Texture.ordinal()];
             if (ts1 == ts2) return 0;
             else if (ts1 == null && ts2 != null) return -1;
             else if (ts2 == null && ts1 != null) return  1;

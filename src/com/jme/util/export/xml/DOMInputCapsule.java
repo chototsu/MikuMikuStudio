@@ -847,7 +847,7 @@ public class DOMInputCapsule implements InputCapsule {
         Savable[] ret = defVal;
         try {
             Renderer r = DisplaySystem.getDisplaySystem().getRenderer();
-            int size = RenderState.RS_MAX_STATE;
+            int size = RenderState.StateType.values().length;
             Savable[] tmp = new Savable[size];
             currentElem = findFirstChildElement(fromElement);
             while (currentElem != null) {
@@ -859,7 +859,7 @@ public class DOMInputCapsule implements InputCapsule {
                     rs = (RenderState) (readSavableFromCurrentElem(null));
                 }
                 if (rs != null) {
-                    tmp[rs.getType()] = rs;
+                    tmp[rs.getStateType().ordinal()] = rs;
                 }
                 currentElem = findNextSiblingElement(el);
                 ret = tmp;
@@ -935,7 +935,7 @@ public class DOMInputCapsule implements InputCapsule {
         return ret;
     }
 
-    public ArrayList readSavableArrayList(String name, ArrayList defVal) throws IOException {
+    public ArrayList<Savable> readSavableArrayList(String name, ArrayList defVal) throws IOException {
         ArrayList<Savable> ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);

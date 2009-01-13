@@ -34,6 +34,7 @@ package com.jme.scene.state;
 
 import java.io.IOException;
 
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -53,13 +54,25 @@ public abstract class ColorMaskState extends RenderState {
     protected boolean red = true;
     protected boolean alpha = true;
 
-    /*
-     * (non-Javadoc) <code>getType</code>
+    /**
+     * <code>getType</code> return {@link RenderState#RS_COLORMASK_STATE}
      * 
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RenderState.RS_COLORMASK_STATE;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#ColorMask}
+     * 
+     * @return {@link RenderState.StateType#ColorMask}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.ColorMask;
     }
 
     public void setAll(boolean on) {

@@ -76,7 +76,7 @@ public class LightControllerManager {
                 lm);
         controllerList.add(lsc);
         s.addController(lsc);
-        if(s.getRenderState(RenderState.RS_LIGHT) == null) {
+        if(s.getRenderState(RenderState.StateType.Light) == null) {
             s.setRenderState(DisplaySystem.getDisplaySystem().getRenderer().createLightState());
         }
         if (s.getLightCombineMode() != Spatial.LightCombineMode.Off)

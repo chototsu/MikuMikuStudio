@@ -126,7 +126,7 @@ public class LensFlare extends Node {
                 display.getHeight() >> 1);
 
         // Set the renderstates for lensflare to all defaults...
-        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
+        for (int i = 0; i < RenderState.StateType.values().length; i++) {
             setRenderState(Renderer.defaultStateList[i]);
         }
 

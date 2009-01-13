@@ -32,7 +32,6 @@
 
 package com.jme.scene.state.lwjgl;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -311,11 +310,9 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     public void apply() {
         if (isSupported()) {
             //Ask for the current state record
-            RenderContext<?> context = DisplaySystem.getDisplaySystem()
-                    .getCurrentContext();
-            ShaderObjectsStateRecord record = (ShaderObjectsStateRecord) context
-                    .getStateRecord(RS_GLSL_SHADER_OBJECTS);
-            context.currentStates[RS_GLSL_SHADER_OBJECTS] = this;
+            RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+            ShaderObjectsStateRecord record = (ShaderObjectsStateRecord) context.getStateRecord(StateType.GLSLShaderObjects);
+            context.currentStates[StateType.GLSLShaderObjects.ordinal()] = this;
 
             if (needSendShader){
                 sendToGL(vertShader, fragShader);

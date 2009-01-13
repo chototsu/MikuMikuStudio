@@ -75,7 +75,7 @@ public class SketchRenderPass extends Pass {
 	private float off = 0.002f;
 	private boolean supported = true;
 
-	protected RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];
+	protected RenderState[] preStates = new RenderState[RenderState.StateType.values().length];
 
 	/**
 	 * Reset sketch parameters to default
@@ -179,7 +179,7 @@ public class SketchRenderPass extends Pass {
 		tRendererDepth.render(spatials.get(0), textureDepth);
 		replaceEnforcedStates();
 
-		TextureState ts = (TextureState) fullScreenQuad.getRenderState(RenderState.RS_TEXTURE);
+		TextureState ts = (TextureState) fullScreenQuad.getRenderState(RenderState.StateType.Texture);
 
 		//Apply sobel as final render
 		sobelShader.clearUniforms();
@@ -199,7 +199,7 @@ public class SketchRenderPass extends Pass {
 	 * pass.
 	 */
 	protected void saveEnforcedStates() {
-		for(int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+		for(int x = RenderState.StateType.values().length; --x >= 0;) {
 			preStates[x] = context.enforcedStateList[x];
 		}
 	}
@@ -208,7 +208,7 @@ public class SketchRenderPass extends Pass {
 	 * replaces any states enforced by the user at the end of the pass.
 	 */
 	protected void replaceEnforcedStates() {
-		for(int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+		for(int x = RenderState.StateType.values().length; --x >= 0;) {
             context.enforcedStateList[x] = preStates[x];
 		}
 	}

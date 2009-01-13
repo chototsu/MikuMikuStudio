@@ -77,11 +77,9 @@ public class LWJGLFogState extends FogState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext<?> context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        FogStateRecord record = (FogStateRecord) context
-                .getStateRecord(RS_FOG);
-        context.currentStates[RS_FOG] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        FogStateRecord record = (FogStateRecord) context.getStateRecord(StateType.Fog);
+        context.currentStates[StateType.Fog.ordinal()] = this;
 
         if (isEnabled()) {
             enableFog(true, record);

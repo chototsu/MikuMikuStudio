@@ -47,7 +47,9 @@ import com.jme.util.export.Savable;
 /** PassNodeState Creator: rikard.herlitz, 2007-maj-10 */
 public class PassNodeState implements Savable, Serializable {
 
-    /** if false, pass will not be updated or rendered. */
+	private static final long serialVersionUID = -2190443394368566111L;
+
+	/** if false, pass will not be updated or rendered. */
     protected boolean enabled = true;
 
     /**
@@ -61,15 +63,13 @@ public class PassNodeState implements Savable, Serializable {
      * RenderStates registered with this pass - if a given state is not null it
      * overrides the corresponding state set during rendering.
      */
-    protected RenderState[] passStates =
-            new RenderState[RenderState.RS_MAX_STATE];
+    protected RenderState[] passStates = new RenderState[RenderState.StateType.values().length];
 
     /**
      * a place to internally save previous states setup before rendering this
      * pass
      */
-    protected RenderState[] savedStates =
-            new RenderState[RenderState.RS_MAX_STATE];
+    protected RenderState[] savedStates = new RenderState[RenderState.StateType.values().length];
 
     /**
      * Applies all currently set renderstates and z offset parameters to the
@@ -78,7 +78,7 @@ public class PassNodeState implements Savable, Serializable {
      * @param r
      * @param context
      */
-    public void applyPassNodeState(Renderer r, RenderContext context) {
+    public void applyPassNodeState(Renderer r, RenderContext<?> context) {
         applyPassStates(context);
         r.setPolygonOffset(zFactor, zOffset);
     }
@@ -90,7 +90,7 @@ public class PassNodeState implements Savable, Serializable {
      * @param r
      * @param context
      */
-    public void resetPassNodeStates(Renderer r, RenderContext context) {
+    public void resetPassNodeStates(Renderer r, RenderContext<?> context) {
         r.clearPolygonOffset();
         resetOldStates(context);
     }
@@ -105,16 +105,30 @@ public class PassNodeState implements Savable, Serializable {
      * @param state state to enforce
      */
     public void setPassState(RenderState state) {
-        passStates[state.getType()] = state;
+    	
+        passStates[state.getStateType().ordinal()] = state;
     }
 
 	/**
 	 * @param renderStateType
 	 *            the type to query
 	 * @return the state enforced for a give state type, or null if none.
+	 * @deprecated As of 2.0, use {@link #getPassState(com.jme.scene.state.RenderState.StateType)} instead.
 	 */
     public RenderState getPassState(int renderStateType) {
     	return passStates[renderStateType];
+    }
+
+	/**
+	 * Returns the {@link RenderState} of the given type.
+	 * 
+	 * @param type
+	 *            the type to query
+	 * @return the {@link RenderState} enforced for a given state type, or null if none.
+	 */
+    public RenderState getPassState(RenderState.StateType type) {
+    	
+    	return passStates[type.ordinal()];
     }
 
     /**
@@ -122,9 +136,22 @@ public class PassNodeState implements Savable, Serializable {
      * object specific states to be used.
      *
      * @param renderStateType The type of RenderState to clear enforcement on.
+	 * @deprecated As of 2.0, use {@link #clearPassState(com.jme.scene.state.RenderState.StateType)} instead.
      */
     public void clearPassState(int renderStateType) {
+    	
         passStates[renderStateType] = null;
+    }
+
+    /**
+     * Clears an enforced render state by setting it to null. This allows
+     * object specific states to be used.
+     *
+     * @param type The type of {@link RenderState} to clear enforcement on.
+     */
+    public void clearPassState(RenderState.StateType type) {
+    	
+        passStates[type.ordinal()] = null;
     }
 
     /**
@@ -143,8 +170,8 @@ public class PassNodeState implements Savable, Serializable {
      *
      * @param context
      */
-    protected void applyPassStates(RenderContext context) {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+    protected void applyPassStates(RenderContext<?> context) {
+        for (int x = RenderState.StateType.values().length; --x >= 0;) {
             if (passStates[x] != null) {
                 savedStates[x] = context.enforcedStateList[x];
                 context.enforcedStateList[x] = passStates[x];
@@ -157,8 +184,8 @@ public class PassNodeState implements Savable, Serializable {
      *
      * @param context
      */
-    protected void resetOldStates(RenderContext context) {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+    protected void resetOldStates(RenderContext<?> context) {
+        for (int x = RenderState.StateType.values().length; --x >= 0;) {
             if (passStates[x] != null) {
                 context.enforcedStateList[x] = savedStates[x];
             }
@@ -203,7 +230,7 @@ public class PassNodeState implements Savable, Serializable {
         zOffset = offset;
 	}
 
-    public Class getClassTag() {
+    public Class<?> getClassTag() {
         return this.getClass();
     }
 
@@ -222,7 +249,7 @@ public class PassNodeState implements Savable, Serializable {
 		zFactor = ic.readFloat("zFactor", 0);
 		zOffset = ic.readFloat("zOffset", 0);
 		Savable[] temp = ic.readSavableArray("passStates", null);
-		// XXX: Perhaps this should be redone to use the state type to place it
+		// TODO: Perhaps this should be redone to use the state type to place it
 		// in the right spot in the array?
 		passStates = new RenderState[temp.length];
 		for (int i = 0; i < temp.length; i++) {

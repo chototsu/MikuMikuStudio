@@ -57,68 +57,177 @@ import com.jme.util.export.Savable;
  */
 public abstract class RenderState implements Savable {
 
-    // TODO: Once we finish cleaning up states, make an enum
-//    public enum StateType {
-//        Blend,
-//        Fog,
-//        Light,
-//        Material,
-//        Shade,
-//        Texture,
-//        Wireframe,
-//        ZBuffer,
-//        Cull,
-//        Stencil,
-//        ColorMask,
-//        Clip;
-//    }
+	/**
+	 * Enumerates every possible {@link RenderState} type. 
+	 * 
+	 * @note The order of this enumeration matters as long as the deprecated 
+	 * integer render state types still exist, because the ordinal should map 
+	 * to the old values. When the deprecated integer types are removed, then 
+	 * we can re-order this enum.
+	 * 
+	 * @author Carter
+	 */
+	public static enum StateType {
+		
+		/** The value returned by getType() for BlendState. */
+        Blend(true),
+        
+        /** The value returned by getType() for FogState. */
+        Fog(false),
+        
+        /** The value returned by getType() for LightState. */
+        Light(false),
+        
+        /** The value returend by getType() for MaterialState. */
+        Material(false),
+        
+        /** The value returned by getType() for ShadeState. */
+        Shade(true),
+        
+        /** The value returned by getType() for TextureState. */
+        Texture(false),
+        
+        /** The value returned by getType() for WireframeState. */
+        Wireframe(false),
+        
+        /** The value returned by getType() for ZBufferState. */
+        ZBuffer(true),
+        
+        /** The value returned by getType() for CullState. */
+        Cull(true),
+        
+        /** The value returned by getType() for VertexProgramState. */
+        VertexProgram(true),
+        
+        /** The value returned by getType() for FragmentProgramState. */
+        FragmentProgram(true),
+        
+        /** The value returned by getType() for StencilState. */
+        Stencil(true),
+        
+        /** The value returned by getType() for GLSLShaderObjectsState. */
+        GLSLShaderObjects(true),
+        
+        /** The value returned by getType() for ColorMaskState. */ 
+        ColorMask(true),
+        
+        /** The value returned by getType() for ClipState. */
+        Clip(true);
+        
+        /**
+         * <p>
+         * If false, each renderstate of that type is always applied in the renderer
+         * and only field by field checks are done to minimize jni overhead. This is
+         * slower than setting to true, but relieves the programmer from situations
+         * where he has to remember to update the needsRefresh field of a state.
+         * </p>
+         * <p>
+         * If true, each renderstate of that type is checked for == with the last
+         * applied renderstate of the same type. If same and the state's
+         * needsRefresh method returns false, then application of the renderstate is
+         * skipped. This can be much faster than setting false, but in certain
+         * circumstances, the programmer must manually set needsRefresh (for
+         * example, in a FogState, if you call getFogColor().set(....) to change the
+         * color, the fogstate will not set the needsRefresh field. In non-quick
+         * compare mode, this is not a problem because it will go into the apply
+         * method and do an actual check of the current fog color in opengl vs. the
+         * color in the state being applied.)
+         * </p>
+         * <p>
+         * DEFAULTS:
+         * <ul>
+         * <li>Blend: true</li>
+         * <li>Clip: true</li>
+         * <li>ColorMask: true</li>
+         * <li>Cull: true</li>
+         * <li>Fog: false</li>
+         * <li>FragmentProgram: true</li>
+         * <li>GLSLShaderObjects: true</li>
+         * <li>Light: false</li>
+         * <li>Material: false</li>
+         * <li>Shade: true</li>
+         * <li>Stencil: true</li>
+         * <li>Texture: false</li>
+         * <li>VertexProgram: true</li>
+         * <li>Wireframe: false</li>
+         * <li>ZBuffer: true</li>\
+         * </ul>
+         */
+        private boolean quickCompare = false;
+        
+        private StateType(boolean quickCompare) {
+        	
+        	this.quickCompare = quickCompare;
+        }
+        
+        public boolean canQuickCompare() {
+        	
+            return quickCompare;
+        }
+    }
 
-    /** The value returned by getType() for BlendState. */
+    /** The value returned by getType() for BlendState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Blend} */
     public static final int RS_BLEND = 0;
 
-    /** The value returned by getType() for FogState. */
+    /** The value returned by getType() for FogState.
+     * @deprecated As of 2.0, use {@link RenderState.StateType#fog} */
     public static final int RS_FOG = 1;
 
-    /** The value returned by getType() for LightState. */
+    /** The value returned by getType() for LightState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Light} */
     public static final int RS_LIGHT = 2;
 
-    /** The value returend by getType() for MaterialState. */
+    /** The value returend by getType() for MaterialState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Material} */
     public static final int RS_MATERIAL = 3;
 
-    /** The value returned by getType() for ShadeState. */
+    /** The value returned by getType() for ShadeState.
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Shade} */
     public static final int RS_SHADE = 4;
 
-    /** The value returned by getType() for TextureState. */
+    /** The value returned by getType() for TextureState.
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Texture} */
     public static final int RS_TEXTURE = 5;
 
-    /** The value returned by getType() for WireframeState. */
+    /** The value returned by getType() for WireframeState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Wireframe} */
     public static final int RS_WIREFRAME = 6;
 
-    /** The value returned by getType() for ZBufferState. */
+    /** The value returned by getType() for ZBufferState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#ZBuffer} */
     public static final int RS_ZBUFFER = 7;
 
-    /** The value returned by getType() for CullState. */
+    /** The value returned by getType() for CullState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Cull} */
     public static final int RS_CULL = 8;
 
-    /** The value returned by getType() for VertexProgramState. */
+    /** The value returned by getType() for VertexProgramState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#VertexProgram} */
     public static final int RS_VERTEX_PROGRAM = 9;
 
-    /** The value returned by getType() for FragmentProgramState. */
+    /** The value returned by getType() for FragmentProgramState.
+     * @deprecated As of 2.0, use {@link RenderState.StateType#FragmentProgram} */
     public static final int RS_FRAGMENT_PROGRAM = 10;
 
-    /** The value returned by getType() for StencilState. */
+    /** The value returned by getType() for StencilState.
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Stencil} */
     public static final int RS_STENCIL = 11;
     
-    /** The value returned by getType() for ShaderObjectsState. */
+    /** The value returned by getType() for GLSLShaderObjectsState.
+     * @deprecated As of 2.0, use {@link RenderState.StateType#GLSLShaderObjects} */
     public static final int RS_GLSL_SHADER_OBJECTS = 12;
 
-    /** The value returned by getType() for ColorMaskState. */    
+    /** The value returned by getType() for ColorMaskState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#ColorMask} */
     public static final int RS_COLORMASK_STATE = 13; 
 
-    /** The value returned by getType() for ClipState. */
+    /** The value returned by getType() for ClipState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType#Clip} */
     public static final int RS_CLIP = 14;
 
-    /** The total number of diffrent types of RenderState. */
+    /** The total number of diffrent types of RenderState. 
+     * @deprecated As of 2.0, use {@link RenderState.StateType} */
     public static final int RS_MAX_STATE = 15;
 
     /**
@@ -161,6 +270,7 @@ public abstract class RenderState implements Savable {
      * <li>RS_COLORMASK_STATE: true</li>
      * <li>RS_CLIP: true</li>
      * </ul>
+     * @deprecated As of 2.0, use {@link StateType} instead.
      */
     public static boolean[] QUICK_COMPARE = new boolean[RS_MAX_STATE];
     static {
@@ -180,7 +290,7 @@ public abstract class RenderState implements Savable {
         QUICK_COMPARE[RS_COLORMASK_STATE] = true;
         QUICK_COMPARE[RS_CLIP] = true;
     }
-    
+
     private boolean enabled = true;
 
     private boolean needsRefresh = false;
@@ -196,8 +306,17 @@ public abstract class RenderState implements Savable {
      * For example, RS_CULL or RS_TEXTURE.
      * 
      * @return An int identifying this render state.
+     * @deprecated Use {@link #getStateType()} instead.
      */
     public abstract int getType();
+    
+    /**
+     * Defined by the subclass, this returns a StateType value identifying the renderstate.
+     * For example, StateType.Cull or StateType.Texture.
+     * 
+     * @return A StateType value identifying this render state.
+     */
+    public abstract StateType getStateType();
 
     /**
      * Returns if this render state is enabled during rendering. Disabled states
@@ -232,7 +351,7 @@ public abstract class RenderState implements Savable {
     /**
      * Extracts from the stack the correct renderstate that should apply to the
      * given spatial. This is mainly used for RenderStates that can be
-     * cumulitive such as TextureState or LightState. By default, the top of the
+     * cumulative such as TextureState or LightState. By default, the top of the
      * static is returned. This function should not be called by users directly.
      * 
      * @param stack
@@ -241,10 +360,11 @@ public abstract class RenderState implements Savable {
      *            The spatial to apply the render states too.
      * @return The render state to use.
      */
-    public RenderState extract(Stack stack, Spatial spat) {
+    public RenderState extract(Stack<? extends RenderState> stack, Spatial spat) {
+    	
         // The default behavior is to return the top of the stack, the last item
-        // pushed during the recursive traveral.
-        return (RenderState) stack.peek();
+        // pushed during the recursive traversal.
+        return stack.peek();
     }
     
     public void write(JMEExporter e) throws IOException {
@@ -257,7 +377,7 @@ public abstract class RenderState implements Savable {
         enabled = capsule.readBoolean("enabled", true);
     }
     
-    public Class getClassTag() {
+    public Class<?> getClassTag() {
         return this.getClass();
     }
 
@@ -287,6 +407,10 @@ public abstract class RenderState implements Savable {
      * @param enabled
      */
     public static void setQuickCompares(boolean enabled) {
-        Arrays.fill(QUICK_COMPARE, enabled);
+        
+    	Arrays.fill(QUICK_COMPARE, enabled);
+        
+        for(StateType type : StateType.values())
+        	type.quickCompare = enabled;
     }
 }

@@ -58,11 +58,10 @@ public class JOGLCullState extends CullState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
-        CullStateRecord record = (CullStateRecord) context
-                .getStateRecord(RS_CULL);
-        context.currentStates[RS_CULL] = this;
+        CullStateRecord record = (CullStateRecord) context.getStateRecord(StateType.Cull);
+        context.currentStates[StateType.Cull.ordinal()] = this;
 
         if (isEnabled()) {
             Face useCullMode = getCullFace();

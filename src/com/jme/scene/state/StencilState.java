@@ -34,6 +34,7 @@ package com.jme.scene.state;
 
 import java.io.IOException;
 
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -155,9 +156,21 @@ public abstract class StencilState extends RenderState {
      * Returns RS_STENCIL
      * 
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_STENCIL;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#Stencil}
+     * 
+     * @return {@link RenderState.StateType#Stencil}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.Stencil;
     }
 
     /**

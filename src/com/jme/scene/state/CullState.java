@@ -34,6 +34,7 @@ package com.jme.scene.state;
 
 import java.io.IOException;
 
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -91,9 +92,21 @@ public abstract class CullState extends RenderState {
      * 
      * @return RenderState.RS_CULL
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_CULL;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#Cull}
+     * 
+     * @return {@link RenderState.StateType#Cull}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.Cull;
     }
 
     /**

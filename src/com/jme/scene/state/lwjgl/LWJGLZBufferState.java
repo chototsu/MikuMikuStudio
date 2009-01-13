@@ -58,11 +58,9 @@ public class LWJGLZBufferState extends ZBufferState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        ZBufferStateRecord record = (ZBufferStateRecord) context
-                .getStateRecord(RS_ZBUFFER);
-        context.currentStates[RS_ZBUFFER] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        ZBufferStateRecord record = (ZBufferStateRecord) context.getStateRecord(StateType.ZBuffer);
+        context.currentStates[StateType.ZBuffer.ordinal()] = this;
 
         enableDepthTest(isEnabled(), record);
         if (isEnabled()) {

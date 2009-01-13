@@ -93,7 +93,7 @@ public class TestInputHandler extends SimpleGame {
                         Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear )
         );
         cursor.setRenderState( cursorTextureState );
-        cursor.setRenderState( text1.getRenderState( RenderState.RS_BLEND ) );
+        cursor.setRenderState( text1.getRenderState( RenderState.StateType.Blend ) );
         cursor.registerWithInputHandler( input );
         rootNode.attachChild( cursor );
 

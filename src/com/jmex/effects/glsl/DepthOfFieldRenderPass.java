@@ -119,7 +119,7 @@ public class DepthOfFieldRenderPass extends Pass {
      * A place to internally save previous enforced states setup before
      * rendering this pass
      */
-    private RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];
+    private RenderState[] preStates = new RenderState[RenderState.StateType.values().length];
     /** A utility to render the spatials added in one texture render */
     private final SpatialsRenderNode spatialsRenderNode = new SpatialsRenderNode();
 
@@ -270,7 +270,7 @@ public class DepthOfFieldRenderPass extends Pass {
      * pass.
      */
     protected void saveEnforcedStates() {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+        for (int x = RenderState.StateType.values().length; --x >= 0;) {
             preStates[x] = context.enforcedStateList[x];
         }
     }
@@ -279,7 +279,7 @@ public class DepthOfFieldRenderPass extends Pass {
      * replaces any states enforced by the user at the end of the pass.
      */
     protected void replaceEnforcedStates() {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+        for (int x = RenderState.StateType.values().length; --x >= 0;) {
             context.enforcedStateList[x] = preStates[x];
         }
     }
@@ -292,8 +292,8 @@ public class DepthOfFieldRenderPass extends Pass {
             return;
         }
 
-        BlendState as = (BlendState) fullScreenQuad.states[RenderState.RS_BLEND];
-        TextureState ts = (TextureState) fullScreenQuad.states[RenderState.RS_TEXTURE];
+        BlendState as = (BlendState) fullScreenQuad.states[RenderState.StateType.Blend.ordinal()];
+        TextureState ts = (TextureState) fullScreenQuad.states[RenderState.StateType.Texture.ordinal()];
 
         if (throttle < sinceLast) {
             sinceLast = 0;
@@ -317,7 +317,7 @@ public class DepthOfFieldRenderPass extends Pass {
             dofShader.setUniform("scene", 0);
             dofShader.setUniform("depth", 1);
             dofShader.setUniform("sampleDist0", getBlurSize());
-            fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = dofShader;
+            fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = dofShader;
             ts.setTexture(screenTexture, 0);
             ts.setTexture(depthTexture, 1);
             fullScreenQuad.setRenderState(ts);
@@ -331,7 +331,7 @@ public class DepthOfFieldRenderPass extends Pass {
         // Final blend
         as.setEnabled(true);
 
-        fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
+        fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = finalShader;
         r.draw(fullScreenQuad);
     }
 

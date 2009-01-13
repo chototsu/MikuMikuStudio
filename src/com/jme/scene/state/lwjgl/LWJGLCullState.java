@@ -56,11 +56,9 @@ public class LWJGLCullState extends CullState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        CullStateRecord record = (CullStateRecord) context
-                .getStateRecord(RS_CULL);
-        context.currentStates[RS_CULL] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        CullStateRecord record = (CullStateRecord) context.getStateRecord(StateType.Cull);
+        context.currentStates[StateType.Cull.ordinal()] = this;
 
         if (isEnabled()) {
             Face useCullMode = getCullFace();

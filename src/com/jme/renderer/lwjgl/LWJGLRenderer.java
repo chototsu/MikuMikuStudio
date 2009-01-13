@@ -436,8 +436,8 @@ public class LWJGLRenderer extends Renderer {
      * @see com.jme.renderer.Renderer#clearZBuffer()
      */
     public void clearZBuffer() {
-        if (Renderer.defaultStateList[RenderState.RS_ZBUFFER] != null)
-            Renderer.defaultStateList[RenderState.RS_ZBUFFER].apply();
+        if (Renderer.defaultStateList[RenderState.StateType.ZBuffer.ordinal()] != null)
+            Renderer.defaultStateList[RenderState.StateType.ZBuffer.ordinal()].apply();
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
     }
 
@@ -473,9 +473,9 @@ public class LWJGLRenderer extends Renderer {
      */
     public void clearBuffers() {
         // make sure no funny business is going on in the z before clearing.
-        if (Renderer.defaultStateList[RenderState.RS_ZBUFFER] != null) {
-            Renderer.defaultStateList[RenderState.RS_ZBUFFER].setNeedsRefresh(true);
-            Renderer.defaultStateList[RenderState.RS_ZBUFFER].apply();
+        if (Renderer.defaultStateList[RenderState.StateType.ZBuffer.ordinal()] != null) {
+            Renderer.defaultStateList[RenderState.StateType.ZBuffer.ordinal()].setNeedsRefresh(true);
+            Renderer.defaultStateList[RenderState.StateType.ZBuffer.ordinal()].apply();
         }
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
@@ -504,7 +504,7 @@ public class LWJGLRenderer extends Renderer {
     public void displayBackBuffer() {
         renderQueue();
 
-        Renderer.defaultStateList[RenderState.RS_COLORMASK_STATE].apply();
+        Renderer.defaultStateList[RenderState.StateType.ColorMask.ordinal()].apply();
 
         reset();
 
@@ -1443,7 +1443,7 @@ public class LWJGLRenderer extends Renderer {
             colors.limit(oldLimit);
         prevColor = colors;
 
-        TextureState ts = (TextureState) context.currentStates[RenderState.RS_TEXTURE];
+        TextureState ts = (TextureState) context.currentStates[RenderState.StateType.Texture.ordinal()];
         int offset = 0;
         if (ts != null) {
             offset = ts.getTextureCoordinateOffset();
@@ -1615,8 +1615,8 @@ public class LWJGLRenderer extends Renderer {
         // invalidate states -- this makes sure things like line stipple get
         // called in list.
         context.invalidateStates();
-        RenderState oldTS = context.currentStates[RenderState.RS_TEXTURE];
-        context.currentStates[RenderState.RS_TEXTURE] = g.states[RenderState.RS_TEXTURE];
+        RenderState oldTS = context.currentStates[RenderState.StateType.Texture.ordinal()];
+        context.currentStates[RenderState.StateType.Texture.ordinal()] = g.states[RenderState.StateType.Texture.ordinal()];
         GL11.glNewList(listID, GL11.GL_COMPILE);
         if (g instanceof TriMesh)
             draw((TriMesh) g);
@@ -1627,7 +1627,7 @@ public class LWJGLRenderer extends Renderer {
         else if (g instanceof Point)
             draw((Point) g);
         GL11.glEndList();
-        context.currentStates[RenderState.RS_TEXTURE] = oldTS;
+        context.currentStates[RenderState.StateType.Texture.ordinal()] = oldTS;
         generatingDisplayList = false;
 
         return listID;
@@ -1702,10 +1702,10 @@ public class LWJGLRenderer extends Renderer {
 
         // TODO: To be used for the attribute shader solution
         if (geom != null) {
-            GLSLShaderObjectsState shaderState = (GLSLShaderObjectsState) (context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] != null ? context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS]
-                    : states[RenderState.RS_GLSL_SHADER_OBJECTS]);
+            GLSLShaderObjectsState shaderState = (GLSLShaderObjectsState) (context.enforcedStateList[RenderState.StateType.GLSLShaderObjects.ordinal()] != null ? context.enforcedStateList[RenderState.StateType.GLSLShaderObjects.ordinal()]
+                    : states[RenderState.StateType.GLSLShaderObjects.ordinal()]);
             if (shaderState != null
-                    && shaderState != defaultStateList[RenderState.RS_GLSL_SHADER_OBJECTS]) {
+                    && shaderState != defaultStateList[RenderState.StateType.GLSLShaderObjects.ordinal()]) {
                 shaderState.setGeometry(geom);
                 shaderState.setNeedsRefresh(true);
             }
@@ -1717,7 +1717,7 @@ public class LWJGLRenderer extends Renderer {
                     : states[i];
 
             if (tempState != null) {
-                if (!RenderState.QUICK_COMPARE[i] || tempState.needsRefresh()
+                if (!tempState.getStateType().canQuickCompare() || tempState.needsRefresh()
                         || tempState != context.currentStates[i]) {
                     tempState.apply();
                     tempState.setNeedsRefresh(false);

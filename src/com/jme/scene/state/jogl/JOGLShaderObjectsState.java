@@ -309,8 +309,8 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
             RenderContext<?> context = DisplaySystem.getDisplaySystem()
                     .getCurrentContext();
             ShaderObjectsStateRecord record = (ShaderObjectsStateRecord) context
-                    .getStateRecord(RS_GLSL_SHADER_OBJECTS);
-            context.currentStates[RS_GLSL_SHADER_OBJECTS] = this;
+                    .getStateRecord(StateType.GLSLShaderObjects);
+            context.currentStates[StateType.GLSLShaderObjects.ordinal()] = this;
 
             if (needSendShader){
                 sendToGL(vertShader, fragShader);

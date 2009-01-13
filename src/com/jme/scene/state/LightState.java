@@ -38,6 +38,7 @@ import java.util.ArrayList;
 
 import com.jme.light.Light;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -138,9 +139,21 @@ public abstract class LightState extends RenderState {
      * (RS_LIGHT).
      * 
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_LIGHT;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#Light}
+     * 
+     * @return {@link RenderState.StateType#Light}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.Light;
     }
 
     /**

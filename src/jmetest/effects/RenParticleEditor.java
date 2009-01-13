@@ -731,8 +731,7 @@ public class RenParticleEditor extends JFrame {
 
     private void setTexturePathsRelative(Spatial spatial, File parent,
             boolean relative) {
-        TextureState tstate = (TextureState) spatial
-                .getRenderState(RenderState.RS_TEXTURE);
+        TextureState tstate = (TextureState) spatial.getRenderState(RenderState.StateType.Texture);
         if (tstate != null) {
             Texture tex = tstate.getTexture();
             if (tex != null
@@ -814,8 +813,7 @@ public class RenParticleEditor extends JFrame {
         particleGeom.setEndColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 0.0f));
         particleGeom.warmUp(120);
 
-        BlendState as = (BlendState) particleGeom
-                .getRenderState(RenderState.RS_BLEND);
+        BlendState as = (BlendState) particleGeom.getRenderState(RenderState.StateType.Blend);
         if (as == null) {
             as = DisplaySystem.getDisplaySystem().getRenderer()
                     .createBlendState();

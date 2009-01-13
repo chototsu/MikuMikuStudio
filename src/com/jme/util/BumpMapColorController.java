@@ -98,7 +98,7 @@ public class BumpMapColorController extends Controller {
             }
 
             // Ok, grab the first light on the mesh:
-            LightState ls = (LightState) mesh.states[RenderState.RS_LIGHT];
+            LightState ls = (LightState) mesh.states[RenderState.StateType.Light.ordinal()];
             if (ls == null || ls.getQuantity() < 1 || ls.get(0) == null)
                 continue;
 

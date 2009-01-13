@@ -177,7 +177,7 @@ public class HelloLOD extends SimpleGame {
                 acm.setDistanceTolerance(2);
 
                 // Give the clodMesh node the material state that the original had.
-                acm.setRenderState(child.getRenderState(RenderState.RS_MATERIAL));
+                acm.setRenderState(child.getRenderState(RenderState.StateType.Material));
 
                 // Attach clod node.
                 clodNode.attachChild(acm);

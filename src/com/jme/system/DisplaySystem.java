@@ -753,10 +753,12 @@ public abstract class DisplaySystem {
      *            The renderer to get the default states from.
      */
     public static void updateStates(Renderer r) {
-        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            Renderer.defaultStateList[i] = r.createState(i);
-            Renderer.defaultStateList[i].setEnabled(false);
-        }
+    	
+    	for (RenderState.StateType type : RenderState.StateType.values()) {
+    		
+    		Renderer.defaultStateList[type.ordinal()] = r.createState(type);
+    		Renderer.defaultStateList[type.ordinal()].setEnabled(false);
+    	}
     }
 
     /**

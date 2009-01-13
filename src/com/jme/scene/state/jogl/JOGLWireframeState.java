@@ -63,12 +63,11 @@ public class JOGLWireframeState extends WireframeState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
-        WireframeStateRecord record = (WireframeStateRecord) context
-                .getStateRecord(RS_WIREFRAME);
+        WireframeStateRecord record = (WireframeStateRecord) context.getStateRecord(StateType.Wireframe);
         LineRecord lineRecord = (LineRecord) context.getLineRecord();
-        context.currentStates[RS_WIREFRAME] = this;
+        context.currentStates[StateType.Wireframe.ordinal()] = this;
 
         if (isEnabled()) {
             lineRecord.applyLineWidth(lineWidth);

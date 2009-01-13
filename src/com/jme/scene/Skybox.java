@@ -124,7 +124,7 @@ public class Skybox extends Node {
             throw new IllegalArgumentException("Face can not be null.");
         }
 
-        skyboxQuads[face.ordinal()].clearRenderState(RenderState.RS_TEXTURE);
+        skyboxQuads[face.ordinal()].clearRenderState(RenderState.StateType.Texture);
         setTexture(face, texture, 0);
     }
 
@@ -146,8 +146,7 @@ public class Skybox extends Node {
             throw new IllegalArgumentException("Face can not be null.");
         }
 
-        TextureState ts = (TextureState) skyboxQuads[face.ordinal()]
-                .getRenderState(RenderState.RS_TEXTURE);
+        TextureState ts = (TextureState) skyboxQuads[face.ordinal()].getRenderState(RenderState.StateType.Texture);
         if (ts == null) {
             ts = DisplaySystem.getDisplaySystem().getRenderer()
                     .createTextureState();
@@ -167,7 +166,7 @@ public class Skybox extends Node {
         if (face == null) {
             throw new IllegalArgumentException("Face can not be null.");
         }
-        return ((TextureState)skyboxQuads[face.ordinal()].getRenderState(RenderState.RS_TEXTURE)).getTexture();
+        return ((TextureState)skyboxQuads[face.ordinal()].getRenderState(RenderState.StateType.Texture)).getTexture();
     }
 
     private void initialize() {
@@ -248,7 +247,7 @@ public class Skybox extends Node {
     }
     
     public void preloadTexture(Face face) {
-    	TextureState ts = (TextureState) skyboxQuads[face.ordinal()].getRenderState(RenderState.RS_TEXTURE);
+    	TextureState ts = (TextureState) skyboxQuads[face.ordinal()].getRenderState(RenderState.StateType.Texture);
     	if(ts != null) {
     		ts.apply();
     	}
@@ -260,8 +259,7 @@ public class Skybox extends Node {
      */
     public void preloadTextures() {
         for (int x = 0; x < 6; x++) {
-            TextureState ts = (TextureState) skyboxQuads[x]
-                    .getRenderState(RenderState.RS_TEXTURE);
+            TextureState ts = (TextureState) skyboxQuads[x].getRenderState(RenderState.StateType.Texture);
             if (ts != null)
                 ts.apply();
         }

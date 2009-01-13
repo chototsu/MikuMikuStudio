@@ -369,7 +369,7 @@ final public class TextureManager {
         TextureState state = null;
         if (DisplaySystem.getDisplaySystem() != null
                 && DisplaySystem.getDisplaySystem().getRenderer() != null) {
-            state = (TextureState) Renderer.defaultStateList[RenderState.RS_TEXTURE];
+            state = (TextureState) Renderer.defaultStateList[RenderState.StateType.Texture.ordinal()];
         }
 
         // we've already guessed the format. override if given.
@@ -542,6 +542,7 @@ final public class TextureManager {
      * @param imageIn
      * @return
      * @throws java.io.IOException
+     * TODO Does this need to be removed?
      */
     private static BufferedImage readImage(String fileExt, InputStream imageIn)
             throws IOException {
@@ -838,7 +839,7 @@ final public class TextureManager {
                 || DisplaySystem.getDisplaySystem().getRenderer() == null)
             return;
         
-        TextureState ts = (TextureState)Renderer.defaultStateList[RenderState.RS_TEXTURE];
+        TextureState ts = (TextureState)Renderer.defaultStateList[RenderState.StateType.Texture.ordinal()];
         for (Integer i : cleanupStore) {
             if (i != null) {
                 try {
@@ -854,7 +855,7 @@ final public class TextureManager {
                 || DisplaySystem.getDisplaySystem().getRenderer() == null)
             return;
 
-        TextureState ts = (TextureState)Renderer.defaultStateList[RenderState.RS_TEXTURE];
+        TextureState ts = (TextureState)Renderer.defaultStateList[RenderState.StateType.Texture.ordinal()];
         try {
             ts.deleteTextureId(tex.getTextureId());
         } catch (Exception e) {

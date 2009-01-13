@@ -115,7 +115,7 @@ public class TestMultiFaceBox extends SimpleGame {
                             Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear, 1, false);
                     ts.setTexture(t);
                     TextureState oldTs = (TextureState) s
-                            .getRenderState(RenderState.RS_TEXTURE);
+                            .getRenderState(RenderState.StateType.Texture);
                     if (oldTs != null) {
                         TextureManager.releaseTexture(oldTs.getTexture());
                         oldTs.deleteAll(true);

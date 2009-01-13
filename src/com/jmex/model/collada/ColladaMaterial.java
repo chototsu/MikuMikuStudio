@@ -59,7 +59,7 @@ public class ColladaMaterial {
     
 
     public ColladaMaterial() {
-        stateList = new RenderState[RenderState.RS_MAX_STATE];
+        stateList = new RenderState[RenderState.StateType.values().length];
     }
     
     public void addController(Controller c) {
@@ -76,11 +76,18 @@ public class ColladaMaterial {
 
     public void setState(RenderState ss) {
     	if(ss == null) return;
-        stateList[ss.getType()] = ss;
+        stateList[ss.getStateType().ordinal()] = ss;
     }
 
+    /**
+     * @deprecated As of 2.0, use {@link #getState(com.jme.scene.state.RenderState.StateType)} instead.
+     */
     public RenderState getState(int index) {
         return stateList[index];
+    }
+
+    public RenderState getState(RenderState.StateType type) {
+        return stateList[type.ordinal()];
     }
     
     public MagnificationFilter getMagFilterConstant() {

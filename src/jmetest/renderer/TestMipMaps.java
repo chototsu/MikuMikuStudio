@@ -239,8 +239,8 @@ public class TestMipMaps extends SimpleGame {
     }
 
     private void stripTexturesAndMaterials(Spatial sp) {
-        sp.clearRenderState(RenderState.RS_TEXTURE);
-        sp.clearRenderState(RenderState.RS_MATERIAL);
+        sp.clearRenderState(RenderState.StateType.Texture);
+        sp.clearRenderState(RenderState.StateType.Material);
         if (sp instanceof Node) {
             Node n = (Node) sp;
             for (Spatial child : n.getChildren()) {

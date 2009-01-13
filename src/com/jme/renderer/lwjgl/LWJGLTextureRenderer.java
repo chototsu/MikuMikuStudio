@@ -479,8 +479,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         // Setup filtering and wrap
         RenderContext<?> context = display.getCurrentContext();
-        TextureStateRecord record = (TextureStateRecord) context
-                .getStateRecord(RenderState.RS_TEXTURE);
+        TextureStateRecord record = (TextureStateRecord) context.getStateRecord(RenderState.StateType.Texture);
         TextureRecord texRecord = record.getTextureRecord(tex.getTextureId(), tex.getType());
 
         LWJGLTextureState.applyFilter(tex, texRecord, 0, record);

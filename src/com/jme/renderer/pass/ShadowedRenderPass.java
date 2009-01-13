@@ -139,7 +139,7 @@ public class ShadowedRenderPass extends Pass {
     * a place to internally save previous enforced states setup before
     * rendering this pass
     */
-   protected RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];
+   protected RenderState[] preStates = new RenderState[RenderState.StateType.values().length];
 
    protected int quadWidth = -1, quadHeight = -1;
 
@@ -447,7 +447,7 @@ public class ShadowedRenderPass extends Pass {
    protected void getShadowLights(Spatial s) {
        if (s instanceof Geometry) {
            Geometry g = (Geometry)s;
-           LightState ls = (LightState)g.states[RenderState.RS_LIGHT];
+           LightState ls = (LightState)g.states[RenderState.StateType.Light.ordinal()];
            if (ls != null) {
                for (int q = ls.getQuantity(); --q >= 0;) {
                    Light l = ls.get(q);
@@ -505,7 +505,7 @@ public class ShadowedRenderPass extends Pass {
     * pass.
     */
    protected void saveEnforcedStates() {
-       for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+       for (int x = RenderState.StateType.values().length; --x >= 0;) {
            preStates[x] = context.enforcedStateList[x];
        }
    }
@@ -514,7 +514,7 @@ public class ShadowedRenderPass extends Pass {
     * replaces any states enforced by the user at the end of the pass.
     */
    protected void replaceEnforcedStates() {
-       for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+       for (int x = RenderState.StateType.values().length; --x >= 0;) {
            context.enforcedStateList[x] = preStates[x];
        }
    }
@@ -533,7 +533,7 @@ public class ShadowedRenderPass extends Pass {
             MeshShadows sv = meshes.get(mesh);
 
             // Create the geometry for the shadow volume
-            sv.createGeometry((LightState) mesh.states[RenderState.RS_LIGHT]);
+            sv.createGeometry((LightState) mesh.states[RenderState.StateType.Light.ordinal()]);
         }
     }
 

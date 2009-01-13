@@ -71,11 +71,9 @@ public class JOGLMaterialState extends MaterialState {
         final GL gl = GLU.getCurrentGL();
 
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        MaterialStateRecord record = (MaterialStateRecord) context
-                .getStateRecord(RS_MATERIAL);
-        context.currentStates[RS_MATERIAL] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        MaterialStateRecord record = (MaterialStateRecord) context.getStateRecord(StateType.Material);
+        context.currentStates[StateType.Material.ordinal()] = this;
 
         if(isEnabled()) {
 	        int face = getGLMaterialFace(getMaterialFace());

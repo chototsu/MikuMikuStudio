@@ -739,7 +739,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
     private Camera oldCamera;
     private int oldWidth, oldHeight;
 
-    private RenderContext oldContext;
+    private RenderContext<?> oldContext;
     private void switchCameraIn(boolean doClear) {
         // grab non-rtt settings
         oldCamera = parentRenderer.getCamera();

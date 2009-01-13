@@ -121,7 +121,7 @@ public abstract class Renderer {
     protected int height;
 
     /** List of default states all spatials take if none is set. */
-    public static final RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
+    public static final RenderState[] defaultStateList = new RenderState[RenderState.StateType.values().length];
 
     /**
      * <code>setCamera</code> sets the reference to the applications camera
@@ -681,38 +681,53 @@ public abstract class Renderer {
      * @param type
      *            one of RenderState.RS_****
      * @return the new RenderState or null if an invalid type is given.
+     * @deprecated As of 2.0, use {@link #createState(com.jme.scene.state.RenderState.StateType)} instead.
      */
     public RenderState createState(int type) {
+    	
+    	return createState(RenderState.StateType.values()[type]);
+    }
+
+
+    /**
+     * Create a {@link RenderState} via a given {@link RenderState.StateType} type.
+     * 
+     * @param types
+     *            one of {@link RenderState.StateType} types
+     * @return the new {@link RenderState} or null if an invalid type is given.
+     */
+    public RenderState createState(RenderState.StateType type) {
+    	
         switch (type) {
-            case RenderState.RS_BLEND:
+            case Blend:
                 return createBlendState();
-            case RenderState.RS_CLIP:
+            case Clip:
                 return createClipState();
-            case RenderState.RS_COLORMASK_STATE:
+            case ColorMask:
                 return createColorMaskState();
-            case RenderState.RS_CULL:
+            case Cull:
                 return createCullState();
-            case RenderState.RS_FOG:
+            case Fog:
                 return createFogState();
-            case RenderState.RS_FRAGMENT_PROGRAM:
+            case FragmentProgram:
                 return createFragmentProgramState();
-            case RenderState.RS_GLSL_SHADER_OBJECTS:
+            case GLSLShaderObjects:
                 return createGLSLShaderObjectsState();
-            case RenderState.RS_LIGHT:
+            case Light:
                 return createLightState();
-            case RenderState.RS_MATERIAL:
+            case Material:
                 return createMaterialState();
-            case RenderState.RS_SHADE:
+            case Shade:
                 return createShadeState();
-            case RenderState.RS_STENCIL:
+            case Stencil:
                 return createStencilState();
-            case RenderState.RS_TEXTURE:
+            case Texture:
                 return createTextureState();
-            case RenderState.RS_VERTEX_PROGRAM:
+            case VertexProgram:
                 return createVertexProgramState();
-            case RenderState.RS_WIREFRAME:
+            case Wireframe:
                 return createWireframeState();
-            case RenderState.RS_ZBUFFER:
+            case ZBuffer:
                 return createZBufferState();
             default:
                 return null;

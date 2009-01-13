@@ -113,7 +113,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * The compiled list of renderstates for this geometry, taking into account
      * ancestors' states - updated with updateRenderStates()
      */
-    public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
+    public RenderState[] states = new RenderState[RenderState.StateType.values().length];
 
     private LightState lightState;
     

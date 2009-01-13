@@ -57,11 +57,9 @@ public class LWJGLClipState extends ClipState {
      */
     public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        ClipStateRecord record = (ClipStateRecord) context
-                .getStateRecord(RS_CLIP);
-        context.currentStates[RS_CLIP] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        ClipStateRecord record = (ClipStateRecord) context.getStateRecord(StateType.Clip);
+        context.currentStates[StateType.Clip.ordinal()] = this;
 
         if (isEnabled()) {
             for (int i = 0; i < MAX_CLIP_PLANES; i++) {

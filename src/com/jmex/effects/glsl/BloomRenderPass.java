@@ -250,13 +250,13 @@ public class BloomRenderPass extends Pass {
             return;
         }
 
-        BlendState as = (BlendState) fullScreenQuad.states[RenderState.RS_BLEND];
+        BlendState as = (BlendState) fullScreenQuad.states[RenderState.StateType.Blend.ordinal()];
 
         if (sinceLast > throttle) {
             sinceLast = 0;
 
             as.setEnabled(false);
-            TextureState ts = (TextureState) fullScreenQuad.states[RenderState.RS_TEXTURE];
+            TextureState ts = (TextureState) fullScreenQuad.states[RenderState.StateType.Texture.ordinal()];
             
             // see if we should use the current scene to bloom, or only things added to the pass.
             if (useCurrentScene) {
@@ -275,7 +275,7 @@ public class BloomRenderPass extends Pass {
     		extractionShader.setUniform("exposurePow", getExposurePow());
     		extractionShader.setUniform("exposureCutoff", getExposureCutoff());
     
-            fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = extractionShader;
+            fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = extractionShader;
             tRenderer.render(fullScreenQuad, secondTexture);
         
             if (!useSeparateConvolution) {
@@ -283,7 +283,7 @@ public class BloomRenderPass extends Pass {
                 blurShader.setUniform("blurIntensityMultiplier",  getBlurIntensityMultiplier());
 
                 ts.setTexture(secondTexture, 0);
-                fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShader;
+                fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = blurShader;
                 tRenderer.render(fullScreenQuad, mainTexture);
 
                 //Extra blur passes
@@ -311,9 +311,9 @@ public class BloomRenderPass extends Pass {
                     blurShaderVertical.setUniform("sampleDist", getBlurSize() - (float)i*getBlurSize()/getNrBlurPasses());
 
                     ts.setTexture(secondTexture, 0);
-                    fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShaderHorizontal;
+                    fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = blurShaderHorizontal;
                     ts.setTexture(mainTexture, 0);
-                    fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShaderVertical;
+                    fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = blurShaderVertical;
                     tRenderer.render(fullScreenQuad, secondTexture);
                 }
                 ts.setTexture(secondTexture, 0);
@@ -323,7 +323,7 @@ public class BloomRenderPass extends Pass {
 		//Final blend
 		as.setEnabled(true);
         
-        fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
+        fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = finalShader;
         r.draw(fullScreenQuad);
 	}
 

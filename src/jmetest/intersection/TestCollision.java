@@ -35,7 +35,7 @@ package jmetest.intersection;
 import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
-import com.jme.bounding.BoundingCapsule;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
 import com.jme.intersection.BoundingCollisionResults;
 import com.jme.intersection.CollisionResults;
@@ -127,7 +127,7 @@ public class TestCollision extends SimpleGame {
 		n1.calculateCollisions(scene, results);
 		
 		if(n1.hasCollision(scene, false)) {
-			logger.info("hasCollision also reports true");
+			//logger.info("hasCollision also reports true");
 		}
 	}
 
@@ -164,13 +164,13 @@ public class TestCollision extends SimpleGame {
 		n2 = new Node("Node 2");
 		
 		t = new Box("Box 1", min, max);
-		t.setModelBound(new BoundingCapsule());
+		t.setModelBound(new OrientedBoundingBox());
 		t.updateModelBound();
 		t.setLocalTranslation(new Vector3f(0, 30, 0));
         t.setLocalScale(new Vector3f(1,2,3));
 
 		t2 = new Box("Box 2", min, max);
-		t2.setModelBound(new BoundingCapsule());
+		t2.setModelBound(new OrientedBoundingBox());
 		t2.updateModelBound();
 		t2.setLocalTranslation(new Vector3f(30, 0, 0));
 		n1.attachChild(t);

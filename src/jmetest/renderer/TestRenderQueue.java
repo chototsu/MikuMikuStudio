@@ -270,7 +270,7 @@ public class TestRenderQueue extends SimpleGame {
         zstate.setEnabled(false);
         orthos.setRenderState(zstate);
 
-        orthos.setRenderState(Renderer.defaultStateList[RenderState.RS_LIGHT]);
+        orthos.setRenderState(Renderer.defaultStateList[RenderState.StateType.Light.ordinal()]);
 
         // XXX: This is CullHint.Always because we want to explicity control how it's children are drawn for purposes of this demonstration.
         rootNode.setCullHint(Spatial.CullHint.Always);

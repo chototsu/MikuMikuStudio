@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -108,9 +109,21 @@ public abstract class VertexProgramState extends RenderState {
     /**
      * @return RS_VERTEX_PROGRAM
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_VERTEX_PROGRAM;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#VertexProgram}
+     * 
+     * @return {@link RenderState.StateType#VertexProgram}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.VertexProgram;
     }
 
     /**

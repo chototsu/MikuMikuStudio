@@ -150,7 +150,7 @@ public class DirectionalShadowMapPass extends Pass {
      * A place to internally save previous enforced states setup before
      * rendering this pass
      */
-    private RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];
+    private RenderState[] preStates = new RenderState[RenderState.StateType.values().length];
 
     /** The colour of shadows cast */
     private ColorRGBA shadowCol = new ColorRGBA(0, 0, 0, 0.3f);
@@ -271,7 +271,7 @@ public class DirectionalShadowMapPass extends Pass {
      * pass.
      */
     protected void saveEnforcedStates() {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+        for (int x = RenderState.StateType.values().length; --x >= 0;) {
             preStates[x] = context.enforcedStateList[x];
         }
     }
@@ -280,7 +280,7 @@ public class DirectionalShadowMapPass extends Pass {
      * replaces any states enforced by the user at the end of the pass.
      */
     protected void replaceEnforcedStates() {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
+        for (int x = RenderState.StateType.values().length; --x >= 0;) {
             context.enforcedStateList[x] = preStates[x];
         }
     }

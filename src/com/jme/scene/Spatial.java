@@ -898,9 +898,10 @@ public abstract class Spatial implements Serializable, Savable {
             parent.propagateStatesFromRoot(states);
 
         // push states onto current render state stack
-        for (int x = 0; x < RenderState.RS_MAX_STATE; x++)
-            if (getRenderState(x) != null)
-                states[x].push(getRenderState(x));
+        for (RenderState.StateType type : RenderState.StateType.values()) {
+            if (getRenderState(type) != null)
+                states[type.ordinal()].push(getRenderState(type));
+        }
     }
 
     /**
@@ -1495,14 +1496,14 @@ public abstract class Spatial implements Serializable, Savable {
         // first we need to get all the states from parent to us.
         if (initiator) {
             // grab all states from root to here.
-            parentStates = new Stack[RenderState.RS_MAX_STATE];
+            parentStates = new Stack[RenderState.StateType.values().length];
             for (int x = 0; x < parentStates.length; x++)
                 parentStates[x] = new Stack<RenderState>();
             propagateStatesFromRoot(parentStates);
         } else {
-            for (int x = 0; x < RenderState.RS_MAX_STATE; x++) {
-                if (getRenderState(x) != null)
-                    parentStates[x].push(getRenderState(x));
+            for (RenderState.StateType type : RenderState.StateType.values()) {
+                if (getRenderState(type) != null)
+                    parentStates[type.ordinal()].push(getRenderState(type));
             }
         }
 
@@ -1510,9 +1511,10 @@ public abstract class Spatial implements Serializable, Savable {
 
         // restore previous if we are not the initiator
         if (!initiator) {
-            for (int x = 0; x < RenderState.RS_MAX_STATE; x++)
-                if (getRenderState(x) != null)
-                    parentStates[x].pop();
+            for (RenderState.StateType type : RenderState.StateType.values()) {
+                if (getRenderState(type) != null)
+                	parentStates[type.ordinal()].pop();
+            }
         }
 
     }
@@ -1548,11 +1550,12 @@ public abstract class Spatial implements Serializable, Savable {
         }
 
         if (renderStateList == null) {
-            renderStateList = new RenderState[RenderState.RS_MAX_STATE];
+            renderStateList = new RenderState[RenderState.StateType.values().length];
         }
 
-        RenderState oldState = renderStateList[rs.getType()];
-        renderStateList[rs.getType()] = rs;
+        RenderState oldState = renderStateList[rs.getStateType().ordinal()];
+        renderStateList[rs.getStateType().ordinal()] = rs;
+        
         return oldState;
     }
 
@@ -1563,9 +1566,37 @@ public abstract class Spatial implements Serializable, Savable {
      * @param type
      *            the renderstate type to retrieve
      * @return a renderstate at the given position or null
+     * @deprecated As of 2.0, use {@link #getRenderState(com.jme.scene.state.RenderState.StateType)} instead.
      */
     public RenderState getRenderState(int type) {
         return renderStateList != null ? renderStateList[type] : null;
+    }
+
+    /**
+     * Returns the requested RenderState that this Spatial currently has set or
+     * null if none is set.
+     * 
+     * @param type
+     *            the {@link RenderState.StateType} to return
+     * @return a {@link RenderState} that matches the given {@link RenderState.StateType} or null
+     */
+    public RenderState getRenderState(RenderState.StateType type) {
+
+        return renderStateList != null ? renderStateList[type.ordinal()] : null;
+    }
+
+    /**
+     * Clears a given render state index by setting it to null.
+     * 
+     * @param renderStateType
+     *            The index of a RenderState to clear
+     * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link #clearRenderState(com.jme.scene.state.RenderState.StateType)} instead.
+     */
+    public void clearRenderState(int renderStateType) {
+        if (renderStateList != null) {
+            renderStateList[renderStateType] = null;
+        }
     }
 
     /**
@@ -1575,9 +1606,9 @@ public abstract class Spatial implements Serializable, Savable {
      *            The index of a RenderState to clear
      * @see com.jme.scene.state.RenderState#getType()
      */
-    public void clearRenderState(int renderStateType) {
+    public void clearRenderState(RenderState.StateType type) {
         if (renderStateList != null) {
-            renderStateList[renderStateType] = null;
+            renderStateList[type.ordinal()] = null;
         }
     }
 

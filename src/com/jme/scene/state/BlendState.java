@@ -321,9 +321,21 @@ public abstract class BlendState extends RenderState {
      * (RS_ALPHA).
      * 
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_BLEND;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#Blend}
+     * 
+     * @return {@link RenderState.StateType#Blend}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.Blend;
     }
 
     /**

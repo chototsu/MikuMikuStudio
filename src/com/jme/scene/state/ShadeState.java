@@ -34,6 +34,7 @@ package com.jme.scene.state;
 
 import java.io.IOException;
 
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -102,9 +103,21 @@ public abstract class ShadeState extends RenderState {
      * (RS_SHADE).
      * 
      * @see com.jme.scene.state.RenderState#getType()
+     * @deprecated As of 2.0, use {@link RenderState#getStateType()} instead.
      */
     public int getType() {
         return RS_SHADE;
+    }
+
+    /**
+     * <code>getStateType</code> returns the type {@link RenderState.StateType#Shade}
+     * 
+     * @return {@link RenderState.StateType#Shade}
+     * @see com.jme.scene.state.RenderState#getStateType()
+     */
+    public StateType getStateType() {
+    	
+        return StateType.Shade;
     }
 
     public void write(JMEExporter e) throws IOException {

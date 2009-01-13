@@ -233,7 +233,7 @@ public class TestNormalmap extends SimpleGame {
     }
 
     public static void removeMaterialStates(Node node) {
-        node.clearRenderState(RenderState.RS_MATERIAL);
+        node.clearRenderState(RenderState.StateType.Material);
 
         if (node.getQuantity() == 0) {
             return;
@@ -242,13 +242,13 @@ public class TestNormalmap extends SimpleGame {
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
             Spatial child = children.get(i);
             if (child != null) {
-                child.clearRenderState(RenderState.RS_MATERIAL);
+                child.clearRenderState(RenderState.StateType.Material);
                 if (child instanceof Node) {
                     removeMaterialStates((Node) child);
                 } else if (child instanceof SharedMesh) {
                     SharedMesh sharedMesh = (SharedMesh) child;
                     TriMesh t = sharedMesh.getTarget();
-                    t.clearRenderState(RenderState.RS_MATERIAL);
+                    t.clearRenderState(RenderState.StateType.Material);
                 }
             }
         }

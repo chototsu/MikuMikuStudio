@@ -56,7 +56,9 @@ import com.jme.scene.state.TextureState;
  */
 public abstract class Mouse extends Quad {
 
-    /**
+	private static final long serialVersionUID = -2865530220854857049L;
+
+	/**
      * the cursor's texture.
      */
     protected boolean hasCursor = false;
@@ -112,7 +114,7 @@ public abstract class Mouse extends Quad {
      * @return the old render state.
      */
     public RenderState setRenderState(RenderState rs) {
-        if (rs.getType() == RenderState.RS_TEXTURE) {
+        if (rs.getStateType() == RenderState.StateType.Texture) {
             hasCursor = true;
             imageHeight = ((TextureState) rs).getTexture().getImage()
                     .getHeight();

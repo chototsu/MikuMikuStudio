@@ -121,7 +121,7 @@ public class TestScenegraph extends SimpleGame {
 
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("notex",
                 false)) {
-            selectedNode.clearRenderState(RenderState.RS_TEXTURE);
+            selectedNode.clearRenderState(RenderState.StateType.Texture);
             rootNode.updateRenderState();
         }
 

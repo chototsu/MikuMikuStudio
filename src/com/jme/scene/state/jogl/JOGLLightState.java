@@ -83,11 +83,9 @@ public class JOGLLightState extends LightState {
      * @see com.jme.scene.state.RenderState#apply()
      */
     public void apply() {
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
-        LightStateRecord record = (LightStateRecord) context
-                .getStateRecord(RS_LIGHT);
-        context.currentStates[RS_LIGHT] = this;
+        RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        LightStateRecord record = (LightStateRecord) context.getStateRecord(StateType.Light);
+        context.currentStates[StateType.Light.ordinal()] = this;
 
         if (isEnabled() && LIGHTS_ENABLED && getQuantity() > 0) {
             setLightEnabled(true, record);
@@ -539,7 +537,7 @@ public class JOGLLightState extends LightState {
         return new LightStateRecord();
     }
 
-    public RenderState extract(Stack stack, Spatial spat) {
+    public RenderState extract(Stack<? extends RenderState> stack, Spatial spat) {
         LightCombineMode mode = spat.getLightCombineMode();
 
         Geometry geom = (Geometry)spat;
