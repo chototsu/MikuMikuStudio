@@ -285,9 +285,9 @@ public abstract class Renderer {
     public abstract ClipState createClipState();
 
     /**
-     * Retrieves the stencil state object for the proper renderer.
+     * Retrieves the color mask state object for the proper renderer.
      * 
-     * @return The <code>StencilState</code> object that can make use of the
+     * @return The <code>ColorMaskState</code> object that can make use of the
      *         proper renderer.
      */
     public abstract ColorMaskState createColorMaskState();
