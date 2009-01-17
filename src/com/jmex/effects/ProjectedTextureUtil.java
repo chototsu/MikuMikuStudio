@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,20 +31,12 @@
  */
 package com.jmex.effects;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import org.lwjgl.opengl.GL11;
-
 import com.jme.image.Texture;
-import com.jme.math.FastMath;
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
+import com.jme.renderer.AbstractCamera;
 import com.jme.renderer.Renderer;
-import com.jme.renderer.jogl.JOGLRenderer;
-import com.jme.renderer.lwjgl.LWJGLRenderer;
 import com.jme.system.DisplaySystem;
-import com.jme.util.geom.BufferUtils;
 
 
 
@@ -53,26 +45,18 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Rikard Herlitz (MrCoder)
  * 
- * Dual implementation framework:
  * @author Joshua Ellen (basixs)
+ * [1-16-2009] - Abstracted, removed direct calls to openGL
+ * 
  */
-public abstract class ProjectedTextureUtil {
+public class ProjectedTextureUtil {
 
+    private static AbstractCamera camera = null;
     private static Matrix4f lightProjectionMatrix = new Matrix4f();
     private static Matrix4f lightViewMatrix = new Matrix4f();
     private static Matrix4f biasMatrix = new Matrix4f( 0.5f, 0.0f, 0.0f, 0.0f,
             0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f,
             1.0f ); // bias from [-1, 1] to [0, 1]
-
-    // UTILS
-    private static final FloatBuffer tmp_FloatBuffer = BufferUtils.createFloatBuffer( 16 );
-    private static Vector3f localDir = new Vector3f();
-    private static Vector3f localLeft = new Vector3f();
-    private static Vector3f localUp = new Vector3f();
-    private static IntBuffer matrixModeBuffer = BufferUtils.createIntBuffer( 16 );
-    private static int savedMatrixMode = 0;
-    //
-    private static ProjectedTextureUtil currentImplementation = null;
 
     /**
      * Updated texture matrix on the provided texture
@@ -96,304 +80,100 @@ public abstract class ProjectedTextureUtil {
             float aspect, float near, float far, Vector3f pos, Vector3f aim,
             Vector3f up ) {
 
-        checkImplementation();
-        matrixPerspective( fov, aspect, near, far, lightProjectionMatrix );
         matrixLookAt( pos, aim, up, lightViewMatrix );
+        matrixProjection( fov, aspect, near, far, lightProjectionMatrix );
+
         texture.getMatrix().set(
                 lightViewMatrix.multLocal( lightProjectionMatrix ).multLocal(
                 biasMatrix ) ).transposeLocal();
     }
 
+    /**
+     * Populates a <code>Matrix4f</code> with the proper look at transformations
+     * from the ModelView matrix.
+     * @param location the 'Where' in result matrix
+     * @param at the 'At' in the result matrix
+     * @param up the world up
+     * @param result the altered <code>Matrix4f</code>
+     */
     public static void matrixLookAt( Vector3f location, Vector3f at,
             Vector3f up, Matrix4f result ) {
-        checkImplementation();
-        currentImplementation._matrixLookAt_( location, at, up, result );
+
+        checkCamera();
+
+        camera.setLocation( location );
+        camera.lookAt( at, up );
+
+        result.set( camera.getModelViewMatrix() );
     }
 
-    public static void matrixPerspective( float fovY, float aspect, float near,
-            float far, Matrix4f result ) {
-        checkImplementation();
-        currentImplementation._matrixPerspective_( fovY, aspect, near, far, result );
+    /**
+     * Populates a <code>Matrix4f</code> with the proper frustum transformations
+     * from the ModelView matrix.
+     * @param fovY the Field of View
+     * @param aspect the aspect ratio 
+     * @param near the near plane of the frustum
+     * @param far the far frame of the frustum
+     * @param result the altered <code>Matrix4f</code>
+     */
+    public static void matrixPerspective( float fovY, float aspect,
+            float near, float far, Matrix4f result ) {
+
+        checkCamera();
+
+        camera.setFrustumPerspective( fovY, aspect, near, far );
+
+        result.set( camera.getModelViewMatrix() );
     }
 
+    /**
+     * Populates a <code>Matrix4f</code> with the proper frustum transformations
+     * from the Projection matrix.
+     * @param fovY the Field of View
+     * @param aspect the aspect ratio 
+     * @param near the near plane of the frustum
+     * @param far the far frame of the frustum
+     * @param result the altered <code>Matrix4f</code>
+     */
     public static void matrixProjection( float fovY, float aspect, float near,
             float far, Matrix4f result ) {
-        checkImplementation();
-        currentImplementation._matrixProjection_( fovY, aspect, near, far, result );
+
+        checkCamera();
+
+        camera.setFrustumPerspective( fovY, aspect, near, far );
+
+        result.set( camera.getProjectionMatrix() );
     }
 
+    /**
+     * Populates a <code>Matrix4f</code> with the proper frustum transformations
+     * from the Projection matrix.
+     * @param frustumLeft the left plane of the frustum
+     * @param frustumRight the right plane of the frustum
+     * @param frustumBottom the bottom plane of the frustum
+     * @param frustumTop the top plane of the frustum
+     * @param frustumNear the near plane of the frustum
+     * @param frustumFar the far plane of the frustum
+     * @param result the altered <code>Matrix4f</code>
+     */
     public static void matrixFrustum( float frustumLeft, float frustumRight,
             float frustumBottom, float frustumTop, float frustumNear,
             float frustumFar, Matrix4f result ) {
-        checkImplementation();
-        currentImplementation._matrixFrustum_( frustumLeft, frustumRight,
-                frustumBottom, frustumTop, frustumNear, frustumFar, result );
+
+        checkCamera();
+
+        camera.setFrustum( frustumFar, frustumFar, frustumLeft, frustumRight,
+                frustumTop, frustumFar );
+
+        result.set( camera.getProjectionMatrix() );
     }
 
-    protected abstract void _matrixLookAt_( Vector3f location, Vector3f at,
-            Vector3f up, Matrix4f result );
-
-    protected abstract void _matrixPerspective_( float fovY, float aspect,
-            float near, float far, Matrix4f result );
-
-    protected abstract void _matrixProjection_( float fovY, float aspect,
-            float near, float far, Matrix4f result );
-
-    protected abstract void _matrixFrustum_( float frustumLeft,
-            float frustumRight, float frustumBottom, float frustumTop,
-            float frustumNear, float frustumFar, Matrix4f result );
-
-    private static void checkImplementation() {
-        
-        final Renderer renderer = DisplaySystem.getDisplaySystem().getRenderer();
-        if( renderer instanceof LWJGLRenderer &&
-                !( currentImplementation instanceof LWJGLProjectedTextureUtil ) ){
-            currentImplementation = new LWJGLProjectedTextureUtil();
-
-        } else if( renderer instanceof JOGLRenderer &&
-                !( currentImplementation instanceof JOGLProjectedTextureUtil ) ){
-            currentImplementation = new JOGLProjectedTextureUtil();
-        }
-    }
-
-
-
-    private static class LWJGLProjectedTextureUtil extends ProjectedTextureUtil {
-
-        protected void _matrixLookAt_( Vector3f location, Vector3f at,
-                Vector3f up, Matrix4f result ) {
-            localDir.set( at ).subtractLocal( location ).normalizeLocal();
-            localDir.cross( up, localLeft );
-            localLeft.cross( localDir, localUp );
-
-            saveMatrixMode();
-
-            // set view matrix
-            getRecord().switchMode( GL11.GL_MODELVIEW );
-            GL11.glPushMatrix();
-            GL11.glLoadIdentity();
-            org.lwjgl.util.glu.GLU.gluLookAt( location.x, location.y, location.z,
-                    at.x, at.y, at.z, localUp.x, localUp.y, localUp.z );
-
-            if( result != null ){
-                tmp_FloatBuffer.rewind();
-                GL11.glGetFloat( GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer );
-                tmp_FloatBuffer.rewind();
-                result.readFloatBuffer( tmp_FloatBuffer );
-            }
-
-            GL11.glPopMatrix();
-            restoreMatrixMode();
-        }
-
-        protected void _matrixPerspective_( float fovY, float aspect, float near,
-                float far, Matrix4f result ) {
-            saveMatrixMode();
-
-            // set view matrix
-            getRecord().switchMode( GL11.GL_MODELVIEW );
-            GL11.glPushMatrix();
-            GL11.glLoadIdentity();
-            org.lwjgl.util.glu.GLU.gluPerspective( fovY, aspect, near, far );
-
-            if( result != null ){
-                tmp_FloatBuffer.rewind();
-                GL11.glGetFloat( GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer );
-                tmp_FloatBuffer.rewind();
-                result.readFloatBuffer( tmp_FloatBuffer );
-            }
-
-            GL11.glPopMatrix();
-            restoreMatrixMode();
-        }
-
-        protected void _matrixProjection_( float fovY, float aspect, float near,
-                float far, Matrix4f result ) {
-            float h = FastMath.tan( fovY * FastMath.DEG_TO_RAD * .5f ) * near;
-            float w = h * aspect;
-            float frustumLeft = -w;
-            float frustumRight = w;
-            float frustumBottom = -h;
-            float frustumTop = h;
-            float frustumNear = near;
-            float frustumFar = far;
-
-            saveMatrixMode();
-            getRecord().switchMode( GL11.GL_PROJECTION );
-            GL11.glPushMatrix();
-            GL11.glLoadIdentity();
-            GL11.glFrustum( frustumLeft, frustumRight, frustumBottom, frustumTop,
-                    frustumNear, frustumFar );
-
-            if( result != null ){
-                tmp_FloatBuffer.rewind();
-                GL11.glGetFloat( GL11.GL_PROJECTION_MATRIX, tmp_FloatBuffer );
-                tmp_FloatBuffer.rewind();
-                result.readFloatBuffer( tmp_FloatBuffer );
-            }
-
-            GL11.glPopMatrix();
-            restoreMatrixMode();
-        }
-
-        protected void _matrixFrustum_( float frustumLeft, float frustumRight,
-                float frustumBottom, float frustumTop, float frustumNear,
-                float frustumFar, Matrix4f result ) {
-            saveMatrixMode();
-            getRecord().switchMode( GL11.GL_PROJECTION );
-            GL11.glPushMatrix();
-            GL11.glLoadIdentity();
-            GL11.glFrustum( frustumLeft, frustumRight, frustumBottom, frustumTop,
-                    frustumNear, frustumFar );
-
-            if( result != null ){
-                tmp_FloatBuffer.rewind();
-                GL11.glGetFloat( GL11.GL_PROJECTION_MATRIX, tmp_FloatBuffer );
-                tmp_FloatBuffer.rewind();
-                result.readFloatBuffer( tmp_FloatBuffer );
-            }
-
-            GL11.glPopMatrix();
-            restoreMatrixMode();
-        }
-
-        private static void saveMatrixMode() {
-            matrixModeBuffer.rewind();
-            GL11.glGetInteger( GL11.GL_MATRIX_MODE, matrixModeBuffer );
-            savedMatrixMode = matrixModeBuffer.get( 0 );
-        }
-
-        private static void restoreMatrixMode() {
-            getRecord().switchMode( savedMatrixMode );
-        }
-
-        private static com.jme.scene.state.lwjgl.records.RendererRecord getRecord() {
-            return (com.jme.scene.state.lwjgl.records.RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
-        }
-    }
-
-
-
-    private static class JOGLProjectedTextureUtil extends ProjectedTextureUtil {
-
-        private static final javax.media.opengl.glu.GLU GLU = new javax.media.opengl.glu.GLU();
-
-        protected void _matrixLookAt_( Vector3f location, Vector3f at,
-                Vector3f up, Matrix4f result ) {
-
-            localDir.set( at ).subtractLocal( location ).normalizeLocal();
-            localDir.cross( up, localLeft );
-            localLeft.cross( localDir, localUp );
-
-            saveMatrixMode();
-
-            // set view matrix
-            getRecord().switchMode( getGL().GL_MODELVIEW );
-            getGL().glPushMatrix();
-            getGL().glLoadIdentity();
-            GLU.gluLookAt( location.x, location.y, location.z,
-                    at.x, at.y, at.z, localUp.x, localUp.y, localUp.z );
-
-            if( result != null ){
-                tmp_FloatBuffer.rewind();
-                getGL().glGetFloatv( getGL().GL_MODELVIEW_MATRIX, tmp_FloatBuffer );
-                tmp_FloatBuffer.rewind();
-                result.readFloatBuffer( tmp_FloatBuffer );
-            }
-
-            getGL().glPopMatrix();
-            restoreMatrixMode();
-        }
-
-        protected void _matrixPerspective_( float fovY, float aspect, float near,
-                float far, Matrix4f result ) {
-
-            saveMatrixMode();
-
-            // set view matrix
-            getRecord().switchMode( getGL().GL_MODELVIEW );
-            getGL().glPushMatrix();
-            getGL().glLoadIdentity();
-            GLU.gluPerspective( fovY, aspect, near, far );
-
-            if( result != null ){
-                tmp_FloatBuffer.rewind();
-                getGL().glGetFloatv( getGL().GL_MODELVIEW_MATRIX, tmp_FloatBuffer );
-                tmp_FloatBuffer.rewind();
-                result.readFloatBuffer( tmp_FloatBuffer );
-            }
-
-            getGL().glPopMatrix();
-            restoreMatrixMode();
-        }
-
-        protected void _matrixProjection_( float fovY, float aspect, float near,
-                float far, Matrix4f result ) {
-            float h = FastMath.tan( fovY * FastMath.DEG_TO_RAD * .5f ) * near;
-            float w = h * aspect;
-            float frustumLeft = -w;
-            float frustumRight = w;
-            float frustumBottom = -h;
-            float frustumTop = h;
-            float frustumNear = near;
-            float frustumFar = far;
-
-            saveMatrixMode();
-            getRecord().switchMode( getGL().GL_PROJECTION );
-            getGL().glPushMatrix();
-            getGL().glLoadIdentity();
-            getGL().glFrustum( frustumLeft, frustumRight, frustumBottom, frustumTop,
-                    frustumNear, frustumFar );
-
-            if( result != null ){
-                tmp_FloatBuffer.rewind();
-                getGL().glGetFloatv( getGL().GL_PROJECTION_MATRIX, tmp_FloatBuffer );
-                tmp_FloatBuffer.rewind();
-                result.readFloatBuffer( tmp_FloatBuffer );
-            }
-
-            getGL().glPopMatrix();
-            restoreMatrixMode();
-        }
-
-        protected void _matrixFrustum_( float frustumLeft, float frustumRight,
-                float frustumBottom, float frustumTop, float frustumNear,
-                float frustumFar, Matrix4f result ) {
-
-            saveMatrixMode();
-            getRecord().switchMode( getGL().GL_PROJECTION );
-            getGL().glPushMatrix();
-            getGL().glLoadIdentity();
-            getGL().glFrustum( frustumLeft, frustumRight, frustumBottom, frustumTop,
-                    frustumNear, frustumFar );
-
-            if( result != null ){
-                tmp_FloatBuffer.rewind();
-                getGL().glGetFloatv( getGL().GL_PROJECTION_MATRIX, tmp_FloatBuffer );
-                tmp_FloatBuffer.rewind();
-                result.readFloatBuffer( tmp_FloatBuffer );
-            }
-
-            getGL().glPopMatrix();
-            restoreMatrixMode();
-        }
-
-        private static void saveMatrixMode() {
-            matrixModeBuffer.rewind();
-            getGL().glGetIntegerv( getGL().GL_MATRIX_MODE, matrixModeBuffer );
-            savedMatrixMode = matrixModeBuffer.get( 0 );
-        }
-
-        private static void restoreMatrixMode() {
-            getRecord().switchMode( savedMatrixMode );
-        }
-
-        private static com.jme.scene.state.jogl.records.RendererRecord getRecord() {
-            return (com.jme.scene.state.jogl.records.RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
-        }
-
-        private static javax.media.opengl.GL getGL() {
-            return GLU.getCurrentGL();
+    private static void checkCamera() {
+        if( camera == null ){
+            final Renderer renderer = DisplaySystem.getDisplaySystem().getRenderer();
+            camera = (AbstractCamera) renderer.createCamera(
+                    renderer.getWidth(), renderer.getHeight() );
+            camera.setDataOnly( true );
         }
     }
 }
