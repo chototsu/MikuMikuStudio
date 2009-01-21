@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2008 jMonkeyEngine
+ * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -184,7 +184,8 @@ public class LWJGLRenderer extends Renderer {
         this.width = width;
         this.height = height;
 
-        logger.info("LWJGLRenderer created. W:  " + width + "H: " + height);
+        logger.info( "LWJGLRenderer created. W:  " + width + "H: " + height + 
+                "\tVersion: " + Package.getPackage( "org.lwjgl.opengl" ).getImplementationVersion() );
 
         capabilities = GLContext.getCapabilities();
 
