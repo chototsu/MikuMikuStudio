@@ -185,7 +185,7 @@ public class LWJGLRenderer extends Renderer {
         this.height = height;
 
         logger.info( "LWJGLRenderer created. W:  " + width + "H: " + height + 
-                "\tVersion: " + Package.getPackage( "org.lwjgl.opengl" ).getImplementationVersion() );
+                "\tVersion: " + org.lwjgl.Sys.getVersion() );
 
         capabilities = GLContext.getCapabilities();
 

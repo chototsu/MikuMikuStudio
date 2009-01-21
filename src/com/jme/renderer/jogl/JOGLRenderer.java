@@ -185,7 +185,8 @@ public class JOGLRenderer extends Renderer {
         this.width = width;
         this.height = height;
 
-        logger.info("JOGLRenderer created. W:  " + width + "H: " + height);
+        logger.info("JOGLRenderer created. W:  " + width + "H: " + height + "\tVersion: "
+                + Package.getPackage( "javax.media.opengl" ).getImplementationVersion() );
 
         queue = new RenderQueue(this);
         if (TextureState.getNumberOfTotalUnits() == -1)
