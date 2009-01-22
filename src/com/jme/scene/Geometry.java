@@ -860,6 +860,8 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
         capsule.write(vertBuf, "vertBuf", null);
         capsule.writeSavableArrayList(texBuf, "texBuf",
                 new ArrayList<TexCoords>(1));
+        capsule.write(tangentBuf, "tangentBuf", null);
+        capsule.write(binormalBuf, "binormalBuf", null);
         capsule.write(enabled, "enabled", true);
         capsule.write(castsShadows, "castsShadows", true);
         capsule.write(bound, "bound", null);
@@ -879,6 +881,8 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
             vertQuantity = vertBuf.limit() / 3;
         else
             vertQuantity = 0;
+        tangentBuf = capsule.readFloatBuffer("tangentBuf", null);
+        binormalBuf = capsule.readFloatBuffer("binormalBuf", null);
         texBuf = capsule.readSavableArrayList("texBuf",
                 new ArrayList<TexCoords>(1));
         checkTextureCoordinates();
