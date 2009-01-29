@@ -127,6 +127,7 @@ public final class TGALoader {
         // open a stream to the file
         BufferedInputStream bis = new BufferedInputStream(fis, 8192);
         DataInputStream dis = new DataInputStream(bis);
+        boolean createAlpha=false;
         
         
         // ---------- Start Reading the TGA header ---------- //
@@ -214,6 +215,7 @@ public final class TGALoader {
         if ((pixelDepth == 32) || (exp32)) {
             rawData = new byte[width * height * 4];
             dl = 4;
+            createAlpha = true;
         } else {
             rawData = new byte[width * height * 3];
             dl = 3;
@@ -283,9 +285,145 @@ public final class TGALoader {
                     }
                 }
             else throw new JmeException("Unsupported TGA true color depth: "+pixelDepth);
-            
-            
-        } else if (imageType == TYPE_COLORMAPPED) {
+
+
+        } else if( imageType == TYPE_TRUECOLOR_RLE ){
+            byte red = 0;
+            byte green = 0;
+            byte blue = 0;
+            byte alpha = 0;
+            // Faster than doing a 16-or-24-or-32 check on each individual pixel,
+            // just make a seperate loop for each.
+            if( pixelDepth == 32 ){
+                for( int i = 0; i <= ( height - 1 ); ++i ){
+                    if( !flip ){
+                        rawDataIndex = ( height - 1 - i ) * width * dl;
+                    }
+
+                    for( int j = 0; j < width; ++j ){
+                        // Get the number of pixels the next chunk covers (either packed or unpacked)
+                        int count = dis.readByte();
+                        if( ( count & 0x80 ) != 0 ){
+                            // Its an RLE packed block - use the following 1 pixel for the next <count> pixels
+                            count &= 0x07f;
+                            j += count;
+                            blue = dis.readByte();
+                            green = dis.readByte();
+                            red = dis.readByte();
+                            alpha = dis.readByte();
+                            while( count-- >= 0 ){
+                                rawData[rawDataIndex++] = red;
+                                rawData[rawDataIndex++] = green;
+                                rawData[rawDataIndex++] = blue;
+                                rawData[rawDataIndex++] = alpha;
+                            }
+                        } else{
+                            // Its not RLE packed, but the next <count> pixels are raw.
+                            j += count;
+                            while( count-- >= 0 ){
+                                blue = dis.readByte();
+                                green = dis.readByte();
+                                red = dis.readByte();
+                                alpha = dis.readByte();
+                                rawData[rawDataIndex++] = red;
+                                rawData[rawDataIndex++] = green;
+                                rawData[rawDataIndex++] = blue;
+                                rawData[rawDataIndex++] = alpha;
+                            }
+                        }
+                    }
+                }
+            } else if( pixelDepth == 24 ){
+                for( int i = 0; i <= ( height - 1 ); i++ ){
+                    if( !flip ){
+                        rawDataIndex = ( height - 1 - i ) * width * dl;
+                    }
+                    for( int j = 0; j < width; ++j ){
+                        // Get the number of pixels the next chunk covers (either packed or unpacked)
+                        int count = dis.readByte();
+                        if( ( count & 0x80 ) != 0 ){
+                            // Its an RLE packed block - use the following 1 pixel for the next <count> pixels
+                            count &= 0x07f;
+                            j += count;
+                            blue = dis.readByte();
+                            green = dis.readByte();
+                            red = dis.readByte();
+                            while( count-- >= 0 ){
+                                rawData[rawDataIndex++] = red;
+                                rawData[rawDataIndex++] = green;
+                                rawData[rawDataIndex++] = blue;
+                                if( createAlpha ){
+                                    rawData[rawDataIndex++] = (byte) 255;
+                                }
+                            }
+                        } else{
+                            // Its not RLE packed, but the next <count> pixels are raw.
+                            j += count;
+                            while( count-- >= 0 ){
+                                blue = dis.readByte();
+                                green = dis.readByte();
+                                red = dis.readByte();
+                                rawData[rawDataIndex++] = red;
+                                rawData[rawDataIndex++] = green;
+                                rawData[rawDataIndex++] = blue;
+                                if( createAlpha ){
+                                    rawData[rawDataIndex++] = (byte) 255;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if( pixelDepth == 16 ){
+                byte[] data = new byte[ 2 ];
+                float scalar = 255f / 31f;
+                for( int i = 0; i <= ( height - 1 ); i++ ){
+                    if( !flip ){
+                        rawDataIndex = ( height - 1 - i ) * width * dl;
+                    }
+                    for( int j = 0; j < width; j++ ){
+                        // Get the number of pixels the next chunk covers (either packed or unpacked)
+                        int count = dis.readByte();
+                        if( ( count & 0x80 ) != 0 ){
+                            // Its an RLE packed block - use the following 1 pixel for the next <count> pixels
+                            count &= 0x07f;
+                            j += count;
+                            data[1] = dis.readByte();
+                            data[0] = dis.readByte();
+                            blue = (byte) (int) ( getBitsAsByte( data, 1, 5 ) * scalar );
+                            green = (byte) (int) ( getBitsAsByte( data, 6, 5 ) * scalar );
+                            red = (byte) (int) ( getBitsAsByte( data, 11, 5 ) * scalar );
+                            while( count-- >= 0 ){
+                                rawData[rawDataIndex++] = red;
+                                rawData[rawDataIndex++] = green;
+                                rawData[rawDataIndex++] = blue;
+                                if( createAlpha ){
+                                    rawData[rawDataIndex++] = (byte) 255;
+                                }
+                            }
+                        } else{
+                            // Its not RLE packed, but the next <count> pixels are raw.
+                            j += count;
+                            while( count-- >= 0 ){
+                                data[1] = dis.readByte();
+                                data[0] = dis.readByte();
+                                blue = (byte) (int) ( getBitsAsByte( data, 1, 5 ) * scalar );
+                                green = (byte) (int) ( getBitsAsByte( data, 6, 5 ) * scalar );
+                                red = (byte) (int) ( getBitsAsByte( data, 11, 5 ) * scalar );
+                                rawData[rawDataIndex++] = red;
+                                rawData[rawDataIndex++] = green;
+                                rawData[rawDataIndex++] = blue;
+                                if( createAlpha ){
+                                    rawData[rawDataIndex++] = (byte) 255;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else{
+                throw new JmeException( "Unsupported TGA true color depth: " + pixelDepth );
+            }
+
+        } else if( imageType == TYPE_COLORMAPPED ){
             int bytesPerIndex = pixelDepth / 8;
             
             if (bytesPerIndex == 1) {
