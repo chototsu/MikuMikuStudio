@@ -569,7 +569,9 @@ public class JOGLRenderer extends Renderer {
         matRecord.switchMode(GL.GL_PROJECTION);
         gl.glPushMatrix();
         gl.glLoadIdentity();
-        glu.gluOrtho2D(0, width, 0, height);
+        float viewportWidth = width * (camera.getViewPortRight() - camera.getViewPortLeft());
+        float viewportHeight = height * (camera.getViewPortTop() - camera.getViewPortBottom());
+        glu.gluOrtho2D(0, viewportWidth, 0, viewportHeight);
         matRecord.switchMode(GL.GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glLoadIdentity();

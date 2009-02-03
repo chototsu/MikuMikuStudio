@@ -1047,8 +1047,8 @@ public abstract class AbstractCamera implements Camera {
         tmp_quat.set( worldPosition.x, worldPosition.y, worldPosition.z, 1 );
         modelViewProjection.mult( tmp_quat, tmp_quat );
         tmp_quat.multLocal( 1.0f / tmp_quat.w );
-        store.x = ( ( tmp_quat.x + 1 ) * ( viewPortRight - viewPortLeft ) / 2 + viewPortLeft ) * getWidth();
-        store.y = ( ( tmp_quat.y + 1 ) * ( viewPortTop - viewPortBottom ) / 2 + viewPortBottom ) * getHeight();
+        store.x = ( ( tmp_quat.x + 1 ) * ( viewPortRight - viewPortLeft ) / 2 ) * getWidth();
+        store.y = ( ( tmp_quat.y + 1 ) * ( viewPortTop - viewPortBottom ) / 2 ) * getHeight();
         store.z = ( tmp_quat.z + 1 ) / 2;
 
         return store;
