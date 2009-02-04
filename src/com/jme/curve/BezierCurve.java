@@ -56,6 +56,11 @@ public class BezierCurve extends Curve {
 	private static final long serialVersionUID = 1L;
 
 	private static Vector3f tempVect = new Vector3f();
+	
+	public BezierCurve() {
+		super(null);
+	}
+	
 	/**
 	 * Constructor instantiates a new <code>BezierCurve</code> object.
 	 * 
