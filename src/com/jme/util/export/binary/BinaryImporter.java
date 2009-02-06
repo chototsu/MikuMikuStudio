@@ -83,10 +83,14 @@ public class BinaryImporter implements JMEImporter {
     }
 
     public Savable load(InputStream is) throws IOException {
-        return load(is, null);
+        return load(is, null, null);
     }
-
+    
     public Savable load(InputStream is, ReadListener listener) throws IOException {
+    	return load(is, listener, null);
+    }
+    
+    public Savable load(InputStream is, ReadListener listener, ByteArrayOutputStream baos) throws IOException {
         contentTable = new HashMap<Integer, Savable>();
         GZIPInputStream zis = new GZIPInputStream(is);
         BufferedInputStream bis = new BufferedInputStream(zis);
@@ -141,7 +145,11 @@ public class BinaryImporter implements JMEImporter {
         bytes += 8;
         if (listener != null) listener.readBytes(bytes);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        if (baos == null) {
+        	baos = new ByteArrayOutputStream(bytes);
+        } else {
+        	baos.reset();
+        }
         int size = -1;
         byte[] cache = new byte[4096];
         while((size = bis.read(cache)) != -1) {
