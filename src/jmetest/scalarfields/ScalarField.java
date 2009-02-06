@@ -36,13 +36,15 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 
+
+
 public interface ScalarField {
 
     float calculate( Vector3f point );
 
-    Vector3f normal( Vector3f point );
+    void normal( Vector3f point, final Vector3f result );
 
-    Vector2f textureCoords( Vector3f point );
+    void textureCoords( Vector3f point, final Vector2f result );
 
-    ColorRGBA color( Vector3f point );
+    void color( Vector3f point, final ColorRGBA result );
 }

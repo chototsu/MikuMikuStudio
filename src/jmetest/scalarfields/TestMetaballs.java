@@ -34,9 +34,10 @@ package jmetest.scalarfields;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.math.Vector3f;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.TriMesh;
+import com.jme.scene.Text;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -44,40 +45,37 @@ import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
 
+
+
 /**
  * Demo to show off the {@link ScalarFieldPolygonisator} for scalar fields.
  *
  * @author Daniel Gronau
+ * @author Joshua Ellen (performace and test update)
  */
 public class TestMetaballs extends SimpleGame {
 
-    private Vector3f boxSize = new Vector3f( 5, 5, 5 );
-    private TriMesh mesh = new TriMesh( "mesh" );
-    private ScalarFieldPolygonisator poly;
-    private MetaBallScalarField field;
+    private MetaBalls metaBalls = null;
+    private Texture texture = null;
+    //
+    private Text envMapToggleText = null;
+    private final String envMapToggleString = "Press E to toggle EnvMap mode: ";
+    private int frameCounter = 0;
 
     public static void main( String[] args ) {
         TestMetaballs app = new TestMetaballs();
-        app.setConfigShowMode( ConfigShowMode.AlwaysShow );
+        app.setConfigShowMode( ConfigShowMode.NeverShow );
         app.start();
     }
 
     @Override
     protected void simpleInitGame() {
-        float maxWeight = 10f;
-        float maxSpeed = 0.1f;
-        field = new MetaBallScalarField(
-                MetaBallScalarField.MetaBall.getRandomBall( boxSize, maxWeight, maxSpeed, new ColorRGBA( 1, 0, 0, 1 ) ),
-                MetaBallScalarField.MetaBall.getRandomBall( boxSize, maxWeight, maxSpeed, new ColorRGBA( 1, 1, 0, 1 ) ),
-                MetaBallScalarField.MetaBall.getRandomBall( boxSize, maxWeight, maxSpeed, new ColorRGBA( 0, 1, 0, 1 ) ),
-                MetaBallScalarField.MetaBall.getRandomBall( boxSize, maxWeight, maxSpeed, new ColorRGBA( 0, 1, 1, 1 ) ),
-                MetaBallScalarField.MetaBall.getRandomBall( boxSize, maxWeight, maxSpeed, new ColorRGBA( 0, 0, 1, 1 ) ),
-                MetaBallScalarField.MetaBall.getRandomBall( boxSize, maxWeight, maxSpeed, new ColorRGBA( 1, 0, 1, 1 ) ),
-                MetaBallScalarField.MetaBall.getRandomBall( boxSize, maxWeight, maxSpeed, new ColorRGBA( 1, 1, 1, 1 ) ),
-                MetaBallScalarField.MetaBall.getRandomBall( boxSize, maxWeight, maxSpeed, new ColorRGBA( 0, 0, 0, 1 ) ) );
-        poly = new ScalarFieldPolygonisator( boxSize.mult( 2 ), 0.8f, field );
-        mesh.setRenderState( createTextureState( "cloud_land.jpg" ) );
-        rootNode.attachChild( mesh );
+
+        display.setTitle( "MetaBalls Test" );
+
+        metaBalls = new MetaBalls();
+        metaBalls.setRenderState( createTextureState( "terrain/road.jpg" ) );
+        rootNode.attachChild( metaBalls );
 
         // light up the scene a little (attention works for SimpleGame only)
         this.lightState.get( 0 ).setAmbient( ColorRGBA.white );
@@ -86,33 +84,60 @@ public class TestMetaballs extends SimpleGame {
         state.setColorMaterial( MaterialState.ColorMaterial.Diffuse );
         state.setShininess( 100 );
         state.setAmbient( new ColorRGBA( 0.4f, 0.4f, 0.4f, 1 ) );
-        mesh.setRenderState( state );
+        metaBalls.setRenderState( state );
+
+        lightState.setEnabled( false );         // Turn them off initially to see vertex coloring
+
+
+        final String tempString = envMapToggleString + " (OFF)";
+        envMapToggleText = new Text( tempString, tempString );
+        envMapToggleText.setRenderState( Text.getDefaultFontTextureState() );
+        envMapToggleText.setRenderState( Text.getFontBlend() );
+        envMapToggleText.setLocalTranslation( 10, envMapToggleText.getHeight() + 5, 0 );
+
+        statNode.attachChild( envMapToggleText );
+        KeyBindingManager.getKeyBindingManager().set( "toggleEnvMap", KeyInput.KEY_E );
     }
 
     @Override
     protected void simpleUpdate() {
-        field.updateBallLocations( boxSize );
-        poly.calculate( mesh, 1f );
+
+        if( KeyBindingManager.getKeyBindingManager().isValidCommand( "toggleEnvMap", false ) ){
+            if( texture.getEnvironmentalMapMode().equals( Texture.EnvironmentalMapMode.ReflectionMap ) ){
+                texture.setEnvironmentalMapMode( Texture.EnvironmentalMapMode.None );
+                envMapToggleText.print( envMapToggleString + " (OFF)" );
+            } else{
+                texture.setEnvironmentalMapMode( Texture.EnvironmentalMapMode.ReflectionMap );
+                envMapToggleText.print( envMapToggleString + " (ON)" );
+            }
+        }
+
+        if( frameCounter % 10 == 0 ){
+            metaBalls.updateGeometricState( tpf, false );
+            frameCounter = -1;
+        }
+        ++frameCounter;
     }
 
-    private TextureState createTextureState( String texture ) {
+    private TextureState createTextureState( String textureString ) {
 
-        try {
+        try{
             ResourceLocatorTool.addResourceLocator(
                     ResourceLocatorTool.TYPE_TEXTURE,
-                    new SimpleResourceLocator( getClass().getResource(
-                            "/jmetest/data/texture/" ) ) );
-        } catch ( Exception e ) {
+                    new SimpleResourceLocator(
+                    Thread.currentThread().getContextClassLoader().getResource(
+                    "jmetest/data/texture/" ) ) );
+        } catch( Exception e ){
             System.err.println( "Unable to access texture directory." );
             e.printStackTrace();
         }
 
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        Texture t = TextureManager.loadTexture( texture, Texture.MinificationFilter.BilinearNoMipMaps,
+        texture = TextureManager.loadTexture( textureString, Texture.MinificationFilter.BilinearNoMipMaps,
                 Texture.MagnificationFilter.Bilinear, ts.getMaxAnisotropic(), false );
-        t.setWrap( Texture.WrapMode.Repeat );
-//        t.setEnvironmentalMapMode( Texture.EnvironmentalMapMode.ReflectionMap );
-        ts.setTexture( t );
+        texture.setWrap( Texture.WrapMode.Repeat );
+
+        ts.setTexture( texture );
         return ts;
     }
 }

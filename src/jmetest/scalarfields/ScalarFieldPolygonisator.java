@@ -44,12 +44,15 @@ import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
+
+
 /**
  * Based on Paul Bourke's code from "Polygonising a Scalar Field Using Tetrahedrons"
  * http://local.wasp.uwa.edu.au/~pbourke/geometry/polygonise/
  *
  * @author Daniel Gronau
  * @author Irrisor (replaced array lists by using buffers)
+ * @author basixs (replaced creation of objects with global 'calc' vectors, for better performance)
  */
 public class ScalarFieldPolygonisator {
 
@@ -57,11 +60,12 @@ public class ScalarFieldPolygonisator {
     private final float cubeSize;
     private final float[][][] values;
     private final Vector3f[] cellPoints = new Vector3f[]{
-            new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f(),
-            new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f()
+        new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f(),
+        new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f()
     };
-    private final int[] cellIso = new int[8];
+    private final int[] cellIso = new int[ 8 ];
     private final Map<Edge, Integer> interpol = new HashMap<Edge, Integer>( 5000 );
+    private final Edge tmpEdge = new Edge();
     private final int xSize;
     private final int ySize;
     private final int zSize;
@@ -71,6 +75,12 @@ public class ScalarFieldPolygonisator {
     private IntBuffer indexBuffer;
     private FloatBuffer textureBuffer;
     private FloatBuffer colorBuffer;
+    //
+    // Temporary calc vars
+    private final ColorRGBA calcColor = new ColorRGBA();
+    private final Vector3f calcVector = new Vector3f();
+    private final Vector3f calcVector1 = new Vector3f();
+    private final Vector2f calcVector2f = new Vector2f();
 
     public ScalarFieldPolygonisator( Vector3f boxSize, float cubeSize, final ScalarField field ) {
         this.boxSize = boxSize;
@@ -78,52 +88,52 @@ public class ScalarFieldPolygonisator {
         xSize = (int) Math.ceil( 2 * boxSize.x / cubeSize );
         ySize = (int) Math.ceil( 2 * boxSize.y / cubeSize );
         zSize = (int) Math.ceil( 2 * boxSize.z / cubeSize );
-        values = new float[xSize + 1][ySize + 1][zSize + 1];
+        values = new float[ xSize + 1 ][ ySize + 1 ][ zSize + 1 ];
         this.field = field;
     }
 
     public void calculate( TriMesh mesh, float iso ) {
 
         vertexBuffer = mesh.getVertexBuffer();
-        if ( vertexBuffer == null ) {
+        if( vertexBuffer == null ){
             vertexBuffer = BufferUtils.createFloatBuffer( 16000 );
-        } else {
+        } else{
             vertexBuffer.clear();
         }
 
         normalBuffer = mesh.getNormalBuffer();
-        if ( normalBuffer == null ) {
+        if( normalBuffer == null ){
             normalBuffer = BufferUtils.createFloatBuffer( 16000 );
-        } else {
+        } else{
             normalBuffer.clear();
         }
 
         colorBuffer = mesh.getColorBuffer();
-        if ( colorBuffer == null ) {
+        if( colorBuffer == null ){
             colorBuffer = BufferUtils.createFloatBuffer( 16000 );
-        } else {
+        } else{
             colorBuffer.clear();
         }
 
         final TexCoords texCoords = mesh.getTextureCoords( 0 );
-        if ( texCoords != null ) {
+        if( texCoords != null ){
             textureBuffer = texCoords.coords;
-        } else {
+        } else{
             textureBuffer = null;
         }
-        if ( textureBuffer == null ) {
+        if( textureBuffer == null ){
             textureBuffer = BufferUtils.createFloatBuffer( 16000 );
-        } else {
+        } else{
             textureBuffer.clear();
         }
 
         indexBuffer = mesh.getIndexBuffer();
-        if ( indexBuffer == null ) {
+        if( indexBuffer == null ){
             indexBuffer = BufferUtils.createIntBuffer( 16000 );
-        } else {
+        } else{
             indexBuffer.clear();
         }
-        interpol.clear();
+        clearField();
 
         populateFieldArray( field );
 
@@ -145,63 +155,92 @@ public class ScalarFieldPolygonisator {
         mesh.setTextureCoords( new TexCoords( textureBuffer ) );
     }
 
-    private void calculateCells( float iso ) {
-        for ( int xk = 0; xk < xSize; xk++ ) {
-            for ( int yk = 0; yk < ySize; yk++ ) {
-                for ( int zk = 0; zk < zSize; zk++ ) {
+    protected void clearField() {
+        interpol.clear();
+
+        for( int x = 0; x < xSize; x++ ){
+            for( int y = 0; y < ySize; y++ ){
+                for( int z = 0; z < zSize; z++ ){
+                    values[x][y][z] = 0;
+                }
+            }
+        }
+    }
+
+    protected void gridToWorld( final int x, final int y, final int z, final Vector3f store ) {
+        store.setX( x * cubeSize - boxSize.x );
+        store.setY( y * cubeSize - boxSize.y );
+        store.setZ( z * cubeSize - boxSize.z );
+    }
+
+    protected void worldToGrid( final Vector3f world, final int[] store ) {
+        worldToGrid( world.getX(), world.getY(), world.getZ(), store );
+    }
+
+    protected void worldToGrid( final float x, final float y, final float z, final int[] store ) {
+        store[0] = new Float( ( x + boxSize.x ) / cubeSize + 0.5f ).intValue();
+        store[1] = new Float( ( y + boxSize.y ) / cubeSize + 0.5f ).intValue();
+        store[2] = new Float( ( z + boxSize.z ) / cubeSize + 0.5f ).intValue();
+    }
+
+
+    protected void calculateCells( float iso ) {
+        for( int xk = 0; xk < xSize; xk++ ){
+            for( int yk = 0; yk < ySize; yk++ ){
+                for( int zk = 0; zk < zSize; zk++ ){
                     calculateCell( iso, xk, yk, zk );
                 }
             }
         }
     }
 
-    private void populateFieldArray( ScalarField field ) {
-        Vector3f vector = new Vector3f();
-        for ( int x = 0; x < xSize; x++ ) {
-            for ( int y = 0; y < ySize; y++ ) {
-                for ( int z = 0; z < zSize; z++ ) {
-                    vector.set( x * cubeSize - boxSize.x,
-                            y * cubeSize - boxSize.y,
-                            z * cubeSize - boxSize.z );
-                    values[x][y][z] = field.calculate( vector );
+    protected void populateFieldArray( ScalarField field ) {
+        for( int x = 0; x < xSize; x++ ){
+            for( int y = 0; y < ySize; y++ ){
+                for( int z = 0; z < zSize; z++ ){
+                    gridToWorld( x, y, z, calcVector );
+                    values[x][y][z] = field.calculate( calcVector );
                 }
             }
         }
     }
 
-    private void calculateCell( final float iso, final int xk, final int yk, final int zk ) {
+    protected int calculateCell( final float iso, final int xk, final int yk, final int zk ) {
 
-        int sum = 0;
+        int bits = 0;
 
-        sum += cellIso[0] = values[xk][yk][zk] > iso ? 1 : 0;
-        sum += cellIso[1] = values[xk + 1][yk][zk] > iso ? 1 : 0;
-        sum += cellIso[2] = values[xk + 1][yk][zk + 1] > iso ? 1 : 0;
-        sum += cellIso[3] = values[xk][yk][zk + 1] > iso ? 1 : 0;
-        sum += cellIso[4] = values[xk][yk + 1][zk] > iso ? 1 : 0;
-        sum += cellIso[5] = values[xk + 1][yk + 1][zk] > iso ? 1 : 0;
-        sum += cellIso[6] = values[xk + 1][yk + 1][zk + 1] > iso ? 1 : 0;
-        sum += cellIso[7] = values[xk][yk + 1][zk + 1] > iso ? 1 : 0;
+        cellIso[0] = values[xk][yk][zk] > iso ? 1 : 0;
+        cellIso[1] = values[xk + 1][yk][zk] > iso ? 1 : 0;
+        cellIso[2] = values[xk + 1][yk][zk + 1] > iso ? 1 : 0;
+        cellIso[3] = values[xk][yk][zk + 1] > iso ? 1 : 0;
+        cellIso[4] = values[xk][yk + 1][zk] > iso ? 1 : 0;
+        cellIso[5] = values[xk + 1][yk + 1][zk] > iso ? 1 : 0;
+        cellIso[6] = values[xk + 1][yk + 1][zk + 1] > iso ? 1 : 0;
+        cellIso[7] = values[xk][yk + 1][zk + 1] > iso ? 1 : 0;
 
-        if ( sum == 0 || sum == 8 ) {
-            return;
+        for( int i = 0; i < cellIso.length; ++i ){
+            bits |= cellIso[i] == 1 ? ( 1 << i ) : 0;
         }
 
-        float x0 = xk * cubeSize - boxSize.x;
-        float y0 = yk * cubeSize - boxSize.y;
-        float z0 = zk * cubeSize - boxSize.z;
+        if( bits == 0 || bits == 255 ){
+            return bits;
+        }
 
-        float x1 = x0 + cubeSize;
-        float y1 = y0 + cubeSize;
-        float z1 = z0 + cubeSize;
+        calcVector.x = xk * cubeSize - boxSize.x;
+        calcVector.y = yk * cubeSize - boxSize.y;
+        calcVector.z = zk * cubeSize - boxSize.z;
+        calcVector1.x = calcVector.x + cubeSize;
+        calcVector1.y = calcVector.y + cubeSize;
+        calcVector1.z = calcVector.z + cubeSize;
 
-        cellPoints[0].set( x0, y0, z0 );
-        cellPoints[1].set( x1, y0, z0 );
-        cellPoints[2].set( x1, y0, z1 );
-        cellPoints[3].set( x0, y0, z1 );
-        cellPoints[4].set( x0, y1, z0 );
-        cellPoints[5].set( x1, y1, z0 );
-        cellPoints[6].set( x1, y1, z1 );
-        cellPoints[7].set( x0, y1, z1 );
+        cellPoints[0].set( calcVector.x, calcVector.y, calcVector.z );
+        cellPoints[1].set( calcVector1.x, calcVector.y, calcVector.z );
+        cellPoints[2].set( calcVector1.x, calcVector.y, calcVector1.z );
+        cellPoints[3].set( calcVector.x, calcVector.y, calcVector1.z );
+        cellPoints[4].set( calcVector.x, calcVector1.y, calcVector.z );
+        cellPoints[5].set( calcVector1.x, calcVector1.y, calcVector.z );
+        cellPoints[6].set( calcVector1.x, calcVector1.y, calcVector1.z );
+        cellPoints[7].set( calcVector.x, calcVector1.y, calcVector1.z );
 
         calculateTetra( iso, 0, 4, 7, 6, xk, yk, zk );
         calculateTetra( iso, 0, 4, 6, 5, xk, yk, zk );
@@ -209,13 +248,18 @@ public class ScalarFieldPolygonisator {
         calculateTetra( iso, 0, 1, 6, 2, xk, yk, zk );
         calculateTetra( iso, 0, 3, 6, 7, xk, yk, zk );
         calculateTetra( iso, 0, 1, 5, 6, xk, yk, zk );
+
+        // return the cell triangle bits
+        return bits;
     }
 
-    private void calculateTetra( float iso, int v0, int v1, int v2, int v3, final int xk, final int yk, final int zk ) {
-        int triindex = cellIso[v0] + cellIso[v1] * 2 + cellIso[v2] * 4 + cellIso[v3] * 8;
+    private void calculateTetra( final float iso, final int v0, final int v1,
+            final int v2, final int v3, final int xk, final int yk, final int zk ) {
+
+        final int triindex = cellIso[v0] + cellIso[v1] * 2 + cellIso[v2] * 4 + cellIso[v3] * 8;
 
         /* Form the vertices of the triangles for each case */
-        switch ( triindex ) {
+        switch( triindex ){
             case 0x00:
             case 0x0F:
                 break;
@@ -354,7 +398,7 @@ public class ScalarFieldPolygonisator {
     }
 
     private IntBuffer enlargeIfNeeded( IntBuffer buffer ) {
-        if ( buffer.capacity() == buffer.position() ) {
+        if( buffer.capacity() == buffer.position() ){
             final IntBuffer oldBuffer = buffer;
             buffer = BufferUtils.createIntBuffer( oldBuffer.capacity() * 2 );
             oldBuffer.flip();
@@ -364,7 +408,7 @@ public class ScalarFieldPolygonisator {
     }
 
     private FloatBuffer enlargeIfNeeded( FloatBuffer buffer ) {
-        if ( buffer.capacity() < buffer.position() + 4 ) {
+        if( buffer.capacity() < buffer.position() + 4 ){
             final FloatBuffer oldBuffer = buffer;
             buffer = BufferUtils.createFloatBuffer( oldBuffer.capacity() * 2 );
             oldBuffer.flip();
@@ -373,15 +417,13 @@ public class ScalarFieldPolygonisator {
         return buffer;
     }
 
-    private final Edge tmpEdge = new Edge();
-
     private int interpolate( float iso, int v1, int v2, int xk, int yk, int zk ) {
-        if ( v1 > v2 ) {
-            int tmp = v2;
+        if( v1 > v2 ){
+            final int tmp = v2;
             v2 = v1;
             v1 = tmp;
         }
-        switch ( v1 ) {
+        switch( v1 ){
             default:
                 tmpEdge.x1 = xk;
                 tmpEdge.y1 = yk;
@@ -423,7 +465,8 @@ public class ScalarFieldPolygonisator {
                 tmpEdge.z1 = zk + 1;
                 break;
         }
-        switch ( v2 ) {
+
+        switch( v2 ){
             default:
                 tmpEdge.x2 = xk;
                 tmpEdge.y2 = yk;
@@ -465,28 +508,39 @@ public class ScalarFieldPolygonisator {
                 tmpEdge.z2 = zk + 1;
                 break;
         }
+
         final Integer index = interpol.get( tmpEdge );
-        if ( index != null ) {
+        if( index != null ){
             return index;
         }
         float ratio = 0.5f;
-        float value1 = tmpEdge.getValue1( this );
-        float value2 = tmpEdge.getValue2( this );
-        if ( value1 != value2 ) {
+        final float value1 = tmpEdge.getValue1( this );
+        final float value2 = tmpEdge.getValue2( this );
+        if( value1 != value2 ){
             ratio = ( value1 - iso ) / ( value1 - value2 );
         }
-        Vector3f point = cellPoints[v1].mult( 1 - ratio ).add( cellPoints[v2].mult( ratio ) );
-        int i = vertexBuffer.position() / 3;
-        addVertex( point.x, point.y, point.z );
-        Vector3f normal = field.normal( point );
-        addNormal( normal.x, normal.y, normal.z );
-        Vector2f tex = field.textureCoords( point );
-        addTextureCoord( tex.x, tex.y );
-        ColorRGBA color = field.color( point );
-        addColor( color.r, color.g,  color.b,  color.a );
-        interpol.put( new Edge( tmpEdge ), i );
-        return i;
+
+        final int currentVertexIndex = vertexBuffer.position() / 3;
+
+        calcVector1.set( cellPoints[v2].mult( ratio ) );
+        calcVector.set( cellPoints[v1] ).multLocal( 1 - ratio ).addLocal( calcVector1 );
+        addVertex( calcVector.x, calcVector.y, calcVector.z );
+
+        field.normal( calcVector, calcVector1 );
+        addNormal( calcVector1.x, calcVector1.y, calcVector1.z );
+
+        field.textureCoords( calcVector1, calcVector2f );
+        addTextureCoord( calcVector2f.x, calcVector2f.y );
+
+        field.color( calcVector, calcColor );
+        addColor( calcColor.r, calcColor.g, calcColor.b, calcColor.a );
+
+        interpol.put( new Edge( tmpEdge ), currentVertexIndex );
+
+        return currentVertexIndex;
     }
+
+
 
     static class Edge {
 
