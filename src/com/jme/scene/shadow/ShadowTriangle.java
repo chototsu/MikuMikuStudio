@@ -77,8 +77,8 @@ public class ShadowTriangle implements Savable {
 	public void read(JMEImporter e) throws IOException {
 		InputCapsule cap = e.getCapsule(this);
 		edge1 = (ShadowEdge)cap.readSavable("edge1", new ShadowEdge(0, 0));
-		edge2 = (ShadowEdge)cap.readSavable("edge1", new ShadowEdge(0, 0));
-		edge3 = (ShadowEdge)cap.readSavable("edge1", new ShadowEdge(0, 0));
+		edge2 = (ShadowEdge)cap.readSavable("edge2", new ShadowEdge(0, 0));
+		edge3 = (ShadowEdge)cap.readSavable("edge3", new ShadowEdge(0, 0));
 	}
     
     public Class getClassTag() {
