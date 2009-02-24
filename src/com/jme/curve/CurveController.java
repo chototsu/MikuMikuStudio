@@ -216,6 +216,10 @@ public class CurveController extends Controller {
         }
     }
     
+    public void reset() {
+    	this.currentTime = 0;
+    }
+    
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
