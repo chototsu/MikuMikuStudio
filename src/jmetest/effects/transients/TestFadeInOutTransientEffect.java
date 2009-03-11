@@ -179,7 +179,8 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 
     public static void main(String[] args) {
         TestFadeInOutTransientEffect app = new TestFadeInOutTransientEffect();
-        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow, 
+                TestFadeInOutTransientEffect.class.getResource("/jmetest/data/images/Monkey.png"));
         app.start();
     }
 }
