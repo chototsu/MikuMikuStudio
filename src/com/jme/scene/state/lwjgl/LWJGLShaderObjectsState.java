@@ -328,10 +328,8 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                 if (isEnabled()) {
                     if (programID != -1) {
                         ARBShaderObjects.glUseProgramObjectARB(programID);
- 
-                        for (int i = shaderAttributes.size(); --i >= 0;) {
-                            ShaderVariable shaderVariable =
-                                    shaderAttributes.get(i);
+
+                        for (ShaderVariable shaderVariable : shaderAttributes.values()) {
                             if (shaderVariable.needsRefresh) {                                                           
                                 LWJGLShaderUtil.updateAttributeLocation(
                                         shaderVariable, programID);
@@ -341,9 +339,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                                     .updateShaderAttribute(shaderVariable);
                         }
 
-                        for (int i = shaderUniforms.size(); --i >= 0;) {
-                            ShaderVariable shaderVariable =
-                                    shaderUniforms.get(i);
+                        for (ShaderVariable shaderVariable : shaderUniforms.values()) {
                             if (shaderVariable.needsRefresh) {
                                 LWJGLShaderUtil.updateUniformLocation(
                                         shaderVariable, programID);

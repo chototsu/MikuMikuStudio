@@ -327,9 +327,7 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
                     if (programID != -1) {
                         gl.glUseProgramObjectARB(programID);
 
-                        for (int i = shaderAttributes.size(); --i >= 0;) {
-                            ShaderVariable shaderVariable =
-                                    shaderAttributes.get(i);
+                        for (ShaderVariable shaderVariable : shaderAttributes.values()) {
                             if (shaderVariable.needsRefresh) {
                                 JOGLShaderUtil.updateAttributeLocation(
                                         shaderVariable, programID);
@@ -339,9 +337,7 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
                                     .updateShaderAttribute(shaderVariable);
                         }
 
-                        for (int i = shaderUniforms.size(); --i >= 0;) {
-                            ShaderVariable shaderVariable =
-                                    shaderUniforms.get(i);
+                        for (ShaderVariable shaderVariable : shaderUniforms.values()) {
                             if (shaderVariable.needsRefresh) {
                                 JOGLShaderUtil.updateUniformLocation(
                                         shaderVariable, programID);

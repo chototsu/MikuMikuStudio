@@ -78,4 +78,9 @@ public class ShaderVariable implements Savable {
     public Class getClassTag() {
         return this.getClass();
     }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

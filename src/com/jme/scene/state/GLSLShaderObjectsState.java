@@ -43,7 +43,8 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,7 +55,6 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Geometry;
-import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -72,6 +72,7 @@ import com.jme.util.shader.uniformtypes.ShaderVariableInt4;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix2;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix3;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4Array;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerByte;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerInt;
@@ -88,11 +89,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
             .getLogger(GLSLShaderObjectsState.class.getName());
 
     /** Storage for shader uniform values */
-    protected ArrayList<ShaderVariable> shaderUniforms =
-            new ArrayList<ShaderVariable>();
+    protected HashMap<String, ShaderVariable> shaderUniforms =
+            new HashMap<String, ShaderVariable>();
     /** Storage for shader attribute values */
-    protected ArrayList<ShaderVariable> shaderAttributes =
-            new ArrayList<ShaderVariable>();
+    protected HashMap<String, ShaderVariable> shaderAttributes =
+            new HashMap<String, ShaderVariable>();
     
     /** Optional logic for setting shadervariables based on the current geom */
     protected GLSLShaderDataLogic shaderDataLogic;
@@ -127,8 +128,8 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      * Gets all shader uniforms variables.
      * @return
      */
-    public	ArrayList<ShaderVariable>	getShaderUniforms() {
-    	return shaderUniforms;
+    public	Collection<ShaderVariable>	getShaderUniforms() {
+    	return shaderUniforms.values();
     }
     
     /**
@@ -137,21 +138,15 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      * @return
      */
     public	ShaderVariable		getUniformByName(String uniformName) {
-    	for(ShaderVariable shaderVar : shaderUniforms) {
-    		if(shaderVar.name.equals(uniformName)) {
-    			return shaderVar;
-    		}
-    	}
-    	
-    	return null;
+    	return shaderUniforms.get(uniformName);
     }
     
     /**
      * Gets all shader attribute variables.
      * @return
      */
-    public	ArrayList<ShaderVariable>	getShaderAttributes() {
-    	return shaderAttributes;
+    public	Collection<ShaderVariable>	getShaderAttributes() {
+    	return shaderAttributes.values();
     }
     
     /**
@@ -160,13 +155,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      * @return
      */
     public	ShaderVariable		getAttributeByName(String attributeName) {
-    	for(ShaderVariable shaderVar : shaderAttributes) {
-    		if(shaderVar.name.equals(attributeName)) {
-    			return shaderVar;
-    		}
-    	}
-    	
-    	return null;
+        return shaderAttributes.get(attributeName);
     }
     
     /**
@@ -729,19 +718,18 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
     @SuppressWarnings("unchecked")
     private <T extends ShaderVariable> T getShaderVariable(String name,
-            Class<T> classz, ArrayList<ShaderVariable> shaderVariableList) {
-        for (int i = shaderVariableList.size(); --i >= 0;) {
-            ShaderVariable temp = shaderVariableList.get(i);
-            if (name.equals(temp.name)) {
-                temp.needsRefresh = true;
-                return (T) temp;
-            }
+            Class<T> classz, HashMap<String, ShaderVariable> shaderVariableList) {
+    	
+    	ShaderVariable temp = shaderVariableList.get(name);
+        if (temp != null) {
+            temp.needsRefresh = true;
+            return (T) temp;
         }
 
         try {
             T shaderUniform = classz.newInstance();
             shaderUniform.name = name;
-            shaderVariableList.add(shaderUniform);
+            shaderVariableList.put(name, shaderUniform);
 
             return shaderUniform;
         } catch (InstantiationException e) {
@@ -840,20 +828,18 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.writeSavableArrayList(shaderUniforms, "shaderUniforms",
-                new ArrayList<ShaderVariable>());
-        capsule.writeSavableArrayList(shaderAttributes, "shaderAttributes",
-                new ArrayList<ShaderVariable>());
+        capsule.writeStringSavableMap(shaderUniforms, "shaderUniforms", null);
+        capsule.writeStringSavableMap(shaderAttributes, "shaderAttributes", null);
     }
 
     @SuppressWarnings ("unchecked")
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        shaderUniforms = capsule.readSavableArrayList("shaderUniforms",
-                new ArrayList<ShaderVariable>());
-        shaderAttributes = capsule.readSavableArrayList("shaderAttributes",
-                new ArrayList<ShaderVariable>());
+        shaderUniforms = (HashMap<String, ShaderVariable>) capsule.readStringSavableMap("shaderUniforms",
+                new HashMap<String, ShaderVariable>());
+        shaderAttributes = (HashMap<String, ShaderVariable>) capsule.readStringSavableMap("shaderAttributes",
+                new HashMap<String, ShaderVariable>());
     }
 
     public Class<? extends GLSLShaderObjectsState> getClassTag() {
