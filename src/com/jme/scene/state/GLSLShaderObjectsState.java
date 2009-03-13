@@ -72,7 +72,6 @@ import com.jme.util.shader.uniformtypes.ShaderVariableInt4;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix2;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix3;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4;
-import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4Array;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerByte;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerInt;
