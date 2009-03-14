@@ -165,7 +165,7 @@ public class JMEDragAndDrop {
         dragComponent.setLocation(p.x - dragComponent.getWidth() / 2, p.y - dragComponent.getHeight() / 2);
         if (dropTargetListener != null) {
             Point p2 = SwingUtilities.convertPoint(desktop.getJDesktop(), p.x, p.y, (Component)dropTargetListener);
-            dropTargetListener.dragOver(new JMEDropTargetEvent(p2, dge.getAction(), this));
+			dropTargetListener.dragOver(new JMEDropTargetEvent(event.getSource(),p2, dge.getAction(), this));
         }
     }
 
@@ -215,7 +215,7 @@ public class JMEDragAndDrop {
         boolean dropSuccess = false;
         if (dropTargetListener != null) {
             Point p = SwingUtilities.convertPoint((Component)dragSourceListener, e.getX(), e.getY(), (Component)dropTargetListener);
-            JMEDropTargetEvent dte = new JMEDropTargetEvent(p, dge.getAction(), this);
+			JMEDropTargetEvent dte = new JMEDropTargetEvent(e.getSource(),p, dge.getAction(), this);
             dropTargetListener.drop(dte);
             dropSuccess = dte.isCompleted();
         } else {
@@ -244,7 +244,7 @@ public class JMEDragAndDrop {
         if ( e.getSource() instanceof JMEDropTargetListener ) {
             dropTargetListener = (JMEDropTargetListener) e.getSource();
             Point p = SwingUtilities.convertPoint((Component)dragSourceListener, e.getX(), e.getY(), (Component)dropTargetListener);
-            ( (JMEDropTargetListener)e.getSource() ).dragEnter( new JMEDropTargetEvent(p, dge.getAction(), this ) );
+			( (JMEDropTargetListener)e.getSource() ).dragEnter( new JMEDropTargetEvent(e.getSource(),p, dge.getAction(), this ) );
         }
         dragSourceListener.dragEnter( new JMEDragSourceEvent( e.getPoint(), dge.getAction(), e.getComponent() ) );
     }
@@ -256,7 +256,7 @@ public class JMEDragAndDrop {
     public void mouseExited( MouseEvent e ) {
         if ( e.getSource() instanceof JMEDropTargetListener ) {
             dropTargetListener = null;
-            ( (JMEDropTargetListener) e.getSource() ).dragExit( new JMEDropTargetEvent( e.getPoint(), dge.getAction(), this ) );
+            ( (JMEDropTargetListener) e.getSource() ).dragExit( new JMEDropTargetEvent(e.getSource(), e.getPoint(), dge.getAction(), this ) );
         }
         dragSourceListener.dragExit( new JMEDragSourceEvent( e.getPoint(), dge.getAction() ) );
     }

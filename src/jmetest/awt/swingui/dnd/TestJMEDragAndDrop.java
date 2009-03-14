@@ -78,6 +78,7 @@ public class TestJMEDragAndDrop extends SimpleGame {
         }
         TestJMEDragAndDrop app = new TestJMEDragAndDrop();
         instance = app;
+        instance.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
