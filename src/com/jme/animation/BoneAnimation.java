@@ -979,7 +979,7 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * <b>This method foces interpolation mode, regardless of input</b>
+     * <b>This method forces interpolation mode, regardless of input</b>
      */
     @SuppressWarnings("unchecked")
     public void read(JMEImporter e) throws IOException {
