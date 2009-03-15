@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="jME" default="compile" basedir=".">
+<project name="jME" default="compile">
   <description>
     Ant Build File for the jME API.
     $Id$
