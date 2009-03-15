@@ -1050,9 +1050,11 @@ public class BoneAnimation implements Serializable, Savable {
                     break;
                 }
             }        
-            logger.warning("Unsupported interpolation type specified for at "
-                    + "least one frame: " + iType
-                    + ".  Continuing with specified type.");
+            if (iType != BoneAnimation.LINEAR) {
+                logger.warning("Unsupported interpolation type specified for "
+                        + "at " + "least one frame: " + iType
+                        + ".  Continuing with specified type.");
+            }
         }
     }
 
