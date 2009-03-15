@@ -53,7 +53,7 @@
   <!-- Compiles all the jME classes, including com.jmex.* -->
   <target name="compile" depends="init" description="generate jme classes">
     <copy todir="${class}">
-      <fileset dir="${src}" includes="com/**" excludes="**/*.java"/>
+      <fileset dir="${src}" includes="com/**" excludes="**/*.*/**, **/*.java"/>
     </copy>
     <javac source="${javac.source}" target="${javac.target}"
       srcdir="${src}" destdir="${class}" includes="com/**/*.java"
@@ -67,47 +67,68 @@
     </java>
   </target>
 
+  <target name="-enforce.jar.deps">
+    <dependset>
+      <srcfileset dir="build" includes="com/**"/>
+      <targetfileset dir="${jars}" excludes="**/.*/**" includes="*.jar"/>
+    </dependset>
+  </target>
+
   <!-- Jar files for different parts of the jME API -->
 
-  <target name="dist-core" depends="compile" description="generate jme jar file">
-    <jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="true" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf, **/com/jme/**/*.vert, **/com/jme/**/*.frag" />
+  <target name="dist-core" depends="compile, -enforce.jar.deps"
+         description="generate jme jar file">
+    <jar destfile="${jars}/jme.jar" basedir="${class}" update="no" compress="true" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf, **/com/jme/**/*.vert, **/com/jme/**/*.frag" />
   </target>
-  <target name="dist-audio" depends="compile" description="generate jme jar file (audio)">
-    <jar jarfile="${jars}/jme-audio.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/audio/**/*.class" />
+  <target name="dist-audio" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (audio)">
+    <jar destfile="${jars}/jme-audio.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/audio/**/*.class" />
   </target>
-  <target name="dist-awt" depends="compile" description="generate jme jar file (awt)">
-    <jar jarfile="${jars}/jme-awt.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/awt/**/*.class" />
+  <target name="dist-awt" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (awt)">
+    <jar destfile="${jars}/jme-awt.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/awt/**/*.class" />
   </target>
-  <target name="dist-swt" depends="compile" description="generate jme jar file (swt)">
-    <jar jarfile="${jars}/jme-swt.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/swt/**/*.class" />
+  <target name="dist-swt" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (swt)">
+    <jar destfile="${jars}/jme-swt.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/swt/**/*.class" />
   </target>
-  <target name="dist-editors" depends="compile" description="generate jme jar file (editors)">
-    <jar jarfile="${jars}/jme-editors.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/editors/**/*.class" />
+  <target name="dist-editors" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (editors)">
+    <jar destfile="${jars}/jme-editors.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/editors/**/*.class" />
   </target>
-  <target name="dist-effects" depends="compile" description="generate jme jar file (effects)">
-    <jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/effects/**/*.class, **/com/jmex/effects/**/data/*.*" />
+  <target name="dist-effects" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (effects)">
+    <jar destfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/effects/**/*.class, **/com/jmex/effects/**/data/*" />
   </target>
-  <target name="dist-font" depends="compile" description="generate jme jar file (font)">
-    <jar jarfile="${jars}/jme-font.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/font2d/**/*.class,**/com/jmex/font3d/**/*.class" />
+  <target name="dist-font" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (font)">
+    <jar destfile="${jars}/jme-font.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/font2d/**/*.class,**/com/jmex/font3d/**/*.class" />
   </target>
-  <target name="dist-gamestates" depends="compile" description="generate jme jar file (gamestates)">
-    <jar jarfile="${jars}/jme-gamestates.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/game/**/*.class" />
+  <target name="dist-gamestates" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (gamestates)">
+    <jar destfile="${jars}/jme-gamestates.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/game/**/*.class" />
   </target>
-  <target name="dist-model" depends="compile" description="generate jme jar file (model)">
-    <jar jarfile="${jars}/jme-model.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/model/**/*.class" excludes="**/com/jmex/model/collada/**" />
+  <target name="dist-model" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (model)">
+    <jar destfile="${jars}/jme-model.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/model/**/*.class" excludes="**/com/jmex/model/collada/**" />
   </target>
-  <target name="dist-collada" depends="compile" description="generate jme jar file (collada)">
-    <jar jarfile="${jars}/jme-collada.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/model/collada/**/*.class" />
+  <target name="dist-collada" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (collada)">
+    <jar destfile="${jars}/jme-collada.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/model/collada/**/*.class" />
   </target>
-  <target name="dist-scene" depends="compile" description="generate jme jar file (scene)">
-    <jar jarfile="${jars}/jme-scene.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/scene/**/*.class" />
+  <target name="dist-scene" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (scene)">
+    <jar destfile="${jars}/jme-scene.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/scene/**/*.class" />
   </target>
-  <target name="dist-terrain" depends="compile" description="generate jme jar file (terrain)">
-    <jar jarfile="${jars}/jme-terrain.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/terrain/**/*.class" />
+  <target name="dist-terrain" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (terrain)">
+    <jar destfile="${jars}/jme-terrain.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/terrain/**/*.class" />
   </target>
-  <target name="dist-xml" depends="compile" description="generate jme jar file (xml)">
-    <jar jarfile="${jars}/jme-xml.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/xml/**/*.class" />
+  <target name="dist-xml" depends="compile, -enforce.jar.deps"
+          description="generate jme jar file (xml)">
+    <jar destfile="${jars}/jme-xml.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/xml/**/*.class" />
   </target>
+
   <!-- Creates all the jME jars -->
   <target name="dist-all" depends="dist-core, dist-terrain, dist-audio, dist-awt, dist-swt, dist-effects, dist-model, dist-collada, dist-editors, dist-font, dist-gamestates, dist-scene, dist-xml" description="Generate all jar files" />
 
@@ -127,13 +148,27 @@
     <signjar jar="${jars}/jme-xml.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
   </target>
 
-  <!-- Generats javadoc -->
-  <target name="doc" depends="compile" description="generate the javadoc documentation">
+  <target name="doc" depends="compile"
+          description="generate the javadoc documentation">
+    <dependset>
+      <srcfileset dir="${src}/com" excludes="**/.*/**"/>
+      <targetfileset dir="${doc}"/>
+    </dependset>
+    <available property="_passname" value="_docs.uptodate"
+               file="${doc}/index.html"/>
+    <property name="_passname" value="dummy"/>
+    <antcall target="-doc">
+      <param name="${_passname}" value="true"/>
+    </antcall>
+  </target>
+
+  <!-- Generates javadoc unless param is set -->
+  <target name="-doc" unless="_docs.uptodate">
+    <delete dir="${doc}"/>  <!-- The dependset leaves empty directories -->
     <javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true" package="yes" windowtitle="jME API" maxmemory="256m">
-      <fileset dir="${src}/com">
-        <include name="**/*.java" />
-        <exclude name="**/jmex/model/collada/schema/**" />
-      </fileset>
+      <fileset dir="${src}/com"
+               excludes="**/.*/**, **/jmex/model/collada/schema/**"
+               includes="**/*.java" />
     </javadoc>
   </target>
 
@@ -161,11 +196,13 @@
       debug="${javac.debug}"/>
     <!-- copy the resources into the build directory -->
     <copy todir="${class}">
-      <fileset dir="${src}" includes="jmetest/**" excludes="**/*.java"/>
+      <fileset dir="${src}" includes="jmetest/**"
+               excludes="**/.*/**, **/*.java"/>
     </copy>
   </target>
 
-  <target name="dist-test" depends="compile-test" description="generate jme test class and data jars">
+  <target name="dist-test" depends="dist-all, compile-test"
+    description="generate jme test class and data jars + dependent distro jars">
     <!-- Jar the demo classes -->
 
     <pathconvert property="jarclasspathlibs" pathsep=" " dirsep="/">
@@ -187,7 +224,12 @@
     </pathconvert>
     <echo>${jarclasspathlibs} ${jarclasspathrelease}</echo>
 
-    <jar jarfile="${jars}/jmetest.jar" basedir="${class}" compress="true" excludes="**/jmetest/**/data/**,**/com/**" index="yes">
+    <dependset>
+      <srcfileset dir="build"/>
+      <targetfileset dir="${jars}" excludes="**/.*/**" includes="jmetest*.jar"/>
+    </dependset>
+
+    <jar destfile="${jars}/jmetest.jar" basedir="${class}" compress="true" excludes="**/jmetest/**/data/**,**/com/**" index="yes">
       <manifest>
         <attribute name="Implementation-Title" value="${name}" />
         <attribute name="Implementation-Vendor" value="${vendor}" />
@@ -198,12 +240,12 @@
     </jar>
 
     <!-- Jar the demo data -->
-    <jar jarfile="${jars}/jmetest-data-cursor.jar" basedir="${class}" compress="true" includes="**/jmetest/data/cursor/**" />
-    <jar jarfile="${jars}/jmetest-data-images.jar" basedir="${class}" compress="true" includes="**/jmetest/data/images/**" />
-    <jar jarfile="${jars}/jmetest-data-model.jar" basedir="${class}" compress="true" includes="**/jmetest/data/model/**" />
-    <jar jarfile="${jars}/jmetest-data-skybox1.jar" basedir="${class}" compress="true" includes="**/jmetest/data/skybox1/**" />
-    <jar jarfile="${jars}/jmetest-data-sound.jar" basedir="${class}" compress="true" includes="**/jmetest/data/sound/**" />
-    <jar jarfile="${jars}/jmetest-data-texture.jar" basedir="${class}" compress="true" includes="**/jmetest/data/texture/**" />
+    <jar destfile="${jars}/jmetest-data-cursor.jar" basedir="${class}" compress="true" includes="**/jmetest/data/cursor/**" />
+    <jar destfile="${jars}/jmetest-data-images.jar" basedir="${class}" compress="true" includes="**/jmetest/data/images/**" />
+    <jar destfile="${jars}/jmetest-data-model.jar" basedir="${class}" compress="true" includes="**/jmetest/data/model/**" />
+    <jar destfile="${jars}/jmetest-data-skybox1.jar" basedir="${class}" compress="true" includes="**/jmetest/data/skybox1/**" />
+    <jar destfile="${jars}/jmetest-data-sound.jar" basedir="${class}" compress="true" includes="**/jmetest/data/sound/**" />
+    <jar destfile="${jars}/jmetest-data-texture.jar" basedir="${class}" compress="true" includes="**/jmetest/data/texture/**" />
   </target>
 
   <target name="webdist-test" depends="dist-test" description="sign test jars for Webstart distribution">
@@ -218,27 +260,32 @@
 
   <!-- Jar and sign all the libraries required by jME -->
   <target name="webdist-nativelibs" description="jar and sign native libraries for Webstart distribution">
+    <dependset>
+      <srcfileset dir="lib"/>
+      <targetfileset dir="${webstart}" excludes="**/.*/**" includes="*.jar"/>
+    </dependset>
+
     <!--  Jar and sign the Windows libraries -->
-    <jar jarfile="${webstart}/lwjgl-windows.jar" basedir="lib" includes="lwjgl.dll" update="yes" />
-    <jar jarfile="${webstart}/openal-windows.jar" basedir="lib" includes="OpenAL32.dll" update="yes" />
-    <jar jarfile="${webstart}/jinput-windows.jar" basedir="lib" includes="jinput-dxplugin.dll" update="yes" />
+    <jar destfile="${webstart}/lwjgl-windows.jar" basedir="lib" includes="lwjgl.dll" update="yes" />
+    <jar destfile="${webstart}/openal-windows.jar" basedir="lib" includes="OpenAL32.dll" update="yes" />
+    <jar destfile="${webstart}/jinput-windows.jar" basedir="lib" includes="jinput-dxplugin.dll" update="yes" />
     <signjar jar="${webstart}/lwjgl-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/openal-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/jinput-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 
     <!-- Jar and sign Linux native libraries -->
-    <jar jarfile="${webstart}/lwjgl-linux.jar" basedir="lib" includes="liblwjgl.so" update="yes" />
-    <jar jarfile="${webstart}/openal-linux.jar" basedir="lib" includes="libopenal.so" update="yes" />
-    <jar jarfile="${webstart}/jinput-linux.jar" basedir="lib" includes="libjinput-linux.so" update="yes" />
+    <jar destfile="${webstart}/lwjgl-linux.jar" basedir="lib" includes="liblwjgl.so" update="yes" />
+    <jar destfile="${webstart}/openal-linux.jar" basedir="lib" includes="libopenal.so" update="yes" />
+    <jar destfile="${webstart}/jinput-linux.jar" basedir="lib" includes="libjinput-linux.so" update="yes" />
     <signjar jar="${webstart}/lwjgl-linux.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/openal-linux.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/jinput-linux.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 
     <!-- Jar (eventually) and sign Mac native libraries -->
-    <jar jarfile="${webstart}/lwjgl-mac.jar" basedir="lib" includes="liblwjgl.jnilib" update="yes" />
-    <jar jarfile="${webstart}/openal-mac.jar" basedir="lib" includes="openal.dylib" update="yes" />
+    <jar destfile="${webstart}/lwjgl-mac.jar" basedir="lib" includes="liblwjgl.jnilib" update="yes" />
+    <jar destfile="${webstart}/openal-mac.jar" basedir="lib" includes="openal.dylib" update="yes" />
     <!--fix me: shouldn't it be a jnilib?-->
-    <jar jarfile="${webstart}/jinput-mac.jar" basedir="lib" includes="libjinput.jnilib" update="yes" />
+    <jar destfile="${webstart}/jinput-mac.jar" basedir="lib" includes="libjinput.jnilib" update="yes" />
 
     <signjar jar="${webstart}/lwjgl-mac.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/openal-mac.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
@@ -262,9 +309,7 @@
       </fileset>
     </zip>
     <zip zipfile="${release}/src.zip">
-      <zipfileset dir="${src}" prefix="src">
-        <include name="**/*.*" />
-      </zipfileset>
+      <zipfileset dir="${src}" prefix="src" excludes="**/.*/**"/>
     </zip>
     <!--        <mkdir dir="ftp"/>-->
     <!--        <copy todir="ftp">-->
