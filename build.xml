@@ -19,6 +19,7 @@
 	<property name="ftphost" value="ftp.jmonkeyengine.com" />
 	  <!-- You may prefer to set javac.debug to false to reduce size. -->
 	<property name="javac.debug" value="true" />
+	<property name="javac.maxmem" value="256m" />
 	<property name="javac.debuglevel" value="lines,source" />
       <!-- Having line numbers in debug output is useful for the 99.9%
            of non-public builds, esp. for custom-builders who have
@@ -51,7 +52,7 @@
 		</copy>
 		<javac source="1.5" target="1.5" srcdir="${src}/com" destdir="${class}"
 			classpathref="classpath" listfiles="no" fork="true"
-			memoryMaximumSize="256m" debug="${javac.debug}"/>
+      memoryMaximumSize="${javac.maxmem}" debug="${javac.debug}"/>
 	</target>
 
 	<target name="run-testchooser" depends="compile-test" description="Runs the TestChooser">
@@ -149,7 +150,7 @@
 
 	<target name="compile-test" depends="compile" description="generate jme test classes">
 		<javac source="1.5" target="1.5" srcdir="${src}/jmetest" destdir="${class}"
-			classpathref="classpath" fork="true" memoryMaximumSize="256m"
+      classpathref="classpath" fork="true" memoryMaximumSize="${javac.maxmem}"
 			debug="${javac.debug}"/>
 		<!-- copy the resources into the build directory -->
 		<copy todir="${class}/jmetest">
