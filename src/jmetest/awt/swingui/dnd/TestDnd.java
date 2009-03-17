@@ -13,6 +13,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 
 import com.jme.bounding.BoundingSphere;
+import com.jme.input.FirstPersonHandler;
 import com.jme.input.MouseInput;
 import com.jme.input.MouseLookHandler;
 import com.jme.math.FastMath;
@@ -85,12 +86,7 @@ public class TestDnd {
 		public MyGameState() {
 			super();
 			// remove the MouseLookHnadler because the mouse is used for the hud
-			for (int i = 0; i < input.sizeOfAttachedHandlers(); i++) {
-			    if (input.getFromAttachedHandlers(i) instanceof MouseLookHandler) {
-			        input.removeFromAttachedHandlers(input.getFromAttachedHandlers(i));
-			        break;
-			    }
-			}
+			((FirstPersonHandler)input).getMouseLookHandler().setEnabled(false);
 			this.box = new Box("my box", new Vector3f(0, 0, 0), 2, 2, 2);
 			box.setModelBound(new BoundingSphere());
 			box.updateModelBound();
