@@ -35,7 +35,7 @@ package com.jmex.model;
 /**
  * <code>Face</code>
  * @author Mark Powell
- * @version $Id: Face.java,v 1.4 2007/08/02 23:08:03 nca Exp $
+ * @version $Id$
  */
 public class Face {
 	public int[] vertIndex = new int[3];

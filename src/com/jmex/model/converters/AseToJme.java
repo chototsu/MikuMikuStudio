@@ -107,7 +107,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.2 2007/08/20 10:28:40 rherlitz Exp $
+     * @version $Id$
      */
     private class ASEModelCopy{
         private static final long serialVersionUID = 1L;

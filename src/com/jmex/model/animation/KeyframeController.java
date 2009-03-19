@@ -74,7 +74,7 @@ import com.jme.util.geom.BufferUtils;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.16 2007/08/02 23:09:04 nca Exp $
+ * @version $Id$
  */
 public class KeyframeController extends Controller {
     private static final Logger logger = Logger.getLogger(KeyframeController.class.getName());
