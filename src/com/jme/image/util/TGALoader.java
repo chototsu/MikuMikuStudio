@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack - cleaned, commented, added ability to read 16bit true color and color-mapped TGAs.
- * @version $Id: TGALoader.java,v 1.4 2007/01/26 20:53:57 nca Exp $
+ * @version $Id$
  */
 public final class TGALoader {
 

@@ -39,7 +39,7 @@ import java.util.ArrayList;
  * including ignoring and shallow copying fields by name.
  *
  * @author kevin
- * @version $Id: CloneConfiguration.java,v 1.2 2006/09/20 19:25:59 llama Exp $
+ * @version $Id$
  */
 public class CloneConfiguration {
         /** A configuration that specifies that all geometry buffers should be shared between copies */

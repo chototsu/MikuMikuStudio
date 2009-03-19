@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * @author Mark Powell
  * @author Joshua Slack - Light state combining and performance enhancements
  * @author Three Rings: Local viewer and separate specular
- * @version $Id: LightState.java,v 1.25 2007/02/05 16:33:03 nca Exp $
+ * @version $Id$
  */
 public abstract class LightState extends RenderState {
     

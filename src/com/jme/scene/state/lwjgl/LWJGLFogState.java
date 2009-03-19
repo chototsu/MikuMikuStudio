@@ -48,7 +48,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLFogState.java,v 1.13 2007/04/11 18:27:36 nca Exp $
+ * @version $Id$
  */
 public class LWJGLFogState extends FogState {
     private static final long serialVersionUID = 2L;

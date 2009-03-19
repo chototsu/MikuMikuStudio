@@ -61,7 +61,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLLightState.java,v 1.30 2007/09/14 20:53:54 nca Exp $
+ * @version $Id$
  */
 public class LWJGLLightState extends LightState {
     private static final long serialVersionUID = 1L;

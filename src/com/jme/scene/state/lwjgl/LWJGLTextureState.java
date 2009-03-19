@@ -96,7 +96,7 @@ import com.jme.util.stat.StatType;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: LWJGLTextureState.java,v 1.99 2008/04/21 02:57:04 renanse Exp $
+ * @version $Id$
  */
 public class LWJGLTextureState extends TextureState {
     private static final Logger logger = Logger

@@ -48,7 +48,7 @@ import com.jme.input.action.InputActionEvent;
  * typically useful for a first person mouse look or similar.
  * 
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.18 2006/01/13 19:39:27 renanse Exp $
+ * @version $Id$
  */
 public class RelativeMouse extends Mouse {
 

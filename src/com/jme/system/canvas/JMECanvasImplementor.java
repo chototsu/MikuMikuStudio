@@ -43,7 +43,7 @@ import com.jme.util.GameTaskQueueManager;
  * <code>JMECanvasImplementor</code>
  * 
  * @author Joshua Slack
- * @version $Id: JMECanvasImplementor.java,v 1.5 2007/10/24 15:08:56 nca Exp $
+ * @version $Id$
  */
 public abstract class JMECanvasImplementor {
 

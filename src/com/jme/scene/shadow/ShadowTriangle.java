@@ -46,7 +46,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowTriangle.java,v 1.4 2006/06/01 15:05:44 nca Exp $
+ * @version $Id$
  */
 public class ShadowTriangle implements Savable {
 

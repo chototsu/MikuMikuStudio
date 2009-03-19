@@ -49,7 +49,7 @@ import com.jme.scene.TriMesh;
  * result in Bounding accuracy.
  * 
  * @author Mark Powell
- * @version $Id: TriangleCollisionResults.java,v 1.11 2007/02/05 16:14:22 nca Exp $
+ * @version $Id$
  */
 public class TriangleCollisionResults extends CollisionResults {
     /*

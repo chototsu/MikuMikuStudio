@@ -78,7 +78,7 @@ import com.jme.system.JmeException;
  * read/write jME. It is <b>NOT </b> to be used for rendering as it won't do
  * anything at all.
  * 
- * @version $Id: $
+ * @version $Id$
  */
 public final class DummyRenderer extends Renderer {
 

@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>FragmentProgramState</code>
- * @version $Id: FragmentProgramState.java,v 1.8 2007/08/14 15:00:48 rherlitz Exp $
+ * @version $Id$
  */
 public abstract class FragmentProgramState extends RenderState {
 

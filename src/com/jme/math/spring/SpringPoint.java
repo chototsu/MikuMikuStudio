@@ -44,7 +44,7 @@ import com.jme.util.export.Savable;
 /**
  * <code>SpringPoint</code> defines a single point in a SpringSystem.
  * @author Joshua Slack
- * @version $Id: SpringPoint.java,v 1.5 2007/09/21 15:45:33 nca Exp $
+ * @version $Id$
  */
 public class SpringPoint implements Savable {
 

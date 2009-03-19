@@ -51,7 +51,7 @@ import com.jme.util.export.OutputCapsule;
  * distance from the camera.
  * 
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.11 2006/09/29 22:36:52 nca Exp $
+ * @version $Id$
  */
 public class SwitchNode extends Node {
 	private static final long serialVersionUID = 1L;

@@ -50,7 +50,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.24 2007/03/06 15:08:50 nca Exp $
+ * @version $Id$
  */
 public abstract class KeyInput extends Input {
 

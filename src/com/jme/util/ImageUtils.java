@@ -34,7 +34,7 @@
  * <code>ImageUtils</code> is used to for various helper methods based on com.jme.image.Image.
  * 
  * @author Tijl Houtbeckers
- * @version $Id: ImageUtils.java,v 1.2 2007/02/05 16:41:23 nca Exp $
+ * @version $Id$
  */
 
 package com.jme.util;

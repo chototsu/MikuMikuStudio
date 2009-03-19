@@ -52,7 +52,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Image.java,v 1.16 2007/03/06 15:07:50 nca Exp $
+ * @version $Id$
  */
 public class Image implements Serializable, Savable {
 

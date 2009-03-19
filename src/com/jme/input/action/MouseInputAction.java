@@ -41,7 +41,7 @@ import com.jme.input.Mouse;
  * 
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: MouseInputAction.java,v 1.11 2006/01/13 19:39:41 renanse Exp $
+ * @version $Id$
  */
 public abstract class MouseInputAction extends InputAction {
 

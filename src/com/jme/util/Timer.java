@@ -40,7 +40,7 @@ import com.jme.system.JmeException;
  * created from getTimer("display system")
  *
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.18 2007/03/09 10:19:34 rherlitz Exp $
+ * @version $Id$
  */
 public abstract class Timer {
     protected static Timer instance;

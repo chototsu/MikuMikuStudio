@@ -52,7 +52,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.26 2007/08/29 19:00:15 nca Exp $
+ * @version $Id$
  */
 public abstract class Mouse extends Quad {
 

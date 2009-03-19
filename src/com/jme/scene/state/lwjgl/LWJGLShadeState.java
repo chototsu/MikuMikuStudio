@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLShadeState.java,v 1.10 2007/04/11 18:27:36 nca Exp $
+ * @version $Id$
  */
 public class LWJGLShadeState extends ShadeState {
     private static final long serialVersionUID = 1L;

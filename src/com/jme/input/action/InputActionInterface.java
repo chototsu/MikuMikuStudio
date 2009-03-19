@@ -36,7 +36,7 @@ package com.jme.input.action;
  * An object implementing <code>InputActionInterface</code> can be subscribed at an {@link com.jme.input.InputHandler}
  * to get its {@link #performAction} method called on specific event triggers.
  * @author Irrisor
- * @version $Id: InputActionInterface.java,v 1.2 2006/11/25 11:50:58 irrisor Exp $
+ * @version $Id$
  */
 public interface InputActionInterface {
     /**

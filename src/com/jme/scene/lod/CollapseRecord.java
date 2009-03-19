@@ -50,7 +50,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: CollapseRecord.java,v 1.10 2006/06/01 15:05:49 nca Exp $
+ * @version $Id$
  */
 
 public class CollapseRecord implements Serializable, Savable {

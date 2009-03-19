@@ -45,7 +45,7 @@ import org.lwjgl.Sys;
  * singleton object and must be created via the <code>getTimer</code> method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.21 2007/09/22 16:46:35 irrisor Exp $
+ * @version $Id$
  */
 public class LWJGLTimer extends Timer {
     private static final Logger logger = Logger.getLogger(LWJGLTimer.class

@@ -48,7 +48,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: ZBufferState.java,v 1.8 2006/11/16 17:02:15 nca Exp $
+ * @version $Id$
  */
 public abstract class ZBufferState extends RenderState {
 

@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * turn and the time between frames.
  * 
  * @author Mark Powell
- * @version $Id: KeyRotateLeftAction.java,v 1.16 2006/09/29 22:30:17 nca Exp $
+ * @version $Id$
  */
 public class KeyRotateLeftAction extends KeyInputAction {
     //the camera to manipulate

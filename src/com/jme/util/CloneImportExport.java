@@ -71,7 +71,7 @@ import com.jme.util.geom.BufferUtils;
  * </code>
  * 
  * @author kevin
- * @version $Id: CloneImportExport.java,v 1.9 2008/02/06 14:40:15 renanse Exp $
+ * @version $Id$
  */
 public class CloneImportExport implements JMEExporter, JMEImporter {
     private static final Logger logger = Logger

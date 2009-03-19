@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
  * flat provides no smoothing.  If this state is not enabled, Smooth is used.
  * 
  * @author Mark Powell
- * @version $Id: ShadeState.java,v 1.7 2006/11/16 17:02:15 nca Exp $
+ * @version $Id$
  */
 public abstract class ShadeState extends RenderState {
 

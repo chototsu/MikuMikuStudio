@@ -50,7 +50,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BlendState.java,v 1.9 2007/08/02 22:05:39 nca Exp $
+ * @version $Id$
  */
 public abstract class BlendState extends RenderState {
 

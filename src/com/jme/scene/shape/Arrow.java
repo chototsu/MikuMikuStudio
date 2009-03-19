@@ -48,7 +48,7 @@ import com.jme.util.export.OutputCapsule;
  * A cylinder with a pyramid at one end.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.3 $, $Date$
+ * @version $Revision$, $Date$
  */
 public class Arrow extends Node {
 

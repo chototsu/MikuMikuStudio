@@ -43,7 +43,7 @@ import com.jme.renderer.Camera;
  * travel.
  * 
  * @author Mark Powell
- * @version $Id: KeyBackwardAction.java,v 1.13 2006/11/03 09:18:54 irrisor Exp $
+ * @version $Id$
  */
 public class KeyBackwardAction extends KeyInputAction {
 

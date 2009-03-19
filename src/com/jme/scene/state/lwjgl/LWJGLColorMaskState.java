@@ -44,7 +44,7 @@ import com.jme.system.DisplaySystem;
  * <code>LWJGLColorMaskState</code>
  * @author Mike Talbot
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLColorMaskState.java,v 1.4 2007/04/11 18:27:36 nca Exp $
+ * @version $Id$
  */
 public class LWJGLColorMaskState extends ColorMaskState {
     private static final long serialVersionUID = 1L;

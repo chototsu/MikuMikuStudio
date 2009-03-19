@@ -56,7 +56,7 @@ import com.jme.system.DisplaySystem;
  *      run are restored.
  *      
  * @author Joshua Slack
- * @version $Id: Pass.java,v 1.9 2007/08/14 13:41:40 rherlitz Exp $
+ * @version $Id$
  */
 public abstract class Pass implements Serializable {
 

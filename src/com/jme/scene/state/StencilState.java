@@ -52,7 +52,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack - two sided, wrap, enums, etc.
- * @version $Id: $
+ * @version $Id$
  */
 public abstract class StencilState extends RenderState {
 

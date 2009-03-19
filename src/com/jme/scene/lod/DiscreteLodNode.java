@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
 /**
  * <code>DiscreteLodNode</code>
  * @author Mark Powell
- * @version $Id: DiscreteLodNode.java,v 1.10 2007/09/21 15:45:32 nca Exp $
+ * @version $Id$
  */
 public class DiscreteLodNode extends SwitchNode implements Savable {
 	private static final long serialVersionUID = 1L;

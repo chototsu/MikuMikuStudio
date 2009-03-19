@@ -51,7 +51,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Beskid Lucian Cristian
  * @author Tijl Houtbeckers (only minor changes / extra javadoc)
- * @version $Id: OutlinePass.java,v 1.8 2007/09/21 15:45:31 nca Exp $
+ * @version $Id$
  */
 public class OutlinePass extends RenderPass {
 

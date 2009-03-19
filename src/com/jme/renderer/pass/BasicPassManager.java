@@ -41,7 +41,7 @@ import com.jme.renderer.Renderer;
  * calls to render and update.
  * 
  * @author Joshua Slack
- * @version $Id: BasicPassManager.java,v 1.5 2006/06/19 22:39:43 nca Exp $
+ * @version $Id$
  */
 public class BasicPassManager {
 

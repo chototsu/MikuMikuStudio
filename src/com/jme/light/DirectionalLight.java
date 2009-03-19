@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
  * of the light rays are all parallel. The direction the light is coming from
  * is defined by the class.
  * @author Mark Powell
- * @version $Id: DirectionalLight.java,v 1.9 2007/09/21 15:45:30 nca Exp $
+ * @version $Id$
  */
 public class DirectionalLight extends Light {
     private static final long serialVersionUID = 1L;

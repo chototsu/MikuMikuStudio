@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
  * for easy calling.
  *
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.12 2006/01/13 19:39:50 renanse Exp $
+ * @version $Id$
  */
 public class Distance {
 

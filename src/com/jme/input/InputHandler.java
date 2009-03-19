@@ -65,7 +65,7 @@ import com.jme.input.util.SyntheticButton;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.44 2007/08/02 22:55:27 nca Exp $
+ * @version $Id$
  */
 public class InputHandler {
     private static final Logger logger = Logger.getLogger(InputHandler.class.getName());

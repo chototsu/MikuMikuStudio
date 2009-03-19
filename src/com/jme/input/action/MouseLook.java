@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * and converts it into camera rotations and camera tilts.
  * 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.18 2007/08/02 21:38:55 nca Exp $
+ * @version $Id$
  */
 public class MouseLook extends MouseInputAction {
 

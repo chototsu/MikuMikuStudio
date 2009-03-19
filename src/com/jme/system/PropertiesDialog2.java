@@ -69,7 +69,7 @@ import javax.swing.UIManager;
  * @see com.jme.system.GameSettings
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: PropertiesDialog2.java,v 1.7 2007/08/02 22:14:06 nca Exp $
+ * @version $Id$
  */
 public final class PropertiesDialog2 extends JDialog {
     private static final Logger logger = Logger.getLogger(PropertiesDialog2.class.getName());

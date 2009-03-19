@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.21 2007/08/02 21:54:36 nca Exp $
+ * @version $Id$
  */
 public class Point extends Geometry {
     private static final Logger logger = Logger

@@ -40,7 +40,7 @@ package com.jme.system;
  * what is causing the exception.
  * 
  * @author Mark Powell
- * @version $Id: JmeException.java,v 1.6 2006/01/13 19:39:45 renanse Exp $
+ * @version $Id$
  */
 public class JmeException extends RuntimeException {
 

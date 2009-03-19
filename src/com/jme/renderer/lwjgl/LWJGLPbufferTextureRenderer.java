@@ -66,7 +66,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.9 2007/08/20 20:53:29 nca Exp $
+ * @version $Id$
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {

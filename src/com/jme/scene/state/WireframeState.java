@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: WireframeState.java,v 1.12 2006/11/16 17:02:15 nca Exp $
+ * @version $Id$
  */
 public abstract class WireframeState extends RenderState {
 

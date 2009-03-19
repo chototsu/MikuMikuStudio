@@ -48,7 +48,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: FogState.java,v 1.9 2007/09/21 15:45:29 nca Exp $
+ * @version $Id$
  */
 public abstract class FogState extends RenderState {
 

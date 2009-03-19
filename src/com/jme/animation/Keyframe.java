@@ -46,7 +46,7 @@ import com.jme.util.export.Savable;
  * system uses a collection of these keyframes to build a sequence of
  * transitions to manipulate and animate a collection of vertices.
  * @author Mark Powell
- * @version $Id: Keyframe.java,v 1.7 2006/06/01 15:05:47 nca Exp $
+ * @version $Id$
  */
 public class Keyframe implements Savable {
 

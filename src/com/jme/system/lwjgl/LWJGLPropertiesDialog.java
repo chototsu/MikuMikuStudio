@@ -79,7 +79,7 @@ import com.jme.system.GameSettings;
  * @author Mark Powell
  * @author Eric Woroshow
  * @author Joshua Slack - reworked for proper use of GL commands.
- * @version $Id: LWJGLPropertiesDialog.java,v 1.20 2008/04/20 10:58:38 irrisor Exp $
+ * @version $Id$
  */
 public final class LWJGLPropertiesDialog extends JDialog {
     private static final Logger logger = Logger.getLogger(LWJGLPropertiesDialog.class.getName());

@@ -40,7 +40,7 @@ import java.io.InputStream;
  * <code>GIFLoader</code> is a stub to be filled in later with non-awt dependant
  * gif loading code.
  *
- * @version $Id: GIFLoader.java,v 1.2 2006/12/16 13:51:41 irrisor Exp $
+ * @version $Id$
  */
 public final class GIFLoader {
   private GIFLoader() {

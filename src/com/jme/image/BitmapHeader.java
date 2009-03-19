@@ -40,7 +40,7 @@ import java.io.IOException;
  * <code>BitmapHeader</code> defines header information about a bitmap (BMP) image
  * file format.
  * @author Mark Powell
- * @version $Id: BitmapHeader.java,v 1.13 2006/01/13 19:40:05 renanse Exp $
+ * @version $Id$
  */
 public class BitmapHeader {
     /**

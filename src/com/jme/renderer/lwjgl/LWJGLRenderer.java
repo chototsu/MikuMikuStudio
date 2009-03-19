@@ -127,7 +127,7 @@ import com.jme.util.stat.StatType;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.149 2008/04/21 03:14:33 renanse Exp $
+ * @version $Id$
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class

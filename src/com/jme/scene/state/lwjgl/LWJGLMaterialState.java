@@ -47,7 +47,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLMaterialState.java,v 1.15 2007/04/11 18:27:36 nca Exp $
+ * @version $Id$
  */
 public class LWJGLMaterialState extends MaterialState {
     private static final long serialVersionUID = 1L;

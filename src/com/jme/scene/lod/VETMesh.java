@@ -47,7 +47,7 @@ import java.util.Vector;
  * use outside of a base class for clod meshes.
  * 
  * @author Joshua Slack
- * @version $Id: VETMesh.java,v 1.13 2007/08/20 10:28:23 rherlitz Exp $
+ * @version $Id$
  * @see ClodCreator
  */
 

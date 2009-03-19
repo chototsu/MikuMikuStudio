@@ -41,7 +41,7 @@ import com.jme.renderer.Camera;
  * and of the form units per second.
  * 
  * @author Mark Powell
- * @version $Id: KeyStrafeRightAction.java,v 1.13 2006/11/03 09:18:54 irrisor Exp $
+ * @version $Id$
  */
 public class KeyStrafeRightAction extends KeyInputAction {
     //the camera to manipulate

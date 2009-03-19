@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
  * <code>ThirdPersonForwardAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.8 $
+ * @version $Revision$
  */
 public class ThirdPersonForwardAction extends KeyInputAction {
     private Vector3f rot;

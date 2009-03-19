@@ -40,7 +40,7 @@ import com.jme.scene.Spatial;
  * including rendering the renderqueue at the end of the pass.
  * 
  * @author Joshua Slack
- * @version $Id: RenderPass.java,v 1.4 2007/02/23 17:08:08 irrisor Exp $
+ * @version $Id$
  */
 public class RenderPass extends Pass {
     

@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * renderer the order in which to draw the points, creating quads based on the mode set.
  * 
  * @author Joshua Slack
- * @version $Id: $
+ * @version $Id$
  */
 public class QuadMesh extends Geometry implements Serializable {
     private static final Logger logger = Logger.getLogger(QuadMesh.class

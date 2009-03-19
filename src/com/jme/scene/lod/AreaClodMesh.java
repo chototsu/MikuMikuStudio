@@ -56,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: AreaClodMesh.java,v 1.19 2007/08/02 22:04:07 nca Exp $
+ * @version $Id$
  */
 public class AreaClodMesh extends ClodMesh {
     private static final Logger logger = Logger.getLogger(AreaClodMesh.class

@@ -48,7 +48,7 @@ import com.jme.util.export.OutputCapsule;
  * point light and the object it illuminates.
  * 
  * @author Mark Powell
- * @version $Id: SpotLight.java,v 1.11 2007/09/21 15:45:30 nca Exp $
+ * @version $Id$
  */
 public class SpotLight extends PointLight {
     private static final long serialVersionUID = 1L;

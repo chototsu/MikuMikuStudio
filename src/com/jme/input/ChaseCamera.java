@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.25 $
+ * @version $Revision$
  */
 
 public class ChaseCamera extends InputHandler {

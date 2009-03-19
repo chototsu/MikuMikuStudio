@@ -46,7 +46,7 @@ import com.jme.input.KeyInputListener;
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard.
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.17 2007/08/17 20:57:30 nca Exp $
+ * @version $Id$
  */
 public class LWJGLKeyInput extends KeyInput {
     private static final Logger logger = Logger.getLogger(LWJGLKeyInput.class

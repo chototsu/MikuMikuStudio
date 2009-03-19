@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * how smooth the mesh will be.
  * 
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.20 2006/06/21 20:33:03 nca Exp $
+ * @version $Id$
  */
 public class BezierMesh extends TriMesh {
 

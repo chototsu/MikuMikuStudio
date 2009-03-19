@@ -42,7 +42,7 @@ import java.util.concurrent.Future;
  * easy access to task queues.
  * 
  * @author Joshua Slack
- * @version $Id: GameTaskQueueManager.java,v 1.2 2007/08/27 23:37:56 sunsett Exp $
+ * @version $Id$
  */
 public final class GameTaskQueueManager {
 

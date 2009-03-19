@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.15 2006/09/29 22:37:32 nca Exp $
+ * @version $Id$
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;

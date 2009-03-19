@@ -51,7 +51,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowVolume.java,v 1.6 2007/09/21 15:45:33 nca Exp $
+ * @version $Id$
  */
 public class ShadowVolume extends TriMesh {
     private static final long serialVersionUID = 1L;

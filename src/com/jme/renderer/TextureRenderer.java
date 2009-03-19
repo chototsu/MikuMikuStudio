@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.21 2007/08/20 20:53:30 nca Exp $
+ * @version $Id$
  */
 public interface TextureRenderer {
 

@@ -50,7 +50,7 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.12 2007/08/14 13:41:31 rherlitz Exp $
+ * @version $Id$
  */
 public class BinaryFileReader {
     private static final Logger logger = Logger

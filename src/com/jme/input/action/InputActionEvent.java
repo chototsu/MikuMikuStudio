@@ -39,7 +39,7 @@ package com.jme.input.action;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.10 2006/11/25 11:45:19 irrisor Exp $
+ * @version $Id$
  */
 public class InputActionEvent {
 

@@ -50,7 +50,7 @@ import com.jme.util.export.Savable;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.19 2007/03/06 15:14:26 nca Exp $
+ * @version $Id$
  */
 public abstract class Controller implements Serializable, Savable {
 

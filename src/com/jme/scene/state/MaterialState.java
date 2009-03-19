@@ -50,7 +50,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Joshua Slack - Material Face and Performance enhancements
  * @author Three Rings - contributed color material
- * @version $Id: MaterialState.java,v 1.16 2007/09/21 15:45:29 nca Exp $
+ * @version $Id$
  */
 public abstract class MaterialState extends RenderState {
     

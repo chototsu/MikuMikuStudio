@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
 /**
  * Implementation of the GL_ARB_vertex_program extension.
  * @author Eric Woroshow
- * @version $Id: VertexProgramState.java,v 1.12 2007/08/14 15:00:48 rherlitz Exp $
+ * @version $Id$
  */
 public abstract class VertexProgramState extends RenderState {
 

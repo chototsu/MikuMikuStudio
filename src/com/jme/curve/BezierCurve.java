@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.19 2006/05/11 19:40:52 nca Exp $
+ * @version $Id$
  */
 public class BezierCurve extends Curve {
 

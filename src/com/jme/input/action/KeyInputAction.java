@@ -41,7 +41,7 @@ package com.jme.input.action;
  * 
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: KeyInputAction.java,v 1.5 2006/05/11 19:40:46 nca Exp $
+ * @version $Id$
  */
 public abstract class KeyInputAction extends InputAction {
 }

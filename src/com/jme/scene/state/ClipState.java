@@ -44,7 +44,7 @@ import com.jme.util.export.OutputCapsule;
  * take "slices" out of geometric objects. ClipPlane can add an additional (to the normal frustum planes) 
  * six planes to clip against.
  * @author Joshua Slack
- * @version $Id: $
+ * @version $Id$
  */
 public abstract class ClipState extends RenderState {
     public static final int CLIP_PLANE0 = 0;

@@ -42,7 +42,7 @@ import com.jme.util.geom.BufferUtils;
  * jME! If you plan to texture this shape, use wrapmode WM_WRAP_S_WRAP_T.
  * 
  * @author Joshua Slack
- * @version $Id: Teapot.java,v 1.3 2007/09/21 15:45:27 nca Exp $
+ * @version $Id$
  * @see "http://www.sjbaker.org/teapot/"
  */
 public class Teapot extends TriMesh implements Savable {

@@ -43,7 +43,7 @@ import com.jme.scene.Spatial;
  * the <code>setSpeed</code> method. This can be thought as units/second.
  * 
  * @author Mark Powell
- * @version $Id: KeyNodeBackwardAction.java,v 1.17 2007/03/06 15:09:31 nca Exp $
+ * @version $Id$
  */
 public class KeyNodeBackwardAction extends KeyInputAction {
     //the node to manipulate

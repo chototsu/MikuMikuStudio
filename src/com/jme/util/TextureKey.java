@@ -49,7 +49,7 @@ import com.jme.util.resource.ResourceLocatorTool;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.27 2007/10/06 05:57:41 renanse Exp $
+ * @version $Id$
  */
 final public class TextureKey implements Savable {
 
