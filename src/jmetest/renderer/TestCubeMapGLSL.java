@@ -75,7 +75,7 @@ import com.jme.util.resource.SimpleResourceLocator;
  * <code>TestCubeMapGLSL</code>
  * 
  * @author Joshua Slack
- * @version $Id: $
+ * @version $Id$
  */
 public class TestCubeMapGLSL extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestCubeMapGLSL.class

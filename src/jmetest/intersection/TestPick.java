@@ -61,7 +61,7 @@ import com.jmex.model.converters.MilkToJme;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.35 2007/08/17 22:04:20 nca Exp $
+ * @version $Id$
  */
 public class TestPick extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestPick.class

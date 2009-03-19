@@ -52,7 +52,7 @@ import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
  * particle system.
  * 
  * @author Joshua Slack
- * @version $Id: TestBatchParticles.java,v 1.4 2007/09/21 15:46:34 nca Exp $
+ * @version $Id$
  */
 public class TestBatchParticles extends SimpleGame {
 

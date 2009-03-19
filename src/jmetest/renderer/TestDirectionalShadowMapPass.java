@@ -65,7 +65,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestDirectionShadowMapPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.15 $
+ * @version $Revision$
  * 
  * @author kevglass - updated to test shadow mapping
  */

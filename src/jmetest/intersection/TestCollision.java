@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestCollision</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.26 2007/08/02 23:51:30 nca Exp $
+ * @version $Id$
  */
 public class TestCollision extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestCollision.class

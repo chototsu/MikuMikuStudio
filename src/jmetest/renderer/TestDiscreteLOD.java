@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestDiscreteLOD</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.15 2006/01/13 19:37:18 renanse Exp $
+ * @version $Id$
  */
 public class TestDiscreteLOD extends SimpleGame {
 

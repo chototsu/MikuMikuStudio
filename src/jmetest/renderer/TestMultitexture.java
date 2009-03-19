@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestMultitexture</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.19 2007/08/02 23:54:48 nca Exp $
+ * @version $Id$
  */
 public class TestMultitexture extends SimpleGame {
     private static final Logger logger = Logger

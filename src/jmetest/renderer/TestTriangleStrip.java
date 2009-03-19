@@ -40,7 +40,7 @@ import com.jme.util.geom.BufferUtils;
 /**
  * <code>TestAnisotropic</code>
  * @author Joshua Slack
- * @version $Id: TestTriangleStrip.java,v 1.1 2006/06/01 15:05:47 nca Exp $
+ * @version $Id$
  */
 public class TestTriangleStrip extends SimpleGame {
 

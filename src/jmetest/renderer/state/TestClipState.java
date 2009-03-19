@@ -59,8 +59,8 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestClipState</code>
  * @author Mark Powell
- * @version $Id: TestClipState.java,v 1.3 2006/01/13 19:37:15 renanse Exp $
- * @version $Id: TestClipState.java,v 1.4 2008/12/29 23:44:21 basixs Exp $
+ * @version $Id$
+ * @version $Id$
  * 
  * Demonstrats the use of clips planes in an interactive demo.  A clip plane splits 
  * the rendering 'area' in 2, one side is rendered unchanged while the other is not

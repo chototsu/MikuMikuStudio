@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRTTSideBySide</code>
  * @author Mark Powell
- * @version $Id: TestRTTSideBySide.java,v 1.10 2007/08/02 23:54:48 nca Exp $
+ * @version $Id$
  */
 public class TestRTTSideBySide extends SimpleGame {
 

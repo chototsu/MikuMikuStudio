@@ -46,7 +46,7 @@ import com.jme.scene.shape.Sphere;
  * <code>TestSharedNodeOffset</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNodeOffset.java,v 1.8 2007/09/21 15:46:35 nca Exp $
+ * @version $Id$
  */
 public class TestSharedNodeOffset extends SimpleGame {
 	Node file = null;

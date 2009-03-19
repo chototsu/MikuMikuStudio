@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
  * <code>TestTeapot</code>
  * 
  * @author Joshua Slack
- * @version $Id: TestTeapot.java,v 1.3 2007/09/21 15:46:35 nca Exp $
+ * @version $Id$
  */
 public class TestTeapot extends SimpleGame {
 

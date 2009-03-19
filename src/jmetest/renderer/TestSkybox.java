@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestSkybox</code>
  * @author Joshua Slack
- * @version $Id: TestSkybox.java,v 1.9 2007/10/24 15:07:50 nca Exp $
+ * @version $Id$
  */
 public class TestSkybox extends SimpleGame {
 

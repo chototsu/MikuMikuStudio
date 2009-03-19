@@ -89,7 +89,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.18 2007/08/17 10:34:35 rherlitz Exp $
+ * @version $Id$
  */
 
 public class JMESwingTest {

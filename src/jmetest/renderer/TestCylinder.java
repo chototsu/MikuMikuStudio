@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCylinder</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.17 2007/08/02 23:54:48 nca Exp $
+ * @version $Id$
  */
 public class TestCylinder extends SimpleGame {
 

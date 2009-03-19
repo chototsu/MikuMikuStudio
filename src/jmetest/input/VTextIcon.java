@@ -53,7 +53,7 @@ import javax.swing.Icon;
  * special rules when drawn vertically and should never be rotated)
  * 
  * @author Lee Ann Rucker - LRucker@mac.com
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public class VTextIcon implements Icon, PropertyChangeListener {
     String fLabel;

@@ -67,7 +67,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.15 $
+ * @version $Revision$
  */
 public class TestShadowPass extends SimplePassGame {
     private Node m_character;

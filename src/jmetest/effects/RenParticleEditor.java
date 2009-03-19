@@ -140,7 +140,7 @@ import com.jmex.effects.particles.SwarmInfluence;
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme
  *         format
- * @version $Id: RenParticleEditor.java,v 1.42 2007/09/21 15:46:35 nca Exp $
+ * @version $Id$
  */
 
 public class RenParticleEditor extends JFrame {

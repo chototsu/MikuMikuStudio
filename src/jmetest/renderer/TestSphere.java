@@ -50,7 +50,7 @@ import com.jme.util.resource.ResourceLocatorTool;
 /**
  * <code>TestSphere</code>
  * @author Mark Powell
- * @version $Id: TestSphere.java,v 1.16 2007/08/17 20:39:07 nca Exp $
+ * @version $Id$
  */
 public class TestSphere extends SimpleGame {
 

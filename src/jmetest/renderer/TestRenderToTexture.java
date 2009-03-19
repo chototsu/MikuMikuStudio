@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.37 2007/08/02 23:54:48 nca Exp $
+ * @version $Id$
  */
 public class TestRenderToTexture extends SimpleGame {
     private static final Logger logger = Logger

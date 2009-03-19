@@ -63,7 +63,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestCubeMap</code>
  * 
  * @author Joshua Slack
- * @version $Id: $
+ * @version $Id$
  */
 public class TestCubeMap extends SimpleGame {
     

@@ -43,7 +43,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestMirroredWrap</code>
  * @author Joshua Slack
- * @version $Id: TestMirroredWrap.java,v 1.1 2007/08/23 03:33:25 renanse Exp $
+ * @version $Id$
  */
 public class TestMirroredWrap extends SimpleGame {
 

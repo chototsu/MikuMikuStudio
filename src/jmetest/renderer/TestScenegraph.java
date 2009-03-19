@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.39 2006/08/12 12:19:59 irrisor Exp $
+ * @version $Id$
  */
 public class TestScenegraph extends SimpleGame {
 

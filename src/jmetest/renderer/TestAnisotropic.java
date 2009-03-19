@@ -51,7 +51,7 @@ import com.jme.util.TextureManager;
  * <code>TestAnisotropic</code>
  * 
  * @author Joshua Slack
- * @version $Id: TestAnisotropic.java,v 1.10 2007/08/17 20:38:07 nca Exp $
+ * @version $Id$
  */
 public class TestAnisotropic extends SimpleGame {
 

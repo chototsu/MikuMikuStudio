@@ -40,7 +40,7 @@ import com.jme.scene.shape.Box;
 /**
  * <code>TestSimpleGame</code>
  * @author Joshua Slack
- * @version $Id: TestSimpleGame.java,v 1.7 2006/01/13 19:37:43 renanse Exp $
+ * @version $Id$
  */
 public class TestSimpleGame extends SimpleGame {
 

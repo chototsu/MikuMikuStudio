@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.15 2007/08/02 23:54:48 nca Exp $
+ * @version $Id$
  */
 public class TestOctahedron extends SimpleGame {
 

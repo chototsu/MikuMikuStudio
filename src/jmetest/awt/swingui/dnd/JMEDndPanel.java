@@ -54,7 +54,7 @@ import com.jmex.awt.swingui.dnd.JMEMouseDragGestureRecognizer;
  * a test panel with drag and drop
  *
  * @author galun
- * @version $Id: JMEDndPanel.java,v 1.4 2007/08/17 10:34:33 rherlitz Exp $
+ * @version $Id$
  */
 public class JMEDndPanel extends JInternalFrame implements JMEDragSourceListener, JMEDropTargetListener, JMEDragGestureListener {
     private static final Logger logger = Logger.getLogger(JMEDndPanel.class

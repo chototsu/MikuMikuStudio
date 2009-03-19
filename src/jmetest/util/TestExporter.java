@@ -55,7 +55,7 @@ import com.jme.util.export.binary.BinaryImporter;
 
 /**
  * <code>TestExporter</code> (TH 2008-03017: modified to test using special characters during export/import.
- * @version $Id: TestExporter.java,v 1.4 2008/03/12 16:50:30 llama Exp $
+ * @version $Id$
  */
 public class TestExporter extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestExporter.class

@@ -68,7 +68,7 @@ import com.jmex.model.converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.30 2007/08/20 10:28:51 rherlitz Exp $
+ * @version $Id$
  */
 
 public class TestClodMesh extends SimpleGame {

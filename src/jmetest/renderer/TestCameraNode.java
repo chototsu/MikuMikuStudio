@@ -55,7 +55,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.18 2008/01/23 16:01:43 renanse Exp $
+ * @version $Id$
  */
 public class TestCameraNode extends SimpleGame {
     
