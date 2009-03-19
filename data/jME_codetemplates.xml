@@ -10,7 +10,7 @@
  */</codetemplate><codetemplate name="typecomment" description="Comment for created types" context="typecomment_context" enabled="true">/**
  * &lt;code&gt;${type_name}&lt;/code&gt;
  * @author ${user}
- * @version $$Id: jME_codetemplates.xml,v 1.2 2004/01/29 21:15:18 ericthered Exp $$
+ * @version $$Id$$
  */</codetemplate><codetemplate name="methodcomment" description="Comment for non-overriding methods" context="methodcomment_context" enabled="true">/**
  * &lt;code&gt;${enclosing_method}&lt;/code&gt;
  * ${tags}
