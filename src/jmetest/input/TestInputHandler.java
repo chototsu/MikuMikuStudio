@@ -89,7 +89,7 @@ public class TestInputHandler extends SimpleGame {
         TextureState cursorTextureState = display.getRenderer().createTextureState();
         cursorTextureState.setTexture(
                 TextureManager.loadTexture(
-                        TestInputHandler.class.getClassLoader().getResource( "jmetest/data/cursor/cursor1.PNG" ),
+                        TestInputHandler.class.getClassLoader().getResource( "jmetest/data/cursor/cursor1.png" ),
                         Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear )
         );
         cursor.setRenderState( cursorTextureState );
