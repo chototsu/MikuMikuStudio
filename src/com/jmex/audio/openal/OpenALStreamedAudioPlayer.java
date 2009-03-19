@@ -51,7 +51,7 @@ import com.jmex.audio.stream.AudioInputStream;
 /**
  * @see StreamedAudioPlayer
  * @author Joshua Slack
- * @version $Id: OpenALStreamedAudioPlayer.java,v 1.5 2007/08/17 10:34:29 rherlitz Exp $
+ * @version $Id$
  */
 public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
     private static final Logger logger = Logger.getLogger(OpenALStreamedAudioPlayer.class.getName());

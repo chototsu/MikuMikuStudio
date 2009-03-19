@@ -43,7 +43,7 @@ import com.jme.system.JmeException;
  * <code>LensFlareFactory</code>
  *  A Factory useful for creating various types of LensFlares.
  * @author Joshua Slack
- * @version $Id: LensFlareFactory.java,v 1.4 2006/01/13 19:39:42 renanse Exp $
+ * @version $Id$
  */
 
 public class LensFlareFactory {

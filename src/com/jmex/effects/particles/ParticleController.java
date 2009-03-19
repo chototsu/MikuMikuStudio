@@ -51,7 +51,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleGeometry particle system over time.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleController.java,v 1.14 2007/04/03 14:30:20 nca Exp $
+ * @version $Id$
  */
 public class ParticleController extends Controller {
 

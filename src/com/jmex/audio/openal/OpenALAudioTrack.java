@@ -50,7 +50,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioTrack
  * @author Joshua Slack
- * @version $Id: OpenALAudioTrack.java,v 1.7 2007/12/03 17:59:28 nca Exp $
+ * @version $Id$
  */
 public class OpenALAudioTrack extends AudioTrack {
     private static final Logger logger = Logger

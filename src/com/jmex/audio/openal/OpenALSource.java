@@ -40,7 +40,7 @@ import com.jmex.audio.AudioTrack;
  * Data class used for tracking the current state of an OpenAL Audio Source.
  * 
  * @author Joshua Slack
- * @version $Id: OpenALSource.java,v 1.1 2007/03/06 15:29:19 nca Exp $
+ * @version $Id$
  */
 public class OpenALSource {
 

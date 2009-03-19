@@ -46,7 +46,7 @@ import com.jmex.audio.player.AudioPlayer;
 /**
  * Represents a sound file. 
  * @author Joshua Slack
- * @version $Id: AudioTrack.java,v 1.5 2007/08/17 10:34:29 rherlitz Exp $
+ * @version $Id$
  */
 public abstract class AudioTrack {
     private static final Logger logger = Logger.getLogger(AudioTrack.class

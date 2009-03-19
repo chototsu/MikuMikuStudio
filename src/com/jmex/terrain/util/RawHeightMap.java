@@ -50,7 +50,7 @@ import com.jme.util.LittleEndien;
  * point. Where pure black the lowest point and pure white denotes the highest.
  * 
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.10 2007/09/11 15:44:28 nca Exp $
+ * @version $Id$
  */
 public class RawHeightMap extends AbstractHeightMap {
     private static final Logger logger = Logger.getLogger(RawHeightMap.class

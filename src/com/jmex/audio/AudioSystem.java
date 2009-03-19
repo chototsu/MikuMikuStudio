@@ -41,7 +41,7 @@ import com.jmex.audio.openal.OpenALSystem;
  * com.jmex.audio package.
  * 
  * @author Joshua Slack
- * @version $Id: AudioSystem.java,v 1.4 2007/08/27 00:18:13 renanse Exp $
+ * @version $Id$
  */
 public abstract class AudioSystem {
 

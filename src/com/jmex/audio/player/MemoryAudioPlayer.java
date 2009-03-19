@@ -40,7 +40,7 @@ import com.jmex.audio.AudioTrack;
  * completely loaded into memory prior to playback.
  * 
  * @author Joshua Slack
- * @version $Id: MemoryAudioPlayer.java,v 1.1 2007/03/06 15:29:12 nca Exp $
+ * @version $Id$
  */
 public abstract class MemoryAudioPlayer extends AudioPlayer {
 

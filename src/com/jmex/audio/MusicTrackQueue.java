@@ -46,7 +46,7 @@ import com.jmex.audio.event.TrackStateAdapter;
  * iTunes or WinAmp.
  * 
  * @author Joshua Slack
- * @version $Id: MusicTrackQueue.java,v 1.4 2007/12/03 17:59:28 nca Exp $
+ * @version $Id$
  */
 public class MusicTrackQueue {
 

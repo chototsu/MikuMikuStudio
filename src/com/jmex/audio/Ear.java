@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * speed, position and orientation of your listener.
  * 
  * @author Joshua Slack
- * @version $Id: Ear.java,v 1.1 2007/03/06 15:29:16 nca Exp $
+ * @version $Id$
  */
 public abstract class Ear {
     public static float EAR_THROTTLE = .033f;

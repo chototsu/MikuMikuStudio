@@ -45,7 +45,7 @@ import com.jmex.audio.event.TrackStateAdapter;
  * head space (as opposed to a 3d location in space.)
  * 
  * @author Joshua Slack
- * @version $Id: EnvironmentalPool.java,v 1.1 2007/03/06 15:29:15 nca Exp $
+ * @version $Id$
  */
 public class EnvironmentalPool {
     private ArrayList<AudioTrack> tracks = new ArrayList<AudioTrack>();

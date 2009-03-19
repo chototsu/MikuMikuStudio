@@ -16,7 +16,7 @@ import com.jme.util.geom.BufferUtils;
  * geometric data.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleLines.java,v 1.2 2007/03/06 15:23:19 nca Exp $
+ * @version $Id$
  */
 public class ParticleLines extends ParticleSystem {
 

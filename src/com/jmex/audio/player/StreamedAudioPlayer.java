@@ -40,7 +40,7 @@ import com.jmex.audio.stream.AudioInputStream;
  * audio track need not (and possibliy may not) be completely in memory to play.
  * 
  * @author Joshua Slack
- * @version $Id: StreamedAudioPlayer.java,v 1.1 2007/03/06 15:29:13 nca Exp $
+ * @version $Id$
  */
 public abstract class StreamedAudioPlayer extends AudioPlayer {
 

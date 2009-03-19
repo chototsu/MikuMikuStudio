@@ -40,7 +40,7 @@ import com.jme.math.spring.SpringPointForce;
 /**
  * <code>ClothUtils</code>
  * @author Joshua Slack
- * @version $Id: ClothUtils.java,v 1.4 2006/01/13 19:39:57 renanse Exp $
+ * @version $Id$
  */
 public final class ClothUtils {
 

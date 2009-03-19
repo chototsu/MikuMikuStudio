@@ -54,7 +54,7 @@ import com.jmex.effects.particles.ParticleSystem.ParticleType;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.10 2007/09/21 15:45:32 nca Exp $
+ * @version $Id$
  */
 public class Particle implements Savable {
 

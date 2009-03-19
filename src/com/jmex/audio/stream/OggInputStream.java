@@ -55,7 +55,7 @@ import com.jmex.audio.filter.Filter;
  *
  * @author Arman Ozcelik
  * @author Joshua Slack
- * @version $Id: OggInputStream.java,v 1.4 2007/08/20 10:28:29 rherlitz Exp $
+ * @version $Id$
  */
 public class OggInputStream extends AudioInputStream {
     private static final Logger logger = Logger.getLogger(OggInputStream.class

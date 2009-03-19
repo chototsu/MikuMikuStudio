@@ -41,7 +41,7 @@ import com.jmex.audio.player.AudioPlayer;
  * single location.
  * 
  * @author Joshua Slack
- * @version $Id: OpenALPropertyTool.java,v 1.4 2007/08/18 02:58:34 renanse Exp $
+ * @version $Id$
  */
 public class OpenALPropertyTool {
 

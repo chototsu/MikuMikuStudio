@@ -45,7 +45,7 @@ import com.jmex.audio.player.MemoryAudioPlayer;
 /**
  * @see MemoryAudioPlayer
  * @author Joshua Slack
- * @version $Id: OpenALMemoryAudioPlayer.java,v 1.3 2007/08/02 22:27:16 nca Exp $
+ * @version $Id$
  */
 public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
     private static final Logger logger = Logger.getLogger(OpenALMemoryAudioPlayer.class.getName());

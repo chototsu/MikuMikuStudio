@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * behavior.
  * 
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.11 2007/02/05 16:46:33 nca Exp $
+ * @version $Id$
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;

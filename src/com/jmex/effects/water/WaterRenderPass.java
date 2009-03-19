@@ -64,7 +64,7 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.18 2007/09/11 15:48:54 nca Exp $
+ * @version $Id$
  */
 public class WaterRenderPass extends Pass {
     private static final Logger logger = Logger.getLogger(WaterRenderPass.class

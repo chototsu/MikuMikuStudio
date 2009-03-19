@@ -61,7 +61,7 @@ import com.jme.system.JmeException;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.7 2007/08/20 10:28:45 rherlitz Exp $
+ * @version $Id$
  */
 public class ProceduralTextureGenerator {
     private static final Logger logger = Logger

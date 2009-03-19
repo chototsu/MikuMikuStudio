@@ -49,7 +49,7 @@ import javax.swing.ImageIcon;
  * the existing <code>ProceduralTexture</code>.
  * 
  * @author Chris Gray
- * @version $Id: ProceduralSplatTextureGenerator.java,v 1.5 2007/08/20 10:28:45 rherlitz Exp $
+ * @version $Id$
  *  */
 public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator {
     private static final Logger logger = Logger

@@ -69,7 +69,7 @@ import com.jme.util.export.OutputCapsule;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.17 2007/10/27 19:36:40 renanse Exp $
+ * @version $Id$
  */
 
 public class LensFlare extends Node {

@@ -48,7 +48,7 @@ import com.jmex.audio.filter.Filter;
  * 
  * @author Arman Ozcelik
  * @author Joshua Slack
- * @version $Id: AudioInputStream.java,v 1.2 2007/12/03 17:59:27 nca Exp $
+ * @version $Id$
  */
 public abstract class AudioInputStream extends FilterInputStream {
 

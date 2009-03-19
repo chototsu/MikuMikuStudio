@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
  * object.
  * 
  * @author Joshua Slack
- * @version $Id: FlareQuad.java,v 1.4 2006/05/11 19:39:37 nca Exp $
+ * @version $Id$
  */
 
 public class FlareQuad extends Quad {

@@ -43,7 +43,7 @@ import com.jmex.audio.Ear;
 /**
  * @see Ear
  * @author Joshua Slack
- * @version $Id: OpenALEar.java,v 1.1 2007/03/06 15:29:19 nca Exp $
+ * @version $Id$
  */
 public class OpenALEar extends Ear {
 

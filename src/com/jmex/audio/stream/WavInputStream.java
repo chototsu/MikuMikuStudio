@@ -46,7 +46,7 @@ import com.jmex.audio.filter.Filter;
  *
  * @author Arman Ozcelik
  * @author Joshua Slack
- * @version $Id: WavInputStream.java,v 1.2 2007/08/20 10:28:29 rherlitz Exp $
+ * @version $Id$
  */
 public class WavInputStream extends AudioInputStream {
     private static final int RIFFid = ('R' << 24) | ('I' << 16) + ('F' << 8)

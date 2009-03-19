@@ -50,7 +50,7 @@ import com.jmex.audio.stream.WavInputStream;
 /**
  * Utility class for loading audio files.  For use by the underlying AudioSystem code.
  * @author Joshua Slack
- * @version $Id: AudioLoader.java,v 1.5 2007/09/21 11:08:04 irrisor Exp $
+ * @version $Id$
  */
 public class AudioLoader {
     private static final Logger logger = Logger.getLogger(AudioLoader.class
