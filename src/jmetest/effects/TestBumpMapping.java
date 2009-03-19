@@ -121,7 +121,7 @@ public class TestBumpMapping extends SimpleGame {
 
 		Texture tex2 = TextureManager.loadTexture(
 				TestBumpMapping.class.getClassLoader().getResource(
-						"jmetest/data/texture/Decal.PNG"),
+						"jmetest/data/texture/decalimage.png"),
 				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, 0.0f, true);
 		tex2.setApply(Texture.ApplyMode.Combine);
 		tex2.setWrap(Texture.WrapMode.Repeat);

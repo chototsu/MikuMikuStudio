@@ -78,7 +78,7 @@ public class TestShaderTexturing extends SimpleGame {
 
         TextureState ts = display.getRenderer().createTextureState();
         Texture t0 = TextureManager.loadTexture(ClassLoader
-                .getSystemResource("jmetest/data/texture/Decal.PNG"),
+                .getSystemResource("jmetest/data/texture/decalimage.png"),
                 Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.NearestNeighbor);
         ts.setTexture(t0, 0);
         Texture t1 = TextureManager.loadTexture(ClassLoader
@@ -86,7 +86,7 @@ public class TestShaderTexturing extends SimpleGame {
                 Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t1, 1);
         Texture t2 = TextureManager.loadTexture(ClassLoader
-                .getSystemResource("jmetest/data/cursor/test.PNG"),
+                .getSystemResource("jmetest/data/cursor/testcursor.png"),
                 Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.NearestNeighbor, 0, true);
         t2.setWrap(Texture.WrapMode.EdgeClamp);
         ts.setTexture(t2, 2);
@@ -95,7 +95,7 @@ public class TestShaderTexturing extends SimpleGame {
                 Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t3, 3);
         Texture t4 = TextureManager.loadTexture(ClassLoader
-                .getSystemResource("jmetest/data/cursor/test.PNG"),
+                .getSystemResource("jmetest/data/cursor/testcursor.png"),
                 Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.NearestNeighbor, 0, false);
         t4.setWrap(Texture.WrapMode.EdgeClamp);
         ts.setTexture(t4, 4);

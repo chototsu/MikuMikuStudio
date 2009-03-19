@@ -170,7 +170,7 @@ public class TestDepthOfField extends SimplePassGame {
             MaxToJme C1 = new MaxToJme();
             ByteArrayOutputStream BO = new ByteArrayOutputStream();
             URL maxFile = TestMaxJmeWrite.class.getClassLoader().getResource(
-                    "jmetest/data/model/Character.3DS");
+                    "jmetest/data/model/char.3ds");
             C1.convert(new BufferedInputStream(maxFile.openStream()), BO);
             r = (Node) BinaryImporter.getInstance().load(
                     new ByteArrayInputStream(BO.toByteArray()));

@@ -108,7 +108,7 @@ public class TestBloom extends SimplePassGame {
 		try {
             MaxToJme C1=new MaxToJme();
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
-            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
+            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/char.3ds");
             C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
             Node r = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             r.getController(0).setRepeatType(Controller.RT_WRAP);

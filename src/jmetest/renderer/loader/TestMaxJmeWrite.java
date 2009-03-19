@@ -83,7 +83,7 @@ public class TestMaxJmeWrite extends SimpleGame {
     protected void simpleInitGame() {
         if (modelToLoad == null) {
             modelToLoad = TestMaxJmeWrite.class.getClassLoader().getResource(
-                    "jmetest/data/model/Character.3DS");
+                    "jmetest/data/model/char.3ds");
         }
         try {
             MaxToJme C1 = new MaxToJme();
