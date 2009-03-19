@@ -52,6 +52,7 @@ import com.jme.util.shader.uniformtypes.ShaderVariableInt4;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix2;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix3;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4Array;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerByte;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerInt;
@@ -89,6 +90,8 @@ public class LWJGLShaderUtil {
             updateShaderUniform((ShaderVariableMatrix3) shaderVariable);
         } else if (shaderVariable instanceof ShaderVariableMatrix4) {
             updateShaderUniform((ShaderVariableMatrix4) shaderVariable);
+        } else if (shaderVariable instanceof ShaderVariableMatrix4Array){
+            updateShaderUniform((ShaderVariableMatrix4Array) shaderVariable);
         } else {
             logger.warning("updateShaderUniform: Unknown shaderVariable type!");
         }
@@ -182,6 +185,13 @@ public class LWJGLShaderUtil {
 
     private static void updateShaderUniform(
             ShaderVariableMatrix4 shaderUniform) {
+        shaderUniform.matrixBuffer.rewind();
+        ARBShaderObjects.glUniformMatrix4ARB(shaderUniform.variableID,
+                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+    }
+
+    private static void updateShaderUniform(
+            ShaderVariableMatrix4Array shaderUniform) {
         shaderUniform.matrixBuffer.rewind();
         ARBShaderObjects.glUniformMatrix4ARB(shaderUniform.variableID,
                 shaderUniform.rowMajor, shaderUniform.matrixBuffer);

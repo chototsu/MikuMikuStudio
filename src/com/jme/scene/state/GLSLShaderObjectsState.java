@@ -72,6 +72,7 @@ import com.jme.util.shader.uniformtypes.ShaderVariableInt4;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix2;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix3;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4Array;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerByte;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerInt;
@@ -532,6 +533,35 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         value.fillFloatBuffer(shaderUniform.matrixBuffer);
         // prepare buffer for reading
         shaderUniform.matrixBuffer.rewind();
+        shaderUniform.rowMajor = rowMajor;
+
+        setNeedsRefresh(true);
+    }
+
+     /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value the new value
+     * @param rowMajor true if is this in row major order
+     */
+    public void setUniform(String name, Matrix4f[] values, boolean rowMajor) {
+        ShaderVariableMatrix4Array shaderUniform =
+                getShaderUniform(name, ShaderVariableMatrix4Array.class);
+        // prepare buffer for writing
+        FloatBuffer matrixBuffer = shaderUniform.matrixBuffer;
+        if (matrixBuffer == null || matrixBuffer.capacity() > values.length * 16){
+            matrixBuffer = BufferUtils.createFloatBuffer(values.length * 16);
+            shaderUniform.matrixBuffer = matrixBuffer;
+        }
+        
+        matrixBuffer.rewind();
+        for (Matrix4f value : values){
+            value.fillFloatBuffer(matrixBuffer);
+        }
+        matrixBuffer.flip();
+        
+        // prepare buffer for reading
         shaderUniform.rowMajor = rowMajor;
 
         setNeedsRefresh(true);

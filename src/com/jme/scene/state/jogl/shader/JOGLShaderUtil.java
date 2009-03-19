@@ -49,6 +49,7 @@ import com.jme.util.shader.uniformtypes.ShaderVariableInt4;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix2;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix3;
 import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4Array;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerByte;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
 import com.jme.util.shader.uniformtypes.ShaderVariablePointerInt;
@@ -86,6 +87,8 @@ public class JOGLShaderUtil {
             updateShaderUniform((ShaderVariableMatrix3) shaderVariable);
         } else if (shaderVariable instanceof ShaderVariableMatrix4) {
             updateShaderUniform((ShaderVariableMatrix4) shaderVariable);
+        } else if (shaderVariable instanceof ShaderVariableMatrix4Array){
+            updateShaderUniform((ShaderVariableMatrix4Array) shaderVariable);
         } else {
             logger.warning("updateShaderUniform: Unknown shaderVariable type!");
         }
@@ -200,6 +203,15 @@ public class JOGLShaderUtil {
         shaderUniform.matrixBuffer.rewind();
         gl.glUniformMatrix4fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit(),
                 shaderUniform.rowMajor, shaderUniform.matrixBuffer); // TODO Check <count>
+    }
+
+    private static void updateShaderUniform(
+            ShaderVariableMatrix4Array shaderUniform) {
+        final GL gl = GLU.getCurrentGL();
+        
+        shaderUniform.matrixBuffer.rewind();
+        gl.glUniformMatrix4fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit(),
+                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
     }
 
     /**
