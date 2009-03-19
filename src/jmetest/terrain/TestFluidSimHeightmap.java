@@ -52,7 +52,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
 * <code>TestFluidSimHeightmap</code> demonstrates the usage of
 * <code>FluidSimHeightMap</code>.
 * 
-* @author Frederik Bülthoff
+* @author Frederik BÃ¼lthoff
 * @version $Id$
 * 
 */

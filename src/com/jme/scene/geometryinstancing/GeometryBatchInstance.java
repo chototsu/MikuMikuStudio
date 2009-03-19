@@ -45,7 +45,7 @@ import com.jme.scene.geometryinstancing.instance.GeometryInstance;
  * data for the instance, instead of GeomBatch which does not have an index
  * buffer.
  *
- * @author Patrik Lindegrén
+ * @author Patrik LindegrÃ©n
  */
 public class GeometryBatchInstance
         extends GeometryInstance<GeometryBatchInstanceAttributes> {

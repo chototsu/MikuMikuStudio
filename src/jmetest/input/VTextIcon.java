@@ -255,9 +255,9 @@ public class VTextIcon implements Icon, PropertyChangeListener {
      * 
      * from http://www.unicode.org/unicode/reports/tr9/tr9-3.html When setting
      * text using the Arabic script in vertical lines, it is more common to
-     * employ a horizontal baseline that is rotated by 90ก counterclockwise so
+     * employ a horizontal baseline that is rotated by 90ยก counterclockwise so
      * that the characters are ordered from top to bottom. Latin text and
-     * numbers may be rotated 90ก clockwise so that the characters are also
+     * numbers may be rotated 90ยก clockwise so that the characters are also
      * ordered from top to bottom.
      * 
      * Rotation rules - Roman can rotate left, right, or none - default right

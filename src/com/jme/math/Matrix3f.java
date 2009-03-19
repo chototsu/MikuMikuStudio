@@ -1124,7 +1124,7 @@ public class Matrix3f  implements Serializable, Savable, Cloneable {
      *            normalized non-zero starting vector
      * @param end
      *            normalized non-zero ending vector
-     * @see "Tomas Möller, John Hughes \"Efficiently Building a Matrix to Rotate \
+     * @see "Tomas MÃ¶ller, John Hughes \"Efficiently Building a Matrix to Rotate \
      *      One Vector to Another\" Journal of Graphics Tools, 4(4):1-4, 1999"
      */
     public void fromStartEndVectors(Vector3f start, Vector3f end) {

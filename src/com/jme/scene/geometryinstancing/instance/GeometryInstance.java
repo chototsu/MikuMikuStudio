@@ -37,7 +37,7 @@ import com.jme.scene.TriMesh;
  * <code>GeometryInstance</code> uses a <code>GeometryInstanceAttributes</code>
  * to define an instance of object in world space.
  *
- * @author Patrik Lindegrén
+ * @author Patrik LindegrÃ©n
  */
 public abstract class GeometryInstance<T extends GeometryInstanceAttributes> {
     protected T attributes;

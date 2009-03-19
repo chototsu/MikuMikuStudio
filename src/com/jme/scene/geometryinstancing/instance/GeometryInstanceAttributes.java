@@ -39,7 +39,7 @@ import com.jme.math.Vector3f;
  * <code>GeometryInstanceAttributes</code> specifies the attributes for a
  * <code>GeometryInstance</code>.
  *
- * @author Patrik Lindegrén
+ * @author Patrik LindegrÃ©n
  */
 public class GeometryInstanceAttributes {
     protected Vector3f translation;    // Translation

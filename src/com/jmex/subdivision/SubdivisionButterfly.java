@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * <br><br>
  * Other papers used during implementetion:<br>
  * 'SIGGRAPH 2000 Course Notes', Denis Zorin et al. (http://mrl.nyu.edu/~dzorin/sig00course/) mainly pp. 69-75 (Contains faulty coefficients on extraordinary crease rule)<br>
- * 'Interpolating Subdivision for Meshes with Arbitrary Topology', Denis Zorin, Peter Schröder, Wim Sweldens. Computer Graphics, Ann. Conf. Series, vol. 30, pp. 189-192, 1996.<br>
+ * 'Interpolating Subdivision for Meshes with Arbitrary Topology', Denis Zorin, Peter SchrÃ¶der, Wim Sweldens. Computer Graphics, Ann. Conf. Series, vol. 30, pp. 189-192, 1996.<br>
  * 'Sharpen&Bend: Recovering curved sharp edges in triangle meshes produced by feature-insensitive sampling', M. Attene, B. Falcidieno, J. Rossignac and M. Spagnuolo. (contains the corrected coefficients, which I had to correct again to get it right. Where it says 'K=degree(V)+1' it should be 'K=degree(V)-1', I think... it works for me)<br>
  * <br>
  * The SIGGRAPH 2000 Course Notes contains detailed descriptions of other subdivison schemes if anyone feels the urge to implement another one,<em>hint, hint</em>. Be sure to contact me if that's the case.<br>

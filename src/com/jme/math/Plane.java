@@ -1,5 +1,5 @@
 /*
- * Copyright � 2003-2009 jMonkeyEngine
+ * Copyright © 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * <p>
  * The plane is defined by a vector, <i>N</i> which is normal to the plane; and
  * a constant, <i>C</i>, representing the distance of the plane from the
- * origin. The plane can be represented by the equation <i>C = N∙p</i> where
+ * origin. The plane can be represented by the equation <i>C = Nâp</i> where
  * <i>p</p> is a point on the plane.
  *
  * @author Mark Powell
