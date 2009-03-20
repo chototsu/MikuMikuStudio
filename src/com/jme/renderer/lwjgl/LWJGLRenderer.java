@@ -89,6 +89,7 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.StencilState;
+import com.jme.scene.state.StippleState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
@@ -104,6 +105,7 @@ import com.jme.scene.state.lwjgl.LWJGLMaterialState;
 import com.jme.scene.state.lwjgl.LWJGLShadeState;
 import com.jme.scene.state.lwjgl.LWJGLShaderObjectsState;
 import com.jme.scene.state.lwjgl.LWJGLStencilState;
+import com.jme.scene.state.lwjgl.LWJGLStippleState;
 import com.jme.scene.state.lwjgl.LWJGLTextureState;
 import com.jme.scene.state.lwjgl.LWJGLVertexProgramState;
 import com.jme.scene.state.lwjgl.LWJGLWireframeState;
@@ -409,6 +411,18 @@ public class LWJGLRenderer extends Renderer {
         return new LWJGLColorMaskState();
     }
 
+
+    /**
+     * <code>createStippleState</code> returns a new LWJGLStippleState
+     * object as a regular StippleState.
+     * 
+     * @return a StippleState object.
+     */
+    @Override
+    public StippleState createStippleState() {
+    	return new LWJGLStippleState();
+    }
+    
     /**
      * <code>setBackgroundColor</code> sets the OpenGL clear color to the
      * color specified.

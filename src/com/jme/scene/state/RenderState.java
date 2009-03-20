@@ -112,7 +112,10 @@ public abstract class RenderState implements Savable {
         ColorMask(true),
         
         /** The value returned by getType() for ClipState. */
-        Clip(true);
+        Clip(true),
+        
+        /** The value returned by getType() for StippleState. */
+        Stipple(true);
         
         /**
          * <p>
@@ -151,6 +154,7 @@ public abstract class RenderState implements Savable {
          * <li>VertexProgram: true</li>
          * <li>Wireframe: false</li>
          * <li>ZBuffer: true</li>\
+         * <li>Stipple: true</li>\
          * </ul>
          */
         private boolean quickCompare = false;

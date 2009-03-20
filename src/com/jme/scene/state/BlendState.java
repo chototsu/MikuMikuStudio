@@ -694,7 +694,7 @@ public abstract class BlendState extends RenderState {
         constantColor = (ColorRGBA) capsule.readSavable("constantColor", null);
     }
 
-    public Class getClassTag() {
+    public Class<?> getClassTag() {
         return BlendState.class;
     }
 

@@ -81,6 +81,7 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.StencilState;
+import com.jme.scene.state.StippleState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
@@ -96,6 +97,7 @@ import com.jme.scene.state.jogl.JOGLMaterialState;
 import com.jme.scene.state.jogl.JOGLShadeState;
 import com.jme.scene.state.jogl.JOGLShaderObjectsState;
 import com.jme.scene.state.jogl.JOGLStencilState;
+import com.jme.scene.state.jogl.JOGLStippleState;
 import com.jme.scene.state.jogl.JOGLTextureState;
 import com.jme.scene.state.jogl.JOGLVertexProgramState;
 import com.jme.scene.state.jogl.JOGLWireframeState;
@@ -405,6 +407,16 @@ public class JOGLRenderer extends Renderer {
      */
     public ColorMaskState createColorMaskState() {
         return new JOGLColorMaskState();
+    }
+
+    /**
+     * <code>createStippleState</code> returns a new JOGLStippleState
+     * object as a regular StippleState.
+     *
+     * @return a StippleState object.
+     */
+    public StippleState createStippleState() {
+        return new JOGLStippleState();
     }
 
     /**
