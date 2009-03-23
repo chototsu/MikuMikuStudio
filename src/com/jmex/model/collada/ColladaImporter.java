@@ -1221,7 +1221,12 @@ public class ColladaImporter {
             throws Exception {
         BoneAnimation out = new BoneAnimation(animation.getid().toString());
         BoneTransform bt = new BoneTransform();
+        /*
         out.setInterpolate(true);
+        TODO:  Build old baslines and test this example to find out,
+        first:  did this example ever interpolate; and if so, then
+        when did the interpolation break.
+        */
         if (animation.hassource()) {
             for (int i = 0; i < animation.getsourceCount(); i++) {
                 processSource(animation.getsourceAt(i));
