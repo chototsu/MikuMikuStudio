@@ -53,7 +53,7 @@
   <!-- Compiles all the jME classes, including com.jmex.* -->
   <target name="compile" depends="init" description="generate jme classes">
     <copy todir="${class}">
-      <fileset dir="${src}" includes="com/**" excludes="**/*.*/**, **/*.java"/>
+      <fileset dir="${src}" includes="com/**" excludes="**/.*/**, **/*.java"/>
     </copy>
     <javac source="${javac.source}" target="${javac.target}"
       srcdir="${src}" destdir="${class}" includes="com/**/*.java"
