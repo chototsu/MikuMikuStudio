@@ -273,6 +273,8 @@ public abstract class TextureState extends RenderState {
 
         texture.set(index, null);
         idCache[index] = 0;
+        resetFirstLast();
+        setNeedsRefresh(true);
         return true;
     }
 
@@ -287,6 +289,8 @@ public abstract class TextureState extends RenderState {
 
         texture.set(textureUnit, null);
         idCache[textureUnit] = 0;
+        resetFirstLast();
+        setNeedsRefresh(true);
         return true;
 
     }
