@@ -49,6 +49,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.system.DisplaySystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -1067,7 +1068,7 @@ public abstract class Spatial implements Serializable, Savable {
         if (savs == null)
             renderStateList = null;
         else {
-            renderStateList = new RenderState[savs.length];
+            renderStateList = new RenderState[StateType.values().length];
             for (int x = 0; x < savs.length; x++) {
                 renderStateList[x] = (RenderState) savs[x];
             }
