@@ -55,14 +55,29 @@ public class Sphere extends TriMesh {
 
     private static final long serialVersionUID = 1L;
 
+    @Deprecated
     public static final int TEX_ORIGINAL = 0;
 
     // Spherical projection mode, donated by Ogli from the jME forums.
+    @Deprecated
     public static final int TEX_PROJECTED = 1;
+        
+    public enum TextureMode {
+        /** Wrap texture radially and along z-axis */
+        Original,
+        /** Wrap texure radially, but spherically project along z-axis */
+        Projected,
+        /** Apply texture to each pole.  Eliminates polar distortion,
+         * but mirrors the texture across the equator 
+         */
+        Polar
+    }
 
     protected int zSamples;
 
     protected int radialSamples;
+
+    protected boolean useEvenSlices;
 
     /** the distance from the center point each point falls on */
     public float radius;
@@ -75,8 +90,7 @@ public class Sphere extends TriMesh {
 
     private static Vector3f tempVc = new Vector3f();
 
-    // TODO: replace with a boolean property
-    protected int textureMode = TEX_ORIGINAL;
+    protected TextureMode textureMode = TextureMode.Original;
 
     public Sphere() {
     }
@@ -128,8 +142,29 @@ public class Sphere extends TriMesh {
      */
     public Sphere(String name, Vector3f center, int zSamples,
             int radialSamples, float radius) {
+        this(name, center, zSamples, radialSamples, radius, false);
+    }
+
+    /**
+     * Constructs a sphere. Additional arg to evenly space latitudinal slices
+     * 
+     * @param name
+     *            Name of the sphere.
+     * @param center
+     *            Center of the sphere.
+     * @param zSamples
+     *            The number of samples along the Z.
+     * @param radialSamples
+     *            The number of samples along the radial.
+     * @param radius
+     *            The radius of the sphere.
+     * @param useEvenSlices
+     *            Slice sphere evenly along the Z axis
+     */
+    public Sphere(String name, Vector3f center, int zSamples,
+            int radialSamples, float radius, boolean useEvenSlices) {
         super(name);
-        updateGeometry(center, zSamples, radialSamples, radius);
+        updateGeometry(center, zSamples, radialSamples, radius, useEvenSlices);
     }
 
     /**
@@ -152,7 +187,7 @@ public class Sphere extends TriMesh {
     /**
      * @return Returns the textureMode.
      */
-    public int getTextureMode() {
+    public TextureMode getTextureMode() {
         return textureMode;
     }
 
@@ -168,7 +203,8 @@ public class Sphere extends TriMesh {
         radius = capsule.readFloat("radius", 0);
         center = (Vector3f) capsule
                 .readSavable("center", Vector3f.ZERO.clone());
-        textureMode = capsule.readInt("textureMode", TEX_ORIGINAL);
+        useEvenSlices = capsule.readBoolean("useEvenSlices", false);
+        textureMode = capsule.readEnum("textureMode", TextureMode.class, TextureMode.Original);
     }
 
     /**
@@ -182,7 +218,7 @@ public class Sphere extends TriMesh {
      * @deprecated Use {@link #updateGeometry(Vector3f,int,int,float)} instead
      */
     public void setData(Vector3f center, int zSamples, int radialSamples, float radius) {
-        updateGeometry(center, zSamples, radialSamples, radius);
+        updateGeometry(center, zSamples, radialSamples, radius, false);
     }
 
     /**
@@ -220,7 +256,13 @@ public class Sphere extends TriMesh {
         // generate the sphere itself
         int i = 0;
         for (int iZ = 1; iZ < (zSamples - 1); iZ++) {
-            float fZFraction = -1.0f + fZFactor * iZ; // in (-1,1)
+            float fAFraction = FastMath.HALF_PI * (-1.0f + fZFactor * iZ); // in (-pi/2, pi/2)
+            float fZFraction;
+            if (useEvenSlices)
+                fZFraction = -1.0f + fZFactor * iZ; // in (-1, 1)
+            else
+                fZFraction = FastMath.sin(fAFraction); // in (-1,1)
+
             float fZ = radius * fZFraction;
 
             // compute center of slice
@@ -252,14 +294,20 @@ public class Sphere extends TriMesh {
                     getNormalBuffer().put(-kNormal.x).put(-kNormal.y).put(
                             -kNormal.z);
 
-                if (textureMode == TEX_ORIGINAL)
+                if (textureMode == TextureMode.Original)
                     getTextureCoords().get(0).coords.put(fRadialFraction).put(
                             0.5f * (fZFraction + 1.0f));
-                else if (textureMode == TEX_PROJECTED)
+                else if (textureMode == TextureMode.Projected)
                     getTextureCoords().get(0).coords.put(fRadialFraction).put(
                             FastMath.INV_PI
                                     * (FastMath.HALF_PI + FastMath
                                             .asin(fZFraction)));
+                else if (textureMode == TextureMode.Polar) {
+                    float r = (FastMath.HALF_PI - FastMath.abs(fAFraction)) / FastMath.PI;
+                    float u = r * afCos[iR] + 0.5f;
+                    float v = r * afSin[iR] + 0.5f;
+                    getTextureCoords().get(0).coords.put(u).put(v);
+                }
 
                 i++;
             }
@@ -267,15 +315,19 @@ public class Sphere extends TriMesh {
             BufferUtils.copyInternalVector3(getVertexBuffer(), iSave, i);
             BufferUtils.copyInternalVector3(getNormalBuffer(), iSave, i);
 
-            if (textureMode == TEX_ORIGINAL)
+            if (textureMode == TextureMode.Original)
                 getTextureCoords().get(0).coords.put(1.0f).put(
                         0.5f * (fZFraction + 1.0f));
-            else if (textureMode == TEX_PROJECTED)
+            else if (textureMode == TextureMode.Projected)
                 getTextureCoords().get(0).coords.put(1.0f)
                         .put(
                                 FastMath.INV_PI
                                         * (FastMath.HALF_PI + FastMath
                                                 .asin(fZFraction)));
+            else if (textureMode == TextureMode.Polar) {
+                float r = (FastMath.HALF_PI - FastMath.abs(fAFraction)) / FastMath.PI;
+                getTextureCoords().get(0).coords.put(r+0.5f).put(0.5f);
+            }
 
             i++;
         }
@@ -293,7 +345,13 @@ public class Sphere extends TriMesh {
             getNormalBuffer().put(0).put(0).put(1);
 
         getTextureCoords().get(0).coords.position(i * 2);
-        getTextureCoords().get(0).coords.put(0.5f).put(0.0f);
+
+        if (textureMode == TextureMode.Polar) {
+            getTextureCoords().get(0).coords.put(0.5f).put(0.5f);
+        }
+        else {
+            getTextureCoords().get(0).coords.put(0.5f).put(0.0f);
+        }
 
         i++;
 
@@ -305,7 +363,12 @@ public class Sphere extends TriMesh {
         else
             getNormalBuffer().put(0).put(0).put(-1);
 
-        getTextureCoords().get(0).coords.put(0.5f).put(1.0f);
+        if (textureMode == TextureMode.Polar) {
+            getTextureCoords().get(0).coords.put(0.5f).put(0.5f);
+        }
+        else {
+            getTextureCoords().get(0).coords.put(0.5f).put(1.0f);
+        }
     }
 
     /**
@@ -375,8 +438,22 @@ public class Sphere extends TriMesh {
     /**
      * @param textureMode
      *            The textureMode to set.
+     * @Deprecated Use enum version of setTextureMode
      */
+    @Deprecated
     public void setTextureMode(int textureMode) {
+        if (textureMode == TEX_ORIGINAL)
+            this.textureMode = TextureMode.Original;
+        else if (textureMode == TEX_PROJECTED)
+            this.textureMode = TextureMode.Projected;
+        setGeometryData();
+    }
+
+    /**
+     * @param textureMode
+     *            The textureMode to set.
+     */
+    public void setTextureMode(TextureMode textureMode) {
         this.textureMode = textureMode;
         setGeometryData();
     }
@@ -390,10 +467,15 @@ public class Sphere extends TriMesh {
      * @param radius the radius of the sphere.
      */
     public void updateGeometry(Vector3f center, int zSamples, int radialSamples, float radius) {
+        updateGeometry(center, zSamples, radialSamples, radius, false);
+    }
+
+    public void updateGeometry(Vector3f center, int zSamples, int radialSamples, float radius, boolean useEvenSlices) {
         this.center = center != null ? center : new Vector3f();
         this.zSamples = zSamples;
         this.radialSamples = radialSamples;
         this.radius = radius;
+        this.useEvenSlices = useEvenSlices;
         setGeometryData();
         setIndexData();
     }
@@ -405,7 +487,8 @@ public class Sphere extends TriMesh {
         capsule.write(radialSamples, "radialSamples", 0);
         capsule.write(radius, "radius", 0);
         capsule.write(center, "center", Vector3f.ZERO);
-        capsule.write(textureMode, "textureMode", TEX_ORIGINAL);
+        capsule.write(useEvenSlices, "useEvenSlices", false);
+        capsule.write(textureMode, "textureMode", TextureMode.Original);
     }
 
 }
