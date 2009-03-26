@@ -48,6 +48,12 @@
     <mkdir dir="${class}" />
     <mkdir dir="${data}" />
     <mkdir dir="${doc}" />
+    <available property="_rtlp.param" value="_rtlogprops.present"
+               file="logging.properties"/>
+    <property name="_rtlp.param" value="_dummy"/>
+    <antcall target="-gen-rtlogprops">
+      <param name="${_trlp.param}" value="true"/>
+    </antcall>
   </target>
 
   <!-- Compiles all the jME classes, including com.jmex.* -->
@@ -183,9 +189,8 @@
     </delete>
   </target>
 
-  <target name="rebuild" depends="clean" description="build from clean">
-    <ant />
-  </target>
+  <target name="rebuild" depends="clean, compile"
+          description="build from clean"/>
 
   <!-- *** jmetest-related build targets -->
 
@@ -330,4 +335,7 @@
     <!--        </copy>-->
   </target>
 
+  <target name="-gen-rtlogprops" unless="_rtlogprops.present">
+    <copy file="logging-template.properties" tofile="logging.properties"/>
+  </target>
 </project>
