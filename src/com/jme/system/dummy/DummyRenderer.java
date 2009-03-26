@@ -341,6 +341,10 @@ public final class DummyRenderer extends Renderer {
 			@Override
 			protected void sendToGL(ByteBuffer vertexByteBuffer, ByteBuffer fragmentByteBuffer) {
 			}
+
+            @Override
+            public void cleanup() {
+            }
         };
     }
 

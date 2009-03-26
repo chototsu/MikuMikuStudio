@@ -220,7 +220,6 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             ARBShaderObjects.glAttachObjectARB(programID, vertexShaderID);
         } else if (vertexShaderID != -1) {
             removeVertShader();
-            vertexShaderID = -1;
         }
 
         if (fragmentByteBuffer != null) {
@@ -245,7 +244,6 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             ARBShaderObjects.glAttachObjectARB(programID, fragmentShaderID);
         } else if (fragmentShaderID != -1) {
             removeFragShader();
-            fragmentShaderID = -1;
         }
 
         ARBShaderObjects.glLinkProgramARB(programID);
@@ -258,6 +256,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
         if (fragmentShaderID != -1) {
             ARBShaderObjects.glDetachObjectARB(programID, fragmentShaderID);
             ARBShaderObjects.glDeleteObjectARB(fragmentShaderID);
+            fragmentShaderID = -1;
         }
     }
 
@@ -266,6 +265,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
         if (vertexShaderID != -1) {
             ARBShaderObjects.glDetachObjectARB(programID, vertexShaderID);
             ARBShaderObjects.glDeleteObjectARB(vertexShaderID);
+            vertexShaderID = -1;
         }
     }
 
@@ -383,6 +383,19 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      */
     @Override
     public void checkUniformSizeLimits() {
+    }
+
+    /**
+     * @see com.jme.scene.state.GLSLShaderObjectsState#cleanup()
+     */
+    @Override
+    public void cleanup() {
+        removeVertShader();
+        removeFragShader();
+        if (programID != -1) {
+            ARBShaderObjects.glDeleteObjectARB(programID);
+            programID = -1;
+        }
     }
     
     

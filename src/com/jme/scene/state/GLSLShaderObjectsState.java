@@ -928,4 +928,9 @@ public abstract class GLSLShaderObjectsState extends RenderState {
             }
         }
     }
+    
+    /**
+     * Frees the memory and invalidates the shader handle
+     */
+    public abstract void cleanup();
 }

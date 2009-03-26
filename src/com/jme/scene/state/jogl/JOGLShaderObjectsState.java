@@ -383,4 +383,11 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
     public void checkUniformSizeLimits() {
     }
 
+    /**
+     * @see com.jme.scene.state.GLSLShaderObjectsState#cleanup()
+     */
+    @Override
+    public void cleanup() {
+    }
+
 }
