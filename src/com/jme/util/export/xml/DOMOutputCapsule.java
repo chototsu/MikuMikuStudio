@@ -200,15 +200,17 @@ public class DOMOutputCapsule implements OutputCapsule {
         if (value == null) {
             value = defVal;
         }
-        for (float b : value) {
-            buf.append(b);
-            buf.append(" ");
+        if (value != null) {
+            for (float b : value) {
+                buf.append(b);
+                buf.append(" ");
+            }
+            //remove last space
+            buf.setLength(buf.length() - 1);
         }
-        //remove last space
-        buf.setLength(buf.length() - 1);
 
         Element el = appendElement(name);
-        el.setAttribute("size", String.valueOf(value.length));
+        el.setAttribute("size", value == null ? "0" : String.valueOf(value.length));
         el.setAttribute(dataAttributeName, buf.toString());
         currentElement = (Element) currentElement.getParentNode();
     }

@@ -498,15 +498,15 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public short readShort(String name, short defVal) throws IOException {
-        short ret = defVal;
+        String attribute = currentElem.getAttribute(name);
+        if (attribute == null || attribute.length() == 0) { return defVal; }
         try {
-            ret = Short.parseShort(currentElem.getAttribute(name));
-        } catch (Exception e) {
-            IOException ex = new IOException();
+            return Short.parseShort(attribute);
+        } catch (NumberFormatException e) {
+            IOException ex = new IOException("error parsing " + name);
             ex.initCause(e);
             throw ex;
         }
-        return ret;
     }
 
     public short[] readShortArray(String name, short[] defVal) throws IOException {
@@ -1127,7 +1127,7 @@ public class DOMInputCapsule implements InputCapsule {
             tmp.flip();
             ret = tmp;
         } catch (Exception e) {
-            IOException ex = new IOException();
+            IOException ex = new IOException("error reading " + name);
             ex.initCause(e);
             throw ex;
         }
