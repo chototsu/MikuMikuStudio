@@ -1127,11 +1127,10 @@ public class TerrainPage extends Node {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        offset = (Vector2f) capsule
-                .readSavable("offset", Vector3f.ZERO.clone());
+        offset = (Vector2f) capsule.readSavable("offset", new Vector2f());
         totalSize = capsule.readInt("totalSize", 0);
         size = capsule.readInt("size", 0);
-        stepScale = (Vector3f) capsule.readSavable("stepScale", new Vector2f());
+        stepScale = (Vector3f) capsule.readSavable("stepScale", new Vector3f());
         offsetAmount = capsule.readFloat("offsetAmount", 0);
         quadrant = capsule.readShort("quadrant", (short) 1);
     }
