@@ -66,7 +66,8 @@ public class XMLExporter implements JMEExporter{
         	//Initialize Document when saving so we don't retain state of previous exports
         	this.domOut = new DOMOutputCapsule(DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument(), this);
             domOut.write(object, object.getClass().getName(), null);
-            DOM_PrettyPrint.serialize(domOut.getDoc(), f);
+            DOMSerializer serializer = new DOMSerializer();
+            serializer.serialize(domOut.getDoc(), f);
             f.flush();
             return true;
         } catch (Exception ex) {

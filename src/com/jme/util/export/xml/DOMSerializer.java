@@ -31,19 +31,20 @@
  *
  */
   
-
 package com.jme.util.export.xml;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
-// DOM imports
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -55,159 +56,21 @@ import org.w3c.dom.NodeList;
  * 
  * @author Brett McLaughlin, Justin Edelson - Original creation for "Java and XML" book.
  * @author Doug Daniels (dougnukem) - adjustments for XML formatting
- *
+ * @version $Revision$, $Date$
  */
 public class DOMSerializer {
 
-    /** Indentation to use (default is no indentation) */
-    private String indent = "";
+    /** The encoding to use for output (default is UTF-8) */
+    private Charset encoding = Charset.forName("utf-8");
 
-    /** Line separator to use (default is for Windows) */
-    private String lineSeparator = "\n";
+    /** The amount of indentation to use (default is 4 spaces). */
+    private int indent = 4;
 
-    /** Encoding for output (default is UTF-8) */
-    private String encoding = "UTF8";
+    /** The line separator to use (default is the based on the current system settings). */
+    private String lineSeparator = System.getProperty("line.separator", "\n");
 
-    /** Attributes will be displayed on seperate lines   */
-	private boolean displayAttributesOnSeperateLine = true;
-
-    public void setLineSeparator(String lineSeparator) {
-        this.lineSeparator = lineSeparator;
-    }
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
-    public void setIndent(int numSpaces) {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < numSpaces; i++)
-            buffer.append("\t");
-        this.indent = buffer.toString();
-    }
-
-    public void serialize(Document doc, OutputStream out) throws IOException {
-        Writer writer = new OutputStreamWriter(out, encoding);
-        serialize(doc, writer);
-    }
-
-    public void serialize(Document doc, File file) throws IOException {
-        Writer writer = new FileWriter(file);
-        serialize(doc, writer);
-    }
-
-    public void serialize(Document doc, Writer writer) throws IOException {
-        // Start serialization recursion with no indenting
-        serializeNode(doc, writer, "");
-        writer.flush();
-    }
-
-    private void serializeNode(Node node, Writer writer, String indentLevel)
-            throws IOException {
-        // Determine action based on node type
-        switch (node.getNodeType()) {
-        case Node.DOCUMENT_NODE:
-            Document doc = (Document) node;
-            /**
-             * DOM Level 2 code writer.write("<?xml version=\"1.0\"
-             * encoding=\"UTF-8\"?>");
-             */
-            writer.write("<?xml version=\"");
-            writer.write(doc.getXmlVersion());
-            writer.write("\" encoding=\"UTF-8\" standalone=\"");
-            if (doc.getXmlStandalone())
-                writer.write("yes");
-            else
-                writer.write("no");
-            writer.write("\"");
-            writer.write("?>");
-            writer.write(lineSeparator);
-
-            // recurse on each top-level node
-            NodeList nodes = node.getChildNodes();
-            if (nodes != null)
-                for (int i = 0; i < nodes.getLength(); i++)
-                    serializeNode(nodes.item(i), writer, "");
-            break;
-        case Node.ELEMENT_NODE:
-            String name = node.getNodeName();
-            //writer.write(indentLevel + "<" + name);
-            writer.write("<" + name);
-            NamedNodeMap attributes = node.getAttributes();
-            for (int i = 0; i < attributes.getLength(); i++) {
-                Node current = attributes.item(i);
-                String attributeSeperator = " ";
-                if(displayAttributesOnSeperateLine && i!=0) {
-                	attributeSeperator = lineSeparator + indentLevel + indent; 
-                }
-                //Double indentLevel to match parent element and then one indention to format below parent
-                String attributeStr = attributeSeperator + current.getNodeName() + "=\"";
-                writer.write(attributeStr);
-                print(writer, current.getNodeValue());
-                writer.write("\"");
-            }
-            writer.write(">");
-
-            // recurse on each child
-            NodeList children = node.getChildNodes();
-            if (children != null) {
-                if ((children.item(0) != null) && (children.item(0).getNodeType() == Node.ELEMENT_NODE)) {
-                    //writer.write(lineSeparator);
-                }
-
-                for (int i = 0; i < children.getLength(); i++)
-                    serializeNode(children.item(i), writer, indentLevel + indent);
-
-                if ((children.item(0) != null) && (children.item(children.getLength() - 1).getNodeType() == Node.ELEMENT_NODE))
-                    ;//writer.write(indentLevel);
-            }
-
-            writer.write("</" + name + ">");
-            //writer.write(lineSeparator);
-            break;
-        case Node.TEXT_NODE:
-            print(writer, node.getNodeValue());
-            break;
-        case Node.CDATA_SECTION_NODE:
-            writer.write("<![CDATA[");
-            print(writer, node.getNodeValue());
-            writer.write("]]>");
-            break;
-        case Node.COMMENT_NODE:
-            writer.write(indentLevel + "<!-- " + node.getNodeValue() + " -->");
-            writer.write(lineSeparator);
-            break;
-        case Node.PROCESSING_INSTRUCTION_NODE:
-            writer.write("<?" + node.getNodeName() + " " + node.getNodeValue()
-                    + "?>");
-            writer.write(lineSeparator);
-            break;
-        case Node.ENTITY_REFERENCE_NODE:
-            writer.write("&" + node.getNodeName( ) + ";");
-            break;
-        case Node.DOCUMENT_TYPE_NODE:
-            DocumentType docType = (DocumentType) node;
-            String publicId = docType.getPublicId();
-            String systemId = docType.getSystemId();
-            String internalSubset = docType.getInternalSubset();
-            writer.write("<!DOCTYPE " + docType.getName());
-            if (publicId != null)
-                writer.write(" PUBLIC \"" + publicId + "\" ");
-            else
-                writer.write(" SYSTEM ");
-            writer.write("\"" + systemId + "\"");
-            if (internalSubset != null)
-                writer.write(" [" + internalSubset + "]");
-            writer.write(">");
-            writer.write(lineSeparator);
-            break;
-        }
-    }
-
-    private void print(Writer writer, String s) throws IOException {
-
-        if (s == null)
-            return;
+    private void escape(Writer writer, String s) throws IOException {
+        if (s == null) { return; }
         for (int i = 0, len = s.length(); i < len; i++) {
             char c = s.charAt(i);
             switch (c) {
@@ -227,6 +90,176 @@ public class DOMSerializer {
                 writer.write(c);
             }
         }
+    }
+
+    /**
+     * Serialize {@code doc} to {@code out}
+     * 
+     * @param doc the document to serialize.
+     * @param file the file to serialize to.
+     * @throws IOException
+     */
+    public void serialize(Document doc, File file) throws IOException {
+        serialize(doc, new FileOutputStream(file));
+    }
+
+    /**
+     * Serialize {@code doc} to {@code out}
+     * 
+     * @param doc the document to serialize.
+     * @param out the stream to serialize to.
+     * @throws IOException
+     */
+    public void serialize(Document doc, OutputStream out) throws IOException {
+        Writer writer = new OutputStreamWriter(out, encoding);
+        write(doc, writer, 0);
+        writer.flush();
+    }
+
+    /**
+     * Serialize {@code doc} to {@code writer}
+     * 
+     * @param doc the document to serialize.
+     * @param writer the writer to serialize to.
+     * @throws IOException
+     * 
+     * @deprecated this method does not set the encoding correctly.
+     */
+    @Deprecated
+    public void serialize(Document doc, Writer writer) throws IOException {
+        write(doc, writer, 0);
+        writer.flush();
+    }
+
+    /**
+     * Set the encoding used by this serializer.
+     * 
+     * @param encoding the encoding to use, passing in {@code null} results in the
+     *  default encoding (UTF-8) being set.
+     * @throws IllegalCharsetNameException if the given charset name is illegal.
+     * @throws UnsupportedCharsetException if the given charset is not supported by the
+     *  current JVM.
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = Charset.forName(encoding);
+    }
+
+    /**
+     * Set the number of spaces to use for indentation.
+     * <p>
+     * The default is to use 4 spaces.
+     * 
+     * @param indent the number of spaces to use for indentation, values less than or
+     *  equal to zero result in no indentation being used.
+     */
+    public void setIndent(int indent) {
+        this.indent = indent >= 0 ? indent : 0;
+    }
+
+    /**
+     * Set the line separator that will be used when serializing documents.
+     * <p>
+     * If this is not called then the serializer uses a default based on the
+     * {@code line.separator} system property. 
+     * 
+     * @param lineSeparator the line separator to set.
+     */
+    public void setLineSeparator(String lineSeparator) {
+        this.lineSeparator = lineSeparator;
+    }
+
+    private void write(Node node, Writer writer, int depth) throws IOException {
+        switch (node.getNodeType()) {
+        case Node.DOCUMENT_NODE:
+            writeDocument((Document) node, writer);
+            break;
+        case Node.ELEMENT_NODE:
+            writeElement((Element) node, writer, depth);
+            break;
+        case Node.TEXT_NODE:
+            escape(writer, node.getNodeValue());
+            break;
+        case Node.CDATA_SECTION_NODE:
+            writer.write("<![CDATA[");
+            escape(writer, node.getNodeValue());
+            writer.write("]]>");
+            break;
+        case Node.COMMENT_NODE:
+            for (int i = 0; i < depth; ++i) { writer.append(' '); }
+            writer.append("<!-- ").append(node.getNodeValue()).append(" -->").append(lineSeparator);
+            break;
+        case Node.PROCESSING_INSTRUCTION_NODE:
+            String n = node.getNodeName();
+            String v = node.getNodeValue();
+            for (int i = 0; i < depth; ++i) { writer.append(' '); }
+            writer.append("<?").append(n).append(' ').append(v).append("?>").append(lineSeparator);
+            break;
+        case Node.ENTITY_REFERENCE_NODE:
+            writer.append('&').append(node.getNodeName()).append(';');
+            break;
+        case Node.DOCUMENT_TYPE_NODE:
+            writeDocumentType((DocumentType) node, writer, depth);
+            break;
+        }
+    }
+
+    private void writeDocument(Document document, Writer writer) throws IOException {
+        String v = document.getXmlVersion();
+
+        writer.append("<?xml ");
+        writer.append(" version='").append(v == null ? "1.0" : v).append("'");
+        writer.append(" encoding='").append(encoding.name()).append("'");
+        if (document.getXmlStandalone()) {
+            writer.append(" standalone='yes'");
+        }
+        writer.append("?>").append(lineSeparator);
+
+        NodeList nodes = document.getChildNodes();
+        for (int i = 0, imax = nodes.getLength(); i < imax; ++i) {
+            write(nodes.item(i), writer, 0);
+        }
+    }
+
+    private void writeDocumentType(DocumentType docType, Writer writer, int depth) throws IOException {
+        String publicId = docType.getPublicId();
+        String internalSubset = docType.getInternalSubset();
+
+        for (int i = 0; i < depth; ++i) { writer.append(' '); }
+        writer.append("<!DOCTYPE ").append(docType.getName());
+        if (publicId != null) {
+            writer.append(" PUBLIC '").append(publicId).append("' ");
+        } else {
+            writer.write(" SYSTEM ");
+        }
+        writer.append("'").append(docType.getSystemId()).append("'");
+        if (internalSubset != null) {
+            writer.append(" [").append(internalSubset).append("]");
+        }
+        writer.append('>').append(lineSeparator);
+    }
+
+    private void writeElement(Element element, Writer writer, int depth) throws IOException {
+        for (int i = 0; i < depth; ++i) { writer.append(' '); }
+        writer.append('<').append(element.getTagName());
+        NamedNodeMap attrs = element.getAttributes();
+        for (int i = 0, imax = attrs.getLength(); i < imax; ++i) {
+            Attr attr = (Attr) attrs.item(i);
+            writer.append(' ').append(attr.getName()).append("='").append(attr.getValue()).append("'");
+        }
+        NodeList nodes = element.getChildNodes();
+        if (nodes.getLength() == 0) {
+            // no children, so just close off the element and return
+            writer.append("/>").append(lineSeparator);
+            return;
+        }
+        writer.append('>').append(lineSeparator);
+        for (int i = 0, imax = nodes.getLength(); i < imax; ++i) {
+            Node n = nodes.item(i);
+            if (n.getNodeType() == Node.ATTRIBUTE_NODE) { continue; }
+            write(n, writer, depth + indent);
+        }
+        for (int i = 0; i < depth; ++i) { writer.append(' '); }
+        writer.append("</").append(element.getTagName()).append('>').append(lineSeparator);
     }
 
 }

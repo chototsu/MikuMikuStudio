@@ -40,7 +40,9 @@ import org.w3c.dom.Document;
  * 
  * @author Kai Rabien (hevee) - original author of the code.google.com jmexml project
  * @author Doug Daniels (dougnukem) - adjustments for jME 2.0 and Java 1.5
+ * @deprecated This class will be removed in a future release.
  */
+@Deprecated
 public class DOM_PrettyPrint {
     public static void serialize(Document doc, OutputStream out) throws Exception {
     	DOMSerializer serializer = new DOMSerializer();
