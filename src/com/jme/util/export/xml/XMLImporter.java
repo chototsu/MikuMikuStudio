@@ -57,7 +57,12 @@ public class XMLImporter implements JMEImporter {
     public XMLImporter() {
     }
     
-    public Savable load(InputStream f) throws IOException {
+    synchronized public Savable load(InputStream f) throws IOException {
+        /* Leave this method synchronized.  Otherwise multiple calling threads
+         * will clobber the XML Document instantiated here.
+         * Note that the synchronization modifier accommodates the recursion
+         * that is needed here.
+         */
         try {
             domIn = new DOMInputCapsule(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(f), this);
             return domIn.readSavable(null, null);
