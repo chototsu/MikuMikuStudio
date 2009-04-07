@@ -37,6 +37,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * This interface supports two conflicting use cases, and good design would
+ * have a separate interface for each; but as things stand, "loaders" should
+ * only use the load() methods, and reconstituting-jME-elements should only
+ * use the getCapsule() method.
+ */
 public interface JMEImporter {
     
     public Savable load(InputStream f) throws IOException;
