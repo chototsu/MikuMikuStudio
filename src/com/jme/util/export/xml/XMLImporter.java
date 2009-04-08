@@ -35,24 +35,29 @@ package com.jme.util.export.xml;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.Savable;
+import com.jme.util.resource.ResourceLocator;
+import com.jme.util.resource.ResourceLocatorTool;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URI;
+import java.net.URLEncoder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
  * Part of the jME XML IO system as introduced in the google code jmexml project.
- * 
  * @author Kai Rabien (hevee) - original author of the code.google.com jmexml project
  * @author Doug Daniels (dougnukem) - adjustments for jME 2.0 and Java 1.5
  */
-public class XMLImporter implements JMEImporter {
+public class XMLImporter implements JMEImporter, ResourceLocator {
 
     private DOMInputCapsule domIn;
+    private URI baseUri = null;
+    // A single-load-state base URI for texture-loading.
     
     public XMLImporter() {
     }
@@ -61,6 +66,10 @@ public class XMLImporter implements JMEImporter {
         /* Leave this method synchronized.  Calling this method from more than
          * one thread at a time for the same XMLImporter instance will clobber
          * the XML Document instantiated here. */
+        if (baseUri != null) {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE, this);
+        }
         try {
             domIn = new DOMInputCapsule(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(f), this);
             return domIn.readSavable(null, null);
@@ -68,26 +77,82 @@ public class XMLImporter implements JMEImporter {
             IOException ex = new IOException();
             ex.initCause(e);
             throw ex;
-		} catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             IOException ex = new IOException();
             ex.initCause(e);
             throw ex;
-		}
+        } finally {
+            if (baseUri != null) {
+                ResourceLocatorTool.removeResourceLocator(
+                        ResourceLocatorTool.TYPE_TEXTURE, this);
+            }
+        }
     }
 
-    public Savable load(URL f) throws IOException {
-        return load(f.openStream());
+    synchronized public Savable load(URL f) throws IOException {
+        /* Method is only synchronized to ensure that baseUri effects only
+         * the file specified here.
+         * Note that the instance would get synchronized in the
+         * load(InputStream) call anyways. */
+
+        try {
+            try {
+                baseUri = f.toURI();
+            } catch (Exception e) {
+                baseUri = null;
+            }
+            return load(f.openStream());
+        } finally {
+            baseUri = null;
+        }
     }
 
-    public Savable load(File f) throws IOException {
-        return load(new FileInputStream(f));
+    synchronized public Savable load(File f) throws IOException {
+        /* Method is only synchronized to ensure that baseUri effects only
+         * the file specified here.
+         * Note that the instance would get synchronized in the
+         * load(InputStream) call anyways. */
+        try {
+            if (f.isFile() && f.getParentFile().isDirectory())
+                //baseUri = f.getParentFile().toURI();
+                baseUri = f.toURI();
+            return load(new FileInputStream(f));
+        } finally {
+            baseUri = null;
+        }
     }
 
     public InputCapsule getCapsule(Savable id) {
         return domIn;
     }
 
-	public static XMLImporter getInstance() {
-		return new XMLImporter();
-	}
+    public static XMLImporter getInstance() {
+        return new XMLImporter();
+    }
+
+    public URL locateResource(String resourceName) {
+        if (baseUri == null || resourceName == null
+                || resourceName.length() < 2 || resourceName.charAt(0) == '/'
+                || resourceName.charAt(0) == '\\') return null;
+        // No-op unless baseUri set for instance, and resourceName is relative.
+
+        /* The remainder is the safe and conservative subset of code copied
+         * from SimpleResourceLocator.locateResource(String). */
+
+        try {
+            String spec = URLEncoder.encode(resourceName, "UTF-8");
+            //this fixes a bug in JRE1.5 (file handler does not decode "+" to
+            //spaces)
+            spec = spec.replaceAll("\\+", "%20");
+
+            URL rVal = new URL(baseUri.toURL(), spec);
+            // open a stream to see if this is a valid resource
+            // XXX: Perhaps this is wasteful?  Also, what info will determine validity?
+            rVal.openStream().close();
+            return rVal;
+        } catch (IOException e) {
+        } catch (IllegalArgumentException e) {
+        }
+        return null;
+    }
 }

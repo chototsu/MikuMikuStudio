@@ -830,6 +830,10 @@ public class DOMInputCapsule implements InputCapsule {
             ret = (TextureState) readSavableFromCurrentElem(null);
             //Renderer r = DisplaySystem.getDisplaySystem().getRenderer();
             Savable[] savs = readSavableArray("texture", new Texture[0]);
+            // TODO:  Investigate why both readSavableFromCurentElem(null)
+            // and readSavableArray("texture", new TExture[0]) both resolve
+            // the texture file resource.  Who know what other work they
+            // duplicate.
             for (int i = 0; i < savs.length; i++) {
                 Texture t = (Texture) savs[i];
                 TextureKey tKey = t.getTextureKey();
