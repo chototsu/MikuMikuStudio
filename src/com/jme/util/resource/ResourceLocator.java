@@ -42,7 +42,7 @@ import java.net.URL;
 public interface ResourceLocator {
 
     /**
-     * Locates a resource according to the strategy of the reousrce locator implementation (subclass).
+     * Locates a resource according to the strategy of the resource locator implementation (subclass).
      * @see SimpleResourceLocator
      * @see MultiFormatResourceLocator
      * @param resourceName the name of the resource to locate; it this is a path it must be slash separated (no backslashes)  
