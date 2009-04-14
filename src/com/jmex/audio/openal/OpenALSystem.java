@@ -208,45 +208,12 @@ public class OpenALSystem extends AudioSystem {
 
     @Override
     public OpenALAudioTrack createAudioTrack(String resourceStr, boolean stream) {
-        synchronized(this) {
-            URL resource = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_AUDIO, resourceStr);
-            if (resource == null) {
-                logger.warning("Could not locate audio file: "+resourceStr);
-                return null;
-            }
-    
-            String urlString = resource.toString();
-            if (!stream) {
-                // look for it in memory
-                OpenALAudioBuffer buff = memoryPool.get(urlString);
-                if (buff == null) {
-                    buff = OpenALAudioBuffer.generateBuffer();
-                    try {
-                        AudioLoader.fillBuffer(buff, resource);
-                    } catch (IOException e) {
-                        logger.logp(Level.SEVERE, this.getClass().toString(),
-                                "createAudioTrack(URL resource, boolean stream)", "Exception", e);
-                        return null;
-                    }
-    
-                    held += buff.getData().capacity();
-                    memoryPool.put(urlString, buff);
-                    if (held > MAX_MEMORY) {
-                        Object[] keys = memoryPool.keySet().toArray();
-                        Object[] values = memoryPool.values().toArray();
-                        int i = keys.length - 1;
-                        while (held > MAX_MEMORY && i >= 0) {
-                            OpenALAudioBuffer tBuff = (OpenALAudioBuffer) values[i];
-                            held -= tBuff.getData().capacity();
-                            memoryPool.remove(keys[i]);
-                        }
-                    }
-                }
-                // put us at the end!  :)
-                return new OpenALAudioTrack(resource, buff);
-            }
-            return new OpenALAudioTrack(resource, stream);
+        URL resource = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_AUDIO, resourceStr);
+        if (resource == null) {
+            logger.warning("Could not locate audio file: "+resourceStr);
+            return null;
         }
+        return createAudioTrack(resource, stream);
     }
 
     @Override
