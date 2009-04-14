@@ -846,7 +846,7 @@ public class Matrix3f  implements Serializable, Savable, Cloneable {
         if (store == null) store = new Matrix3f();
 
         float det = determinant();
-        if ( FastMath.abs(det) <= FastMath.FLT_EPSILON )
+        if ( FastMath.abs(det) <= 0 )
             return store.zero();
 
         store.m00 = m11*m22 - m12*m21;
@@ -1124,7 +1124,7 @@ public class Matrix3f  implements Serializable, Savable, Cloneable {
      *            normalized non-zero starting vector
      * @param end
      *            normalized non-zero ending vector
-     * @see "Tomas MÃ¶ller, John Hughes \"Efficiently Building a Matrix to Rotate \
+     * @see "Tomas Möller, John Hughes \"Efficiently Building a Matrix to Rotate \
      *      One Vector to Another\" Journal of Graphics Tools, 4(4):1-4, 1999"
      */
     public void fromStartEndVectors(Vector3f start, Vector3f end) {
