@@ -271,33 +271,39 @@
     </dependset>
 
     <!--  Jar and sign the Windows libraries -->
-    <jar destfile="${webstart}/lwjgl-windows.jar" basedir="lib" includes="lwjgl.dll" update="yes" />
-    <jar destfile="${webstart}/openal-windows.jar" basedir="lib" includes="OpenAL32.dll" update="yes" />
-    <jar destfile="${webstart}/jinput-windows.jar" basedir="lib" includes="jinput-dxplugin.dll" update="yes" />
+    <jar destfile="${webstart}/lwjgl-windows.jar" basedir="lib/lwjgl/native/win32" includes="lwjgl.dll" update="yes" />
+    <jar destfile="${webstart}/openal-windows.jar" basedir="lib/lwjgl/native/win32" includes="OpenAL32.dll" update="yes" />
+    <jar destfile="${webstart}/jinput-windows.jar" basedir="lib/lwjgl/native/win32" includes="jinput-dx8.dll" update="yes" />
+    <jar destfile="${webstart}/jinput-windows.jar" basedir="lib/lwjgl/native/win32" includes="jinput-raw.dll" update="yes" />
     <signjar jar="${webstart}/lwjgl-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/openal-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/jinput-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 
     <!-- Jar and sign Linux native libraries -->
-    <jar destfile="${webstart}/lwjgl-linux.jar" basedir="lib" includes="liblwjgl.so" update="yes" />
-    <jar destfile="${webstart}/openal-linux.jar" basedir="lib" includes="libopenal.so" update="yes" />
-    <jar destfile="${webstart}/jinput-linux.jar" basedir="lib" includes="libjinput-linux.so" update="yes" />
+    <jar destfile="${webstart}/lwjgl-linux.jar" basedir="lib/lwjgl/native/linux" includes="liblwjgl.so" update="yes" />
+    <jar destfile="${webstart}/lwjgl-linux.jar" basedir="lib/lwjgl/native/linux" includes="liblwjgl64.so" update="yes" />
+    <jar destfile="${webstart}/openal-linux.jar" basedir="lib/lwjgl/native/linux" includes="libopenal.so" update="yes" />
+    <jar destfile="${webstart}/openal-linux.jar" basedir="lib/lwjgl/native/linux" includes="libopenal64.so" update="yes" />
+    <jar destfile="${webstart}/jinput-linux.jar" basedir="lib/lwjgl/native/linux" includes="libjinput-linux.so" update="yes" />
+    <jar destfile="${webstart}/jinput-linux.jar" basedir="lib/lwjgl/native/linux" includes="libjinput-linux64.so" update="yes" />
     <signjar jar="${webstart}/lwjgl-linux.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/openal-linux.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/jinput-linux.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 
     <!-- Jar (eventually) and sign Mac native libraries -->
-    <jar destfile="${webstart}/lwjgl-mac.jar" basedir="lib" includes="liblwjgl.jnilib" update="yes" />
-    <jar destfile="${webstart}/openal-mac.jar" basedir="lib" includes="openal.dylib" update="yes" />
-    <!--fix me: shouldn't it be a jnilib?-->
-    <jar destfile="${webstart}/jinput-mac.jar" basedir="lib" includes="libjinput.jnilib" update="yes" />
+    <jar destfile="${webstart}/lwjgl-mac.jar" basedir="lib/lwjgl/native/macosx" includes="liblwjgl.jnilib" update="yes" />
+    <jar destfile="${webstart}/lwjgl-mac.jar" basedir="lib/lwjgl/native/macosx" includes="libjinput-osx.jnilib" update="yes" />
+    <jar destfile="${webstart}/openal-mac.jar" basedir="lib/lwjgl/native/macosx" includes="openal.dylib" update="yes" />
 
     <signjar jar="${webstart}/lwjgl-mac.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/openal-mac.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/jinput-mac.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 
     <!-- Sign the lwjgl jar -->
-    <signjar jar="${seg}/lib/lwjgl.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+    <signjar jar="${seg}/lib/lwjgl/lwjgl.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+    <signjar jar="${seg}/lib/lwjgl/lwjgl_util.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+    <signjar jar="${seg}/lib/jorbis/jorbis-0.0.17.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+    <signjar jar="${seg}/lib/lwjgl/jinput.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
   </target>
 
   <target name="nightly" depends="webdist-all, webdist-nativelibs, webdist-test">
