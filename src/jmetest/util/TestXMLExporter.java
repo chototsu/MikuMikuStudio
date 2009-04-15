@@ -35,10 +35,9 @@ package jmetest.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jmetest.renderer.TestEnvMap;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -52,6 +51,8 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.xml.XMLExporter;
 import com.jme.util.export.xml.XMLImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 
 /**
  * <code>TestExporter</code> (TH 2008-03017: modified to test using special characters during export/import.
@@ -76,7 +77,6 @@ public class TestXMLExporter extends SimpleGame {
     }
 
     protected void simpleInitGame() {
-        display.setTitle("Vertex Colors");
         lightState.setEnabled(false);
         
         String torusName = "T\u00D8rus"; // torus with a strike through the O
@@ -88,9 +88,20 @@ public class TestXMLExporter extends SimpleGame {
         background.updateGeometry(150, 120);
         background.setLocalTranslation(new Vector3f(0, 0, -30));
 
-        Texture bg = TextureManager.loadTexture(TestEnvMap.class
-                .getClassLoader()
-                .getResource("jmetest/data/texture/clouds.png"),
+        // set up a ResourceLocators easily load textures
+        try {
+            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE,
+                        new SimpleResourceLocator(
+                                TestXMLExporter.class.getResource("/jmetest/data/texture/")));
+            ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(
+                            TestXMLExporter.class.getResource("/jmetest/data/images/")));
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
+        }
+        
+        Texture bg = TextureManager.loadTexture(
+                ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, "clouds.png"),
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         TextureState bgts = display.getRenderer().createTextureState();
@@ -101,14 +112,12 @@ public class TestXMLExporter extends SimpleGame {
         TextureState ts = display.getRenderer().createTextureState();
         // Base texture, not environmental map.
         Texture t0 = TextureManager.loadTexture(
-                TestEnvMap.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.jpg"),
+                ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, "Monkey.jpg"),
                 Texture.MinificationFilter.Trilinear,
                 Texture.MagnificationFilter.Bilinear);
         // Environmental Map (reflection of clouds)
-        Texture tex = TextureManager.loadTexture(TestEnvMap.class
-                .getClassLoader()
-                .getResource("jmetest/data/texture/clouds.png"),
+        Texture tex = TextureManager.loadTexture(
+                ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, "clouds.png"),
                 Texture.MinificationFilter.Trilinear,
                 Texture.MagnificationFilter.Bilinear);
         tex.setEnvironmentalMapMode(Texture.EnvironmentalMapMode.SphereMap);
