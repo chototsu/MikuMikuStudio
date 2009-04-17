@@ -292,7 +292,7 @@
 
     <!-- Jar (eventually) and sign Mac native libraries -->
     <jar destfile="${webstart}/lwjgl-mac.jar" basedir="lib/lwjgl/native/macosx" includes="liblwjgl.jnilib" update="yes" />
-    <jar destfile="${webstart}/lwjgl-mac.jar" basedir="lib/lwjgl/native/macosx" includes="libjinput-osx.jnilib" update="yes" />
+    <jar destfile="${webstart}/jinput-mac.jar" basedir="lib/lwjgl/native/macosx" includes="libjinput-osx.jnilib" update="yes" />
     <jar destfile="${webstart}/openal-mac.jar" basedir="lib/lwjgl/native/macosx" includes="openal.dylib" update="yes" />
 
     <signjar jar="${webstart}/lwjgl-mac.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
