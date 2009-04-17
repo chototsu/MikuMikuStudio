@@ -92,7 +92,7 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * <code>set</code> transfers the contents of a given matrix to this
+     * <code>set</code> copies the contents of a given matrix to this
      * matrix. If a null matrix is supplied, this matrix is set to the
      * identity matrix.
      * @param matrix the matrix to copy.
@@ -111,8 +111,8 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
     /**
      *
      * <code>set</code> defines the values of the matrix based on a supplied
-     * <code>Quaternion</code>. It should be noted that all previous values
-     * will be overridden.
+     * <code>Quaternion</code> (which it does not modify).
+     * It should be noted that all previous values will be overridden.
      * @param quaternion the quaternion to create a rotational matrix from.
      */
     public void set(Quaternion quaternion) {
@@ -405,7 +405,7 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
 
     /**
      * <code>set</code> changes this matrix's rotational and translational components
-     * to that represented by the given parameters
+     * to that represented by the given parameters, by copying.
      * @param rotation The new rotaiton
      * @param translation The new translation
      */
@@ -415,7 +415,7 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * Sets this TransformMatrix's scale to the given scale (x,y,z)
+     * Sets this TransformMatrix's scale to the given scale (x,y,z), by copying.
      * @param scale The new scale
      */
     public void setScale(Vector3f scale) {

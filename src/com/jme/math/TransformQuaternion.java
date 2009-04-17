@@ -58,7 +58,7 @@ public class TransformQuaternion implements Serializable, Savable, Cloneable {
     private Vector3f scale=new Vector3f(1,1,1);
 
     /**
-     * Sets this rotation to the given Quaternion value.
+     * Sets this rotation to the given Quaternion value by copying.
      * @param rot The new rotation for this matrix.
      */
     public void setRotationQuaternion(Quaternion rot) {
@@ -66,7 +66,7 @@ public class TransformQuaternion implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * Sets this translation to the given value.
+     * Sets this translation to the given value by copying.
      * @param trans The new translation for this matrix.
      */
     public void setTranslation(Vector3f trans) {
@@ -82,7 +82,7 @@ public class TransformQuaternion implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * Sets this scale to the given value.
+     * Sets this scale to the given value by copying.
      * @param scale The new scale for this matrix.
      */
     public void setScale(Vector3f scale) {
