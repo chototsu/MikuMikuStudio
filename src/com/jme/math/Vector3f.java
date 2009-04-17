@@ -298,11 +298,13 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
     }
 
     /**
-     * <code>cross</code> calculates the cross product of this vector with a
-     * parameter vector v.
+     * Returns a new vector which is the cross product of this vector with
+     * the specified vector.
+     * <P>
+     * Neither 'this' nor v are modified.  The starting value of 'result'
+     * </P>
      *
-     * @param v
-     *            the vector to take the cross product of with this.
+     * @param v the vector to take the cross product of with this.
      * @return the cross product vector.
      */
     public Vector3f cross(Vector3f v) {
@@ -312,11 +314,13 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
     /**
      * <code>cross</code> calculates the cross product of this vector with a
      * parameter vector v.  The result is stored in <code>result</code>
+     * <P>
+     * Neither 'this' nor v are modified.  The starting value of 'result'
+     * (if any) is ignored.
+     * </P>
      *
-     * @param v
-     *            the vector to take the cross product of with this.
-     * @param result
-     *            the vector to store the cross product result.
+     * @param v the vector to take the cross product of with this.
+     * @param result the vector to store the cross product result.
      * @return result, after recieving the cross product vector.
      */
     public Vector3f cross(Vector3f v,Vector3f result) {
@@ -325,7 +329,9 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
 
     /**
      * <code>cross</code> calculates the cross product of this vector with a
-     * parameter vector v.  The result is stored in <code>result</code>
+     * Vector comprised of the specified other* elements.
+     * The result is stored in <code>result</code>, without modifying either
+     * 'this' or the 'other*' values.
      *
      * @param otherX
      *            x component of the vector to take the cross product of with this.
@@ -333,8 +339,7 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
      *            y component of the vector to take the cross product of with this.
      * @param otherZ
      *            z component of the vector to take the cross product of with this.
-     * @param result
-     *            the vector to store the cross product result.
+     * @param result the vector to store the cross product result.
      * @return result, after recieving the cross product vector.
      */
     public Vector3f cross(float otherX, float otherY, float otherZ, Vector3f result) {
@@ -424,12 +429,10 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
     }
 
     /**
-     *
      * <code>mult</code> multiplies this vector by a scalar. The resultant
      * vector is returned.
      *
-     * @param scalar
-     *            the value to multiply this vector by.
+     * @param scalar the value to multiply this vector by.
      * @return the new vector.
      */
     public Vector3f mult(float scalar) {
@@ -493,13 +496,14 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
 
 
     /**
-     * <code>multLocal</code> multiplies a provided vector to this vector
-     * internally, and returns a handle to this vector for easy chaining of
-     * calls. If the provided vector is null, null is returned.
+     * Returns a new Vector instance comprised of elements which are the
+     * product of the corresponding vector elements.
+     * (N.b. this is not a cross product).
+     * <P>
+     * Neither 'this' nor 'vec' are modified.
+     * </P>
      *
-     * @param vec
-     *            the vector to mult to this vector.
-     * @return this
+     * @param vec the vector to mult to this vector.
      */
     public Vector3f mult(Vector3f vec) {
         if (null == vec) {
@@ -510,14 +514,22 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
     }
 
     /**
-     * <code>multLocal</code> multiplies a provided vector to this vector
-     * internally, and returns a handle to this vector for easy chaining of
-     * calls. If the provided vector is null, null is returned.
+     * Multiplies a provided 'vec' vector with this vector.
+     * If the specified 'store' is null, then a new Vector instance is returned.
+     * Otherwise, 'store' with replaced values will be returned, to facilitate
+     * chaining.
+     * </P> <P>
+     * 'This' is not modified; and the starting value of 'store' (if any) is
+     * ignored (and over-written).
+     * <P>
+     * The resultant Vector is comprised of elements which are the
+     * product of the corresponding vector elements.
+     * (N.b. this is not a cross product).
+     * </P>
      *
-     * @param vec
-     *            the vector to mult to this vector.
+     * @param vec the vector to mult to this vector.
      * @param store result vector (null to create a new vector)
-     * @return this
+     * @return 'store', or a new Vector3f
      */
     public Vector3f mult(Vector3f vec, Vector3f store) {
         if (null == vec) {
@@ -533,8 +545,7 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
      * <code>divide</code> divides the values of this vector by a scalar and
      * returns the result. The values of this vector remain untouched.
      *
-     * @param scalar
-     *            the value to divide this vectors attributes by.
+     * @param scalar the value to divide this vectors attributes by.
      * @return the result <code>Vector</code>.
      */
     public Vector3f divide(float scalar) {
