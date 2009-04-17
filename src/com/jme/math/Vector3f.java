@@ -907,7 +907,8 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
      * @return the string representation of this vector.
      */
     public String toString() {
-        return "com.jme.math.Vector3f [X=" + x + ", Y=" + y + ", Z=" + z + "]";
+        return Vector3f.class.getName()
+                + " [X=" + x + ", Y=" + y + ", Z=" + z + "]";
     }
 
 

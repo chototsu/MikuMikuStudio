@@ -1102,8 +1102,8 @@ public class Quaternion implements Externalizable, Savable, Cloneable {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return "com.jme.math.Quaternion: [x=" + x + " y=" + y + " z=" + z
-                + " w=" + w + "]";
+        return Quaternion.class.getName()
+            + ": [x=" + x + " y=" + y + " z=" + z + " w=" + w + "]";
     }
 
     /**

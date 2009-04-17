@@ -262,4 +262,16 @@ public class TransformQuaternion implements Serializable, Savable, Cloneable {
         return rot.equals(o.rot) && translation.equals(o.translation)
                 && scale.equals(o.scale);
     }
+
+    /**
+     * <code>toString</code> returns the string representation of this object.
+     * It is simply a toString() call of the rotational matrix and the translational vector
+     * @return the string representation of this object.
+     */
+    public String toString() {
+        return TransformQuaternion.class.getName() + " [\n"+
+                rot.toString() + ":" +
+                translation.toString() + ":" +
+                scale.toString() + "\n]";
+    }
 }

@@ -378,10 +378,10 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
      * @return the string representation of this object.
      */
     public String toString() {
-        return "com.jme.math.TransformMatrix\n[\n"+
+        return TransformMatrix.class.getName() + " [\n"+
                 rot.toString() + ":" +
                 translation.toString() + ":" +
-                scale.toString();
+                scale.toString() + "\n]";
     }
 
     /**
