@@ -484,6 +484,20 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
     }
 
     @Override
+    public int hashCode() {
+        return rot.hashCode() * 2 + translation.hashCode() * 3
+            + scale.hashCode() * 5;
+    }
+
+    @Override
+    public boolean equals(Object oIn) {
+        if (oIn.getClass() != TransformMatrix.class) return false;
+        TransformMatrix o = (TransformMatrix) oIn;
+        return rot.equals(o.rot) && translation.equals(o.translation)
+                && scale.equals(o.scale);
+    }
+
+    @Override
     public TransformMatrix clone() {
         try {
             TransformMatrix tm = (TransformMatrix) super.clone();
@@ -496,4 +510,3 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
         }
     }
 }
-

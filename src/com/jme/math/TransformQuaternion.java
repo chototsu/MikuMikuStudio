@@ -248,4 +248,18 @@ public class TransformQuaternion implements Serializable, Savable, Cloneable {
             throw new AssertionError();
         }
     }
+
+    @Override
+    public int hashCode() {
+        return rot.hashCode() * 2 + translation.hashCode() * 3
+            + scale.hashCode() * 5;
+    }
+
+    @Override
+    public boolean equals(Object oIn) {
+        if (oIn.getClass() != TransformQuaternion.class) return false;
+        TransformQuaternion o = (TransformQuaternion) oIn;
+        return rot.equals(o.rot) && translation.equals(o.translation)
+                && scale.equals(o.scale);
+    }
 }
