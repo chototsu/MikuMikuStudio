@@ -69,7 +69,7 @@
 
   <target name="run-testchooser" depends="compile-test" description="Runs the TestChooser">
     <java classname="jmetest.TestChooser" fork="true" classpathref="classpath">
-      <jvmarg value=  "-Djava.library.path=${libs}/jogl/native/windows_amd64;${libs}/jogl/native/macosx;${libs}/jogl/native/linux_i586;${libs}/jogl/native/linux_amd64;${libs}/jogl/native/windows_i586;${libs}/lwjgl/native/linux;${libs}/lwjgl/native/macosx;${libs}/lwjgl/native/win32;${libs}/swt/linux;${libs}/swt/macosx-carbon;${libs}/swt/macosx-cocoa;${libs}/swt/windows"/>
+      <jvmarg value=  "-Djava.library.path=${libs}/jogl/native/windows_amd64;${libs}/jogl/native/macosx;${libs}/jogl/native/linux_i586;${libs}/jogl/native/linux_amd64;${libs}/jogl/native/windows_i586;${libs}/lwjgl/native/linux;${libs}/lwjgl/native/macosx;${libs}/lwjgl/native/windows;${libs}/swt/linux;${libs}/swt/macosx-carbon;${libs}/swt/macosx-cocoa;${libs}/swt/windows"/>
     </java>
   </target>
 
@@ -271,10 +271,12 @@
     </dependset>
 
     <!--  Jar and sign the Windows libraries -->
-    <jar destfile="${webstart}/lwjgl-windows.jar" basedir="lib/lwjgl/native/win32" includes="lwjgl.dll" update="yes" />
-    <jar destfile="${webstart}/openal-windows.jar" basedir="lib/lwjgl/native/win32" includes="OpenAL32.dll" update="yes" />
-    <jar destfile="${webstart}/jinput-windows.jar" basedir="lib/lwjgl/native/win32" includes="jinput-dx8.dll" update="yes" />
-    <jar destfile="${webstart}/jinput-windows.jar" basedir="lib/lwjgl/native/win32" includes="jinput-raw.dll" update="yes" />
+    <jar destfile="${webstart}/lwjgl-windows.jar" basedir="lib/lwjgl/native/windows" includes="lwjgl.dll" update="yes" />
+  	<jar destfile="${webstart}/lwjgl-windows.jar" basedir="lib/lwjgl/native/windows" includes="lwjgl64.dll" update="yes" />
+    <jar destfile="${webstart}/openal-windows.jar" basedir="lib/lwjgl/native/windows" includes="OpenAL32.dll" update="yes" />
+  	<jar destfile="${webstart}/openal-windows.jar" basedir="lib/lwjgl/native/windows" includes="OpenAL64.dll" update="yes" />
+    <jar destfile="${webstart}/jinput-windows.jar" basedir="lib/lwjgl/native/windows" includes="jinput-dx8.dll" update="yes" />
+    <jar destfile="${webstart}/jinput-windows.jar" basedir="lib/lwjgl/native/windows" includes="jinput-raw.dll" update="yes" />
     <signjar jar="${webstart}/lwjgl-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/openal-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
     <signjar jar="${webstart}/jinput-windows.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
