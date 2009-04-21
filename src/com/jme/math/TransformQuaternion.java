@@ -257,6 +257,7 @@ public class TransformQuaternion implements Serializable, Savable, Cloneable {
 
     @Override
     public boolean equals(Object oIn) {
+        if (oIn == null) return false;
         if (oIn.getClass() != TransformQuaternion.class) return false;
         TransformQuaternion o = (TransformQuaternion) oIn;
         return rot.equals(o.rot) && translation.equals(o.translation)
