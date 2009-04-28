@@ -32,8 +32,11 @@
 
 package com.jme.input;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * <code>KeyBindingManager</code> maintains a list of command and
@@ -50,11 +53,67 @@ import java.util.HashMap;
 public class KeyBindingManager {
 	//singleton instance
 	private static KeyBindingManager instance = null;
+    private Set<Integer> alwaysRepeatableKeyCodes =
+            new HashSet<Integer>(Arrays.asList(
+                KeyInput.KEY_LMETA,
+                KeyInput.KEY_LCONTROL,
+                KeyInput.KEY_LSHIFT,
+                KeyInput.KEY_RMETA,
+                KeyInput.KEY_RCONTROL,
+                KeyInput.KEY_RSHIFT
+            ));
+    private Set<Integer> queuedKeyRestrictions = new HashSet<Integer>();
+    private Set<Integer> queuedKeyReleases = new HashSet<Integer>();
+
+    /*
+     * This method is for users who map the same keyboard key to more than one
+     * action mapping, and who use non-repeatable mode.
+     * In this case, call isValidCommand with applyKeyRestricts false, then
+     * directly invoke this method afterwards.
+     *
+     * @see #isValidCommand(String, boolean, boolean)
+     */
+    public void applyQueuedKeyRestrictions() {
+        if (queuedKeyRestrictions.size() > 0)
+            synchronized (queuedKeyRestrictions) {
+                for (Integer newKey : queuedKeyRestrictions)
+                    restrictKey[newKey] = true;
+                queuedKeyRestrictions.clear();
+            }
+        if (queuedKeyReleases.size() > 0) {
+            synchronized (queuedKeyReleases) {
+                for (Integer oldKey : queuedKeyReleases)
+                    restrictKey[oldKey] = false;
+                queuedKeyReleases.clear();
+            }
+        }
+    }
+
+    /**
+     * The state of these keys is always determined by whether the key is now
+     * pressed, regardless of "repeatable" settings.
+     * <P/>
+     * To change the list, you must supply a new list here, since the default
+     * list is immutable.
+     * (You could copy the default list and then add or subtract, of course).
+     * <P/>
+     */
+    public void setAlwaysRepeatableKeyCodes(
+            Set<Integer> alwaysRepeatableKeyCodes) {
+        this.alwaysRepeatableKeyCodes = alwaysRepeatableKeyCodes;
+    }
+
+    /**
+     * @see #setAlwaysRepeatableKeyCodes(Set<Integer>)
+     */
+    public Set<Integer> getAlwaysRepeatableKeyCodes() {
+        return alwaysRepeatableKeyCodes;
+    }
 
 	//key mappings
 	private HashMap<String, ArrayList<KeyCodes>> keyMap;
 
-        private boolean[] restrictKey = new boolean[256];
+    private boolean[] restrictKey = new boolean[256];
 
 	/**
 	 * Private constructor is called by the getInstance method.
@@ -156,15 +215,38 @@ public class KeyBindingManager {
      return isValidCommand(command, true);
    }
 
+   /*
+    * For backwards compatibility.
+    * This method will not work right for multiple mappings involving the same
+    * keyboard key.
+    *
+    * @see #isValidCommand(String, boolean, boolean)
+    */
+    public boolean isValidCommand(String command, boolean allowRepeats) {
+        return isValidCommand(command, allowRepeats, true);
+    }
+
     /**
      * <code>isValidCommand</code> determines if a command is executable in
      * the current state of the keyboard. That is, is a valid key pressed to
      * execute the requested command.
+     * <P>
+     * If both allowRepeats and applyKeyRestricts are false, then the caller
+     * must call .applyQueuedKeyRestrictions after an atomic set of inputs
+     * has been checked.
+     * This normally means that you need to call applyKeyRestricts() in your
+     * update function after all of your .isValidCommand() calls.
+     * </P>
+     *
      * @param command the command to check.
      * @param allowRepeats allow repetitious key presses.
+     * @param applyKeyRestricts Only has effect if allowRepeats is false.
+     *     The purpose of applyKeyRestricts of false is to allow you to check
+     *     for the same key in multiple key bindings.
      * @return true if the command should be executed, false otherwise.
      */
-    public boolean isValidCommand(String command, boolean allowRepeats) {
+    public boolean isValidCommand(
+            String command, boolean allowRepeats, boolean applyKeyRestricts) {
         ArrayList<KeyCodes> keyList = keyMap.get(command);
         if(null == keyList) {
             return false;
@@ -188,6 +270,7 @@ public class KeyBindingManager {
             if (value) {
                 return true;
             }
+            if (applyKeyRestricts) applyQueuedKeyRestrictions();
         }
         
         return false;
@@ -198,15 +281,30 @@ public class KeyBindingManager {
      * If a key is down and not restricted, the key is set as restricted and true is returned.
      * If a key is down and restricted, false is returned.
      * If a key is not down and is restricted, the restriction is cleared.
+     * <P>
+     * If the specified key is in the alwaysRepeatableKeyCodes list (which
+     * should contain meta keys like SHIFT and CONTROL), then sticky behavior
+     * will be entirely ignored and the returned value will just indicate
+     * whether the key is now down.
+     * </P>
      * @param key The key to test
      * @return True if the key is a fresh key input.
      */
     private boolean getStickyKey(int key) {
-        if (!restrictKey[key] && KeyInput.get().isKeyDown(key)) {
-            restrictKey[key] = true;
-            return true;
-        } else if (!KeyInput.get().isKeyDown(key) && restrictKey[key])
-            restrictKey[key] = false;
+        if (alwaysRepeatableKeyCodes != null
+                && alwaysRepeatableKeyCodes.contains(Integer.valueOf(key)))
+            // The null check is just in case the user has disabled the check
+            // by setting the set to null.
+            return KeyInput.get().isKeyDown(key);
+        if (!restrictKey[key] && KeyInput.get().isKeyDown(key))
+            synchronized (queuedKeyRestrictions) {
+                queuedKeyRestrictions.add(Integer.valueOf(key));
+                return true;
+            }
+        else if (!KeyInput.get().isKeyDown(key) && restrictKey[key])
+            synchronized (queuedKeyReleases) {
+                queuedKeyReleases.add(Integer.valueOf(key));
+            }
         return false;
     }
 
