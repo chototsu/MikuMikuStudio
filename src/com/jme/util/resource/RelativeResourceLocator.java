@@ -43,6 +43,13 @@ import com.jme.util.resource.ResourceLocator;
  * A conservative ResourceLocator implementation that adds to the search
  * path just the parent directory of the specified URI, and it is  only
  * used for resources requested with relative paths.
+ * </P> <P>
+ * Relative paths may have multiple segments, like <CODE>a/b/c.txt</CODE>,
+ * they just can't be absolute, like <CODE>/a/b.c.txt</CODE>.
+ * </P> <P>
+ * It is basic behavior of relative URL lookups that a lookup of "x" relative
+ * to "/a/b" would match both "/a/x" and "/a/b/x".
+ * </P>
  *
  * @see ResourceLocator
  * @author Blaine Simpson (blaine dot simpson at admc dot com)
@@ -56,7 +63,7 @@ public class RelativeResourceLocator implements ResourceLocator {
 
     public URL locateResource(String resourceName) {
         if (baseUri == null || resourceName == null
-                || resourceName.length() < 2 || resourceName.charAt(0) == '/'
+                || resourceName.length() < 1 || resourceName.charAt(0) == '/'
                 || resourceName.charAt(0) == '\\') return null;
         // No-op unless baseUri set for instance, and resourceName is relative.
 

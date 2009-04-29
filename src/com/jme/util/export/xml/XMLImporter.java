@@ -132,7 +132,7 @@ public class XMLImporter implements JMEImporter, ResourceLocator {
 
     public URL locateResource(String resourceName) {
         if (baseUri == null || resourceName == null
-                || resourceName.length() < 2 || resourceName.charAt(0) == '/'
+                || resourceName.length() < 1 || resourceName.charAt(0) == '/'
                 || resourceName.charAt(0) == '\\') return null;
         // No-op unless baseUri set for instance, and resourceName is relative.
 
