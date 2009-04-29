@@ -480,8 +480,8 @@ public class JOGLTextureRenderer implements TextureRenderer {
         JOGLTextureState.applyFilter(tex, texRecord, 0, record);
         JOGLTextureState.applyWrap(tex, texRecord, 0, record);
 
-        logger.info("setup fbo tex with id " + tex.getTextureId() + ": " + width
-                + "," + height);
+        logger.log(Level.INFO, "setup fbo tex with id {0}: {1},{2}", 
+                new Integer[] {tex.getTextureId(), width, height});
     }
 
     /**

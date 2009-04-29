@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.util.NanoTimer;
@@ -179,7 +180,7 @@ public class StatCollector {
 
             // Pop until we find our stat type
             while (!top.equals(type)) {
-                logger.warning("Mismatched endStat, found "+top+".  Expected '"+type+"'");
+                logger.log(Level.WARNING, "Mismatched endStat, found {0}.  Expected '{1}'", new StatType[] {top, type});
                 top = timeStatStack.pop();
             }
         }

@@ -33,6 +33,7 @@
 package com.jme.scene.state.lwjgl.shader;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.opengl.ARBShaderObjects;
@@ -116,8 +117,8 @@ public class LWJGLShaderUtil {
                     .glGetUniformLocationARB(programID, nameBuf);
 
             if (variable.variableID == -1) {
-                logger.severe("Shader uniform [" + variable.name
-                        + "] could not be located in shader");
+                logger.log(Level.SEVERE, "Shader uniform [{0}]"
+                        + " could not be located in shader", variable.name);
             }
         }
     }
@@ -216,8 +217,8 @@ public class LWJGLShaderUtil {
                     .glGetAttribLocationARB(programID, nameBuf);
             
             if (variable.variableID == -1) {
-                logger.severe("Shader attribute [" + variable.name
-                        + "] could not be located in shader");
+                logger.log(Level.SEVERE, "Shader attribute [{0}]" 
+                        + " could not be located in shader", variable.name);
             }
         }
     }

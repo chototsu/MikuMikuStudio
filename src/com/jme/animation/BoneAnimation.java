@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.scene.Controller;
@@ -281,9 +282,9 @@ public class BoneAnimation implements Serializable, Savable {
         }
         if (keyframeTime != null) {
             if (frame >= keyframeTime.length + 1 || frame < 0) {
-                logger.severe(name + ": Invalid frame index (" + frame
-                        + "). Intialized to only " + "have: "
-                        + keyframeTime.length + " keyframes.");
+                logger.log(Level.SEVERE, "{0}: Invalid frame index ({1}). " 
+                        + "Intialized to only " + "have: {2}  keyframes."
+                        , new Object[] {name, frame, keyframeTime.length});
                 return;
             }
             // because we interpolate we are working towards the current frame.
@@ -708,9 +709,9 @@ public class BoneAnimation implements Serializable, Savable {
      */
     public void setEndFrame(int endFrame) {
         if (endFrame >= keyframeTime.length || endFrame < 0) {
-            logger.severe("Invalid endframe index (" + endFrame
-                    + "). Intialized to only " + "have: " + keyframeTime.length
-                    + " keyframes.");
+            logger.log(Level.SEVERE, "Invalid endframe index ({0}"  
+                    + "). Intialized to only " + "have: {1}"  
+                    + " keyframes.", new Integer[]{endFrame,keyframeTime.length} );
             return;
         }
         this.endFrame = endFrame;
@@ -740,9 +741,9 @@ public class BoneAnimation implements Serializable, Savable {
      */
     public void setStartFrame(int startFrame) {
         if (startFrame >= keyframeTime.length || startFrame < 0) {
-            logger.severe("Invalid endframe index (" + startFrame
-                    + "). Intialized to only " + "have: " + keyframeTime.length
-                    + " keyframes.");
+            logger.log(Level.SEVERE, "Invalid endframe index ({0}" 
+                    + "). Intialized to only " + "have: {1}" 
+                    + " keyframes.", new Integer[]{startFrame, keyframeTime.length});
             return;
         }
         this.startFrame = startFrame;
@@ -1051,9 +1052,8 @@ public class BoneAnimation implements Serializable, Savable {
                 }
             }        
             if (iType != BoneAnimation.LINEAR) {
-                logger.warning("Unsupported interpolation type specified for "
-                        + "at " + "least one frame: " + iType
-                        + ".  Continuing with specified type.");
+                logger.log(Level.WARNING, "Unsupported interpolation type specified for "
+                        + "at least one frame: {0}. Continuing with specified type.", iType);
             }
         }
     }

@@ -83,7 +83,7 @@ public class ResourceLocatorTool {
                         "locateResource(String, String)", e.getMessage(), e);
             }
 
-            logger.warning("Unable to locate: "+resourceName);
+            logger.log(Level.WARNING, "Unable to locate: {0}", resourceName);
             return null;
         }
     }

@@ -32,6 +32,7 @@
 
 package com.jmex.audio.openal;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.openal.AL10;
@@ -138,7 +139,7 @@ public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
     protected void check() {
         int error = AL10.alGetError();
         if (error != AL10.AL_NO_ERROR) {
-            logger.info("OpenAL error was raised. errorCode=" + error);
+            logger.log(Level.INFO, "OpenAL error was raised. errorCode={0}", error);
         }
     }
 

@@ -42,6 +42,7 @@ import com.jme.image.Image.Format;
 import com.jme.util.LittleEndien;
 import com.jme.util.geom.BufferUtils;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -175,7 +176,7 @@ public final class DDSLoader {
                 } else if (mipMapCount_ != expectedMipmaps) {
                     // changed to warning- images often do not have the required amount,
                     // or specify that they have mipmaps but include only the top level..
-                    logger.warning("Got " + mipMapCount_ + "mipmaps, expected" + expectedMipmaps);
+                    logger.log(Level.WARNING, "Got {0} mipmaps, expected {1}", new Integer[]{ mipMapCount_, expectedMipmaps});
                 }
             } else {
                 mipMapCount_ = 1;
@@ -229,7 +230,7 @@ public final class DDSLoader {
                         logger.warning("Must use linear size with fourcc");
                         pitchOrSize_ = size;
                     } else if (pitchOrSize_ != size) {
-                        logger.warning("Expected size = " + size + ", real = " + pitchOrSize_);
+                        logger.log(Level.WARNING, "Expected size = {0}, real = {1}", new Integer[] {size, pitchOrSize_});
                 }
             } else {
                     pitchOrSize_ = size;
@@ -281,7 +282,7 @@ public final class DDSLoader {
                         logger.warning("Linear size said to contain valid value but does not");
                         pitchOrSize_ = size;
                     } else if (pitchOrSize_ != size) {
-                        logger.warning("Expected size = " + size + ", real = " + pitchOrSize_);
+                        logger.log(Level.WARNING, "Expected size = {0}, real = {1}", new Integer[] {size, pitchOrSize_});
                     }
                 } else {
                     pitchOrSize_ = size;

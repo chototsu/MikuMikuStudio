@@ -147,14 +147,14 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             }
         }
 
-        logger.fine("Creating FBO sized: "+width+" x "+height);
+        logger.log(Level.FINE, "Creating FBO sized: {0} x {1}", new Integer[] {width, height});
 
         IntBuffer buffer = BufferUtils.createIntBuffer(1);
         EXTFramebufferObject.glGenFramebuffersEXT(buffer); // generate id
         fboID = buffer.get(0);
 
         if (fboID <= 0) {
-            logger.severe("Invalid FBO id returned! " + fboID);
+            logger.log(Level.SEVERE, "Invalid FBO id returned! {0}", fboID);
             isSupported = false;
             return;
         }
@@ -485,8 +485,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         LWJGLTextureState.applyFilter(tex, texRecord, 0, record);
         LWJGLTextureState.applyWrap(tex, texRecord, 0, record);
 
-        logger.info("setup fbo tex with id " + tex.getTextureId() + ": " + width
-                + "," + height);
+        logger.log(Level.INFO, "setup fbo tex with id {0}: {1},{2}", 
+        	new Integer[] {tex.getTextureId(), width, height});
     }
 
     /**

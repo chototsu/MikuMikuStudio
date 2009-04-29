@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.input.action.InputAction;
@@ -272,8 +273,7 @@ public class InputHandler {
             if ( device != null ) {
                 InputHandlerDevice oldDevice = devicesMap.put( device.getName(), device );
                 if ( oldDevice != null && oldDevice != device ) {
-                    logger.warning("InputHandlerDevice name '" + device.getName()
-                            + "' used twice!");
+                    logger.log(Level.WARNING, "InputHandlerDevice name '{0}' used twice!", device.getName());
                 }
             }
         }

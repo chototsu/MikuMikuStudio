@@ -38,6 +38,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.util.geom.BufferUtils;
@@ -78,9 +79,8 @@ public class AudioLoader {
         int bytes = data.limit();
         float time = bytes / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
-        logger.info("ogg loaded - time: " + time + "  channels: " + channels
-                + "  rate: " + bitRate + " depth: " + depth + " bytes: "
-                + bytes);
+        logger.log(Level.INFO, "ogg loaded - time: {0} channels: {1} rate: {2} depth: {3} bytes: {4}",
+                   new Object[] {time, channels, bitRate, depth, bytes} );
 
         // cleanup
         data.clear();
@@ -104,9 +104,8 @@ public class AudioLoader {
         int bytes = data.limit();
         float time = bytes / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
-        logger.info("wav loaded - time: " + time + "  channels: " + channels
-                + "  rate: " + bitRate + " depth: " + depth + " bytes: "
-                + bytes);
+        logger.log(Level.INFO, "wav loaded - time: {0} channels: {1} rate: {2} depth: {3} bytes: {4}",
+                new Object[] {time, channels, bitRate, depth, bytes} );
         
         // cleanup
         data.clear();

@@ -37,6 +37,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.opengl.ARBDepthTexture;
@@ -331,9 +332,8 @@ public class LWJGLTextureState extends TextureState {
             if (!supportsNonPowerTwo
                     && (!FastMath.isPowerOfTwo(image.getWidth()) || !FastMath
                             .isPowerOfTwo(image.getHeight()))) {
-                logger
-                        .warning("(card unsupported) Attempted to apply texture with size that is not power of 2: "
-                                + image.getWidth() + " x " + image.getHeight());
+                logger.log(Level.WARNING, "(card unsupported) Attempted to apply texture with size that is not power of 2: "
+                                + "{0}x{1}", new Integer[] {image.getWidth(), image.getHeight()});
 
                 final int maxSize = LWJGLMipMap
                         .glGetIntegerv(GL11.GL_MAX_TEXTURE_SIZE);
@@ -349,7 +349,7 @@ public class LWJGLTextureState extends TextureState {
                 if (h > maxSize) {
                     h = maxSize;
                 }
-                logger.warning("Rescaling image to " + w + " x " + h + " !!!");
+                logger.log(Level.WARNING, "Rescaling image to {0} x {1} !!!", new Integer[]{w, h});
 
                 // must rescale image to get "top" mipmap texture image
                 int format = TextureStateRecord.getGLPixelFormat(image

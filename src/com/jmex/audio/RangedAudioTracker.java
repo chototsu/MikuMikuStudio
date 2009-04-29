@@ -32,6 +32,7 @@
 
 package com.jmex.audio;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.math.FastMath;
@@ -115,15 +116,15 @@ public class RangedAudioTracker {
                 q.addTrack(getAudioTrack());
 
                 if (shouldPlay && !(q.isPlaying() && q.getCurrentTrack() == getAudioTrack())) {
-                    logger.info("I should start playing music: "
-                            + getAudioTrack().getResource());
+                    logger.log(Level.INFO, "I should start playing music: {0}",
+                             getAudioTrack().getResource());
                     q.setCurrentTrack(getAudioTrack());
                 } else if (shouldStop) {
                     // already fading!  Probably coming in or out.  Ignore.
                     if (getAudioTrack().getTargetVolume() != getAudioTrack().getVolume()) break;
 
-                    logger.info("I should stop playing music: "
-                            + getAudioTrack().getResource());
+                    logger.log(Level.INFO, "I should stop playing music: {0}",
+                            getAudioTrack().getResource());
                     if (q.getCurrentTrack() == getAudioTrack())
                         q.setCurrentTrack(-1);
                     else

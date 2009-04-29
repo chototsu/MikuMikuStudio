@@ -40,6 +40,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -186,8 +187,8 @@ public class LWJGLRenderer extends Renderer {
         this.width = width;
         this.height = height;
 
-        logger.info( "LWJGLRenderer created. W:  " + width + "H: " + height + 
-                "\tVersion: " + org.lwjgl.Sys.getVersion() );
+        logger.log(Level.INFO, "LWJGLRenderer created. W: {0} H: {1}\tVersion: {2}"
+                , new Object[] {width, height, org.lwjgl.Sys.getVersion()} );
 
         capabilities = GLContext.getCapabilities();
 
@@ -628,7 +629,7 @@ public class LWJGLRenderer extends Renderer {
             throw new JmeException("Screenshot filename cannot be null");
         }
         File out = new File(filename + ".png");
-        logger.info("Taking screenshot: " + out.getAbsolutePath() );
+        logger.log(Level.INFO, "Taking screenshot: {0}", out.getAbsolutePath());
 
         // Create a pointer to the image info and create a buffered image to
         // hold it.
@@ -997,8 +998,8 @@ public class LWJGLRenderer extends Renderer {
             // cards.
             IntBuffer indices = tris.getIndexBuffer();
             if (indices == null) {
-                logger.severe("missing indices on geometry object: "
-                        + tris.toString());
+                logger.log(Level.SEVERE, "missing indices on geometry object: {0}",
+                 tris.toString());
             } else {
                 indices.rewind();
                 indices.limit(tris.getMaxIndex());

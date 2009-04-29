@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
@@ -725,8 +726,8 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
         if (texBuf != null && texBuf.size() > max) {
             for (int i = max; i < texBuf.size(); i++) {
                 if (texBuf.get(i) != null) {
-                    logger.warning("Texture coordinates set for unit " + i
-                            + ". Only " + max + " units are available.");
+                    logger.log(Level.WARNING, "Texture coordinates set for unit {0}."
+                            + " Only {1} units are available.", new Integer[]{i, max});
                 }
             }
         }

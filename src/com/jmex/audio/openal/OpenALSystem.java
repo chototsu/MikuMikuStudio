@@ -95,7 +95,7 @@ public class OpenALSystem extends AudioSystem {
         } catch (OpenALException e) {
             MAX_SOURCES = sourcePool.size();
         }
-        logger.info("max source channels: " + MAX_SOURCES);
+        logger.log(Level.INFO, "max source channels: {0}", MAX_SOURCES);
     }
 
     @Override
@@ -210,7 +210,7 @@ public class OpenALSystem extends AudioSystem {
     public OpenALAudioTrack createAudioTrack(String resourceStr, boolean stream) {
         URL resource = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_AUDIO, resourceStr);
         if (resource == null) {
-            logger.warning("Could not locate audio file: "+resourceStr);
+            logger.log(Level.WARNING, "Could not locate audio file: {0}", resourceStr);
             return null;
         }
         return createAudioTrack(resource, stream);
