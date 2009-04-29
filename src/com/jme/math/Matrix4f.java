@@ -539,9 +539,30 @@ public class Matrix4f  implements Serializable, Savable, Cloneable {
      * @return this object for chaining.
      */
     public Matrix4f transposeLocal() {
-        float[] tmp = new float[16];
-        get(tmp, true);
-        set(tmp, false);
+        float tmp = m01;
+        m01 = m10;
+        m10 = tmp;
+        
+        tmp = m02;
+        m02 = m20;
+        m20 = tmp;
+        
+        tmp = m03;
+        m03 = m30;
+        m30 = tmp;
+        
+        tmp = m12;
+        m12 = m21;
+        m21 = tmp;
+        
+        tmp = m13;
+        m13 = m31;
+        m31 = tmp;
+        
+        tmp = m23;
+        m23 = m32;
+        m32 = tmp;
+
         return this;
     }
     
