@@ -180,7 +180,7 @@ public class StatCollector {
 
             // Pop until we find our stat type
             while (!top.equals(type)) {
-                logger.log(Level.WARNING, "Mismatched endStat, found {0}.  Expected '{1}'", new StatType[] {top, type});
+                logger.log(Level.WARNING, "Mismatched endStat, found {0}.  Expected \"{1}\"", new StatType[] {top, type});
                 top = timeStatStack.pop();
             }
         }

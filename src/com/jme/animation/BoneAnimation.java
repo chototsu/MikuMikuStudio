@@ -282,7 +282,7 @@ public class BoneAnimation implements Serializable, Savable {
         }
         if (keyframeTime != null) {
             if (frame >= keyframeTime.length + 1 || frame < 0) {
-                logger.log(Level.SEVERE, "{0}: Invalid frame index ({1}). " 
+                logger.log(Level.SEVERE, "{0}: Invalid frame index {1}. " 
                         + "Intialized to only " + "have: {2}  keyframes."
                         , new Object[] {name, frame, keyframeTime.length});
                 return;
@@ -709,8 +709,8 @@ public class BoneAnimation implements Serializable, Savable {
      */
     public void setEndFrame(int endFrame) {
         if (endFrame >= keyframeTime.length || endFrame < 0) {
-            logger.log(Level.SEVERE, "Invalid endframe index ({0}"  
-                    + "). Intialized to only " + "have: {1}"  
+            logger.log(Level.SEVERE, "Invalid endframe index {0}"  
+                    + ". Intialized to only " + "have: {1}"  
                     + " keyframes.", new Integer[]{endFrame,keyframeTime.length} );
             return;
         }
@@ -741,8 +741,8 @@ public class BoneAnimation implements Serializable, Savable {
      */
     public void setStartFrame(int startFrame) {
         if (startFrame >= keyframeTime.length || startFrame < 0) {
-            logger.log(Level.SEVERE, "Invalid endframe index ({0}" 
-                    + "). Intialized to only " + "have: {1}" 
+            logger.log(Level.SEVERE, "Invalid endframe index {0}" 
+                    + ". Intialized to only " + "have: {1}" 
                     + " keyframes.", new Integer[]{startFrame, keyframeTime.length});
             return;
         }
