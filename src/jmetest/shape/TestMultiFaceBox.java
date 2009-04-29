@@ -37,9 +37,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.ConcurrentModificationException;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -49,17 +47,20 @@ import com.jme.input.controls.GameControlManager;
 import com.jme.input.controls.binding.KeyboardBinding;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Spatial;
 import com.jme.scene.shape.MultiFaceBox;
+import com.jme.scene.shape.Quad;
 import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 
+/**
+ * Shows the usage of TestMultiFaceBox.
+ * The used Texture is 1 Unit wide and 8 Units high and is created dynamically.
+ * The first 6 squares are mapped to the sides of the Box.
+ * Everything else is exactly as in Box.
+ */
 public class TestMultiFaceBox extends SimpleGame {
-
     private static final Random RANDOM = new Random();
     private static final Font FONT = new Font("Arial Unicode MS", Font.PLAIN,
             30);
@@ -70,9 +71,19 @@ public class TestMultiFaceBox extends SimpleGame {
             KeyInput.KEY_2, KeyInput.KEY_3, KeyInput.KEY_4, KeyInput.KEY_5 };
 
     private GameControl[] control = new GameControl[6];
+    private Quad quad;
+    private TextureState ts;
 
     protected void simpleInitGame() {
+        // create a Quad to show the Texture itself
+        quad = new Quad("info", 64, 64*8);
+        quad.setLocalTranslation(new Vector3f(display.getWidth()-quad.getWidth(), 
+                    quad.getHeight()/2 +10, 0));
+        graphNode.attachChild(quad);
+        
+        // create the MultiFaceBox
         box = new MultiFaceBox("box", new Vector3f(), 10, 10, 10);
+        // create controls to change the color of a face
         GameControlManager manager = new GameControlManager();
         for (int i = 0; i < 6; i++) {
             control[i] = manager.addControl("control" + 1);
@@ -82,17 +93,18 @@ public class TestMultiFaceBox extends SimpleGame {
                 .createMaterialState();
         ms.setEmissive(ColorRGBA.white.clone());
         box.setRenderState(ms);
-        setTexture(box);
+        setTexture();
         rootNode.attachChild(box);
+        
+        // set the initial Camera location and look at the Box
+        cam.setLocation(new Vector3f(-40, 40, 40));
+        cam.lookAt(box.getLocalTranslation(), Vector3f.UNIT_Y);
     }
 
-    public static void main(String... args) {
-        TestMultiFaceBox app = new TestMultiFaceBox();
-        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
-        app.start();
-    }
-
-    private void setTexture(final Spatial s) {
+    /**
+     * create a Texture which is 1 Unit wide and 8 Units high dynamically
+     */
+    private void setTexture() {
         final BufferedImage bi = new BufferedImage(64, 512,
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D bg = (Graphics2D) bi.getGraphics();
@@ -106,30 +118,31 @@ public class TestMultiFaceBox extends SimpleGame {
             bg.drawString("" + i, 28, 64 * i + 38);
         }
         bg.dispose();
-        GameTaskQueueManager.getManager().update(new Callable<Object>() {
-            public Object call() throws Exception {
-                try {
-                    TextureState ts = DisplaySystem.getDisplaySystem()
-                            .getRenderer().createTextureState();
-                    Texture t = TextureManager.loadTexture(bi,
-                            Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear, 1, false);
-                    ts.setTexture(t);
-                    TextureState oldTs = (TextureState) s
-                            .getRenderState(RenderState.StateType.Texture);
-                    if (oldTs != null) {
-                        TextureManager.releaseTexture(oldTs.getTexture());
-                        oldTs.deleteAll(true);
-                    }
-                    s.setRenderState(ts);
-                    s.updateRenderState();
-                } catch (ConcurrentModificationException ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-        });
+        
+        if (ts == null) {
+            // only create the TextureState the first time
+            ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        } else {
+            // destroy the old texture
+            ts.deleteAll(true);
+        }
+        // create the new one
+        Texture t = TextureManager.loadTexture(bi,
+                Texture.MinificationFilter.BilinearNearestMipMap, 
+                Texture.MagnificationFilter.Bilinear, 1, false);
+        ts.setTexture(t);
+        
+        box.setRenderState(ts);
+        box.updateRenderState();
+        
+        // show the same texture also on a simple Quad
+        quad.setRenderState(ts);
+        quad.updateRenderState();
     }
 
+    /**
+     * check for pressed keys and recreate the texture if needed.
+     */
     @Override
     public void simpleUpdate() {
         for (int i = 0; i < 6; i++) {
@@ -137,8 +150,14 @@ public class TestMultiFaceBox extends SimpleGame {
                 System.out.println(i);
                 colors[i] = new Color(RANDOM.nextInt(256), RANDOM.nextInt(256),
                         RANDOM.nextInt(256));
-                setTexture(box);
+                setTexture();
             }
         }
+    }
+    
+    public static void main(String... args) {
+        TestMultiFaceBox app = new TestMultiFaceBox();
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
+        app.start();
     }
 }

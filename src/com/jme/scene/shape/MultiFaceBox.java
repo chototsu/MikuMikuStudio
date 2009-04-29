@@ -36,6 +36,11 @@ import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
 
+/**
+ * The used Texture is 1 Unit wide and 8 Units high. (to avoid rescaling)<br>
+ * The first 6 squares are mapped to the sides of the Box.<br>
+ * Everything else is exactly as in {@link Box}.<br>
+ */
 public class MultiFaceBox extends Box {
 
     private static final long serialVersionUID = 1L;
