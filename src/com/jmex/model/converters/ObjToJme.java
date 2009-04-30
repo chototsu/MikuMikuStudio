@@ -294,15 +294,15 @@ public class ObjToJme extends FormatConverter {
             return;
         } else if ("Ka".equals(parts[0])) {
             curGroup.m.setAmbient(new ColorRGBA(Float.parseFloat(parts[1]),
-                    Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), 1));
+                    Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), curGroup.m.getAmbient().a));
             return;
         } else if ("Kd".equals(parts[0])) {
             curGroup.m.setDiffuse(new ColorRGBA(Float.parseFloat(parts[1]),
-                    Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), 1));
+                    Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), curGroup.m.getDiffuse().a));
             return;
         } else if ("Ks".equals(parts[0])) {
             curGroup.m.setSpecular(new ColorRGBA(Float.parseFloat(parts[1]),
-                    Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), 1));
+                    Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), curGroup.m.getSpecular().a));
             return;
         } else if ("Ns".equals(parts[0])) {
             float shine = Float.parseFloat(parts[1]);
