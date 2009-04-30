@@ -82,16 +82,19 @@ public class ClasspathResourceLocator implements ResourceLocator {
      *          method!).  We just eliminate the ambiguity of
      *          beginning with "/" by forcing you to specify it.
      *
-     * @throws IllegalArgumentException if specified resourceName does not
-     *         begin with "/".
      * @see ClassLoader#getResource(String)
      * @see com.jme.util.resource.ResourceLocator#locateResource(String)
      */
     public URL locateResource(String resourceName) {
         if (resourceName == null) return null;
-        if (resourceName.length() < 1 || resourceName.charAt(0) != '/')
-            throw new IllegalArgumentException("Resource name '"
-                    + resourceName + "' does not begin with '/'");
+        if (resourceName.length() < 1 || resourceName.charAt(0) != '/') {
+            /*  Kinda verbose, and since we have no logger instance readily
+             *  available, disabling this message for now.
+            logger.finest("Not attempting to load resource '" + resourceName
+                    + "' from classpath, since it does not begin with '/'");
+            */
+            return null;
+        }
         return resourceClassLoader.getResource(resourceName);
     }
 }
