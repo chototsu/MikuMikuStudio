@@ -61,35 +61,35 @@ import java.util.logging.Logger;
 public class TestMeshLoading extends SimpleGame {
 
     private static final Logger logger = Logger.getLogger(TestMeshLoading.class.getName());
-    
+
     private Node model;
-    
+
     public static void main(String[] args){
         TestMeshLoading app = new TestMeshLoading();
         app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
-    
+
     protected void loadMeshModel(){
         OgreLoader loader = new OgreLoader();
         MaterialLoader matLoader = new MaterialLoader();
-        
+
         try {
             URL matURL = TestMeshLoading.class.getClassLoader().getResource("com/radakan/jme/mxml/data/Example.material");
             URL meshURL = TestMeshLoading.class.getClassLoader().getResource("com/radakan/jme/mxml/data/ninja.mesh.xml");
-            
+
             if (matURL != null){
                 matLoader.load(matURL.openStream());
                 if (matLoader.getMaterials().size() > 0)
                     loader.setMaterials(matLoader.getMaterials());
             }
-            
+
             model = (Node) loader.loadModel(meshURL);
         } catch (IOException ex) {
             Logger.getLogger(TestMeshLoading.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     protected Spatial loadParticle(){
         BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
@@ -119,22 +119,22 @@ public class TestMeshLoading extends SimpleGame {
         manager.getParticleController().setControlFlow(false);
         manager.setInitialVelocity(0.12f);
         //manager.setGeometry((Geometry)(i.getChild(0)));
-        
+
         manager.warmUp(60);
         manager.setRenderState(ts);
         manager.setRenderState(as1);
         manager.setLightCombineMode(LightCombineMode.Off);
         manager.setTextureCombineMode(TextureCombineMode.Replace);
         manager.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-        
+
         ZBufferState zstate = display.getRenderer().createZBufferState();
         zstate.setEnabled(true);
         zstate.setWritable(false);
         manager.setRenderState(zstate);
-        
+
         return manager;
     }
-    
+
     @Override
     protected void simpleInitGame() {
         try {
@@ -148,41 +148,41 @@ public class TestMeshLoading extends SimpleGame {
         } catch (URISyntaxException e1) {
             logger.log(Level.WARNING, "unable to setup texture directory.", e1);
         }
-        
+
         Logger.getLogger("com.jme.scene.state.lwjgl").setLevel(Level.SEVERE);
-        
+
         DisplaySystem.getDisplaySystem().setTitle("Test Mesh Instancing");
         display.getRenderer().setBackgroundColor(ColorRGBA.darkGray);
         ((FirstPersonHandler)input).getKeyboardLookHandler().setMoveSpeed(300);
         cam.setFrustumFar(20000f);
         loadMeshModel();
         //MeshCloner.setVBO(model);
-        
+
         int modelN = 0;
         for (int x = 0; x < 1; x++){
             for (int y = 0; y < 1; y++){
                 Node clone = MeshCloner.cloneMesh(model);
                 clone.setLocalTranslation(75 * x,  0,  75 * y);
                 rootNode.attachChild(clone);
-                
+
                 if (clone.getControllerCount() > 0){
                     MeshAnimationController animControl = (MeshAnimationController) clone.getController(0);
                     animControl.setAnimation("Walk");
                     animControl.setTime(animControl.getAnimationLength("Walk") * FastMath.nextRandomFloat());
                     //clone.addController(new MeshLodController((animControl)));
-                    
+
                     Bone b = animControl.getBone("Joint22");
                     Node attachNode = b.getAttachmentsNode();
                     clone.attachChild(attachNode);
                     Spatial particle = loadParticle();
                     attachNode.attachChild(particle);
-                    
+
                     b = animControl.getBone("Joint27");
                     attachNode = b.getAttachmentsNode();
                     clone.attachChild(attachNode);
                     particle = loadParticle();
                     attachNode.attachChild(particle);
-                    
+
                     b = animControl.getBone("Joint17");
                     attachNode = b.getAttachmentsNode();
                     clone.attachChild(attachNode);
@@ -191,11 +191,10 @@ public class TestMeshLoading extends SimpleGame {
                 }
             }
         }
-        
+
         rootNode.updateGeometricState(0, true);
         rootNode.updateRenderState();
     }
 
-    
-    
+
 }

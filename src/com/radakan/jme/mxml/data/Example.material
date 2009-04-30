@@ -1,43 +1,43 @@
 material Examples/Fish
 {
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture steelhead.png
-			}
-		}
-	}
+        technique
+        {
+                pass
+                {
+                        texture_unit
+                        {
+                                texture steelhead.png
+                        }
+                }
+        }
 }
 material Examples/Ninja
 {
-	technique
-	{
-		pass
-		{
-		
-			texture_unit
-			{
-				texture nskingr.jpg
-			}
-		}
-	}
+        technique
+        {
+                pass
+                {
+                
+                        texture_unit
+                        {
+                                texture nskingr.jpg
+                        }
+                }
+        }
 }
 
 material Examples/Robot
 {
-	// Software blending technique
-	technique
-	{
-		pass
-		{
+        // Software blending technique
+        technique
+        {
+                pass
+                {
 
-			texture_unit
-			{
-				texture r2skin.jpg
-			}
-		}
-	}
+                        texture_unit
+                        {
+                                texture r2skin.jpg
+                        }
+                }
+        }
 }

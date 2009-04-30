@@ -35,49 +35,49 @@ import java.nio.FloatBuffer;
 
 /**
  * WeightBuffer contains associations of vertexes to bones and their weights.
- * The WeightBuffer can be sent to a shader or processed on the CPU 
+ * The WeightBuffer can be sent to a shader or processed on the CPU
  * to do skinning.
  */
 public final class WeightBuffer {
 
     /**
      * Each 4 bytes in the boneIndex buffer are assigned to a vertex.
-     * 
+     *
      */
     final ByteBuffer indexes;
-    
+
     /**
      * The weight of each bone specified in the index buffer
      */
     final FloatBuffer weights;
-    
+
     /**
      * The maximum number of weighted bones used by the vertices
      * Can be 1-4. The indexes and weights still have 4 components per vertex,
      * regardless of this value.
      */
     int maxWeightsPerVert = 0;
-    
+
     public WeightBuffer(int vertexCount){
         indexes = BufferUtils.createByteBuffer(vertexCount * 4);
         weights = BufferUtils.createFloatBuffer(vertexCount * 4);
     }
-    
+
     public WeightBuffer(ByteBuffer indexes, FloatBuffer weights){
         this.indexes = indexes;
         this.weights = weights;
     }
-      
+
     public void sendToShader(GLSLShaderObjectsState shader){
         indexes.rewind();
         shader.setAttributePointer("indexes", 4, false, true, 0, indexes);
-        
+
         if (maxWeightsPerVert > 1){
             weights.rewind();
             shader.setAttributePointer("weights", 4, true, 0, weights);
         }
     }
-    
+
     /**
      * Normalizes weights if needed and finds largest amount of weights used
      * for all vertices in the buffer.
@@ -90,7 +90,7 @@ public final class WeightBuffer {
                   w1 = weights.get(),
                   w2 = weights.get(),
                   w3 = weights.get();
-            
+
             if (w3 > 0.01f){
                 maxWeightsPerVert = Math.max(maxWeightsPerVert, 4);
             }else if (w2 > 0.01f){
@@ -100,7 +100,7 @@ public final class WeightBuffer {
             }else if (w0 > 0.01f){
                 maxWeightsPerVert = Math.max(maxWeightsPerVert, 1);
             }
-            
+
             float sum = w0 + w1 + w2 + w3;
             if (sum != 1f){
                 weights.position(weights.position()-4);
@@ -112,5 +112,5 @@ public final class WeightBuffer {
         }
         weights.rewind();
     }
-    
+
 }

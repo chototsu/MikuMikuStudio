@@ -45,14 +45,14 @@ import static com.radakan.util.XMLUtil.*;
  * Utility class used by OgreLoader to load poses and mesh animations.
  */
 public class MeshAnimationLoader {
-    
+
     public static void loadMeshAnimations(Node animationsNode, List<Pose> poseList, OgreMesh sharedgeom, List<OgreMesh> submeshes, Map<String, Animation> animations){
         Node animationNode = animationsNode.getFirstChild();
         while (animationNode != null){
             if (animationNode.getNodeName().equals("animation")){
-                MeshAnimation mAnim = 
+                MeshAnimation mAnim =
                         loadMeshAnimation(animationNode, poseList, sharedgeom, submeshes);
-                
+
                 Animation anim = animations.get(mAnim.getName());
                 if (anim != null){
                     anim.setMeshAnimation(mAnim);
@@ -63,9 +63,9 @@ public class MeshAnimationLoader {
             }
             animationNode = animationNode.getNextSibling();
         }
-            
+
 //            Map<TriMesh, List<Pose>> trimeshPoses = new HashMap<TriMesh, List<Pose>>();
-//            
+//
 //            // find the poses for each mesh
 //            for (Pose p : poses){
 //                List<Pose> poseList = trimeshPoses.get(p.getTarget());
@@ -73,22 +73,22 @@ public class MeshAnimationLoader {
 //                    poseList = new ArrayList<Pose>();
 //                    trimeshPoses.put(p.getTarget(), poseList);
 //                }
-//                
+//
 //                poseList.add(p);
 //            }
-//            
+//
 //            for (Map.Entry<TriMesh, List<Pose>> poseEntry: trimeshPoses){
 //                PoseController
 //            }
     }
-    
+
     public static MeshAnimation loadMeshAnimation(Node animationNode, List<Pose> poseList, OgreMesh sharedgeom, List<OgreMesh> submeshes){
         String name =  XMLUtil.getAttribute(animationNode, "name");
         float length = XMLUtil.getFloatAttribute(animationNode, "length");
-        
+
         MeshAnimation anim = new MeshAnimation(name, length);
         List<Track> tracks = new ArrayList<Track>();
-        
+
         Node tracksNode = XMLUtil.getChildNode(animationNode, "tracks");
         if (tracksNode != null){
             Node trackNode = tracksNode.getFirstChild();
@@ -103,7 +103,7 @@ public class MeshAnimationLoader {
                         else
                             targetMeshIndex = getIntAttribute(trackNode, "index");
                     }
-                    
+
                     if (XMLUtil.getAttribute(trackNode, "type").equals("pose")){
                         PoseTrack pt = loadPoseTrack(trackNode, targetMeshIndex, poseList);
                         tracks.add(pt);
@@ -111,16 +111,16 @@ public class MeshAnimationLoader {
                         throw new UnsupportedOperationException("Morph animations not supported!");
                     }
                 }
-                
+
                 trackNode = trackNode.getNextSibling();
             }
         }
-        
+
         anim.setTracks(tracks.toArray(new Track[0]));
-        
+
         return anim;
     }
-    
+
     public static List<Pose> loadPoses(Node posesNode, OgreMesh sharedgeom, List<OgreMesh> submeshes){
         List<Pose> poses = new ArrayList<Pose>();
         Node poseNode = posesNode.getFirstChild();
@@ -142,16 +142,16 @@ public class MeshAnimationLoader {
 
             poseNode = poseNode.getNextSibling();
         }
-        
+
         return poses;
     }
-    
+
     public static Pose loadPose(Node poseNode, int targetMeshIndex){
         String name = XMLUtil.getAttribute(poseNode, "name");
-        
+
         List<Vector3f> offsets = new ArrayList<Vector3f>();
         List<Integer>  indices = new ArrayList<Integer>();
-        
+
         Node poseoffsetNode = poseNode.getFirstChild();
         while (poseoffsetNode != null){
             if (poseoffsetNode.getNodeName().equals("poseoffset")){
@@ -160,31 +160,31 @@ public class MeshAnimationLoader {
                 offset.x = XMLUtil.getFloatAttribute(poseoffsetNode, "x");
                 offset.y = XMLUtil.getFloatAttribute(poseoffsetNode, "y");
                 offset.z = XMLUtil.getFloatAttribute(poseoffsetNode, "z");
-                
+
                 offsets.add(offset);
                 indices.add(vertIndex);
             }
-            
+
             poseoffsetNode = poseoffsetNode.getNextSibling();
         }
-        
+
         int[] indicesArray = new int[indices.size()];
         for (int i = 0; i < indicesArray.length; i++){
             indicesArray[i] = indices.get(i);
         }
-        
-        Pose pose = new Pose(name, 
+
+        Pose pose = new Pose(name,
                              targetMeshIndex,
                              offsets.toArray(new Vector3f[0]),
                              indicesArray);
 
         return pose;
     }
-    
+
     public static PoseTrack loadPoseTrack(Node trackNode, int targetMeshIndex, List<Pose> posesList){
         List<Float> times = new ArrayList<Float>();
         List<PoseFrame> frames = new ArrayList<PoseFrame>();
-        
+
         Node keyframesNode = XMLUtil.getChildNode(trackNode, "keyframes");
         Node keyframeNode = keyframesNode.getFirstChild();
         while (keyframeNode != null){
@@ -192,7 +192,7 @@ public class MeshAnimationLoader {
                 float time = XMLUtil.getFloatAttribute(keyframeNode, "time");
                 List<Pose> poses = new ArrayList<Pose>();
                 List<Float> weights = new ArrayList<Float>();
-                
+
                 Node poserefNode = keyframeNode.getFirstChild();
                 while (poserefNode != null){
                     if (poserefNode.getNodeName().equals("poseref")){
@@ -201,35 +201,35 @@ public class MeshAnimationLoader {
                         float weight = XMLUtil.getFloatAttribute(poserefNode, "influence");
                         weights.add(weight);
                     }
-                    
+
                     poserefNode = poserefNode.getNextSibling();
                 }
-                
+
                 // convert poses and weights to arrays and create a PoseFrame
                 float[] weightsArray = new float[weights.size()];
                 for (int i = 0; i < weightsArray.length; i++){
                     weightsArray[i] = weights.get(i);
                 }
                 PoseFrame frame = new PoseFrame(poses.toArray(new Pose[0]), weightsArray);
-                
+
                 times.add(time);
                 frames.add(frame);
             }
-            
+
             keyframeNode = keyframeNode.getNextSibling();
         }
-        
+
         // convert times and frames to arrays and write to the track
         float[] timesArray = new float[times.size()];
         for (int i = 0; i < timesArray.length; i++){
             timesArray[i] = times.get(i);
         }
-        
-        PoseTrack track = new PoseTrack(targetMeshIndex, 
-                                        timesArray, 
+
+        PoseTrack track = new PoseTrack(targetMeshIndex,
+                                        timesArray,
                                         frames.toArray(new PoseFrame[0]));
 
         return track;
     }
-    
+
 }

@@ -42,25 +42,25 @@ public final class Pose {
 
     private final Vector3f[] offsets;
     private final int[] indices;
-    
+
     private final Vector3f tempVec  = new Vector3f();
     private final Vector3f tempVec2 = new Vector3f();
-    
+
     public Pose(String name, int targetMeshIndex, Vector3f[] offsets, int[] indices){
         this.name = name;
         this.targetMeshIndex = targetMeshIndex;
         this.offsets = offsets;
         this.indices = indices;
     }
-    
+
     public int getTargetMeshIndex(){
         return targetMeshIndex;
     }
-    
-    
+
+
     /**
      * Applies the offsets of this pose to the vertex buffer given by the blend factor.
-     * 
+     *
      * @param blend Blend factor, 0 = no change to vert buf, 1 = apply full offsets
      * @param vertbuf Vertex buffer to apply this pose to
      */
@@ -68,18 +68,18 @@ public final class Pose {
         for (int i = 0; i < indices.length; i++){
             Vector3f offset = offsets[i];
             int vertIndex   = indices[i];
-            
+
             tempVec.set(offset).multLocal(blend);
-            
+
             // aquire vert
             BufferUtils.populateFromBuffer(tempVec2, vertbuf, vertIndex);
-            
+
             // add offset multiplied by factor
             tempVec2.addLocal(tempVec);
-            
+
             // write modified vert
             BufferUtils.setInBuffer(tempVec2, vertbuf, vertIndex);
         }
     }
-    
+
 }

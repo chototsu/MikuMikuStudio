@@ -66,24 +66,24 @@ import com.radakan.jme.RelativeResourceLocator;
 
 /**
  * Reads OGRE3D material files<br/>
- * 
+ *
  * MaterialLoader.getMaterials() to get a map of materials.
  * call Material.apply(Spatial) to apply material to a model.
  */
 public class MaterialLoader {
     private static final Logger logger =
             Logger.getLogger(MaterialLoader.class.getName());
-    
+
     private StreamTokenizer reader;
     private Map<String, Material> materialMap;
-    
+
     public MaterialLoader() {
     }
-    
+
     public Map<String, Material> getMaterials(){
         return materialMap;
     }
-    
+
     public String tokenName(){
         switch (reader.ttype){
             case StreamTokenizer.TT_EOF:
@@ -98,7 +98,7 @@ public class MaterialLoader {
                 return Character.toString((char)reader.ttype);
         }
     }
-    
+
     public String nextStatementRightCurlyNull() throws IOException{
         while (true) {
             switch (reader.ttype) {
@@ -111,7 +111,7 @@ public class MaterialLoader {
             reader.nextToken();
         }
     }
-    
+
     public String nextStatement() throws IOException{
         while (reader.ttype != StreamTokenizer.TT_WORD){
             if (reader.ttype == StreamTokenizer.TT_EOF){
@@ -121,7 +121,7 @@ public class MaterialLoader {
         }
         return reader.sval;
     }
-    
+
     public double nextNumber() throws IOException {
         while (reader.ttype != StreamTokenizer.TT_NUMBER){
             if (reader.ttype == StreamTokenizer.TT_EOF){
@@ -131,7 +131,7 @@ public class MaterialLoader {
         }
         return reader.nval;
     }
-    
+
     public ColorRGBA readColor() throws IOException{
         ColorRGBA color = new ColorRGBA();
         color.r = (float) nextNumber();
@@ -149,7 +149,7 @@ public class MaterialLoader {
         color.clamp();
         return color;
     }
-    
+
     /**
      * This method just returns null.
      *
@@ -161,7 +161,7 @@ public class MaterialLoader {
     public float[] readFloatArray(){
         return null;
     }
-    
+
     public void readMaterialStatement(Material material) throws IOException{
         String stat_name = nextStatement();
         if (stat_name.equals("receive_shadows")){
@@ -171,30 +171,30 @@ public class MaterialLoader {
         while (reader.ttype != StreamTokenizer.TT_EOL)
             reader.nextToken();
     }
-    
+
     public void readTechniqueStatement(Material material) throws IOException{
         nextStatement();
         while (reader.ttype != StreamTokenizer.TT_EOL)
             reader.nextToken();
     }
-    
+
     public void readUnitStatement(TextureState tex, int unit) throws IOException{
         String stat_name = nextStatement();
-        
+
         if (stat_name.equals("texture")){
             reader.nextToken();
             String texName = nextStatement();
-            
+
             URL texURL = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, texName);
-            
+
             if (texURL != null){
-                Texture t = TextureManager.loadTexture(texURL, 
-                                                       MinificationFilter.Trilinear, 
+                Texture t = TextureManager.loadTexture(texURL,
+                                                       MinificationFilter.Trilinear,
                                                        MagnificationFilter.Bilinear, 0.0f, false);
                 t.setWrap(WrapMode.Repeat);
                 tex.setTexture(t, unit);
             }
-            
+
             logger.fine("TEXTURE: "+texURL);
         }else if (stat_name.equals("tex_address_mode")){
             reader.nextToken();
@@ -202,7 +202,7 @@ public class MaterialLoader {
             Texture t = tex.getTexture(unit);
             if (t == null)
                 return;
-            
+
             if (mode.equals("wrap")){
                 t.setWrap(WrapMode.Repeat);
             }else if (mode.equals("mirror")){
@@ -217,7 +217,7 @@ public class MaterialLoader {
             Texture t = tex.getTexture(unit);
             if (t == null)
                 return;
-            
+
             if (mode.equals("trilinear")){
                 t.setMinificationFilter(MinificationFilter.Trilinear);
                 t.setMagnificationFilter(MagnificationFilter.Bilinear);
@@ -228,38 +228,38 @@ public class MaterialLoader {
         }else{
             logger.fine("UNIT STAT: "+stat_name);
         }
-        
+
         while (reader.ttype != StreamTokenizer.TT_EOL)
             reader.nextToken();
     }
-    
+
     public void readTextureUnit(Material material) throws IOException{
         // skip 'texture_unit'
         nextStatement();
-        
+
         TextureState ts = (TextureState) material.getState(RenderState.RS_TEXTURE);
         int unit = ts.getNumberOfSetTextures();
-        
+
         logger.fine("TEXTURE UNIT START: "+unit);
-        
+
         while (reader.ttype != '{')
             reader.nextToken();
-        
+
         while (reader.ttype != '}'){
             readUnitStatement(ts, unit);
             while (reader.ttype == StreamTokenizer.TT_EOL)
                 reader.nextToken();
         }
-        
+
         logger.fine("TEXTURE UNIT END");
     }
-    
+
     public void readPassStatement(Material material) throws IOException{
         String stat_name = nextStatementRightCurlyNull();
         if (stat_name == null) {
             return;
         }
-        
+
         if (stat_name.equals("ambient")){
             MaterialState ms = (MaterialState) material.getState(RenderState.RS_MATERIAL);
             ms.setAmbient(readColor());
@@ -292,7 +292,7 @@ public class MaterialLoader {
                 as.setTestEnabled(true);
                 as.setTestFunction(TestFunction.GreaterThan);
                 as.setReference(0.1f);
-                
+
                 CullState cs = (CullState) material.getState(RenderState.RS_CULL);
                 cs.setCullFace(CullState.Face.None);
             }else if (mode.equals("modulate")){
@@ -330,26 +330,26 @@ public class MaterialLoader {
             }
             fr.close();
             final String vertShader = sb.toString();
-            
+
             reader.nextToken();
             f = new File(nextStatement());
             fr = new BufferedReader(new FileReader(f));
-            sb = new StringBuffer((int)f.length()); 
+            sb = new StringBuffer((int)f.length());
             while (fr.ready()){
                 sb.append(fr.readLine()).append("\n");
             }
             fr.close();
             final String fragShader = sb.toString();
-            
+
             GLSLShaderObjectsState glsl = (GLSLShaderObjectsState) material.getState(RenderState.RS_GLSL_SHADER_OBJECTS);
             glsl.load(vertShader, fragShader);
         }else if (stat_name.equals("uniform_int")){
             reader.nextToken();
             String name = nextStatement();
-            
+
             reader.nextToken();
             int value = (int) nextNumber();
-            
+
             final GLSLShaderObjectsState glsl = (GLSLShaderObjectsState) material.getState(RenderState.RS_GLSL_SHADER_OBJECTS);
             glsl.setUniform(name, value);
         }else if (stat_name.equals("texture_unit")){
@@ -357,44 +357,44 @@ public class MaterialLoader {
         }else{
             logger.fine("PASS STAT: "+stat_name);
         }
-        
+
         while (reader.ttype != StreamTokenizer.TT_EOL)
             reader.nextToken();
     }
-    
+
     public void readPass(Material material) throws IOException{
         // skip "pass"
         reader.nextToken();
-        
+
         logger.fine("PASS START");
-        
+
         while (reader.ttype != '{')
             reader.nextToken();
-        
+
         while (reader.ttype != '}'){
             readPassStatement(material);
             while (reader.ttype == StreamTokenizer.TT_EOL)
                 reader.nextToken();
         }
-        
+
         logger.fine("PASS END");
     }
-    
+
     public void readTechnique(Material material) throws IOException{
         // skip "technique"
         String stat_name = nextStatement();
-        
+
         if (!stat_name.equals("technique"))
             throw new IOException("Expected token 'technique' missing");
-        
+
         logger.fine("TECHNIQUE START");
-        
+
         while (reader.ttype != '{')
             reader.nextToken();
-        
+
         while (reader.ttype != '}'){
             stat_name = nextStatement();
-            
+
             if (stat_name.equals("pass")){
                 reader.pushBack();
                 readPass(material);
@@ -403,12 +403,12 @@ public class MaterialLoader {
                 readTechniqueStatement(material);
             }
         }
-        
+
         logger.fine("TECHNIQUE END");
     }
-    
+
     private boolean skip = false;
-    
+
     public Material readMaterial() throws IOException{
         String stat_name = nextStatement();
         if (stat_name == null){
@@ -422,7 +422,7 @@ public class MaterialLoader {
         if (!stat_name.equals("material")){
             throw new IOException("Expected 'material', got: "+stat_name);
         }
-        
+
         reader.resetSyntax();
         reader.ordinaryChar('{');
         reader.ordinaryChar('}');
@@ -436,21 +436,21 @@ public class MaterialLoader {
         reader.wordChars('a', 'z');
         reader.wordChars('/', '/');
         reader.eolIsSignificant(true);
-        
+
         reader.nextToken();
         String matName = reader.sval.trim();
-        
+
         Material mat = new Material(matName);
-        
+
         logger.fine("MATERIAL START: "+matName);
         materialMap.put(matName, mat);
-        
+
         reader.resetSyntax();
         setupReader(reader);
-        
+
         while (reader.ttype != '{'){
             reader.nextToken();
-            
+
             //if (reader.ttype != '{' && reader.ttype != StreamTokenizer.TT_EOL)
             //    matName = matName + " " + reader.toString();
         }
@@ -458,7 +458,7 @@ public class MaterialLoader {
         while (reader.ttype != '}'){
             if (reader.ttype == StreamTokenizer.TT_WORD){
                 stat_name = reader.sval;
-                
+
                 if (stat_name.equals("technique")){
                     reader.pushBack();
                     readTechnique(mat);
@@ -467,16 +467,16 @@ public class MaterialLoader {
                     readMaterialStatement(mat);
                 }
             }
-            
+
             reader.nextToken();
         }
         mat.assignTransparency();
-        
+
         logger.fine("MATERIAL END for material '" + matName + "'");
-        
+
         return mat;
     }
-    
+
     public void setupReader(StreamTokenizer reader){
         reader.slashSlashComments(true);
         reader.parseNumbers();
@@ -491,23 +491,23 @@ public class MaterialLoader {
         //reader.wordChars('-', '-');
         reader.eolIsSignificant(true);
     }
-    
+
     /**
      * REPLACE the materialsMap of this MaterialLoader instance.
      */
     public void load(InputStream in) throws IOException {
         reader = new StreamTokenizer(new InputStreamReader(in));
         setupReader(reader);
-        
+
         materialMap = new HashMap<String, Material>();
-        
+
         while (true){
             Material mat = readMaterial();
             if (mat == null && !skip)
                 return;
         }
     }
-    
+
     /**
      * Print a debugging message to standard output.
      *

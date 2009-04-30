@@ -45,15 +45,15 @@ import java.nio.IntBuffer;
 public class OgreMesh extends TriMesh {
 
     private static final long serialVersionUID = 8831653270716808462L;
-    
+
     private transient FloatBuffer vertexBufferOriginal;
     private transient FloatBuffer normalBufferOriginal;
-    
+
     private WeightBuffer weightBuffer;
-    
+
     private IntBuffer levelZero;
     private IntBuffer[] lodLevels;
-    
+
     public OgreMesh(String name){
         super(name);
     }
@@ -64,93 +64,93 @@ public class OgreMesh extends TriMesh {
     public OgreMesh(){
         super();
     }
-    
+
     public void cloneFromMesh(OgreMesh source){
         vertexBufferOriginal = source.vertexBufferOriginal;
         normalBufferOriginal = source.normalBufferOriginal;
-        
+
         if (hasBindPose()){
             setVertexBuffer(BufferUtils.createFloatBuffer(source.getVertexBuffer().capacity()));
             setNormalBuffer(BufferUtils.createFloatBuffer(source.getNormalBuffer().capacity()));
             restoreBindPose();
         }
-        
+
         setWeightBuffer(source.weightBuffer);
         setLodLevels(source.lodLevels);
     }
-    
+
     public void setWeightBuffer(WeightBuffer weightBuf){
         if (weightBuf == null)
             return;
-        
+
         if (weightBuf.indexes.limit() / 4 != this.getVertexCount())
             throw new IllegalArgumentException(
                     "Vertex weight element limit mismatch.  Expected "
                     + (getVertexCount() * 4) + ", but got "
                     + weightBuf.indexes.limit());
-        
+
         weightBuffer = weightBuf;
     }
-    
+
     public WeightBuffer getWeightBuffer(){
         return weightBuffer;
     }
-    
+
     public FloatBuffer getVertexBufferOriginal(){
         return vertexBufferOriginal;
     }
-    
+
     public FloatBuffer getNormalBufferOriginal(){
         return normalBufferOriginal;
     }
-    
+
     public void setLodLevels(IntBuffer[] lodLevels){
         this.levelZero = getIndexBuffer();
         this.lodLevels = lodLevels;
     }
-    
+
     /**
      * Set the current LOD level.
-     * LOD level zero is the model in max quality, 
+     * LOD level zero is the model in max quality,
      * levels 1 and below reduce the quality/vertex count of the model
      * by a certain amount to increase rendering speed.
      * @param level
      */
     public void setLodLevel(int level){
         IntBuffer target;
-        
+
         if (level == 0)
             target = levelZero;
         else
             target = lodLevels[level-1];
-        
+
         if (target != indexBuffer){
             setIndexBuffer(target);
 //            DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(vboInfo.getVBOVertexID());
 //            vboInfo.setVBOIndexID(-1);
         }
     }
-    
+
     @Override
     public void setHasDirtyVertices(boolean flag){
         super.setHasDirtyVertices(flag);
-        
+
         if (flag && (vboInfo != null && vboInfo.isVBOVertexEnabled() && vboInfo.isVBONormalEnabled())){
             // update VBO data here
             // not supported by jME yet..
         }
     }
-    
+
     /**
      * @return Total number of lod levels
      */
     public int getLodLevelCount(){
         if (lodLevels == null)
             return 1;
-            
+
         return lodLevels.length + 1;
     }
-    
+
     /**
      * Clears all bind pose data
      */
@@ -158,7 +158,7 @@ public class OgreMesh extends TriMesh {
         vertexBufferOriginal = null;
         normalBufferOriginal = null;
     }
-    
+
     /**
      * Saves the current mesh state to it's bind pose.
      */
@@ -169,16 +169,16 @@ public class OgreMesh extends TriMesh {
         if (normalBufferOriginal == null){
             normalBufferOriginal = BufferUtils.createFloatBuffer(normBuf.capacity());
         }
-              
+
         vertBuf.rewind();
         vertexBufferOriginal.rewind();
         vertexBufferOriginal.put(vertBuf);
-        
+
         normBuf.rewind();
         normalBufferOriginal.rewind();
         normalBufferOriginal.put(normBuf);
     }
-    
+
     /**
      * Restores bind pose
      */
@@ -186,12 +186,12 @@ public class OgreMesh extends TriMesh {
         vertBuf.rewind();
         vertexBufferOriginal.rewind();
         vertBuf.put(vertexBufferOriginal);
-        
+
         normBuf.rewind();
         normalBufferOriginal.rewind();
         normBuf.put(normalBufferOriginal);
     }
-    
+
     /**
      * True if bind pose data is available
      * @return
@@ -200,16 +200,16 @@ public class OgreMesh extends TriMesh {
         return vertexBufferOriginal != null &&
                (normBuf == null || normalBufferOriginal != null);
     }
-    
+
     @Override
     public void write(JMEExporter e) throws IOException{
-        // dont want to write a vertex buffer in an animation here.. 
+        // dont want to write a vertex buffer in an animation here..
         // make sure to restore bind pose
         if (hasBindPose())
             restoreBindPose();
-        
+
         super.write(e);
-        
+
         OutputCapsule out = e.getCapsule(this);
         out.write(hasBindPose(), "HadBindPose", false);
         if (weightBuffer != null){
@@ -217,21 +217,21 @@ public class OgreMesh extends TriMesh {
             out.write(weightBuffer.weights, "BoneWeights", null);
         }
     }
-    
+
     @Override
     public void read(JMEImporter i) throws IOException{
         super.read(i);
-        
+
         InputCapsule in = i.getCapsule(this);
         if (in.readBoolean("HadBindPose", false)){
             saveCurrentToBindPose();
         }
-        
+
         ByteBuffer indexes = in.readByteBuffer("BoneIndexes", null);
         if (indexes != null){
             FloatBuffer weights = in.readFloatBuffer("BoneWeights", null);
             weightBuffer = new WeightBuffer(indexes, weights);
         }
     }
-    
+
 }

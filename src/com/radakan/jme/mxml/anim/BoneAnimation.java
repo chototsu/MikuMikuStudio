@@ -36,31 +36,31 @@ public final class BoneAnimation {
 
     private final String name;
     private final float length;
-    
+
     private final BoneTrack[] tracks;
-    
+
     BoneAnimation(String name, float length, BoneTrack[] tracks){
         this.name = name;
         this.length = length;
         this.tracks = tracks;
     }
-    
+
     String getName(){
         return name;
     }
-    
+
     float getLength(){
         return length;
     }
-    
+
     BoneTrack[] getTracks(){
         return tracks;
     }
-    
+
     void setTime(float time, Skeleton skeleton){
         for (int i = 0; i < tracks.length; i++){
             tracks[i].setTime(time, skeleton);
         }
     }
-    
+
 }

@@ -41,18 +41,18 @@ import com.jme.system.DisplaySystem;
  * Represents a single Ogre3D material object.
  */
 public final class Material {
-    
+
     private final String name;
     private final RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
-    
+
     boolean recieveShadows = false;
     boolean transparent = false;
     boolean lightingOff = false;
-    
+
     public Material(String name) {
         this.name = name;
     }
-    
+
     /**
      * @deprecated The new RenderState.Statetype system should be used
      * @see com.jme.scne.state.RenderState.StateType
@@ -72,7 +72,7 @@ public final class Material {
         return DisplaySystem.getDisplaySystem().getRenderer()
             .createState(stateType);
     }
-    
+
     public void apply(Spatial obj){
         boolean objTransp = false;
         if (obj instanceof Geometry) {
@@ -81,13 +81,13 @@ public final class Material {
         }
         obj.setRenderQueueMode((objTransp || transparent)
                 ? Renderer.QUEUE_TRANSPARENT : Renderer.QUEUE_OPAQUE);
-        
+
         if (lightingOff)
             obj.setLightCombineMode(LightCombineMode.Off);
-        
+
         for (int i = 0; i < states.length; i++)
             obj.setRenderState(states[i]);
-        
+
     }
 
     /**
@@ -124,10 +124,10 @@ public final class Material {
             return;
         }
     }
-    
+
     @Override
     public String toString(){
         return name;
     }
-    
+
 }

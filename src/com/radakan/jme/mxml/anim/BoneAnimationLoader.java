@@ -52,11 +52,11 @@ public class BoneAnimationLoader {
                                        "attribute vec4 indexes;\n" +
                                        "uniform mat4 boneMatrices["+numBones+"];\n");
         if (maxWeightsPerVert == 1){
-            shader = shader.replace("hw_skin_compute", 
+            shader = shader.replace("hw_skin_compute",
                                       "    vec4 vPos = boneMatrices[int(indexes.x)] * gl_Vertex;\n" +
                                       "\n");
         }else{
-            shader = shader.replace("hw_skin_compute", 
+            shader = shader.replace("hw_skin_compute",
                                           "    vec4 index = indexes;\n" +
                                           "    vec4 weight = weights;\n" +
                                           "\n" +
@@ -75,10 +75,10 @@ public class BoneAnimationLoader {
         }
         shader = shader.replace("hw_skin_vpos", "(gl_ModelViewProjectionMatrix * vPos)");
         shader = shader.replace("hw_skin_vnorm", "(normalize(inverseModelView * tempNormal).xyz)");
-        
+
         return shader;
     }
-    
+
     public static GLSLShaderObjectsState createSkinningShader(int numBones, int maxWeightsPerVert){
         GLSLShaderObjectsState shader = DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
         String str =    "hw_skin_vars\n" +
@@ -98,30 +98,30 @@ public class BoneAnimationLoader {
         shader.load(str, null);
         return shader;
     }
-    
+
     private static class VertexBoneAssignments {
-        
+
         byte[] indexes = new byte[4];
         float[] weights = new float[4];
         int written = 0;
-        
+
         VertexBoneAssignments(byte index, float weight){
             push(index, weight);
         }
-        
+
         void push(byte index, float weight){
             if (written >= 4)
                 return;
-                
+
             indexes[written] = index;
             weights[written] = weight;
             written++;
         }
     }
-    
+
     public static BoneAnimation loadAnimation(Node animationNode, Skeleton skeleton){
        Vector3f tempVec = new Vector3f();
-        
+
         // read the name and length (in seconds) of the animation
         String name = getAttribute(animationNode, "name");
         float length = getFloatAttribute(animationNode, "length");
@@ -129,11 +129,11 @@ public class BoneAnimationLoader {
         // list to store keyframes from ALL tracks
         // they will be sorted and later added onto the BoneAnimation
         List<BoneTrack> tracks = new ArrayList<BoneTrack>();
-        
+
         // the bones that have animation tracks associated with them
         // animation processing will only effect those bones
         Set<Bone> bonesWithTracks = new HashSet<Bone>();
-        
+
         // skeleton -> animations -> animation -> tracks
         Node tracksNode = getChildNode(animationNode, "tracks");
         Node trackNode = tracksNode.getFirstChild();
@@ -142,14 +142,14 @@ public class BoneAnimationLoader {
                 trackNode = trackNode.getNextSibling();
                 continue;
             }
-            
+
             ArrayList<Float> times = new ArrayList<Float>();
             ArrayList<Vector3f> translations = new ArrayList<Vector3f>();
             ArrayList<Quaternion> rotations = new ArrayList<Quaternion>();
-            
+
             Bone bone = skeleton.getBone(getAttribute(trackNode, "bone"));
             bonesWithTracks.add(bone);
-            
+
             // tracks -> keyframes -> keyframe
             Node keyframe = getChildNode(trackNode, "keyframes").getFirstChild();
             while (keyframe != null){
@@ -161,7 +161,7 @@ public class BoneAnimationLoader {
                 Node translate = getChildNode(keyframe, "translate");
                 Node rotate    = getChildNode(keyframe, "rotate");
                 Node scale     = getChildNode(keyframe, "scale");
-                
+
                 float time = getFloatAttribute(keyframe, "time");
                 Vector3f pos;
                 if (translate != null){
@@ -171,7 +171,7 @@ public class BoneAnimationLoader {
                 }else{
                     pos = new Vector3f(0,0,0);
                 }
-                
+
                 Quaternion rot;
                 if (rotate != null){
                     rot = new Quaternion();
@@ -184,7 +184,7 @@ public class BoneAnimationLoader {
                 }else{
                     rot = new Quaternion();
                 }
-                
+
                 // XXX: Start using scale?
                 Vector3f scal;
                 if (scale != null){
@@ -199,35 +199,35 @@ public class BoneAnimationLoader {
                 }else{
                     scal = new Vector3f(1,1,1);
                 }
-                
+
                 times.add(time);
                 translations.add(pos);
                 rotations.add(rot);
-                
+
                 keyframe = keyframe.getNextSibling();
             }
-            
+
             float[] timesArray = new float[times.size()];
             for (int i = 0; i < timesArray.length; i++)
                 timesArray[i] = times.get(i);
-            
+
             int targetBoneIndex = skeleton.getBoneIndex(bone);
             BoneTrack bTrack = new BoneTrack(targetBoneIndex,
                                              timesArray,
                                              translations.toArray(new Vector3f[0]),
                                              rotations.toArray(new Quaternion[0]));
-            
+
             tracks.add(bTrack);
-            
+
             trackNode = trackNode.getNextSibling();
         }
 
         BoneAnimation anim = new BoneAnimation(name, length, tracks.toArray(new BoneTrack[0]));
         //System.out.println("ANIM("+name+", len="+length+")");
-        
+
         return anim;
     }
-    
+
     public static void loadAnimations(Node animationsNode, Skeleton skeleton, Map<String, Animation> store){
         Node animationNode = animationsNode.getFirstChild();
         while (animationNode != null){
@@ -248,15 +248,15 @@ public class BoneAnimationLoader {
             animationNode = animationNode.getNextSibling();
         }
     }
-    
+
     public static WeightBuffer loadWeightBuffer(Node assignmentsNode, int vertexCount){
         WeightBuffer weightBuffer = new WeightBuffer(vertexCount);
-        
+
         ByteBuffer ib = weightBuffer.indexes;
         FloatBuffer wb = weightBuffer.weights;
-        
+
         Map<Integer, VertexBoneAssignments> assignments = new HashMap<Integer, VertexBoneAssignments>();
-        
+
         Node vbassignNode = assignmentsNode.getFirstChild();
         while (vbassignNode != null){
             if (vbassignNode.getNodeName().equals("vertexboneassignment")){
@@ -276,25 +276,25 @@ public class BoneAnimationLoader {
 
             vbassignNode = vbassignNode.getNextSibling();
         }
-        
+
         for (Entry<Integer, VertexBoneAssignments> assign : assignments.entrySet()){
             VertexBoneAssignments val = assign.getValue();
-            
+
             ib.put(assign.getKey() * 4,     val.indexes[0]);
             ib.put(assign.getKey() * 4 + 1, val.indexes[1]);
             ib.put(assign.getKey() * 4 + 2, val.indexes[2]);
             ib.put(assign.getKey() * 4 + 3, val.indexes[3]);
-            
+
             wb.put(assign.getKey() * 4,     val.weights[0]);
             wb.put(assign.getKey() * 4 + 1, val.weights[1]);
             wb.put(assign.getKey() * 4 + 2, val.weights[2]);
             wb.put(assign.getKey() * 4 + 3, val.weights[3]);
         }
-        
+
         ib.rewind();
         wb.rewind();
-        
+
         return weightBuffer;
     }
-    
+
 }

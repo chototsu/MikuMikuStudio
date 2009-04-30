@@ -92,7 +92,7 @@ public class SceneLoader {
     }
 
     private Map<String, Material> materials = new HashMap<String, Material>();
-    
+
     private LightState ls = null;
     private com.jme.scene.Node scene;
     private Vector3f[] temp = new Vector3f[3];
@@ -123,20 +123,20 @@ public class SceneLoader {
     public void setModelsOnly(boolean modelsOnly) {
         this.modelsOnly = modelsOnly;
     }
-    
+
     public SceneLoader(){
         scene = new com.jme.scene.Node();
         // We create with no name here, but algorithms below ensure that
         // getScene() will return a Node with a good name set.
     }
-    
+
     private Light loadLight(Node light, Vector3f pos, Quaternion rot){
         String type = getAttribute(light, "type");
         Light l = null;
-        
+
         if (type.equals("directional")){
             //Vector3f dir = loadVector3(getChildNode(light, "normal"));
-            
+
             DirectionalLight dl = new DirectionalLight();
             dl.setEnabled(true);
             Matrix3f tempMat = rot.toRotationMatrix();
@@ -147,7 +147,7 @@ public class SceneLoader {
             pl.setEnabled(true);
             pl.setLocation(pos);
             l = pl;
-            
+
             Node att = getChildNode(light, "lightAttenuation");
             if (att != null){
                 pl.setAttenuate(true);
@@ -158,7 +158,7 @@ public class SceneLoader {
         }else{
             logger.warning("UNSUPPORTED LIGHT: "+type);
         }
-        
+
         Node diffuseNode = getChildNode(light, "colourDiffuse");
         if (diffuseNode != null)
             l.setDiffuse(loadColor(diffuseNode));
@@ -166,10 +166,10 @@ public class SceneLoader {
         Node specularNode = getChildNode(light, "colourSpecular");
         if (specularNode != null)
             l.setDiffuse(loadColor(specularNode));
-        
+
         return l;
     }
-    
+
     private Vector3f loadVector3(Node vector){
         Vector3f vec = new Vector3f();
         vec.x = getFloatAttribute(vector, "x");
@@ -177,7 +177,7 @@ public class SceneLoader {
         vec.z = getFloatAttribute(vector, "z");
         return vec;
     }
-    
+
     private Quaternion loadQuaternion(Node quaternion){
         Quaternion q = new Quaternion();
         q.x = getFloatAttribute(quaternion, "x");
@@ -186,7 +186,7 @@ public class SceneLoader {
         q.w = getFloatAttribute(quaternion, "w");
         return q;
     }
-    
+
     private ColorRGBA loadColor(Node color){
         ColorRGBA c = new ColorRGBA();
         c.r = getFloatAttribute(color, "r");
@@ -194,7 +194,7 @@ public class SceneLoader {
         c.b = getFloatAttribute(color, "b");
         return c;
     }
-    
+
     /**
      * Populates the specified jME Node with data from the specified XML Node.
      * <P>
@@ -280,7 +280,7 @@ public class SceneLoader {
                     targetJmeNode.getLocalRotation()));
         }
     }
-    
+
     public void loadExternals(Node externals) throws IOException{
         Node item = externals.getFirstChild();
         while (item != null){
@@ -299,12 +299,12 @@ public class SceneLoader {
                     }
                 }
             }
-            
+
             item = item.getNextSibling();
         }
         logger.fine("Loaded materials.  Now have: " + materials.keySet());
     }
-    
+
     public void loadEnvironment(Node env){
         if (ls == null) {
             throw new IllegalStateException("Light state is not set up yet");
@@ -313,13 +313,13 @@ public class SceneLoader {
         if (ambient != null){
             ls.setGlobalAmbient(loadColor(ambient));
         }
-        
+
         Node background = getChildNode(env, "colourBackground");
         if (background != null){
             //DisplaySystem.getDisplaySystem().getRenderer().setBackgroundColor(loadColor(background));
         }
     }
-    
+
     public void load(Node sceneXmlNode) throws IOException{
         if (!modelsOnly) {
             ls = DisplaySystem.getDisplaySystem()
@@ -327,20 +327,20 @@ public class SceneLoader {
             scene.setRenderState(ls);
         }
         String version = getAttribute(sceneXmlNode, "formatVersion");
-        
+
         Node externals   = getChildNode(sceneXmlNode, "externals");
         Node nodes       = getChildNode(sceneXmlNode, "nodes");
         // TODO:  According to the DTD, the "nodes" element may have
         // transformation attributes.  We should not ignore them.
         Node environment = getChildNode(sceneXmlNode, "environment");
-        
+
         loadExternals(externals);
         if (!modelsOnly) {
             loadEnvironment(environment);
         }
         loadNode(scene, nodes);
     }
-            
+
     /**
      * @return a com.jme.scene.Node populated with the aggregation of all
      *         load() calls that have been applied to this instance.
@@ -348,7 +348,7 @@ public class SceneLoader {
     public com.jme.scene.Node getScene(){
         return scene;
     }
-    
+
     /**
      * Adds data from the specified dotScene file onto a scene node (which may
      * then be retrieved with getScene().
@@ -377,7 +377,7 @@ public class SceneLoader {
                         + "scene'");
             }
             load(rootEl);
-            
+
             scene.updateGeometricState(0, true);
             scene.updateRenderState();
         } catch (ParserConfigurationException ex) {

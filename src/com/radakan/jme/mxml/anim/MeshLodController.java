@@ -35,16 +35,16 @@ import com.jme.system.DisplaySystem;
 public class MeshLodController extends Controller {
 
     private MeshAnimationController animControl;
-    
+
     public MeshLodController(MeshAnimationController animControl){
         this.animControl = animControl;
     }
-    
+
     @Override
     public void update(float time) {
         OgreMesh[] targets = animControl.getMeshList();
         int maxLod = targets[0].getLodLevelCount() - 1;
-        
+
         Camera cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
         targets[0].updateWorldVectors();
         float dist = cam.getLocation().distance(targets[0].getWorldTranslation());
@@ -53,11 +53,11 @@ public class MeshLodController extends Controller {
             level = 0;
         else if (level > maxLod)
             level = maxLod;
-            
+
         final float desiredTPF = 1f / 60f;
         // 1 > if went above budget, <= 1 if all OK
-        final float TPFratio = time / desiredTPF; 
-        
+        final float TPFratio = time / desiredTPF;
+
         // adaptive frameskip -> increase frameskipping when framerate is low
         animControl.setFrameSkip( Math.round( (dist / 200f) * TPFratio ) );
         for (OgreMesh target: targets){
@@ -65,6 +65,5 @@ public class MeshLodController extends Controller {
         }
     }
 
-    
-    
+
 }

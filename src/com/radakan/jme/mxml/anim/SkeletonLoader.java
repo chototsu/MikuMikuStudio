@@ -37,29 +37,29 @@ import org.w3c.dom.Node;
 import static com.radakan.util.XMLUtil.*;
 
 public class SkeletonLoader {
-    
+
     private static final Logger logger = Logger.getLogger(SkeletonLoader.class.getName());
-    
+
     /**
      * Loads a skeleton object given XML node.
      * All BONEs bind and inverseBind matrices will contain valid values.
-     * 
+     *
      * @param skeletonNode
      * @return
      */
     public static final Skeleton loadSkeleton(Node skeletonNode){
         // maps the name of a bone to itself
         Map<String, Bone> boneMap = new HashMap<String, Bone>();
-        
+
         // maps the index of a bone to itself
         Map<Integer, Bone> indexedBoneMap = new HashMap<Integer, Bone>();
-        
+
         // some work variables
         Vector3f vpos   = new Vector3f(0, 0, 0);
         Quaternion vrot = new Quaternion();
         //Vector3f vscale = new Vector3f(1, 1, 1);
         Vector3f vaxis  = new Vector3f(1, 0, 0);
-        
+
         // skeleton -> bones -> bone
         Node bonesNode = getChildNode(skeletonNode, "bones");
         Node boneNode = bonesNode.getFirstChild();
@@ -68,14 +68,14 @@ public class SkeletonLoader {
                 boneNode = boneNode.getNextSibling();
                 continue;
             }
-            
+
             int id = getIntAttribute(boneNode, "id");
             Bone bone = new Bone(getAttribute(boneNode, "name"));
-            
+
             boneMap.put(bone.name, bone);
             //indexedBoneMap.put(id+1, bone);
             indexedBoneMap.put(id, bone);
-            
+
             Node rot = getChildNode(boneNode, "rotation");
             if (rot != null){
                 Node axis = getChildNode(rot, "axis");
@@ -87,12 +87,12 @@ public class SkeletonLoader {
                     logger.warning("Rotation axis not normalized");
                     vaxis.normalizeLocal();
                 }
-                
+
                 vrot.fromAngleNormalAxis(getFloatAttribute(rot, "angle"), vaxis);
             }else{
                 vrot.loadIdentity();
             }
-            
+
             Node pos = getChildNode(boneNode, "position");
             if (pos != null){
                 vpos.set(getFloatAttribute(pos, "x"),
@@ -101,7 +101,7 @@ public class SkeletonLoader {
             }else{
                 vpos.zero();
             }
-                
+
 //            Node scale = getChildNode(boneNode, "scale");
 //            if (scale != null){
 //                vscale.set(getFloatAttribute(scale, "x"),
@@ -110,13 +110,13 @@ public class SkeletonLoader {
 //            }else{
 //                vscale.set(Vector3f.UNIT_XYZ);
 //            }
-            
+
             // compile individual transformations into bind matrix
             bone.setBindTransforms(vpos, vrot);
-            
+
             boneNode = boneNode.getNextSibling();
         }
-        
+
         // skeleton -> bonehierarchy -> boneparent
         Node bonehierarchy = getChildNode(skeletonNode, "bonehierarchy");
         Node boneparent = bonehierarchy.getFirstChild();
@@ -128,14 +128,14 @@ public class SkeletonLoader {
 
             Bone bone = boneMap.get(getAttribute(boneparent, "bone"));
             Bone parent = boneMap.get(getAttribute(boneparent, "parent"));
-            
+
             parent.addChild(bone);
-            
+
             boneparent = boneparent.getNextSibling();
         }
-        
+
         Bone[] bones = new Bone[indexedBoneMap.size()];
-        
+
         // find bones without a parent and attach them to the skeleton
         // also assign the bones to the bonelist
         for (Map.Entry<Integer, Bone> entry: indexedBoneMap.entrySet()){
@@ -145,5 +145,5 @@ public class SkeletonLoader {
 
         return new Skeleton(bones);
     }
-    
+
 }

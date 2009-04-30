@@ -35,38 +35,38 @@ public final class PoseTrack extends Track {
 
     private PoseFrame[] frames;
     private float[]     times;
-    
+
     public static class PoseFrame {
-        
+
         public PoseFrame(Pose[] poses, float[] weights){
             this.poses = poses;
             this.weights = weights;
         }
-        
+
         final Pose[]  poses;
         final float[] weights;
-        
+
     }
-    
+
     public PoseTrack(int targetMeshIndex, float[] times, PoseFrame[] frames){
         super(targetMeshIndex);
         this.times = times;
         this.frames = frames;
     }
-    
+
     private void applyFrame(OgreMesh target, int frameIndex, float weight){
         PoseFrame frame = frames[frameIndex];
-        
+
         for (int i = 0; i < frame.poses.length; i++){
             Pose pose = frame.poses[i];
             float poseWeight = frame.weights[i] * weight;
-            
+
             pose.apply(poseWeight, target.getVertexBuffer());
         }
-        
+
         target.setHasDirtyVertices(true);
     }
-    
+
     @Override
     public void setTime(float time, OgreMesh[] targets) {
         OgreMesh target = targets[targetMeshIndex];
@@ -80,7 +80,7 @@ public final class PoseTrack extends Track {
                 if (times[i] < time)
                     startFrame = i;
             }
-            
+
             int endFrame = startFrame + 1;
             float blend = (time - times[startFrame]) / (times[endFrame] - times[startFrame]);
             applyFrame(target, startFrame, blend);

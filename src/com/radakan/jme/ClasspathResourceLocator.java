@@ -75,7 +75,7 @@ public class ClasspathResourceLocator implements ResourceLocator {
      * @resourceName Must begin with "/".
      *          The parameter is treated exactly the same as the String param
      *          to ClassLoader.getResource() (because we are using that
-     *          method!).  We just eliminate the ambiguity of 
+     *          method!).  We just eliminate the ambiguity of
      *          beginning with "/" by forcing you to specify it.
      *
      * @throws IllegalArgumentException if specified resourceName does not

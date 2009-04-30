@@ -35,15 +35,15 @@ package com.radakan.jme.mxml.anim;
 public abstract class Track {
 
     protected final int targetMeshIndex;
-    
+
     public Track(int targetMeshIndex){
         this.targetMeshIndex = targetMeshIndex;
     }
-    
+
     public int getTargetMeshIndex(){
         return targetMeshIndex;
     }
-    
+
     public abstract void setTime(float time, OgreMesh[] targets);
-    
+
 }

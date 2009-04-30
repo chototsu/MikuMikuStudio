@@ -35,81 +35,81 @@ import com.jme.scene.Node;
 import java.util.ArrayList;
 
 public final class Bone {
-    
+
     final String name;
-    
+
     Bone parent;
     final ArrayList<Bone> children = new ArrayList<Bone>();
-    
+
     /**
      * If enabled, user can control bone transform with setUserTransforms.
      * Animation transforms are not applied to this bone when enabled.
      */
     boolean userControl = false;
-    
+
     /**
      * The attachment node.
      */
     Node attachNode;
-    
+
     /**
      * Initial transform is the local bind transform of this bone.
      * PARENT SPACE -> BONE SPACE
      */
     private Vector3f initialPos;
     private Quaternion initialRot;
-    
+
     /**
-     * The inverse world bind transform. 
+     * The inverse world bind transform.
      * BONE SPACE -> MODEL SPACE
      */
     private Vector3f worldBindInversePos;
     private Quaternion worldBindInverseRot;
-    
+
     /**
      * The local animated transform combined with the local bind transform and parent world transform
      */
     private Vector3f localPos = new Vector3f();
     private Quaternion localRot = new Quaternion();
-    
+
     /**
      * MODEL SPACE -> BONE SPACE (in animated state)
      */
     private Vector3f worldPos = new Vector3f();
     private Quaternion worldRot = new Quaternion();
-    
+
     /**
      * Creates a new bone
      * @param name Name to give to this bone
      */
     Bone(String name){
         this.name = name;
-        
+
         initialPos = new Vector3f();
         initialRot = new Quaternion();
-        
+
         worldBindInversePos = new Vector3f();
         worldBindInverseRot = new Quaternion();
     }
-    
+
     /**
      * Copy constructor. local bind and world inverse bind transforms shallow copied.
      * @param source
      */
     Bone(Bone source){
         this.name = source.name;
-        
+
         userControl = source.userControl;
-        
+
         initialPos = source.initialPos;
         initialRot = source.initialRot;
-        
+
         worldBindInversePos = source.worldBindInversePos;
         worldBindInverseRot = source.worldBindInverseRot;
-        
+
         // parent and children will be assigned manually..
     }
-    
+
     /**
      * If enabled, user can control bone transform with setUserTransforms.
      * Animation transforms are not applied to this bone when enabled.
@@ -117,12 +117,12 @@ public final class Bone {
     public void setUserControl(boolean enable){
         userControl = enable;
     }
-    
+
     void addChild(Bone bone) {
         children.add(bone);
         bone.parent = this;
     }
-    
+
     /**
      * Updates the world transforms for this bone, and, possibly the attach node if not null.
      */
@@ -131,7 +131,7 @@ public final class Bone {
             // worldRot = localRot * parentWorldRot
             worldRot = parent.worldRot.mult(localRot);
             //worldRot = parent.worldRot.mult(localRot, worldRot);
-            
+
             // worldPos = parentWorldPos + (parentWorldRot * localPos)
             worldPos = parent.worldRot.mult(localPos);
             //parent.worldRot.mult(localPos, worldPos);
@@ -140,41 +140,41 @@ public final class Bone {
             worldRot.set(localRot);
             worldPos.set(localPos);
         }
-        
+
         if (attachNode != null){
             attachNode.setLocalTranslation(worldPos);
             attachNode.setLocalRotation(worldRot);
         }
     }
-    
+
     /**
      * Updates world transforms for this bone and it's children.
      */
     void update(){
         updateWorldVectors();
-        
+
         for (Bone b : children)
             b.update();
     }
-    
+
     /**
      * Saves the current bone state as it's binding pose, including it's children.
      */
     void setBindingPose(){
         initialPos.set(localPos);
         initialRot.set(localRot);
-        
+
         // Save inverse derived position/scale/orientation, used for calculate offset transform later
         worldBindInversePos.set(worldPos);
         worldBindInversePos.negateLocal();
-        
+
         worldBindInverseRot.set(worldRot);
         worldBindInverseRot.inverseLocal();
-        
+
         for (Bone b : children)
             b.setBindingPose();
     }
-    
+
     /**
      * Reset the bone and it's children to bind pose.
      */
@@ -183,11 +183,11 @@ public final class Bone {
             localPos.set(initialPos);
             localRot.set(initialRot);
         }
-        
+
         for (Bone b : children)
             b.reset();
     }
-    
+
     /**
      * Stores the skinning transform in the specified Matrix4f.
      * The skinning transform applies the animation of the bone to a vertex.
@@ -196,12 +196,12 @@ public final class Bone {
     void getOffsetTransform(Matrix4f m){
         Quaternion rotate = worldRot.mult(worldBindInverseRot);
         Vector3f translate = worldPos.add(rotate.mult(worldBindInversePos));
-        
+
         m.loadIdentity();
         m.setTranslation(translate);
         m.setRotationQuaternion(rotate);
     }
-    
+
     /**
      * Set user transform.
      * @see setUserControl
@@ -209,16 +209,16 @@ public final class Bone {
     public void setUserTransforms(Vector3f translation, Quaternion rotation, Vector3f scale){
         if (!userControl)
             throw new IllegalStateException("User control must be on bone to allow user transforms");
-        
+
         localPos.set(initialPos);
         localRot.set(initialRot);
         localPos.addLocal(translation);
         localRot = localRot.mult(rotation);
     }
-    
-    
+
+
     /**
-     * Returns the attachment node. 
+     * Returns the attachment node.
      * Attach models and effects to this node to make
      * them follow this bone's motions.
      */
@@ -228,7 +228,7 @@ public final class Bone {
         }
         return attachNode;
     }
-    
+
     /**
      * Sets the local animation transform of this bone.
      * Bone is assumed to be in bind pose when this is called.
@@ -236,30 +236,30 @@ public final class Bone {
     void setAnimTransforms(Vector3f translation, Quaternion rotation, Vector3f scale){
         if (userControl)
             return;
-        
+
         localPos.addLocal(translation);
         localRot = localRot.mult(rotation);
     }
-    
+
     /**
-     * Sets local bind transform for bone. 
+     * Sets local bind transform for bone.
      * Call setBindingPose() after all of the skeleton bones' bind transforms are set to save them.
      */
     void setBindTransforms(Vector3f translation, Quaternion rotation, Vector3f scale){
         initialPos.set(translation);
         initialRot.set(rotation);
-        
+
         localPos.set(translation);
         localRot.set(rotation);
     }
-    
+
     void setAnimTransforms(Vector3f translation, Quaternion rotation){
         setAnimTransforms(translation, rotation, Vector3f.UNIT_XYZ);
     }
-    
+
     void setBindTransforms(Vector3f translation, Quaternion rotation){
         setBindTransforms(translation, rotation, Vector3f.UNIT_XYZ);
     }
-    
-     
+
+
 }

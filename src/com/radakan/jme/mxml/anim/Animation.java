@@ -35,14 +35,14 @@ public class Animation {
 
     private final String name;
     private float length;
-    
+
     private BoneAnimation boneAnim;
     private MeshAnimation meshAnim;
-    
+
     Animation(BoneAnimation boneAnim, MeshAnimation meshAnim){
         this.boneAnim = boneAnim;
         this.meshAnim = meshAnim;
-        
+
         if (boneAnim == null){
             this.name = meshAnim.getName();
             this.length = meshAnim.getLength();
@@ -55,41 +55,41 @@ public class Animation {
                                    meshAnim.getLength());
         }
     }
-    
+
     void setBoneAnimation(BoneAnimation boneAnim){
         this.boneAnim = boneAnim;
-        
+
         this.length = Math.max(boneAnim.getLength(),
                                meshAnim.getLength());
     }
-    
+
     void setMeshAnimation(MeshAnimation meshAnim){
         this.meshAnim = meshAnim;
-        
+
         this.length = Math.max(boneAnim.getLength(),
                                meshAnim.getLength());
     }
-    
+
     boolean hasMeshAnimation(){
         return meshAnim != null;
     }
-    
+
     boolean hasBoneAnimation(){
         return boneAnim != null;
     }
-    
+
     String getName(){
         return name;
     }
-    
+
     float getLength(){
         return length;
     }
-    
+
     void setTime(float time, OgreMesh[] targets, Skeleton skeleton){
         if (meshAnim != null)
             meshAnim.setTime(time, targets);
-        
+
         if (boneAnim != null){
             boneAnim.setTime(time, skeleton);
         }
@@ -98,11 +98,10 @@ public class Animation {
     MeshAnimation getMeshAnimation() {
         return meshAnim;
     }
-    
+
     BoneAnimation getBoneAnimation(){
         return boneAnim;
     }
-    
-    
-    
+
+
 }

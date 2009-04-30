@@ -49,18 +49,18 @@ import java.util.logging.Logger;
 public class TestTurrentControl extends SimpleGame {
 
     private static final Logger logger = Logger.getLogger(TestMeshLoading.class.getName());
-    
+
     private Spatial model;
     private Bone turretBone;
     private float angle = 0f;
     private float angleVel = 0f;
-    
+
     public static void main(String[] args){
         TestTurrentControl app = new TestTurrentControl();
         app.setConfigShowMode(ConfigShowMode.NeverShow);
         app.start();
     }
-    
+
     @Override
     protected void simpleUpdate(){
         // acceleration
@@ -69,63 +69,63 @@ public class TestTurrentControl extends SimpleGame {
         }else if (KeyInput.get().isKeyDown(KeyInput.KEY_RIGHT)){
             angleVel -= tpf * 0.03f;
         }
-        
+
         // drag
         if (angleVel > FastMath.ZERO_TOLERANCE){
             angleVel = Math.max(0f, angleVel - (tpf * 0.025f));
         }else if (angleVel < -FastMath.ZERO_TOLERANCE){
             angleVel = Math.min(0f, angleVel + (tpf * 0.025f));
         }
-        
+
         // speed limit
         if (angleVel < -0.1f)
             angleVel = -0.1f;
         else if (angleVel > 0.1f)
             angleVel = 0.1f;
-       
+
         // apply velocity
         angle += angleVel;
-        
+
         Quaternion tempRot = new Quaternion();
         tempRot.fromAngleAxis(angle, Vector3f.UNIT_Y);
         turretBone.setUserTransforms(Vector3f.ZERO, tempRot, Vector3f.UNIT_XYZ);
     }
-    
+
     protected void loadMeshModel(){
         OgreLoader loader = new OgreLoader();
         MaterialLoader matLoader = new MaterialLoader();
-        
+
         try {
             URL matURL = TestMeshLoading.class.getClassLoader().getResource("com/radakan/jme/mxml/data/Turret.material");
             URL meshURL = TestMeshLoading.class.getClassLoader().getResource("com/radakan/jme/mxml/data/Turret.mesh.xml");
-            
+
             if (matURL != null){
                 matLoader.load(matURL.openStream());
                 if (matLoader.getMaterials().size() > 0)
                     loader.setMaterials(matLoader.getMaterials());
             }
-            
+
             model = loader.loadModel(meshURL);
             rootNode.attachChild(model);
         } catch (IOException ex) {
             Logger.getLogger(TestMeshLoading.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         rootNode.updateGeometricState(0, true);
         rootNode.updateRenderState();
     }
-    
+
     protected void setupTurretControl(){
         MeshAnimationController animControl = (MeshAnimationController) model.getController(0);
-        
+
         // must set some animation otherwise user control is ignored
         animControl.setAnimation("Rotate");
         animControl.setSpeed(0.25f);
-        
+
         turretBone = animControl.getBone("Turret");
         turretBone.setUserControl(true);
     }
-    
+
     @Override
     protected void simpleInitGame() {
         try {
@@ -139,19 +139,19 @@ public class TestTurrentControl extends SimpleGame {
         } catch (URISyntaxException e1) {
             logger.log(Level.WARNING, "unable to setup texture directory.", e1);
         }
-        
+
         loadMeshModel();
         setupTurretControl();
-        
+
         // disable 3rd person camera
         input.setEnabled(false);
 
         cam.setLocation(new Vector3f(5f, 5f, -6f));
         cam.lookAt(model.getWorldBound().getCenter(), Vector3f.UNIT_Y);
-        
+
         Text t = Text.createDefaultTextLabel("Text", "Use left and right arrow keys to rotate turret");
         statNode.attachChild(t);
     }
 
-    
+
 }

@@ -40,15 +40,15 @@ public final class Skeleton {
 
     private Bone rootBone;
     private Bone[] boneList;
-    
+
     /**
      * Contains the skinning matrices, multiplying it by a vertex effected by a bone
      * will cause it to go to the animated position.
      */
     private transient Matrix4f[] skinningMatrixes;
-    
+
     /**
-     * Creates a skeleton from a bone list. The root bone is found automatically. 
+     * Creates a skeleton from a bone list. The root bone is found automatically.
      * @param boneList
      */
     public Skeleton(Bone[] boneList){
@@ -60,94 +60,94 @@ public final class Skeleton {
                     System.err.println("NEW ROOT "+b.name);
                     throw new IllegalStateException("Cannot have more than one root bone in skeleton");
                 }
-                
+
                 rootBone = b;
             }
         }
-        
+
         createSkinningMatrices();
-        
+
         rootBone.update();
         rootBone.setBindingPose();
     }
-    
+
     /**
-     * Copy constructor. 
+     * Copy constructor.
      * Most of the skeleton data is deeply-copied except the bone bind and inverseBind transforms.
      * @param source
      */
-    public Skeleton(Skeleton source){     
+    public Skeleton(Skeleton source){
         Bone[] sourceList = source.boneList;
         boneList = new Bone[sourceList.length];
         for (int i = 0; i < sourceList.length; i++)
             boneList[i] = new Bone(sourceList[i]);
-        
+
         rootBone = recreateBoneStructure(source.rootBone);
-        
+
         createSkinningMatrices();
-        
+
         rootBone.update();
     }
-    
+
     private void createSkinningMatrices(){
         skinningMatrixes = new Matrix4f[boneList.length];
         for (int i = 0; i < skinningMatrixes.length; i++)
             skinningMatrixes[i] = new Matrix4f();
     }
-    
+
     private Bone recreateBoneStructure(Bone sourceRoot){
         Bone targetRoot = getBone(sourceRoot.name);
-        
+
         for (Bone sourceChild : sourceRoot.children){
             // find my version of the child
             Bone targetChild = getBone(sourceChild.name);
             targetRoot.addChild(targetChild);
             recreateBoneStructure(sourceChild);
         }
-        
+
         return targetRoot;
     }
-    
+
     public Bone getRoot(){
         return rootBone;
     }
-    
+
     public Bone getBone(int index){
         return boneList[index];
     }
-    
+
     public Bone getBone(String name){
         for (int i = 0; i < boneList.length; i++)
             if (boneList[i].name.equals(name))
                 return boneList[i];
-        
+
         return null;
     }
-    
+
     public int getBoneIndex(Bone bone){
         for (int i = 0; i < boneList.length; i++)
             if (boneList[i] == bone)
                 return i;
-        
+
         return -1;
     }
-    
+
     public Matrix4f[] computeSkinningMatrices(){
         for (int i = 0; i < boneList.length; i++){
             boneList[i].getOffsetTransform(skinningMatrixes[i]);
         }
         return skinningMatrixes;
     }
-    
+
     public int getBoneCount() {
         return boneList.length;
     }
-    
+
     public void sendToShader(GLSLShaderObjectsState shader){
         Matrix4f[] skinningMats = computeSkinningMatrices();
         // NOTE: Not supported by jME2 without a patch.
         //shader.setUniform("boneMatrices", skinningMats, true);
         throw new UnsupportedOperationException("Hardware skinning cannot be used without a jME2 patch");
     }
- 
+
 }

@@ -69,10 +69,10 @@ public class XMLUtil {
             + "\\s+([-+]?[0-9.]+[fF]?)"
             + "\\s+([-+]?[0-9.]+[fF]?)"
             + "\\s+([-+]?[0-9.]+[fF]?)\\s*");
-    
+
     /**
      * Returns the first XML child tag with the specified name.
-     * 
+     *
      * @param node The node to search children of
      * @param name The name of the node to search for, case-sensitive.
      * @return The child with the specified name, or null if none exists.
@@ -87,7 +87,7 @@ public class XMLUtil {
         }
         return null;
     }
-    
+
     /**
      * @throws OgreXmlFormatException for high-level Ogre Format violations.
      * @throws IOException for any other parsing or I/O problems.
@@ -114,10 +114,10 @@ public class XMLUtil {
             throw new IOException("Error occured while reading XML document: "+ex.getLocalizedMessage());
         }
     }
-    
+
     /**
      * Returns an attribute of the specified tag with the name provided.
-     * 
+     *
      * @param node
      * @param name
      * @return The attribute if its defined, or null.
@@ -126,45 +126,45 @@ public class XMLUtil {
         Node att = node.getAttributes().getNamedItem(name);
         return att == null ? defVal : att.getNodeValue();
     }
-    
+
     public static String getAttribute(Node node, String name){
         return getAttribute(node,name,null);
     }
-    
+
     public static boolean getBoolAttribute(Node node, String name){
         return Boolean.parseBoolean(getAttribute(node,name));
     }
-    
+
     public static boolean getBoolAttribute(Node node, String name, boolean defVal){
         String att = getAttribute(node, name);
         if (att == null) return defVal;
         return Boolean.parseBoolean(att);
     }
-    
+
     public static float getFloatAttribute(Node node, String name){
         return Float.parseFloat(getAttribute(node,name,"0"));
     }
-    
+
     public static float getFloatAttribute(Node node, String name, float defVal){
         String att = getAttribute(node, name);
         if (att == null) return defVal;
         return Float.parseFloat(att);
     }
-    
+
     public static int getIntAttribute(Node node, String name, int defVal){
         String att = getAttribute(node, name);
         if (att == null) return defVal;
         return Integer.parseInt(att);
     }
-    
+
     public static int getIntAttribute(Node node, String name){
         return Integer.parseInt(getAttribute(node,name));
     }
-    
+
     public static float str2float(String str){
         return Float.parseFloat(str.trim());
     }
-    
+
     /**
      * @throws OgreXmlFormatException if the value String is not a properly
      *                                formatted float tuple of the right size.
@@ -173,7 +173,7 @@ public class XMLUtil {
             throws OgreXmlFormatException {
         return getVec3Attribute(node, name, null);
     }
-    
+
     /**
      * @throws OgreXmlFormatException if the value String is not a properly
      *                                formatted float tuple of the right size.
@@ -183,7 +183,7 @@ public class XMLUtil {
         String att = getAttribute(node, name);
         if (att == null)
             return defVal;
-        
+
         Matcher floatMatcher = float3CommaPattern.matcher(att);
         if (!floatMatcher.matches())
             throw new OgreXmlFormatException(
@@ -192,7 +192,7 @@ public class XMLUtil {
                             str2float(floatMatcher.group(2)),
                             str2float(floatMatcher.group(3)));
     }
-    
+
     /**
      * @throws OgreXmlFormatException if the value String is not a properly
      *                                formatted float tuple of the right size.
@@ -201,7 +201,7 @@ public class XMLUtil {
             throws OgreXmlFormatException {
         return getQuatAttribute(node, name, null);
     }
-    
+
     /**
      * @throws OgreXmlFormatException if the value String is not a properly
      *                                formatted float tuple of the right size.
@@ -211,7 +211,7 @@ public class XMLUtil {
         String att = getAttribute(node, name);
         if (att == null)
             return defVal;
-        
+
         Matcher floatMatcher = float4CommaPattern.matcher(att);
         if (!floatMatcher.matches())
             throw new OgreXmlFormatException(
@@ -221,7 +221,7 @@ public class XMLUtil {
                             str2float(floatMatcher.group(3)),
                             str2float(floatMatcher.group(4)));
     }
-    
+
     /**
      * @throws OgreXmlFormatException if the value String is not a properly
      *                                formatted float tuple of the right size.
@@ -230,7 +230,7 @@ public class XMLUtil {
             throws OgreXmlFormatException {
         return getRGBAAttribute(node, name, null);
     }
-    
+
     /**
      * @throws OgreXmlFormatException if the value String is not a properly
      *                                formatted float tuple of the right size.
@@ -240,11 +240,11 @@ public class XMLUtil {
         String att = getAttribute(node, name);
         if (att == null)
             return defVal;
-        
+
         if (att.startsWith("#")){
             // parse HEX color
             att = att.substring(1);
-            
+
             int rgb = Integer.parseInt(att, 16);
             if (att.length() == 6)
                 rgb = (rgb << 8) | 0xFF;
@@ -266,5 +266,5 @@ public class XMLUtil {
                         ?  str2float(floatMatcher.group(4)) : 1.0f);
         }
     }
-    
+
 }
