@@ -57,7 +57,7 @@ import com.jme.util.resource.ResourceLocatorTool;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import static com.radakan.util.XMLUtil.*;
+import static com.jmex.xml.XMLUtil.*;
 
 /**
  * Loads Ogre MESH.XML and SKELETON.XML files<br/>

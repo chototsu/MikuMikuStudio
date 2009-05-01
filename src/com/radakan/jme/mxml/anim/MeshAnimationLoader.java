@@ -37,13 +37,13 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
-import com.radakan.util.XMLUtil;
+import com.jmex.xml.XMLUtil;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
 import com.radakan.jme.mxml.anim.PoseTrack.PoseFrame;
 
 import java.util.Map;
-import static com.radakan.util.XMLUtil.*;
+import static com.jmex.xml.XMLUtil.*;
 
 /**
  * Utility class used by OgreLoader to load poses and mesh animations.

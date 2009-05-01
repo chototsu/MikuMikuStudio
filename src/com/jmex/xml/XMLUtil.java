@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.radakan.util;
+package com.jmex.xml;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;

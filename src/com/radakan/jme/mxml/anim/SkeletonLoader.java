@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.w3c.dom.Node;
-import static com.radakan.util.XMLUtil.*;
+import static com.jmex.xml.XMLUtil.*;
 
 public class SkeletonLoader {
 

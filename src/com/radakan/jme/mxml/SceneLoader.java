@@ -63,7 +63,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import java.util.logging.Logger;
 
-import static com.radakan.util.XMLUtil.*;
+import static com.jmex.xml.XMLUtil.*;
 
 /**
  * Loads dotScene files.

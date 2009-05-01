@@ -47,7 +47,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.w3c.dom.Node;
 
-import static com.radakan.util.XMLUtil.*;
+import static com.jmex.xml.XMLUtil.*;
 
 public class BoneAnimationLoader {
 
