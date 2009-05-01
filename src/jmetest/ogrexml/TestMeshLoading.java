@@ -122,9 +122,9 @@ public class TestMeshLoading extends SimpleGame {
 
             model = (Node) loader.loadModel(meshURL);
         } catch (IOException ex) {
-            Logger.getLogger(TestMeshLoading.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         } catch (ModelFormatException mfe) {
-            Logger.getLogger(TestMeshLoading.class.getName()).log(Level.SEVERE, null, mfe);
+            logger.log(Level.SEVERE, null, mfe);
         }
     }
 
@@ -203,9 +203,11 @@ public class TestMeshLoading extends SimpleGame {
                 if (clone.getControllerCount() < 1)
                     throw new IllegalStateException(
                             "Ninja's animations are missing");
-                MeshAnimationController animControl = (MeshAnimationController) clone.getController(0);
+                MeshAnimationController animControl =
+                        (MeshAnimationController) clone.getController(0);
                 animControl.setAnimation("Walk");
-                animControl.setTime(animControl.getAnimationLength("Walk") * FastMath.nextRandomFloat());
+                animControl.setTime(animControl.getAnimationLength("Walk")
+                        * FastMath.nextRandomFloat());
                 //clone.addController(new MeshLodController((animControl)));
 
                 Bone b = animControl.getBone("Joint22");

@@ -42,7 +42,9 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.SimpleResourceLocator;
+import com.jme.util.resource.ResourceLocator;
+import com.jme.util.resource.ClasspathResourceLocator;
+import com.jme.util.resource.RelativeResourceLocator;
 import com.jmex.model.ogrexml.anim.Bone;
 import com.jmex.model.ogrexml.anim.MeshAnimationController;
 import java.io.IOException;
@@ -53,7 +55,8 @@ import java.util.logging.Logger;
 
 public class TestTurrentControl extends SimpleGame {
 
-    private static final Logger logger = Logger.getLogger(TestMeshLoading.class.getName());
+    private static final Logger logger = Logger.getLogger(
+            TestTurrentControl.class.getName());
 
     private Spatial model;
     private Bone turretBone;
@@ -100,22 +103,52 @@ public class TestTurrentControl extends SimpleGame {
         OgreLoader loader = new OgreLoader();
         MaterialLoader matLoader = new MaterialLoader();
 
-        try {
-            URL matURL = TestMeshLoading.class.getClassLoader().getResource("com/radakan/jme/mxml/data/Turret.material");
-            URL meshURL = TestMeshLoading.class.getClassLoader().getResource("com/radakan/jme/mxml/data/Turret.mesh.xml");
+        String matUrlString = "/jmetest/data/model/ogrexml/Turret.material";
+        String turretMeshUrlString =
+                "/jmetest/data/model/ogrexml/Turret.mesh.xml";
 
-            if (matURL != null){
-                matLoader.load(matURL.openStream());
-                if (matLoader.getMaterials().size() > 0)
-                    loader.setMaterials(matLoader.getMaterials());
+        try {
+            URL matURL = ResourceLocatorTool.locateResource(
+                    ResourceLocatorTool.TYPE_TEXTURE, matUrlString);
+            URL meshURL = ResourceLocatorTool.locateResource(
+                    ResourceLocatorTool.TYPE_MODEL, turretMeshUrlString);
+
+            if (meshURL == null)
+                throw new IllegalStateException(
+                        "Required runtime resource missing: "
+                        + turretMeshUrlString);
+            if (matURL == null)
+                throw new IllegalStateException(
+                        "Required runtime resource missing: " + matUrlString);
+            try {
+                ResourceLocatorTool.addResourceLocator(
+                        ResourceLocatorTool.TYPE_MODEL,
+                        new RelativeResourceLocator(meshURL.toURI()));
+                  // This causes relative references in the .mesh.xml file to
+                  // resolve to the same dir as the material file (like, for
+                  // the *.skeleton.xml file).
+                ResourceLocatorTool.addResourceLocator(
+                        ResourceLocatorTool.TYPE_TEXTURE,
+                        new RelativeResourceLocator(matURL.toURI()));
+                  // This causes relative references in the .material file to
+                  // resolve to the same dir as the material file.
+            } catch (URISyntaxException use) {
+                // Since we're generating the URI from a URL we know to be
+                // good, we won't get here.  This is just to satisfy the
+                // compiler.
+                throw new RuntimeException(use);
             }
+
+            matLoader.load(matURL.openStream());
+            if (matLoader.getMaterials().size() > 0)
+                loader.setMaterials(matLoader.getMaterials());
 
             model = loader.loadModel(meshURL);
             rootNode.attachChild(model);
         } catch (ModelFormatException mfe) {
-            Logger.getLogger(TestMeshLoading.class.getName()).log(Level.SEVERE, null, mfe);
+            logger.log(Level.SEVERE, null, mfe);
         } catch (IOException ex) {
-            Logger.getLogger(TestMeshLoading.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
 
         rootNode.updateGeometricState(0, true);
@@ -123,7 +156,8 @@ public class TestTurrentControl extends SimpleGame {
     }
 
     protected void setupTurretControl(){
-        MeshAnimationController animControl = (MeshAnimationController) model.getController(0);
+        MeshAnimationController animControl =
+            (MeshAnimationController) model.getController(0);
 
         // must set some animation otherwise user control is ignored
         animControl.setAnimation("Rotate");
@@ -135,18 +169,6 @@ public class TestTurrentControl extends SimpleGame {
 
     @Override
     protected void simpleInitGame() {
-        try {
-            SimpleResourceLocator locator = new SimpleResourceLocator(TestMeshLoading.class
-                                                    .getClassLoader()
-                                                    .getResource("com/radakan/jme/mxml/data/"));
-            ResourceLocatorTool.addResourceLocator(
-                    ResourceLocatorTool.TYPE_TEXTURE, locator);
-            ResourceLocatorTool.addResourceLocator(
-                    ResourceLocatorTool.TYPE_MODEL, locator);
-        } catch (URISyntaxException e1) {
-            logger.log(Level.WARNING, "unable to setup texture directory.", e1);
-        }
-
         loadMeshModel();
         setupTurretControl();
 
@@ -156,7 +178,8 @@ public class TestTurrentControl extends SimpleGame {
         cam.setLocation(new Vector3f(5f, 5f, -6f));
         cam.lookAt(model.getWorldBound().getCenter(), Vector3f.UNIT_Y);
 
-        Text t = Text.createDefaultTextLabel("Text", "Use left and right arrow keys to rotate turret");
+        Text t = Text.createDefaultTextLabel("Text",
+                "Use left and right arrow keys to rotate turret");
         statNode.attachChild(t);
     }
 
