@@ -53,7 +53,9 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.SimpleResourceLocator;
+import com.jme.util.resource.ResourceLocator;
+import com.jme.util.resource.ClasspathResourceLocator;
+import com.jme.util.resource.RelativeResourceLocator;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.model.ogrexml.anim.*;
@@ -65,7 +67,8 @@ import java.util.logging.Logger;
 
 public class TestMeshLoading extends SimpleGame {
 
-    private static final Logger logger = Logger.getLogger(TestMeshLoading.class.getName());
+    private static final Logger logger = Logger.getLogger(
+            TestMeshLoading.class.getName());
 
     private Node model;
 
@@ -78,16 +81,44 @@ public class TestMeshLoading extends SimpleGame {
     protected void loadMeshModel(){
         OgreLoader loader = new OgreLoader();
         MaterialLoader matLoader = new MaterialLoader();
+        String matUrlString = "/jmetest/data/model/ogrexml/Example.material";
+        String ninjaMeshUrlString =
+                "/jmetest/data/model/ogrexml/ninja.mesh.xml";
 
         try {
-            URL matURL = TestMeshLoading.class.getClassLoader().getResource("com/radakan/jme/mxml/data/Example.material");
-            URL meshURL = TestMeshLoading.class.getClassLoader().getResource("com/radakan/jme/mxml/data/ninja.mesh.xml");
+            URL matURL = ResourceLocatorTool.locateResource(
+                    ResourceLocatorTool.TYPE_TEXTURE, matUrlString);
+            URL meshURL = ResourceLocatorTool.locateResource(
+                    ResourceLocatorTool.TYPE_MODEL, ninjaMeshUrlString);
 
-            if (matURL != null){
-                matLoader.load(matURL.openStream());
-                if (matLoader.getMaterials().size() > 0)
-                    loader.setMaterials(matLoader.getMaterials());
+            if (meshURL == null)
+                throw new IllegalStateException(
+                        "Required runtime resource missing: "
+                        + ninjaMeshUrlString);
+            if (matURL == null)
+                throw new IllegalStateException(
+                        "Required runtime resource missing: " + matUrlString);
+            try {
+                ResourceLocatorTool.addResourceLocator(
+                        ResourceLocatorTool.TYPE_MODEL,
+                        new RelativeResourceLocator(meshURL.toURI()));
+                  // This causes relative references in the .mesh.xml file to
+                  // resolve to the same dir as the material file (like, for
+                  // the *.skeleton.xml file).
+                ResourceLocatorTool.addResourceLocator(
+                        ResourceLocatorTool.TYPE_TEXTURE,
+                        new RelativeResourceLocator(matURL.toURI()));
+                  // This causes relative references in the .material file to
+                  // resolve to the same dir as the material file.
+            } catch (URISyntaxException use) {
+                // Since we're generating the URI from a URL we know to be
+                // good, we won't get here.  This is just to satisfy the
+                // compiler.
+                throw new RuntimeException(use);
             }
+            matLoader.load(matURL.openStream());
+            if (matLoader.getMaterials().size() > 0)
+                loader.setMaterials(matLoader.getMaterials());
 
             model = (Node) loader.loadModel(meshURL);
         } catch (IOException ex) {
@@ -144,17 +175,13 @@ public class TestMeshLoading extends SimpleGame {
 
     @Override
     protected void simpleInitGame() {
-        try {
-            SimpleResourceLocator locator = new SimpleResourceLocator(TestMeshLoading.class
-                                                    .getClassLoader()
-                                                    .getResource("com/radakan/jme/mxml/data/"));
-            ResourceLocatorTool.addResourceLocator(
-                    ResourceLocatorTool.TYPE_TEXTURE, locator);
-            ResourceLocatorTool.addResourceLocator(
-                    ResourceLocatorTool.TYPE_MODEL, locator);
-        } catch (URISyntaxException e1) {
-            logger.log(Level.WARNING, "unable to setup texture directory.", e1);
-        }
+        ResourceLocator locator = new ClasspathResourceLocator();
+        ResourceLocatorTool.addResourceLocator(
+                ResourceLocatorTool.TYPE_MODEL, locator);
+          // This is to find our *.mesh.xml file.
+        ResourceLocatorTool.addResourceLocator(
+                ResourceLocatorTool.TYPE_TEXTURE, locator);
+          // This is to find our *.material file.
 
         Logger.getLogger("com.jme.scene.state.lwjgl").setLevel(Level.SEVERE);
 
@@ -164,6 +191,7 @@ public class TestMeshLoading extends SimpleGame {
         cam.setFrustumFar(20000f);
         loadMeshModel();
         //MeshCloner.setVBO(model);
+        logger.info("Loaded model node '" + model.getName() + ')');
 
         int modelN = 0;
         for (int x = 0; x < 1; x++){
@@ -172,30 +200,31 @@ public class TestMeshLoading extends SimpleGame {
                 clone.setLocalTranslation(75 * x,  0,  75 * y);
                 rootNode.attachChild(clone);
 
-                if (clone.getControllerCount() > 0){
-                    MeshAnimationController animControl = (MeshAnimationController) clone.getController(0);
-                    animControl.setAnimation("Walk");
-                    animControl.setTime(animControl.getAnimationLength("Walk") * FastMath.nextRandomFloat());
-                    //clone.addController(new MeshLodController((animControl)));
+                if (clone.getControllerCount() < 1)
+                    throw new IllegalStateException(
+                            "Ninja's animations are missing");
+                MeshAnimationController animControl = (MeshAnimationController) clone.getController(0);
+                animControl.setAnimation("Walk");
+                animControl.setTime(animControl.getAnimationLength("Walk") * FastMath.nextRandomFloat());
+                //clone.addController(new MeshLodController((animControl)));
 
-                    Bone b = animControl.getBone("Joint22");
-                    Node attachNode = b.getAttachmentsNode();
-                    clone.attachChild(attachNode);
-                    Spatial particle = loadParticle();
-                    attachNode.attachChild(particle);
+                Bone b = animControl.getBone("Joint22");
+                Node attachNode = b.getAttachmentsNode();
+                clone.attachChild(attachNode);
+                Spatial particle = loadParticle();
+                attachNode.attachChild(particle);
 
-                    b = animControl.getBone("Joint27");
-                    attachNode = b.getAttachmentsNode();
-                    clone.attachChild(attachNode);
-                    particle = loadParticle();
-                    attachNode.attachChild(particle);
+                b = animControl.getBone("Joint27");
+                attachNode = b.getAttachmentsNode();
+                clone.attachChild(attachNode);
+                particle = loadParticle();
+                attachNode.attachChild(particle);
 
-                    b = animControl.getBone("Joint17");
-                    attachNode = b.getAttachmentsNode();
-                    clone.attachChild(attachNode);
-                    particle = new Box("stick", new Vector3f(0, 0, -25), 2, 2, 30);
-                    attachNode.attachChild(particle);
-                }
+                b = animControl.getBone("Joint17");
+                attachNode = b.getAttachmentsNode();
+                clone.attachChild(attachNode);
+                particle = new Box("stick", new Vector3f(0, 0, -25), 2, 2, 30);
+                attachNode.attachChild(particle);
             }
         }
 
