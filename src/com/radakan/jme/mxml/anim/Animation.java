@@ -32,10 +32,12 @@
 
 package com.radakan.jme.mxml.anim;
 
+import java.io.Serializable;
+
 /**
  * Combines mesh and bone animations into one class for easier access
  */
-public class Animation {
+public class Animation implements Serializable{
 
     private final String name;
     private float length;

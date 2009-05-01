@@ -32,15 +32,17 @@
 
 package com.radakan.jme.mxml.anim;
 
+import java.io.Serializable;
+
 /**
  * A single track of pose animation associated with a certain mesh.
  */
-public final class PoseTrack extends Track {
+public final class PoseTrack extends Track implements Serializable{
 
     private PoseFrame[] frames;
     private float[]     times;
 
-    public static class PoseFrame {
+    public static class PoseFrame implements Serializable{
 
         public PoseFrame(Pose[] poses, float[] weights){
             this.poses = poses;

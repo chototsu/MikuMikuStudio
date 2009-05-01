@@ -34,12 +34,14 @@ package com.radakan.jme.mxml.anim;
 
 import com.jme.math.Vector3f;
 import com.jme.util.geom.BufferUtils;
+
+import java.io.Serializable;
 import java.nio.FloatBuffer;
 
 /**
  * A pose is a list of offsets that say where a mesh verticles should be for this pose.
  */
-public final class Pose {
+public final class Pose implements Serializable{
 
     private final String name;
     private final int targetMeshIndex;

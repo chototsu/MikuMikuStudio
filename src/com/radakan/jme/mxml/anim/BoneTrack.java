@@ -32,13 +32,15 @@
 
 package com.radakan.jme.mxml.anim;
 
+import java.io.Serializable;
+
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 
 /**
  * Contains a list of transforms and times for each keyframe.
  */
-public final class BoneTrack {
+public final class BoneTrack implements Serializable{
 
     /**
      * Bone index in the skeleton which this track effects.

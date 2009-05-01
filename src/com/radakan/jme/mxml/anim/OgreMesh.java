@@ -206,7 +206,7 @@ public class OgreMesh extends TriMesh {
     }
 
     @Override
-    public void write(JMEExporter e) throws IOException{
+    public void write(JMEExporter e) throws IOException {
         // dont want to write a vertex buffer in an animation here..
         // make sure to restore bind pose
         if (hasBindPose())
@@ -216,26 +216,28 @@ public class OgreMesh extends TriMesh {
 
         OutputCapsule out = e.getCapsule(this);
         out.write(hasBindPose(), "HadBindPose", false);
-        if (weightBuffer != null){
+        if (weightBuffer != null) {
             out.write(weightBuffer.indexes, "BoneIndexes", null);
             out.write(weightBuffer.weights, "BoneWeights", null);
+            out.write(weightBuffer.maxWeightsPerVert, "maxWeightsPerVert", 0);
         }
     }
 
     @Override
-    public void read(JMEImporter i) throws IOException{
+    public void read(JMEImporter i) throws IOException {
         super.read(i);
 
         InputCapsule in = i.getCapsule(this);
-        if (in.readBoolean("HadBindPose", false)){
+        if (in.readBoolean("HadBindPose", false)) {
             saveCurrentToBindPose();
         }
 
         ByteBuffer indexes = in.readByteBuffer("BoneIndexes", null);
-        if (indexes != null){
+        if (indexes != null) {
             FloatBuffer weights = in.readFloatBuffer("BoneWeights", null);
             weightBuffer = new WeightBuffer(indexes, weights);
+            weightBuffer.maxWeightsPerVert = in.readInt("maxWeightsPerVert", 0);
+
         }
     }
-
 }

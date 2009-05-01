@@ -32,11 +32,13 @@
 
 package com.radakan.jme.mxml.anim;
 
+import java.io.Serializable;
+
 /**
  * Bone animation updates each of it's tracks with the skeleton and time
  * to apply the animation.
  */
-public final class BoneAnimation {
+public final class BoneAnimation implements Serializable{
 
     private final String name;
     private final float length;

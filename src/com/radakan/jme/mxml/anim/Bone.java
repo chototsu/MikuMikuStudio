@@ -36,11 +36,18 @@ import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
-public final class Bone {
+public final class Bone implements Savable{
 
-    final String name;
+    String name;
 
     Bone parent;
     final ArrayList<Bone> children = new ArrayList<Bone>();
@@ -265,5 +272,64 @@ public final class Bone {
         setBindTransforms(translation, rotation, Vector3f.UNIT_XYZ);
     }
 
+    /**
+     * Used for binary loading as a Savable; the object must be constructed,
+     * then the parameters usually present in the constructor for this class are
+     * restored from the file the object was saved to.
+     */
+    public Bone() {
+
+    }
+
+    @Override
+    public Class getClassTag() {
+        return this.getClass();
+    }
+
+    @Override
+    public void read(JMEImporter im) throws IOException {
+        InputCapsule input = im.getCapsule(this);
+
+        name = input.readString("name", "Unnamed Bone");
+        initialPos = (Vector3f) input.readSavable("initialPos", null);
+        initialRot = (Quaternion) input.readSavable("initialRot", null);
+        worldBindInversePos = (Vector3f) input.readSavable(
+                                        "worldBindInversePos", null);
+        worldBindInverseRot = (Quaternion) input.readSavable(
+                                        "worldBindInverseRot", null);
+        localPos = (Vector3f) input.readSavable("localPos", null);
+        localRot = (Quaternion) input.readSavable("localRot", null);
+        parent = (Bone) input.readSavable("Parent Bone", null);
+
+        int childCount = input.readInt("Child Bone Count", 0);
+        for (int i = 0; i < childCount; i++) {
+            Bone child = (Bone) input.readSavable("ChildBone" + i, null);
+            if (child != null)
+                children.add(child);
+        }
+
+        attachNode = (Node) input.readSavable("attachNode", null);
+    }
+
+    @Override
+    public void write(JMEExporter ex) throws IOException {
+        OutputCapsule output = ex.getCapsule(this);
+
+        output.write(name, "name", "Unnamed Bone");
+        output.write(initialPos, "initialPos", null);
+        output.write(initialRot, "initialRot", null);
+        output.write(worldBindInversePos, "worldBindInversePos", null);
+        output.write(worldBindInverseRot, "worldBindInverseRot", null);
+        output.write(localPos, "localPos", null);
+        output.write(localRot, "localRot", null);
+        output.write(parent, "Parent Bone", null);
+
+        output.write(children.size(), "Child Bone Count", 0);
+        int i = 0;
+        for (Bone childBone : children)
+            output.write(childBone, "ChildBone" + i++, null);
+        output.write(attachNode, "attachNode", null);
+
+    }
 
 }

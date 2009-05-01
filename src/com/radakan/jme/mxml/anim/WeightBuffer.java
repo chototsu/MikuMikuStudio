@@ -34,6 +34,9 @@ package com.radakan.jme.mxml.anim;
 
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.util.geom.BufferUtils;
+
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
@@ -42,18 +45,18 @@ import java.nio.FloatBuffer;
  * The WeightBuffer can be sent to a shader or processed on the CPU
  * to do skinning.
  */
-public final class WeightBuffer {
+public final class WeightBuffer implements Serializable{
 
     /**
      * Each 4 bytes in the boneIndex buffer are assigned to a vertex.
      *
      */
-    final ByteBuffer indexes;
+    ByteBuffer indexes;
 
     /**
      * The weight of each bone specified in the index buffer
      */
-    final FloatBuffer weights;
+    FloatBuffer weights;
 
     /**
      * The maximum number of weighted bones used by the vertices
@@ -117,4 +120,38 @@ public final class WeightBuffer {
         weights.rewind();
     }
 
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeInt(maxWeightsPerVert);
+        out.writeInt(indexes.capacity());
+
+        for (int i = 0; i < indexes.capacity(); i++) {
+            byte b = indexes.get();
+            out.writeByte(b);
+        }
+
+        out.writeInt(weights.capacity());
+        for (int i = 0; i < weights.capacity(); i++) {
+            float f = weights.get();
+            out.writeFloat(f);
+        }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException,
+                                    ClassNotFoundException {
+        maxWeightsPerVert = in.readInt();
+        int indexesArrayLength = in.readInt();
+
+        indexes = BufferUtils.createByteBuffer(indexesArrayLength);
+        for (int i = 0; i < indexesArrayLength; i++) {
+            byte b = in.readByte();
+            indexes.put(b);
+        }
+
+        int weightsArrayLength = in.readInt();
+        weights = BufferUtils.createFloatBuffer(weightsArrayLength);
+        for (int i = 0; i < weightsArrayLength; i++) {
+            float f = in.readFloat();
+            weights.put(f);
+        }
+    }
 }

@@ -32,7 +32,9 @@
 
 package com.radakan.jme.mxml.anim;
 
-public class MeshAnimation {
+import java.io.Serializable;
+
+public class MeshAnimation implements Serializable{
 
     private String name;
     private float length;

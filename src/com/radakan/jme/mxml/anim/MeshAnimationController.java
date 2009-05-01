@@ -30,22 +30,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 package com.radakan.jme.mxml.anim;
 
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera.FrustumIntersect;
 import java.util.Map;
 import java.util.Set;
-
 import com.jme.scene.Controller;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.RenderState;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Collection;
 
-public class MeshAnimationController extends Controller {
+public class MeshAnimationController extends Controller implements Savable {
 
     private static final long serialVersionUID = -2412532346418342259L;
 
@@ -57,17 +66,17 @@ public class MeshAnimationController extends Controller {
     /**
      * List of targets which this controller effects.
      */
-    private final OgreMesh[] targets;
+    private OgreMesh[] targets;
 
     /**
      * Skeleton object must contain corresponding data for the targets' weight buffers.
      */
-    private final Skeleton skeleton;
+    private Skeleton skeleton;
 
     /**
      * List of animations, bone or vertex based.
      */
-    private final Map<String, Animation> animationMap;
+    private Map<String, Animation> animationMap;
 
     /**
      * The currently playing animation.
@@ -432,5 +441,56 @@ public class MeshAnimationController extends Controller {
 
     public Set<String> getAnimationNames() {
         return animationMap.keySet();
+    }
+    
+    /**
+     * Used only for Saving/Loading models (all parameters of the non-default
+     * constructor are restored from the saved model, but the object must be
+     * constructed beforehand)
+     */
+    public MeshAnimationController() {
+
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule output = e.getCapsule(this);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(animationMap);
+        oos.flush();
+        oos.close();
+        bos.close();
+        // Convert the animation map to a byte array:
+        byte[] data = bos.toByteArray();
+        // Then save it as such
+        output.write(data, "MeshAnimationControllerData", null);
+
+        output.write(targets, "targets[]", null);
+        output.write(skeleton, "skeleton", null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule input = e.getCapsule(this);
+
+        byte[] data = input.readByteArray("MeshAnimationControllerData", null);
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        try {
+            animationMap = (Map<String, Animation>) ois.readObject();
+        } catch (ClassNotFoundException e1) {
+            throw new RuntimeException(e1);
+        }
+
+        Savable[] targetsAsSavable = input.readSavableArray("targets[]", null);
+        skeleton = (Skeleton) input.readSavable("skeleton", null);
+
+        targets = new OgreMesh[targetsAsSavable.length];
+        int i = 0;
+        for (Savable s : targetsAsSavable)
+            targets[i++] = (OgreMesh) s;
     }
 }

@@ -32,11 +32,13 @@
 
 package com.radakan.jme.mxml.anim;
 
+import java.io.Serializable;
+
 /**
  * A single track of mesh animation (either morph or pose based).
  * Currently morph animations are not supported (only pose).
  */
-public abstract class Track {
+public abstract class Track implements Serializable{
 
     protected final int targetMeshIndex;
 

@@ -32,15 +32,22 @@
 
 package com.radakan.jme.mxml.anim;
 
+import java.io.IOException;
+
 import com.jme.math.Matrix4f;
 import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * A skeleton is a hierarchy of bones.
  * Skeleton updates the world transforms to reflect the current local
  * animated matrixes.
  */
-public final class Skeleton {
+public final class Skeleton implements Savable {
 
     private Bone rootBone;
     private Bone[] boneList;
@@ -154,4 +161,39 @@ public final class Skeleton {
         throw new UnsupportedOperationException("Hardware skinning cannot be used without a jME2 patch");
     }
 
+    /**
+     * Used for binary loading as a Savable; the object must be constructed,
+     * then the parameters usually present in the constructor for this class are
+     * restored from the file the object was saved to.
+     */
+    public Skeleton() {
+
+    }
+
+    @Override
+    public Class getClassTag() {
+        return this.getClass();
+    }
+
+    @Override
+    public void read(JMEImporter im) throws IOException {
+        InputCapsule input = im.getCapsule(this);
+        rootBone = (Bone) input.readSavable("rootBone", null);
+        Savable[] boneListAsSavable = input.readSavableArray("boneList", null);
+        ;
+        boneList = new Bone[boneListAsSavable.length];
+        for (int i = 0; i < boneListAsSavable.length; i++)
+            boneList[i] = (Bone) boneListAsSavable[i];
+
+        createSkinningMatrices();
+        rootBone.update();
+        rootBone.setBindingPose();
+    }
+
+    @Override
+    public void write(JMEExporter ex) throws IOException {
+        OutputCapsule output = ex.getCapsule(this);
+        output.write(rootBone, "rootBone", null);
+        output.write(boneList, "boneList", null);
+    }
 }
