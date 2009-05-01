@@ -65,8 +65,7 @@ import com.jme.scene.state.BlendState.TestFunction;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocator;
 import com.jme.util.resource.ResourceLocatorTool;
-
-import com.radakan.jme.RelativeResourceLocator;
+import com.jme.util.resource.RelativeResourceLocator;
 
 /**
  * Reads OGRE3D material files<br/>
