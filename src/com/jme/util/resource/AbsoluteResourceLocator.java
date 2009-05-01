@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.radakan.jme;
+package com.jme.util.resource;
 
 import java.net.URLEncoder;
 import java.net.URL;

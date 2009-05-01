@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.radakan.jme;
+package com.jme.util.resource;
 
 import java.net.URL;
 
@@ -39,7 +39,7 @@ import com.jme.util.resource.ResourceLocator;
 /**
  * A conservative ResourceLocator implementation that only resolves Classpath
  * resources with absolute resource name paths.
- * </P> <P>
+ * <P>
  * Lookups succeed only for resources requested with absolute paths, and there
  * is no recursion (hence it is <I>conservative</I>).
  * </P> <P>
