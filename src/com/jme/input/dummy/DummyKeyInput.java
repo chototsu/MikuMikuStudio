@@ -38,7 +38,7 @@ import com.jme.input.KeyInput;
 
 /**
  * <code>DummyKeyInput</code> simulates a Keyinput system, usable for Applications that can be headless or not.
- * @author Kai Börnert
+ * @author Kai BÃ¶rnert
  * @version $Id$
  */
 public class DummyKeyInput extends KeyInput {

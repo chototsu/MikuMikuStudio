@@ -45,7 +45,7 @@ import com.jme.input.MouseInput;
  *
  * @see Cursor
  * @see Mouse
- * @author Kai Börnert
+ * @author Kai BÃ¶rnert
  * @version $Id$
  */
 public class DummyMouseInput extends MouseInput {
