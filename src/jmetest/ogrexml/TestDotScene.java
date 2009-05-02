@@ -32,6 +32,14 @@
 
 package jmetest.ogrexml;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jmex.model.ModelFormatException;
 import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
@@ -39,11 +47,9 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.ClasspathResourceLocator;
 import com.jmex.model.ogrexml.SceneLoader;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.jme.scene.Spatial;
+import com.jme.scene.Node;
+import com.jmex.model.ogrexml.anim.MeshAnimationController;
 
 /**
  * Shows how to load an Ogre dotScene file.
@@ -59,6 +65,8 @@ public class TestDotScene extends SimpleGame {
     private static final Logger logger = Logger.getLogger(
             TestDotScene.class.getName());
 
+    private MeshAnimationController controller = null;
+
     public static void main(String[] args){
         TestDotScene app = new TestDotScene();
         app.setConfigShowMode(ConfigShowMode.AlwaysShow);
@@ -67,15 +75,13 @@ public class TestDotScene extends SimpleGame {
 
     @Override
     protected void simpleInitGame() {
+        DisplaySystem.getDisplaySystem().setTitle(baseTitle);
         ResourceLocatorTool.addResourceLocator(
                 ResourceLocatorTool.TYPE_TEXTURE,
                 new ClasspathResourceLocator());
         /* If you keep all of the scene resources in a single directory,
          * the SceneLoader class will find everything else automatically.
          * That's how we have the resources located for this example. */
-
-        DisplaySystem.getDisplaySystem().setTitle(
-                getClass().getName().replaceFirst(".*\\.", ""));
 
         cam.setLocation(new Vector3f(0f, 1f, 3f));
           // Move the camera in closer
@@ -111,5 +117,55 @@ public class TestDotScene extends SimpleGame {
             ogreSceneLoader = null;  // encourage GC
               // Pretty useless here, but useful in a real app.
         }
+        Spatial ninjaNode = TestDotScene.getDescendant(rootNode, "Ninja");
+        if (ninjaNode == null)
+            throw new RuntimeException("The 'Ninja' is missing");
+        controller = (MeshAnimationController) ninjaNode.getController(0);
+        if (controller == null)
+            throw new RuntimeException("'Ninja' is missing his Controller");
+        animationNames = controller.getAnimationNames().toArray(new String[0]);
+        logger.info(Integer.toString(animationNames.length)
+                + " animations loaded");
+    }
+
+    private long switchTime = -1L;
+    // We will switch to next animation when this time is reached
+    private long cycleMillis = 3000L;
+    private String[] animationNames = null;
+    private int animationIndex = -1;
+    static private String baseTitle =
+            TestDotScene.class.getName().replaceFirst(".*\\.", "");
+
+    public void retitle() {
+        DisplaySystem.getDisplaySystem().setTitle(
+                baseTitle + " | " + (animationIndex + 1) + '/'
+                + animationNames.length + " : "
+                + animationNames[animationIndex]);
+    }
+
+    @Override
+    public void simpleUpdate() {
+        super.simpleUpdate();
+        long now = new Date().getTime();
+        if (switchTime > now) return;
+        if (++animationIndex == animationNames.length) animationIndex = 0;
+        controller.setAnimation(animationNames[animationIndex]);
+        switchTime = now + cycleMillis;
+        retitle();
+    }
+
+    static Spatial getDescendant(Node searchRoot, String targetName) {
+        List<Spatial> children = searchRoot.getChildren();
+        if (children == null || children.size() < 1) return null;
+        Spatial recurseResult;
+        for (Spatial child : children) {
+            if (child.getName() != null && child.getName().equals(targetName))
+                return child;
+            if (!(child instanceof Node)) continue;
+            recurseResult =
+                    TestDotScene.getDescendant((Node) child, targetName);
+            if (recurseResult != null) return recurseResult;
+        }
+        return null;
     }
 }
