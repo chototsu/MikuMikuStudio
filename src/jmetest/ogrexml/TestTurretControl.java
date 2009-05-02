@@ -53,10 +53,10 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class TestTurrentControl extends SimpleGame {
+public class TestTurretControl extends SimpleGame {
 
     private static final Logger logger = Logger.getLogger(
-            TestTurrentControl.class.getName());
+            TestTurretControl.class.getName());
 
     private Spatial model;
     private Bone turretBone;
@@ -64,7 +64,7 @@ public class TestTurrentControl extends SimpleGame {
     private float angleVel = 0f;
 
     public static void main(String[] args){
-        TestTurrentControl app = new TestTurrentControl();
+        TestTurretControl app = new TestTurretControl();
         app.setConfigShowMode(ConfigShowMode.NeverShow);
         app.start();
     }
