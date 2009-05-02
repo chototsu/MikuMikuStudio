@@ -117,7 +117,9 @@ public class TestDotScene extends SimpleGame {
             ogreSceneLoader = null;  // encourage GC
               // Pretty useless here, but useful in a real app.
         }
-        Spatial ninjaNode = TestDotScene.getDescendant(rootNode, "Ninja");
+        Spatial ninjaNode = rootNode.getChild("Ninja");
+        // N.b. Spatial.getChild(String) returns a descendant, not necessarily
+        // a child.
         if (ninjaNode == null)
             throw new RuntimeException("The 'Ninja' is missing");
         controller = (MeshAnimationController) ninjaNode.getController(0);
@@ -152,20 +154,5 @@ public class TestDotScene extends SimpleGame {
         controller.setAnimation(animationNames[animationIndex]);
         switchTime = now + cycleMillis;
         retitle();
-    }
-
-    static Spatial getDescendant(Node searchRoot, String targetName) {
-        List<Spatial> children = searchRoot.getChildren();
-        if (children == null || children.size() < 1) return null;
-        Spatial recurseResult;
-        for (Spatial child : children) {
-            if (child.getName() != null && child.getName().equals(targetName))
-                return child;
-            if (!(child instanceof Node)) continue;
-            recurseResult =
-                    TestDotScene.getDescendant((Node) child, targetName);
-            if (recurseResult != null) return recurseResult;
-        }
-        return null;
     }
 }
