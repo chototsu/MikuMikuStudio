@@ -195,9 +195,7 @@
   <target name="-doc" unless="_docs.uptodate">
     <delete dir="${doc}"/>  <!-- The dependset leaves empty directories -->
     <javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true" package="yes" windowtitle="jME API" maxmemory="256m">
-      <fileset dir="${src}/com"
-               excludes="**/.*/**, jmex/model/collada/schema/**"
-               includes="**/*.java" />
+      <fileset dir="${src}/com" excludes="**/.*/**" includes="**/*.java" />
     </javadoc>
   </target>
 
