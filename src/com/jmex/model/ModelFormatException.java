@@ -42,7 +42,7 @@ import java.io.IOException;
  * <P>
  * This class is purposefully checked, because any method reading or writing
  * model files should either handle format problems, or explicitly acknowledge
- * that they in incapable of doing so.
+ * that they are incapable of doing so.
  * </P> <P>
  * I'd prefer to have a format-related checked exception to subclass, instead
  * of the generic Exception, but the J2SE doesn't provide one.
