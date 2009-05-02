@@ -1,62 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="project" basedir=".">
+<project name="jME-import">
+  <!-- $Id$ -->
 
-    <property name="name" value="jME"/>
+  <!--  In my opinion, the contents of this file do not nearly justify a
+        separate build file.  Ant environment would be simplified, and we
+        could simply use "ant.project.name" instead of the derived property
+        "ant" if we just moved everything here into "build.xml".
+        I'm leaving things as they are in case somebody depends on this
+        file for integration with an IDE or some build framework. -->
+  <property file="shared-build.properties"/>
 
-    <property name="major" value="0"/>
-    <property name="minor" value="svn"/>
-    <property name="vendor" value="jME Development Team"/>
-    <property name="coverage.needed" value="0%"/>
-
-    <property name="project.language.target" value="1.5"/>
-    <property name="project.jdk.home" value="${jdk.home.1.5}"/>
-    <property name="project.jdk.classpath" value="jdk.classpath.1.5"/>
-    <property name="project.working.directory" value="."/>
-    <property name="jdk.home" value="${project.jdk.home}"/>
-
-    <property name="seg" value="."/>
-
-    <property name="src" location="${seg}/src"/>
-    <property name="test" location="./junit"/>
-
-    <property name="libs" value="./lib"/>
-    <property name="mainclass" value="jmetest.TestChooser"/>
-    <property name="build" value="${seg}/build"/>
-    <property name="release" value="${seg}/target"/>
-    <property name="data" value="${seg}/data"/>
-    <property name="doc" value="${data}/doc"/>
-    <property name="javadoc" value="yes"/>
-    <property name="jar" value="${name}.jar"/>
-    <property name="zip" value="${name}.zip"/>
-
-    <path id="classpath">
-        <pathelement path="${project.jdk.classpath}"/>
-        <fileset dir="${libs}" id="libslist">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
-
-    <pathconvert property="jarclasspath" pathsep=" " dirsep="/" refid="libslist">
-        <mapper type="regexp" from=".*(lib.*)" to="\1"/>
-    </pathconvert>
-
-    <fileset id="resources" dir="${src}">
-        <include name="**/*.*"/>
-        <exclude name="build.xml"/>
-        <exclude name="**/*.java"/>
+  <path id="classpath">
+    <pathelement path="${project.jdk.classpath}"/>
+    <fileset dir="${libs}" id="libslist">
+      <include name="*.jar"/>
     </fileset>
+  </path>
 
-    <fileset id="jarcontents" dir="${build}">
-        <exclude name=".dependency-info/**"/>
-    </fileset>
+  <pathconvert property="jarclasspath" pathsep=" " dirsep="/" refid="libslist">
+    <mapper type="regexp" from=".*(lib.*)" to="\1"/>
+  </pathconvert>
 
-    <zipfileset id="zipcontents" dir="." prefix="${name}">
-        <include name="${jar}"/>
-        <include name="lib/*.*"/>
-    </zipfileset>
+  <fileset id="resources" dir="${src}">
+    <include name="**/*.*"/>
+    <exclude name="build.xml"/>
+    <exclude name="**/*.java"/>
+  </fileset>
 
-    <target name="dist">
-        <ant antfile="build.xml"/>
-    </target>
+  <fileset id="jarcontents" dir="${build}">
+    <exclude name=".dependency-info/**"/>
+  </fileset>
 
+  <zipfileset id="zipcontents" dir="." prefix="${name}">
+    <include name="${jar}"/>
+    <include name="lib/*.*"/>
+  </zipfileset>
+
+  <target name="dist">
+    <ant antfile="build.xml"/>
+  </target>
 </project>

@@ -9,14 +9,17 @@
        (Your editor or IDE has a setting to automatically change your tab
        keystrokes into spaces). -->
 
+  <property file="build.properties" />
+  <!-- This is because build-import.xml uses ${name}: -->
+  <property name="name" value="${ant.project.name}"/>
+
+  <!--    defaults for build.properties:-->
   <import file="build-import.xml" />
 
   <property name="class" location="${build}" />
   <property name="jars" location="${release}" />
-  <property name="webstart" location="${seg}/jnlp" />
+  <property name="webstart" location="jnlp" />
 
-  <property file="build.properties" />
-  <!--    defaults for build.properties:-->
   <property name="keyStore" value="jmeKeyStore" />
   <property name="storepass" value="..." />
   <property name="ftpuser" value="..." />
@@ -260,7 +263,7 @@
          duplicate="fail" compress="true"
          excludes="jmetest/**/data/**, com/**" index="yes">
       <manifest>
-        <attribute name="Implementation-Title" value="${name}" />
+        <attribute name="Implementation-Title" value="${ant.project.name}" />
         <attribute name="Implementation-Vendor" value="${vendor}" />
         <attribute name="Version" value="${major}.${minor}" />
         <attribute name="Class-Path" value="${jarclasspathlibs} ${jarclasspathrelease}" />
@@ -351,10 +354,10 @@
     <signjar jar="${webstart}/jinput-mac.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 
     <!-- Sign the lwjgl jar -->
-    <signjar jar="${seg}/lib/lwjgl/lwjgl.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
-    <signjar jar="${seg}/lib/lwjgl/lwjgl_util.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
-    <signjar jar="${seg}/lib/jorbis/jorbis-0.0.17.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
-    <signjar jar="${seg}/lib/lwjgl/jinput.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+    <signjar jar="lib/lwjgl/lwjgl.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+    <signjar jar="lib/lwjgl/lwjgl_util.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+    <signjar jar="lib/jorbis/jorbis-0.0.17.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+    <signjar jar="lib/lwjgl/jinput.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
   </target>
 
   <target name="nightly" depends="webdist-all, webdist-nativelibs, webdist-test">
