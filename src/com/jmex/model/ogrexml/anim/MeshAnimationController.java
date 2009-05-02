@@ -36,7 +36,6 @@ package com.jmex.model.ogrexml.anim;
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
 import java.util.Map;
-import java.util.Set;
 import com.jme.scene.Controller;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.RenderState;
@@ -214,9 +213,19 @@ public class MeshAnimationController extends Controller implements Savable {
     }
 
     /**
-     * @return A list of all animations that are defined
+     * @deprecated  The name of this method incorrectly implies that a List
+     *              is returned.  Use the method getAnimationNames instead.
+     * @see #getAnimationNames();
      */
+    @Deprecated
     public Collection<String> getList(){
+        return getAnimationNames();
+    }
+
+    /**
+     * @return Collection of list of all animations that are defined
+     */
+    public Collection<String> getAnimationNames(){
         return animationMap.keySet();
     }
 
@@ -439,10 +448,6 @@ public class MeshAnimationController extends Controller implements Savable {
 
     public float getCurTime() { return time; }
 
-    public Set<String> getAnimationNames() {
-        return animationMap.keySet();
-    }
-    
     /**
      * Used only for Saving/Loading models (all parameters of the non-default
      * constructor are restored from the saved model, but the object must be
