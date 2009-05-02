@@ -180,7 +180,7 @@ public final class Skeleton implements Savable {
         InputCapsule input = im.getCapsule(this);
         rootBone = (Bone) input.readSavable("rootBone", null);
         Savable[] boneListAsSavable = input.readSavableArray("boneList", null);
-        ;
+
         boneList = new Bone[boneListAsSavable.length];
         for (int i = 0; i < boneListAsSavable.length; i++)
             boneList[i] = (Bone) boneListAsSavable[i];
