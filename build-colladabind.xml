@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project name="jME-colladabinding" default="dist">
+  <description>
+    Ant Build File for the jME Collada Java/XML Bindings.
+    $Id$
+  </description>
+
+  <property name="javac.debug" value="false"/>
+  <import file="build.xml" />
+
+  <target name="-prep" depends="clean, compile">
+    <available property="_collada_schema_exists" type="dir"
+               file="src/com/jmex/model/collada/schema"/>
+    <available property="_collada_xml_exists" type="dir"
+               file="src/com/jmex/xml"/>
+    <fail unless="_collada_schema_exists"
+          message="You must generate the binding source files under src/com/jmex/model/collada/schema"/>
+    <fail unless="_collada_xml_exists"
+          message="You must generate the binding source files under src/com/jmex/xml"/>
+  </target>
+
+  <target name="dist" description="Build jme-colladabinding jar files"
+          depends="bin-jar, src-jar"/>
+
+  <target name="bin-jar" depends="-prep"
+      description="Build binary jme-colladabinding jar file">
+    <jar destfile="lib/jme-colladabinding.jar" basedir="${class}" update="no"
+          compress="true" duplicate="fail" level="9"
+          includes="com/jmex/model/collada/schema/**, com/jmex/xml/**">
+       <metainf dir="/tmp/man"/>
+       <manifest>
+           <attribute name='Specification-Title' value='jMonkeyEngine'/>
+           <attribute name='Specification-Version' value='2.0'/>
+           <attribute name='Specification-Vendor' value='jMonkeyEngine Team'/>
+           <attribute name='Implementation-Title'
+                      value='Collada XML Bindings'/>
+           <attribute name='Implementation-Version' value='2.0.0'/>
+           <attribute name='Implementation-Vendor' value='jMonkeyEngine Team'/>
+       </manifest>
+    </jar>
+  </target>
+
+  <target name="src-jar" depends="-prep"
+      description="Build binary jme-colladabinding jar file">
+    <jar destfile="lib/jme-colladabinding-src.jar" basedir="${src}"
+         update="no" compress="true" duplicate="fail" level="9"
+         includes="com/jmex/model/collada/schema/**, com/jmex/xml/**">
+       <metainf dir="/tmp/man"/>
+       <manifest>
+           <attribute name='Specification-Title' value='jMonkeyEngine'/>
+           <attribute name='Specification-Version' value='2.0'/>
+           <attribute name='Specification-Vendor' value='jMonkeyEngine Team'/>
+           <attribute name='Implementation-Title'
+                      value='Collada XML Bindings'/>
+           <attribute name='Implementation-Version' value='2.0.0'/>
+           <attribute name='Implementation-Vendor' value='jMonkeyEngine Team'/>
+       </manifest>
+    </jar>
+  </target>
+</project>

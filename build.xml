@@ -62,6 +62,7 @@
       <fileset dir="${src}" includes="com/**" excludes="**/.*/**, **/*.java"/>
     </copy>
     <javac source="${javac.source}" target="${javac.target}"
+           debuglevel="${javac.debuglevel}"
       srcdir="${src}" destdir="${class}" includes="com/**/*.java"
       classpathref="classpath" listfiles="no" fork="true"
       memoryMaximumSize="${javac.maxmem}" debug="${javac.debug}"/>
@@ -201,6 +202,7 @@
 
   <target name="compile-test" depends="compile" description="generate jme test classes">
     <javac source="${javac.source}" target="${javac.target}"
+           debuglevel="${javac.debuglevel}"
       srcdir="${src}" destdir="${class}" includes="jmetest/**/*.java"
       classpathref="classpath" fork="true" memoryMaximumSize="${javac.maxmem}"
       debug="${javac.debug}"/>
