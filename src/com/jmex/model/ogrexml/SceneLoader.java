@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -394,21 +395,29 @@ public class SceneLoader {
     }
 
     /**
+     * Convenience wrapper
+     *
+     * @see #load(URL)
+     */
+    public void load(URI uri) throws IOException, ModelFormatException {
+        load(uri.toURL());
+    }
+
+    /**
      * Adds contents of dotScene file at specified URI onto a scene node,
      * automatically adding the containing directory to the resource locator
      * paths for the duration of the load.
      * The scene node may then be retrieved with getScene().
      * <P>
      * An example of invoking this method for a filesystem file:<CODE><PRE>
-     *  ogreSceneLoader.load(file.toURI());
+     *  ogreSceneLoader.load(file.toURL());
      *  </PRE></CODE>
      * </P>
      *
      * @see #getScene()
      * @see RelativeResourceLocator
      */
-    public void load(URI uri) throws IOException, ModelFormatException {
-        URL url = uri.toURL();
+    public void load(URL url) throws IOException, ModelFormatException {
         if (scene.getName() == null) {
             String urlPath = url.getPath();
             if (urlPath == null) {
@@ -432,7 +441,12 @@ public class SceneLoader {
             }
         }
 
-        ResourceLocator locator = new RelativeResourceLocator(uri);
+        ResourceLocator locator = null;
+        try {
+            locator = new RelativeResourceLocator(url);
+        } catch (URISyntaxException use) {
+            throw new IllegalArgumentException("Bad URL: " + use);
+        }
         ResourceLocatorTool.addResourceLocator(
                 ResourceLocatorTool.TYPE_TEXTURE, locator);
         ResourceLocatorTool.addResourceLocator(

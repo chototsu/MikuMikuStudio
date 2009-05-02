@@ -35,6 +35,7 @@ package com.jme.util.resource;
 import java.net.URLEncoder;
 import java.net.URL;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.io.IOException;
 
 import com.jme.util.resource.ResourceLocator;
@@ -59,6 +60,18 @@ public class RelativeResourceLocator implements ResourceLocator {
 
     public RelativeResourceLocator(URI baseUri) {
         this.baseUri = baseUri;
+    }
+
+    /**
+     * Convenience wrapper
+     *
+     * @throws URISyntaxException if input URL is invalid.
+     *         Only doing this due to Java language contraints.
+     *         Would prefer to throw an unchecked exception for this.
+     * @see #RelativeResourceLocator(URI)
+     */
+    public RelativeResourceLocator(URL baseUrl) throws URISyntaxException {
+        this(baseUrl.toURI());
     }
 
     /*

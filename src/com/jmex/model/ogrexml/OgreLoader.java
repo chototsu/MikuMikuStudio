@@ -37,6 +37,7 @@ import com.jmex.model.ogrexml.anim.*;
 import com.jme.bounding.BoundingBox;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.text.NumberFormat;
@@ -47,7 +48,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.io.InputStream;
 import java.util.HashMap;
-
 import org.w3c.dom.Node;
 
 import com.jme.scene.Spatial;
@@ -56,9 +56,10 @@ import com.jme.scene.Spatial.CullHint;
 import com.jme.scene.TriMesh.Mode;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.resource.ResourceLocatorTool;
-
-import static com.jmex.model.XMLUtil.*;
+import com.jme.util.resource.ResourceLocator;
+import com.jme.util.resource.RelativeResourceLocator;
 import com.jmex.model.ModelFormatException;
+import static com.jmex.model.XMLUtil.*;
 
 /**
  * Loads Ogre MESH.XML and SKELETON.XML files<br/>
@@ -177,12 +178,16 @@ public class OgreLoader {
     }
 
     /**
-     * Load a MESH.XML model from the specified URL.
+     * Load a MESH.XML model from the specified URL,
+     * automatically adding the containing directory to the Model resource
+     * locator paths for the duration of the load (in order to pull in
+     * reference skeletons files).
      *
      * @param url The URL that specifies the mesh.xml file
      * @param nodeName  The name of the generated OgreNode.
      *                  If null, then will use the last segment of the URL.
      * @return The model loaded
+     * @see RelativeResourceLocator
      */
     public OgreEntityNode loadModel(URL url, String nodeName)
             throws IOException, ModelFormatException {
@@ -204,7 +209,25 @@ public class OgreLoader {
         } else {
             name = nodeName;
         }
-        return loadMesh(loadDocument(url.openStream(), "mesh"), name);
+        ResourceLocator locator = null;
+        try {
+            locator = new RelativeResourceLocator(url);
+        } catch (URISyntaxException use) {
+            throw new RuntimeException(use);
+            // Will not get here, since our source URL has been validated.
+        }
+        ResourceLocatorTool.addResourceLocator(
+                ResourceLocatorTool.TYPE_MODEL, locator);
+          // This is to automatically load referenced Skeleton files located
+          // alongside the mesh file.
+        InputStream stream = null;
+        try {
+            return loadMesh(loadDocument(url.openStream(), "mesh"), name);
+        } finally {
+            ResourceLocatorTool.removeResourceLocator(
+                    ResourceLocatorTool.TYPE_MODEL, locator);
+            locator = null;  // Just to encourage GC
+        }
     }
 
     private IntBuffer loadLODFaceList(Node lodfacelistNode){
@@ -563,6 +586,7 @@ public class OgreLoader {
             String name = getAttribute(skeletonlinkNode, "name") + ".xml";
 
             URL skeletonURL = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_MODEL, name);
+logger.severe("Seeking skel model (" + name + ")... w/ URL " + skeletonURL);
 
             if (skeletonURL != null){
                 InputStream in = skeletonURL.openStream();

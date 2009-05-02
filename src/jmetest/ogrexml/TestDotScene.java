@@ -97,7 +97,7 @@ public class TestDotScene extends SimpleGame {
                         "Required runtime resource missing: "
                         + ninjaSceneString);
             ogreSceneLoader = new SceneLoader();
-            ogreSceneLoader.load(sceneUrl.toURI());
+            ogreSceneLoader.load(sceneUrl);
             ogreSceneLoader.setModelsOnly(true);
              // modelsOnly means to ignore lights, cams, env. in scene file.
             rootNode.attachChild(ogreSceneLoader.getScene());
@@ -110,9 +110,6 @@ public class TestDotScene extends SimpleGame {
             logger.log(Level.SEVERE, "Unrecoverable I/O failure", ioe);
             // Not recoverable.
             throw new RuntimeException(ioe);
-        } catch (URISyntaxException use) {
-            // Should not get this, since we are generating URI from a URL.
-            throw new RuntimeException(use);
         } finally {
             ogreSceneLoader = null;  // encourage GC
               // Pretty useless here, but useful in a real app.

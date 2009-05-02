@@ -122,16 +122,12 @@ public class TestTurrentControl extends SimpleGame {
                         "Required runtime resource missing: " + matUrlString);
             try {
                 ResourceLocatorTool.addResourceLocator(
-                        ResourceLocatorTool.TYPE_MODEL,
-                        new RelativeResourceLocator(meshURL.toURI()));
-                  // This causes relative references in the .mesh.xml file to
-                  // resolve to the same dir as the material file (like, for
-                  // the *.skeleton.xml file).
-                ResourceLocatorTool.addResourceLocator(
                         ResourceLocatorTool.TYPE_TEXTURE,
-                        new RelativeResourceLocator(matURL.toURI()));
+                        new RelativeResourceLocator(matURL));
                   // This causes relative references in the .material file to
                   // resolve to the same dir as the material file.
+                  // Don't have to set up a relative locator for TYPE_MODEL
+                  // here, because OgreLoader.loadModel() takes care of that.
             } catch (URISyntaxException use) {
                 // Since we're generating the URI from a URL we know to be
                 // good, we won't get here.  This is just to satisfy the

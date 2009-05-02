@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 import java.net.URL;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -525,6 +526,15 @@ public class MaterialLoader {
     }
 
     /**
+     * Convenience wrapper.
+     *
+     * @see #load(URL)
+     */
+    public void load(URI uri) throws IOException{
+        load(uri.toURL());
+    }
+
+    /**
      * REPLACE the materialsMap of this MaterialLoader instance,
      * automatically adding the containing directory to the resource locator
      * paths for the duration of the load.
@@ -538,9 +548,13 @@ public class MaterialLoader {
      * @see #getMaterials()
      * @see RelativeResourceLocator
      */
-    public void load(URI uri) throws IOException{
-        URL url = uri.toURL();
-        ResourceLocator locator = new RelativeResourceLocator(uri);
+    public void load(URL url) throws IOException{
+        ResourceLocator locator = null;
+        try {
+            locator = new RelativeResourceLocator(url);
+        } catch (URISyntaxException use) {
+            throw new IllegalArgumentException("Bad URL: " + use);
+        }
         ResourceLocatorTool.addResourceLocator(
                 ResourceLocatorTool.TYPE_TEXTURE, locator);
         InputStream stream = null;
