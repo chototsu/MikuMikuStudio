@@ -5,7 +5,7 @@
   <!--  In my opinion, the contents of this file do not nearly justify a
         separate build file.  Ant environment would be simplified, and we
         could simply use "ant.project.name" instead of the derived property
-        "ant" if we just moved everything here into "build.xml".
+        "name" if we just moved everything here into "build.xml".
         I'm leaving things as they are in case somebody depends on this
         file for integration with an IDE or some build framework. -->
   <property file="shared-build.properties"/>
