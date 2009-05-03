@@ -281,12 +281,10 @@ public final class Bone implements Savable{
 
     }
 
-    @Override
     public Class getClassTag() {
         return this.getClass();
     }
 
-    @Override
     public void read(JMEImporter im) throws IOException {
         InputCapsule input = im.getCapsule(this);
 
@@ -311,7 +309,6 @@ public final class Bone implements Savable{
         attachNode = (Node) input.readSavable("attachNode", null);
     }
 
-    @Override
     public void write(JMEExporter ex) throws IOException {
         OutputCapsule output = ex.getCapsule(this);
 

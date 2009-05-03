@@ -170,12 +170,10 @@ public final class Skeleton implements Savable {
 
     }
 
-    @Override
     public Class getClassTag() {
         return this.getClass();
     }
 
-    @Override
     public void read(JMEImporter im) throws IOException {
         InputCapsule input = im.getCapsule(this);
         rootBone = (Bone) input.readSavable("rootBone", null);
@@ -190,7 +188,6 @@ public final class Skeleton implements Savable {
         rootBone.setBindingPose();
     }
 
-    @Override
     public void write(JMEExporter ex) throws IOException {
         OutputCapsule output = ex.getCapsule(this);
         output.write(rootBone, "rootBone", null);
