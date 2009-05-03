@@ -44,7 +44,8 @@ import com.jme.scene.Controller;
  * @author Matthew D. Hicks
  */
 public abstract class TimedLifeController extends Controller {
-	private float lifeInSeconds;
+    private static final long serialVersionUID = 1L;
+    private float lifeInSeconds;
 	private float current;
 	
 	public TimedLifeController(float lifeInSeconds) {

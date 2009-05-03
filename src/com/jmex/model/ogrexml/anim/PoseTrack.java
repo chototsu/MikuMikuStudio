@@ -38,12 +38,16 @@ import java.io.Serializable;
  * A single track of pose animation associated with a certain mesh.
  */
 public final class PoseTrack extends Track implements Serializable{
-
+    private static final long serialVersionUID = 1L;
     private PoseFrame[] frames;
     private float[]     times;
 
     public static class PoseFrame implements Serializable{
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         public PoseFrame(Pose[] poses, float[] weights){
             this.poses = poses;
             this.weights = weights;

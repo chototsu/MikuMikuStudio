@@ -38,7 +38,7 @@ import java.io.Serializable;
  * Combines mesh and bone animations into one class for easier access
  */
 public class Animation implements Serializable{
-
+    private static final long serialVersionUID = 1L;
     private final String name;
     private float length;
 

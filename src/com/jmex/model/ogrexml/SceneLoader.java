@@ -32,6 +32,30 @@
 
 package com.jmex.model.ogrexml;
 
+import static com.jmex.model.XMLUtil.getAttribute;
+import static com.jmex.model.XMLUtil.getChildNode;
+import static com.jmex.model.XMLUtil.getFloatAttribute;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
+
 import com.jme.light.DirectionalLight;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
@@ -39,33 +63,12 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.ResourceLocator;
 import com.jme.util.resource.RelativeResourceLocator;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import java.util.logging.Logger;
-
+import com.jme.util.resource.ResourceLocator;
+import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.model.ModelFormatException;
-import static com.jmex.model.XMLUtil.*;
 
 /**
  * Loads dotScene files.

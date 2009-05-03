@@ -42,7 +42,7 @@ import com.jme.util.Timer;
 
 
 public class MetaBalls extends TriMesh {
-
+    private static final long serialVersionUID = 1L;
     private MetaBallScalarField field;
     private final ScalarFieldPolygonisator polygonisator;
 

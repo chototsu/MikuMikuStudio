@@ -215,7 +215,7 @@ public class TestChooser extends JDialog {
             classname = classname.replace('/', '.');
 
             try {
-                final Class cls = Class.forName(classname);
+                final Class<?> cls = Class.forName(classname);
                 cls.getMethod("main", new Class[] { String[].class });
                 if (!getClass().equals(cls)) {
                     return cls;
@@ -454,7 +454,7 @@ public class TestChooser extends JDialog {
             addDisplayedClasses(classes);
 
             setup(classes);
-            Class cls;
+            Class<?> cls;
             do {
                 setVisible(true);
                 cls = getSelectedClass();

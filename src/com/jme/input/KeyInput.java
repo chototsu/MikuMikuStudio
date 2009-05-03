@@ -591,7 +591,7 @@ public abstract class KeyInput extends Input {
      *
      * @return currently selected provider
      */
-    public static Class getProvider() {
+    public static Class<?> getProvider() {
         return provider;
     }
 

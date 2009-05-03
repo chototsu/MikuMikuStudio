@@ -34,7 +34,6 @@ package com.jme.scene.state;
 
 import java.io.IOException;
 
-import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -155,7 +154,7 @@ public abstract class CullState extends RenderState {
         polygonWind = capsule.readEnum("polygonWind", PolygonWind.class, PolygonWind.CounterClockWise);
     }
 
-    public Class getClassTag() {
+    public Class<?> getClassTag() {
         return CullState.class;
     }
 }

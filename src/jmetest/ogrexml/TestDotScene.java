@@ -33,22 +33,19 @@
 package jmetest.ogrexml;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jmex.model.ModelFormatException;
 import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
-import com.jme.system.DisplaySystem;
-import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.ClasspathResourceLocator;
-import com.jmex.model.ogrexml.SceneLoader;
 import com.jme.scene.Spatial;
-import com.jme.scene.Node;
+import com.jme.system.DisplaySystem;
+import com.jme.util.resource.ClasspathResourceLocator;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jmex.model.ModelFormatException;
+import com.jmex.model.ogrexml.SceneLoader;
 import com.jmex.model.ogrexml.anim.MeshAnimationController;
 
 /**

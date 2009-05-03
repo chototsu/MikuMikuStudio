@@ -37,7 +37,7 @@ import com.jme.scene.Controller;
 import com.jme.system.DisplaySystem;
 
 public class MeshLodController extends Controller {
-
+ static final long serialVersionUID = 1L;
     private MeshAnimationController animControl;
 
     public MeshLodController(MeshAnimationController animControl){

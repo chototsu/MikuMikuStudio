@@ -39,7 +39,6 @@ import java.util.logging.Logger;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
-import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.TextureManager;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;

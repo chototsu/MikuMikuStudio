@@ -32,16 +32,12 @@
 
 package com.jme.util.resource;
 
-import java.net.URLEncoder;
-import java.net.URL;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-//import java.io.UnsupportedEncodingException;
-import java.io.IOException;
-import java.util.regex.Pattern;
+import java.net.URL;
 import java.util.logging.Logger;
-
-import com.jme.util.resource.ResourceLocator;
+import java.util.regex.Pattern;
 
 /**
  * A conservative ResourceLocator implementation that only resolves resources

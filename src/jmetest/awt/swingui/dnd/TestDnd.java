@@ -15,7 +15,6 @@ import javax.swing.JLabel;
 import com.jme.bounding.BoundingSphere;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.MouseInput;
-import com.jme.input.MouseLookHandler;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;

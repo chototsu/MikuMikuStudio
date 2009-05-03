@@ -41,6 +41,7 @@ import com.jme.math.Vector3f;
  * Contains a list of transforms and times for each keyframe.
  */
 public final class BoneTrack implements Serializable{
+    private static final long serialVersionUID = 1L;
 
     /**
      * Bone index in the skeleton which this track effects.

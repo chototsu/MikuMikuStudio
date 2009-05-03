@@ -33,7 +33,6 @@
 package com.jme.scene;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.util.geom.BufferUtils;
@@ -45,6 +44,8 @@ import com.jme.util.geom.BufferUtils;
  * @author YongHoon Lim (mulova)
  */
 public class Circle extends Line {
+    private static final long serialVersionUID = 1L;
+
 
     /**
      * create line with

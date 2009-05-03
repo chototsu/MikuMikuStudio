@@ -39,7 +39,7 @@ import java.io.Serializable;
  * Currently morph animations are not supported (only pose).
  */
 public abstract class Track implements Serializable{
-
+    private static final long serialVersionUID = 1L;
     protected final int targetMeshIndex;
 
     public Track(int targetMeshIndex){

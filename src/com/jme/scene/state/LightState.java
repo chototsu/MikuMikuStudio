@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 import com.jme.light.Light;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -369,7 +368,7 @@ public abstract class LightState extends RenderState {
         separateSpecularOn = capsule.readBoolean("separateSpecularOn", false);
     }
     
-    public Class getClassTag() {
+    public Class<?> getClassTag() {
         return LightState.class;
     }
 }

@@ -39,7 +39,7 @@ import java.io.Serializable;
  * to apply the animation.
  */
 public final class BoneAnimation implements Serializable{
-
+    private static final long serialVersionUID = 1L;
     private final String name;
     private final float length;
 

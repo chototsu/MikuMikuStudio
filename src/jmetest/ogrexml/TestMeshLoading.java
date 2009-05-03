@@ -32,8 +32,12 @@
 
 package jmetest.ogrexml;
 
-import com.jmex.model.ogrexml.*;
-import com.jmex.model.ModelFormatException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -41,7 +45,6 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.Spatial.LightCombineMode;
@@ -52,18 +55,18 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.ResourceLocator;
 import com.jme.util.resource.ClasspathResourceLocator;
 import com.jme.util.resource.RelativeResourceLocator;
+import com.jme.util.resource.ResourceLocator;
+import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
-import com.jmex.model.ogrexml.anim.*;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.jmex.model.ModelFormatException;
+import com.jmex.model.ogrexml.MaterialLoader;
+import com.jmex.model.ogrexml.MeshCloner;
+import com.jmex.model.ogrexml.OgreLoader;
+import com.jmex.model.ogrexml.anim.Bone;
+import com.jmex.model.ogrexml.anim.MeshAnimationController;
 
 public class TestMeshLoading extends SimpleGame {
 

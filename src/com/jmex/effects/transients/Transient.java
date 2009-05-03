@@ -45,6 +45,7 @@ import com.jme.scene.Node;
  * @author Jack Lindamood (javadoc only)
  */
 public abstract class Transient extends Node {
+    private static final long serialVersionUID = 1L;
     private int maxNumOfStages, currentStage;
     /**
      * Creates a Transient Node.  Nothing is intialized by default.

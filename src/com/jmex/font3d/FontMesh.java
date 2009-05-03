@@ -37,6 +37,7 @@ import com.jme.scene.TriMesh;
  * @author Pirx
  */
 public class FontMesh extends TriMesh {
+    private static final long serialVersionUID = 1L;
     /*
      * private static final long serialVersionUID = 1L; private String text;
      * private Font font; private float extrusion; private double flatness;

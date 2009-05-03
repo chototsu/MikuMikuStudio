@@ -39,12 +39,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 import com.jme.image.Texture;
@@ -64,9 +63,9 @@ import com.jme.scene.state.BlendState.DestinationFunction;
 import com.jme.scene.state.BlendState.SourceFunction;
 import com.jme.scene.state.BlendState.TestFunction;
 import com.jme.util.TextureManager;
+import com.jme.util.resource.RelativeResourceLocator;
 import com.jme.util.resource.ResourceLocator;
 import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.RelativeResourceLocator;
 
 /**
  * Reads OGRE3D material files<br/>

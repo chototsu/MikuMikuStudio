@@ -46,6 +46,7 @@ import java.nio.FloatBuffer;
  * to do skinning.
  */
 public final class WeightBuffer implements Serializable{
+    private static final long serialVersionUID = 1L;
 
     /**
      * Each 4 bytes in the boneIndex buffer are assigned to a vertex.

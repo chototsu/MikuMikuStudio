@@ -32,18 +32,18 @@
 
 package com.jmex.model.ogrexml.anim;
 
+import static com.jmex.model.XMLUtil.getAttribute;
+import static com.jmex.model.XMLUtil.getIntAttribute;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import com.jmex.model.XMLUtil;
 import com.jme.math.Vector3f;
-import com.jme.scene.TriMesh;
+import com.jmex.model.XMLUtil;
 import com.jmex.model.ogrexml.anim.PoseTrack.PoseFrame;
-
-import java.util.Map;
-import static com.jmex.model.XMLUtil.*;
 
 /**
  * Utility class used by OgreLoader to load poses and mesh animations.

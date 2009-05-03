@@ -33,7 +33,6 @@
 
 package com.jmex.model;
 
-import java.io.IOException;
 
 /**
  * Exception signifying an external model file format violation.

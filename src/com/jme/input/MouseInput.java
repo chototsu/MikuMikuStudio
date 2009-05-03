@@ -85,7 +85,7 @@ public abstract class MouseInput extends Input {
      *
      * @return currently selected provider
      */
-    public static Class getProvider() {
+    public static Class<?> getProvider() {
         return provider;
     }
 

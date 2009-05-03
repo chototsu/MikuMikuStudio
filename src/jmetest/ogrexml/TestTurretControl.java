@@ -32,8 +32,12 @@
 
 package jmetest.ogrexml;
 
-import com.jmex.model.ogrexml.*;
-import com.jmex.model.ModelFormatException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
@@ -41,17 +45,13 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.ResourceLocator;
-import com.jme.util.resource.ClasspathResourceLocator;
 import com.jme.util.resource.RelativeResourceLocator;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jmex.model.ModelFormatException;
+import com.jmex.model.ogrexml.MaterialLoader;
+import com.jmex.model.ogrexml.OgreLoader;
 import com.jmex.model.ogrexml.anim.Bone;
 import com.jmex.model.ogrexml.anim.MeshAnimationController;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TestTurretControl extends SimpleGame {
 

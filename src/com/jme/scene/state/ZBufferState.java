@@ -34,7 +34,6 @@ package com.jme.scene.state;
 
 import java.io.IOException;
 
-import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -183,7 +182,7 @@ public abstract class ZBufferState extends RenderState {
         writable = capsule.readBoolean("writable", true);
     }
 
-    public Class getClassTag() {
+    public Class<?> getClassTag() {
         return ZBufferState.class;
     }
 }

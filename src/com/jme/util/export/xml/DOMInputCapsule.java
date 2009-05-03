@@ -49,10 +49,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.jme.image.Texture;
-import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
-import com.jme.system.DisplaySystem;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.InputCapsule;
@@ -850,7 +848,6 @@ public class DOMInputCapsule implements InputCapsule {
     private Savable[] readRenderStateList(Element fromElement, Savable[] defVal) {
         Savable[] ret = defVal;
         try {
-            Renderer r = DisplaySystem.getDisplaySystem().getRenderer();
             int size = RenderState.StateType.values().length;
             Savable[] tmp = new Savable[size];
             currentElem = findFirstChildElement(fromElement);
