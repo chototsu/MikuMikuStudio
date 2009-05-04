@@ -585,19 +585,23 @@ public class OgreLoader {
         if (skeletonlinkNode != null){
             String name = getAttribute(skeletonlinkNode, "name") + ".xml";
 
-            URL skeletonURL = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_MODEL, name);
-logger.severe("Seeking skel model (" + name + ")... w/ URL " + skeletonURL);
+            URL skeletonURL = ResourceLocatorTool.locateResource(
+                    ResourceLocatorTool.TYPE_MODEL, name);
 
-            if (skeletonURL != null){
+            if (skeletonURL != null) {
                 InputStream in = skeletonURL.openStream();
                 Node skeletonNode = loadDocument(in, "skeleton");
-                if (skeletonNode != null){
+                if (skeletonNode == null) {
+                    logger.warning("Proceeding without skeleton because could "
+                            + "not access the skeleton file");
+                } else {
                     skeleton = SkeletonLoader.loadSkeleton(skeletonNode);
 
                     Node animationsNode = getChildNode(skeletonNode, "animations");
                     if (animationsNode != null){
                         BoneAnimationLoader.loadAnimations(animationsNode, skeleton, animations);
                     }
+                    logger.finest("Successfully loaded bone animations");
                 }
                 in.close();
             }
@@ -706,6 +710,9 @@ logger.severe("Seeking skel model (" + name + ")... w/ URL " + skeletonURL);
                                                                              animations);
             rootnode.addController(controller);
         }
+        logger.finer(
+                Integer.toString(animations.size())
+                +  " animations loaded for Mesh " + rootnode.getName());
 
         rootnode.setModelBound(new BoundingBox());
         rootnode.updateModelBound();
@@ -715,6 +722,4 @@ logger.severe("Seeking skel model (" + name + ")... w/ URL " + skeletonURL);
 
         return rootnode;
     }
-
-
 }
