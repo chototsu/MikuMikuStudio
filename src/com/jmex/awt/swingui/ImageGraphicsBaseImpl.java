@@ -81,6 +81,7 @@ public abstract class ImageGraphicsBaseImpl extends ImageGraphics {
     private Rectangle imageBounds;
     private Rectangle clip = new Rectangle();
     private Rectangle tmp_dirty = new Rectangle();
+    protected AffineTransform tx = new AffineTransform();
     protected float scaleX = 1;
     protected float scaleY = 1;
 
@@ -697,13 +698,13 @@ public abstract class ImageGraphicsBaseImpl extends ImageGraphics {
     }
 
     public void transform( AffineTransform Tx ) {
-        throw new UnsupportedOperationException();
-//        delegate.transform( Tx );
+        tx.setTransform(Tx);
+        delegate.transform( Tx );
     }
 
     public void setTransform( AffineTransform Tx ) {
-        throw new UnsupportedOperationException();
-//        delegate.setTransform( Tx );
+        tx.setTransform(Tx);
+        delegate.setTransform( Tx );
     }
 
     public AffineTransform getTransform() {
