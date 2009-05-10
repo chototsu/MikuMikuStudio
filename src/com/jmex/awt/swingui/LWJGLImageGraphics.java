@@ -85,7 +85,7 @@ class LWJGLImageGraphics extends ImageGraphicsBaseImpl {
         synchronized ( dirty ) {
             if (!tx.isIdentity()) {
                 dirty.setBounds(getImageBounds());
-            } else if ( !dirty.isEmpty()) {
+            } else if ( !dirty.isEmpty() && isExpandDirtyRegion() ) {
                 dirty.grow( 2, 2 ); // to prevent antialiasing problems
             }
             Rectangle2D.intersect( dirty, getImageBounds(), dirty );
