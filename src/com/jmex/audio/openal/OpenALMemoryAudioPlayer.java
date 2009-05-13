@@ -100,7 +100,7 @@ public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
                 return;
             }
     
-            source = ((OpenALSystem) AudioSystem.getSystem()).getNextFreeSource();
+            source = ((OpenALSystem) AudioSystem.getSystem()).getNextFreeMemorySource();
             if (source == null) return;
             source.setTrack(getTrack());
             applyTrackProperties();

@@ -68,6 +68,7 @@ public abstract class AudioSystem {
     public abstract void update();
     public abstract AudioTrack createAudioTrack(URL resource, boolean stream);
     public abstract AudioTrack createAudioTrack(String resource, boolean stream);
+    public abstract void releaseTrack(AudioTrack track);
     
     public void mute() {
         muted = true;

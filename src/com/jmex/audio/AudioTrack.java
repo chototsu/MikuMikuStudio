@@ -89,6 +89,7 @@ public abstract class AudioTrack {
     private URL resource = null;
     private boolean streaming;
     private boolean enabled = true;
+    private boolean isStopped = false;
     private AudioTrack.TrackType type;
 
     private ArrayList<TrackStateListener> trackListeners = new ArrayList<TrackStateListener>();
@@ -110,6 +111,7 @@ public abstract class AudioTrack {
     public void play() {
         if (enabled) {
             try {
+                isStopped = false;
                 // init from current volume.
                 player.setVolume(getVolume());
 
@@ -123,8 +125,11 @@ public abstract class AudioTrack {
     }
 
     public void stop() {
-        player.stop();
-        fireTrackStopped();
+        if (!isStopped) {
+            isStopped = true;
+            player.stop();
+            fireTrackStopped();
+        }
     }
 
     public void setLooping(boolean shouldLoop) {
@@ -407,7 +412,13 @@ public abstract class AudioTrack {
     public AudioTrack.TrackType getType() {
         return type;
     }
+    
     public void setType(AudioTrack.TrackType type) {
         this.type = type;
+    }
+    
+    public void release() {
+        AudioSystem.getSystem().releaseTrack(this);
+        clearTrackStateListeners();
     }
 }

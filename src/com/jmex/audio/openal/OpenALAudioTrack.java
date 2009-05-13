@@ -32,19 +32,17 @@
 
 package com.jmex.audio.openal;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jcraft.jorbis.JOrbisException;
-import com.jcraft.jorbis.VorbisFile;
+import sun.audio.AudioStream;
+
+import com.jmex.audio.AudioSystem;
 import com.jmex.audio.AudioTrack;
+import com.jmex.audio.player.AudioPlayer;
 import com.jmex.audio.stream.AudioInputStream;
-import com.jmex.audio.stream.OggInputStream;
-import com.jmex.audio.stream.WavInputStream;
 import com.jmex.audio.util.AudioLoader;
 
 /**
@@ -61,30 +59,8 @@ public class OpenALAudioTrack extends AudioTrack {
         if (resource != null) {
             if (stream) {
                 try {
-                    Format type = AudioInputStream.sniffFormat(resource.openStream());
-                    if (Format.WAV.equals(type)) {
-                        WavInputStream inputStream = new WavInputStream(resource);
-                        setPlayer(new OpenALStreamedAudioPlayer(inputStream, this));
-                    } else if (Format.OGG.equals(type)) {
-                        float length = -1; 
-                        try {
-                            VorbisFile vf;
-                            if (!resource.getProtocol().equals("file")) {
-                                vf = new VorbisFile(resource.openStream(),
-                                        null, 0);
-                            } else {
-                                vf = new VorbisFile(
-                                        URLDecoder.decode(new File(resource.getFile()).getPath(), "UTF-8"));
-                            }
-                            length = vf.time_total(-1);
-                        } catch (JOrbisException e) {
-                            logger.log(Level.WARNING, "Error creating VorbisFile", e);
-                        }
-                        OggInputStream inputStream = new OggInputStream(resource, length);
-                        setPlayer(new OpenALStreamedAudioPlayer(inputStream, this));
-                    } else {
-                        throw new IllegalArgumentException("Given url is not a recognized audio type. Must be OGG or RIFF/WAV: "+resource);
-                    }
+                    AudioInputStream in = AudioLoader.openStream(resource);
+                    setPlayer(new OpenALStreamedAudioPlayer(in, this));
                     getPlayer().init();
                 } catch (IOException e) {
                     logger.logp(Level.SEVERE, this.getClass().toString(),
@@ -114,4 +90,29 @@ public class OpenALAudioTrack extends AudioTrack {
         setPlayer(new OpenALStreamedAudioPlayer(inputStream, this));
     }
 
+    /**
+     * Set resource this audio track will play. If it is streamed, change the stream as well.
+     * @see com.jmex.audio.AudioTrack#setResource(java.net.URL)
+     */
+    @Override
+    public void setResource(URL resource) {
+        super.setResource(resource);
+        AudioPlayer player = getPlayer();
+        if (player instanceof OpenALStreamedAudioPlayer) {
+            OpenALStreamedAudioPlayer streamedPlayer = (OpenALStreamedAudioPlayer)getPlayer();
+            AudioInputStream oldStream = streamedPlayer.getStream();
+            try {
+                if (oldStream != null) {
+                    oldStream.close();
+                }
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Can't close stream", e);
+            }
+            try {
+                streamedPlayer.setStream(AudioLoader.openStream(resource));
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Can't open stream", e);
+            }
+        }
+    }
 }

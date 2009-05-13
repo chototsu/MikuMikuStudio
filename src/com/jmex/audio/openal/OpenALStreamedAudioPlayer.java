@@ -119,19 +119,26 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
     }
 
     public void stop() {
-        synchronized (this) {
-            if (source == null)
-                return;
-            isStopped = true;
-            AL10.alSourceStop(source.getId());
-            empty();
-            for (int x = 0; x < BUFFER_COUNT; x++) {
-                if (!openBuffers.contains(buffers.get(x)))
-                    openBuffers.add(buffers.get(x));
-            }
-            source = null;
-            getTrack().stop(); // enforce states and event firing
-        }
+    	if (playerThread != null) {
+    	    if (source == null)
+    	        return;
+    	    synchronized (this) {
+    	        playerThread.interrupt();
+    	        AL10.alSourceStop(source.getId());
+    	        isStopped = true;
+    	        empty();
+    	        playerThread = null;
+    	        source = null;
+    	    }
+    	}
+    }
+    
+    
+    /**
+     * Called when the stream reached end of file.
+     */
+    protected void onFinish() {
+        getTrack().stop(); // enforce states and event firing
     }
 
     @Override
@@ -144,8 +151,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
                 return;
             }
 
-            source = ((OpenALSystem) AudioSystem.getSystem())
-                    .getNextFreeSource();
+            source = ((OpenALSystem) AudioSystem.getSystem()).getNextFreeStreamSource();
             if (source == null) return;
             source.setTrack(getTrack());
             applyTrackProperties();
@@ -180,11 +186,12 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
      */
     public boolean playStream() {
         isStopped = false;
+        
         if (isPlaying()) {
             return true;
         }
-
-        if (openBuffers.size() > 0)
+        
+        if (openBuffers.size() > 0) {
             for (int i = 0; i < BUFFER_COUNT; i++) {
                 int id = openBuffers.remove(openBuffers.size() - 1);
                 if (!stream(id)) {
@@ -195,6 +202,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
                 idBuffer.rewind();
                 AL10.alSourceQueueBuffers(source.getId(), idBuffer);
             }
+        }
 
         AL10.alSourcePlay(source.getId());
         setStartTime(System.currentTimeMillis());
@@ -257,15 +265,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
 
         boolean active = true;
 
-        int processed = AL10.alGetSourcei(source.getId(),
-                AL10.AL_BUFFERS_PROCESSED);
-
-        while (processed-- > 0) {
-            AL10.alSourceUnqueueBuffers(source.getId(), idBuffer);
-            openBuffers.add(idBuffer.get(0));
-
-            idBuffer.rewind();
-        }
+        unqueueBuffer();
 
         boolean starved = false;
         // Possibly starved the stream.
@@ -276,19 +276,20 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
         while (openBuffers.size() > 0) {
             int id = openBuffers.remove(0);
             active = stream(id);
-            if (!active) {
-                isStopped = true;
+            if (active) {
+                idBuffer.put(0, id);
+                idBuffer.rewind();
+                AL10.alSourceQueueBuffers(source.getId(), idBuffer);
                 break;
             }
-            idBuffer.put(0, id);
-            idBuffer.rewind();
-            AL10.alSourceQueueBuffers(source.getId(), idBuffer);
         }
 
         if (active && starved && !isPlaying())
             AL10.alSourcePlay(source.getId());
         return active;
     }
+
+    
 
     /**
      * reloads a buffer
@@ -339,6 +340,22 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
         while (queued-- > 0) {
             AL10.alSourceUnqueueBuffers(source.getId(), idBuffer);
         }
+        for (int x = 0; x < BUFFER_COUNT; x++) {
+            int id = buffers.get(x);
+            if (!openBuffers.contains(id)) {
+                openBuffers.add(id);
+            }
+        }
+    }
+    
+    private void unqueueBuffer() {
+        int processed = AL10.alGetSourcei(source.getId(), AL10.AL_BUFFERS_PROCESSED);
+
+        while (processed-- > 0) {
+            AL10.alSourceUnqueueBuffers(source.getId(), idBuffer);
+            openBuffers.add(idBuffer.get(0));
+            idBuffer.rewind();
+        }
     }
 
     /**
@@ -353,18 +370,19 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
         PlayerThread(long interval) {
             this.interval = interval;
             setDaemon(true);
+            source.setState(AL10.AL_PLAYING);
         }
 
         /** Calls update at an interval */
         public void run() {
             try {
-                while (!isStopped && update()) {
+                while (!isStopped && update() && !isInterrupted()) {
                     sleep(interval);
                 }
-                while (isActive()) {
+                while (isActive() && !isInterrupted()) {
                     sleep(interval);
                 }
-                OpenALStreamedAudioPlayer.this.stop();
+                onFinish();
             } catch (Exception e) {
 //                e.printStackTrace();
             }

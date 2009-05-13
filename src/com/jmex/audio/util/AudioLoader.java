@@ -33,17 +33,23 @@
 package com.jmex.audio.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.jcraft.jorbis.JOrbisException;
+import com.jcraft.jorbis.VorbisFile;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.audio.AudioBuffer;
 import com.jmex.audio.AudioTrack.Format;
+import com.jmex.audio.openal.OpenALStreamedAudioPlayer;
 import com.jmex.audio.stream.AudioInputStream;
 import com.jmex.audio.stream.OggInputStream;
 import com.jmex.audio.stream.WavInputStream;
@@ -59,13 +65,41 @@ public class AudioLoader {
 
     public static void fillBuffer(AudioBuffer buffer, URL file) throws IOException {
         if (file == null) return;
-        Format type = AudioInputStream.sniffFormat(file.openStream());
+        InputStream is = file.openStream();
+        Format type = AudioInputStream.sniffFormat(is);
+        is.close();
         if (Format.WAV.equals(type)) {
             loadWAV(buffer, file);
         } else if (Format.OGG.equals(type)) {
             loadOGG(buffer, file);
         } else {
             throw new IllegalArgumentException("Given url is not a recognized audio type. Must be OGG or RIFF/WAV: "+file);
+        }
+    }
+    
+    public static AudioInputStream openStream(URL resource) throws IOException {
+        InputStream is = resource.openStream();
+        Format type = AudioInputStream.sniffFormat(is);
+        is.close();
+        if (Format.WAV.equals(type)) {
+            return new WavInputStream(resource);
+        } else if (Format.OGG.equals(type)) {
+            float length = -1; 
+            try {
+                VorbisFile vf;
+                if (!resource.getProtocol().equals("file")) {
+                    vf = new VorbisFile(resource.openStream(), null, 0);
+                } else {
+                    vf = new VorbisFile(
+                            URLDecoder.decode(new File(resource.getFile()).getPath(), "UTF-8"));
+                }
+                length = vf.time_total(-1);
+            } catch (JOrbisException e) {
+                logger.log(Level.WARNING, "Error creating VorbisFile", e);
+            }
+            return new OggInputStream(resource, length);
+        } else {
+            throw new IOException("Given url is not a recognized audio type. Must be OGG or RIFF/WAV: "+resource);
         }
     }
 
