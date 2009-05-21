@@ -501,6 +501,7 @@ public abstract class Texture implements Savable {
     	 */
     	Intensity,
     	Alpha4, Alpha8, Alpha12, Alpha16, 
+    	Depth16, Depth24, Depth32,
     	Luminance4, Luminance8, Luminance12, Luminance16, 
 		  Luminance4Alpha4,Luminance6Alpha2, Luminance8Alpha8,Luminance12Alpha4,
 		  Luminance12Alpha12, Luminance16Alpha16, 

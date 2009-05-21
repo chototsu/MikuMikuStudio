@@ -61,8 +61,22 @@ public final class JOGLContextCapabilities {
     // TODO Due to JOGL buffer check, you can't use smaller sized
     // buffers (min_size = 16) for glGetFloat().
     private final FloatBuffer floatBuf = BufferUtils.createFloatBuffer(16);
+    
+    public boolean GL_VERSION_1_1;
 
     public boolean GL_VERSION_1_2;
+    
+    public boolean GL_VERSION_1_3;
+    
+    public boolean GL_VERSION_1_4;
+    
+    public boolean GL_VERSION_1_5;
+    
+    public boolean GL_VERSION_2_0;
+    
+    public boolean GL_VERSION_2_1;
+    
+    public boolean GL_VERSION_3_0;
 
     public boolean GL_ARB_imaging;
 
@@ -157,7 +171,14 @@ public final class JOGLContextCapabilities {
         // See Renderer
         GL_ARB_vertex_buffer_object = gl
                 .isExtensionAvailable("GL_ARB_vertex_buffer_object");
+        GL_VERSION_1_1 = gl.isExtensionAvailable("GL_VERSION_1_1");
         GL_VERSION_1_2 = gl.isExtensionAvailable("GL_VERSION_1_2");
+        GL_VERSION_1_3 = gl.isExtensionAvailable("GL_VERSION_1_3");
+        GL_VERSION_1_4 = gl.isExtensionAvailable("GL_VERSION_1_4");
+        GL_VERSION_1_5 = gl.isExtensionAvailable("GL_VERSION_1_5");
+        GL_VERSION_2_0 = gl.isExtensionAvailable("GL_VERSION_2_0");
+        GL_VERSION_2_1 = gl.isExtensionAvailable("GL_VERSION_2_1");
+        GL_VERSION_3_0 = gl.isExtensionAvailable("GL_VERSION_3_0");
 
         // See BlendState
         GL_ARB_imaging = gl.isExtensionAvailable("GL_ARB_imaging");
