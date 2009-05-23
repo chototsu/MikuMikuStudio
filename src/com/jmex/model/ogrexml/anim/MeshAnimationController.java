@@ -243,11 +243,19 @@ public class MeshAnimationController extends Controller implements Savable {
     }
 
     /**
+     * @deprecated  Use setCurTime
+     * @see #setCurTime(float)
+     */
+    public void setTime(float time){
+        setCurTime(time);
+    }
+
+    /**
      * Sets the time of the animation.
      * If it's greater than getAnimationLength(getActiveAnimation()),
      * the time will be appropriately clamped/wraped depending on the repeatMode.
      */
-    public void setTime(float time){
+    public void setCurTime(float time){
         this.time = time;
     }
 

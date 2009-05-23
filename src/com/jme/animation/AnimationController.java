@@ -35,6 +35,7 @@ package com.jme.animation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.jme.math.FastMath;
 import com.jme.scene.Controller;
@@ -62,6 +63,8 @@ import com.jme.util.export.Savable;
  *
  */
 public class AnimationController extends Controller implements Savable {
+    private static final Logger logger =
+            Logger.getLogger(AnimationController.class .getName());
     private static final long serialVersionUID = 1L;
 
     private ArrayList<BoneAnimation> animationSets;
@@ -498,5 +501,58 @@ public class AnimationController extends Controller implements Savable {
 
     public void setProps(AnimationProperties props) {
         this.props = props;
+    }
+
+    /**
+     * Has no effect, and that is misleading.
+     * Should just throw.  Does not in order to not break apps that now call it.
+     */
+    public void setMaxTime(float minTime) {
+        /* TODO:  Implement.
+         * This should set the keyFrameTime of the end fame of the current
+         * BoneAnimation, but needs to verify that it is higher than
+         * keyFrameTime[endFrame-1].
+         */
+        logger.warning(AnimationController.class.getName()
+                + ".setMaxTime() does nothing.  Needs to be implemented.");
+        super.setMaxTime(minTime);
+        // for the unlikely case that somebody runtime-overrides
+        // Controller.setMaxTime().
+    }
+
+    /**
+     * Has no effect, and that is misleading.
+     * Should just throw.  Does not in order to not break apps that now call it.
+     */
+    public void setMinTime(float minTime) {
+        /* TODO:  Implement.
+         * This should set the keyFrameTime of the start fame of the current
+         * BoneAnimation, but needs to verify that it is lower than
+         * keyFrameTime[startFrame+1].
+         */
+        logger.warning(AnimationController.class.getName()
+                + ".setMinTime() does nothing.  Needs to be implemented.");
+        // for the unlikely case that somebody runtime-overrides
+        // Controller.setMinTime().
+    }
+
+    public float getMinTime() {
+        if (activeAnimation == null)
+            throw new IllegalStateException("No animation is active");
+        return activeAnimation.getKeyFrameTimes()[
+                activeAnimation.getStartFrame()];
+    }
+
+    public float getMaxTime() {
+        if (activeAnimation == null)
+            throw new IllegalStateException("No animation is active");
+        return activeAnimation.getKeyFrameTimes()[
+                activeAnimation.getEndFrame()];
+    }
+
+    public float getCurTime() {
+        if (activeAnimation == null)
+            throw new IllegalStateException("No animation is active");
+        return activeAnimation.getCurrentTime();
     }
 }
