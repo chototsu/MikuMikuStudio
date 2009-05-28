@@ -85,7 +85,7 @@ public class TestDome extends SimpleGame {
 	protected void simpleInitGame() {
 		display.setTitle("jME - Dome");
 
-		dome = new Dome("My Dome", null, 20, 20, 20);
+		dome = new Dome("My Dome", new Vector3f(), 20, 20, 20);
 		dome.setLocalTranslation(new Vector3f(0, 0, -40));
 		dome.setModelBound(new BoundingBox());
 		dome.updateModelBound();
