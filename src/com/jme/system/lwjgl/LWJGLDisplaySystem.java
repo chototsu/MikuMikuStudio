@@ -670,5 +670,18 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             Display.setLocation(locX, locY);
         }
     }
-
+    
+    /**
+     * Initializes the displaysystem for use in Applets.
+     * @param w width of the applet
+     * @param h height of the applet
+     */
+    public void initForApplet(int w, int h) {
+        renderer = new LWJGLRenderer(w, h);
+    	switchContext(this);
+        renderer.setHeadless(true);
+        currentContext.setupRecords(renderer);
+        DisplaySystem.updateStates(renderer);
+        created = true;
+    }
 }
