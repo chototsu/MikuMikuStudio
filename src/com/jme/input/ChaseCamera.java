@@ -32,7 +32,7 @@
 
 package com.jme.input;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.math.FastMath;
@@ -121,7 +121,7 @@ public class ChaseCamera extends InputHandler {
 
     /**
      * More involved constructor allowing the setting of all member fields in
-     * ChaseCamera and its associated ThirdPersonMouseLook object via a HashMap
+     * ChaseCamera and its associated ThirdPersonMouseLook object via a Map
      * of properties.
      *
      * @param cam
@@ -133,7 +133,7 @@ public class ChaseCamera extends InputHandler {
      *            from the statics ChaseCamera.PROP_XXXX and
      *            ThirdPersonMouseLook.PROP_XXXX
      */
-    public ChaseCamera(Camera cam, Spatial target, HashMap<String, Object> props) {
+    public ChaseCamera(Camera cam, Spatial target, Map<String, Object> props) {
         super();
         this.cam = cam;
         this.target = target;
@@ -163,7 +163,7 @@ public class ChaseCamera extends InputHandler {
      *
      * @param props
      */
-    public void updateProperties(HashMap<String, Object> props) {
+    public void updateProperties(Map<String, Object> props) {
         if (mouseLook != null)
             mouseLook.updateProperties(props);
 

@@ -32,7 +32,7 @@
 
 package com.jme.input.thirdperson;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.jme.input.ChaseCamera;
 import com.jme.input.InputHandler;
@@ -127,7 +127,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * <code>updateProperties</code>
      * @param props
      */
-    public void updateProperties(HashMap<String, Object> props) {
+    public void updateProperties(Map<String, Object> props) {
         maxAscent = InputHandler.getFloatProp(props, PROP_MAXASCENT, DEFAULT_MAXASCENT);
         minAscent = InputHandler.getFloatProp(props, PROP_MINASCENT, DEFAULT_MINASCENT);
         maxRollOut = InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MAXROLLOUT);

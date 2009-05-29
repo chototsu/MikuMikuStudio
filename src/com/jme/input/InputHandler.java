@@ -35,7 +35,6 @@ package com.jme.input;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -443,7 +442,7 @@ public class InputHandler {
     }
 
 
-    public static float getFloatProp( HashMap<String, Object> props, String key, float defaultVal ) {
+    public static float getFloatProp( Map<String, Object> props, String key, float defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
@@ -451,7 +450,7 @@ public class InputHandler {
         return Float.parseFloat( props.get( key ).toString() );        
     }
 
-    public static int getIntProp( HashMap<String, Object> props, String key, int defaultVal ) {
+    public static int getIntProp( Map<String, Object> props, String key, int defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
@@ -459,7 +458,7 @@ public class InputHandler {
         return Integer.parseInt( props.get( key ).toString() );        
     }
 
-    public static boolean getBooleanProp( HashMap<String, Object> props, String key, boolean defaultVal ) {
+    public static boolean getBooleanProp( Map<String, Object> props, String key, boolean defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
@@ -467,7 +466,7 @@ public class InputHandler {
         return "true".equalsIgnoreCase( props.get( key ).toString() );        
     }
 
-    public static Object getObjectProp( HashMap<String, Object> props, String key, Object defaultVal ) {
+    public static Object getObjectProp( Map<String, Object> props, String key, Object defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
