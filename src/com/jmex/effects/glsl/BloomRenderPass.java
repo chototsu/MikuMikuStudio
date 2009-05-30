@@ -312,6 +312,7 @@ public class BloomRenderPass extends Pass {
 
                     ts.setTexture(secondTexture, 0);
                     fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = blurShaderHorizontal;
+                    tRenderer.render(fullScreenQuad, mainTexture);
                     ts.setTexture(mainTexture, 0);
                     fullScreenQuad.states[RenderState.StateType.GLSLShaderObjects.ordinal()] = blurShaderVertical;
                     tRenderer.render(fullScreenQuad, secondTexture);
