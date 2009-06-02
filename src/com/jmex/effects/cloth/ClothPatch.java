@@ -73,11 +73,23 @@ public class ClothPatch extends TriMesh {
      * underlying system.
      */
     protected float timeDilation = 1.0f;
+    
+    /**
+     * Whether or not to update forces
+     */
+    private boolean active = true;
 
+    /**
+     * interval to calculate and update force
+     */
+    private float updateInterval = 0.025f;
+    
     // Temp vars used to eliminates object creation
     private Vector3f tNorm = new Vector3f();
     private Vector3f tempV1 = new Vector3f(), tempV2 = new Vector3f(),
             tempV3 = new Vector3f();
+
+
 
     public ClothPatch() {
     }
@@ -341,6 +353,25 @@ public class ClothPatch extends TriMesh {
     public void setTimeDilation(float timeDilation) {
         this.timeDilation = timeDilation;
     }
+    
+    
+    /**
+     * set update frequency of flag motion 
+     * @param fps frame per second
+     */
+    public void setUpdateFrequency(float fps) {
+        this.updateInterval = 1f/fps;
+    }
+    
+    
+    /**
+     * Whether or not to update cloth patch
+     * @param active
+     *          if true, enable flag motion 
+     */
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     /**
      * Setup the triangle indices for this cloth.
@@ -375,7 +406,7 @@ public class ClothPatch extends TriMesh {
     }
 
     /**
-     * Update the physics of this cloth. Updates at 40 FPS (every 25 ms)
+     * Update the physics of this cloth.
      * 
      * @param dt
      *            time since last call to this method. Used to determine if
@@ -384,12 +415,14 @@ public class ClothPatch extends TriMesh {
      */
     public void updateWorldData(float dt) {
         super.updateWorldData(dt);
-        sinceLast += dt;
-        if (sinceLast >= 0.025f) { // update physics at 40 FPS
-            sinceLast *= timeDilation;
-            calcForces(sinceLast);
-            doUpdate(sinceLast);
-            sinceLast = 0;
+        if (active) {
+            sinceLast += dt;
+            if (sinceLast >= updateInterval) {
+                sinceLast *= timeDilation;
+                calcForces(sinceLast);
+                doUpdate(sinceLast);
+                sinceLast = 0;
+            }
         }
     }
 
