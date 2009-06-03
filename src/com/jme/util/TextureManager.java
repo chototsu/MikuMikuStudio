@@ -858,6 +858,7 @@ final public class TextureManager {
         TextureState ts = (TextureState)Renderer.defaultStateList[RenderState.StateType.Texture.ordinal()];
         try {
             ts.deleteTextureId(tex.getTextureId());
+            tex.setTextureId(0);
         } catch (Exception e) {
         } // ignore.
     }
