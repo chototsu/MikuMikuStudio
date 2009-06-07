@@ -1,17 +1,11 @@
 package com.jmex.awt.applet;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.concurrent.Callable;
-
 import com.jme.app.AbstractGame;
 import com.jme.app.BaseSimpleGame;
 import com.jme.app.SimplePassGame;
 import com.jme.input.MouseInput;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.BasicPassManager;
-import com.jme.util.GameTaskQueue;
-import com.jme.util.GameTaskQueueManager;
 
 /**
  * LWJGL2 Applet imlpementation similar to {@link SimplePassGame}<br>
@@ -78,22 +72,6 @@ public abstract class SimplePassApplet extends BaseSimpleApplet {
 
 	protected void initSystem() {
 		super.initSystem();
-		this.addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent ce) {
-				Callable<?> exe = new Callable<Object>() {
-					public Object call() {
-						display.getRenderer().reinit(
-								SimplePassApplet.this.getWidth(),
-								SimplePassApplet.this.getHeight());
-						cam.setFrustumPerspective(45.0f, (float) displayParent
-								.getWidth()
-								/ (float) displayParent.getHeight(), 1, 1000);
-						return null;
-					}
-				};
-				GameTaskQueueManager.getManager()
-						.getQueue(GameTaskQueue.RENDER).enqueue(exe);
-			}
-		});
+		this.addComponentListener(new AppletResizeListener(this));
 	}
 }

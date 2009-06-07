@@ -677,9 +677,11 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @param h height of the applet
      */
     public void initForApplet(int w, int h) {
+    	width = w;
+    	height = h;
         renderer = new LWJGLRenderer(w, h);
     	switchContext(this);
-        renderer.setHeadless(true);
+        renderer.setHeadless(false);
         currentContext.setupRecords(renderer);
         DisplaySystem.updateStates(renderer);
         created = true;

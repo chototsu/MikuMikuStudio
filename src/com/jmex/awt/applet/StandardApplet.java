@@ -5,8 +5,6 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -41,8 +39,6 @@ import com.jmex.game.state.GameStateManager;
 
 /**
  * LWJGL2 Applet imlpementation similar to {@link StandardGame}
- * 
- * TODO: not yet finished, crashes when pressing F4
  */
 public abstract class StandardApplet extends Applet {
     private static final long serialVersionUID = 6894421316159346138L;
@@ -199,7 +195,8 @@ public abstract class StandardApplet extends Applet {
 					height);
 				camera.setFrustumPerspective(45.0f, (float) width
 					/ (float) height, 1, 1000);
-			
+			DisplaySystem.getDisplaySystem().setWidth(width);
+			DisplaySystem.getDisplaySystem().setHeight(height);
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
@@ -358,7 +355,7 @@ public abstract class StandardApplet extends Applet {
 	    		// render game state
 	    		render(tpf);
 	    		// Swap buffers, process messages, handle input
-	    		Display.update();
+	    		display.getRenderer().displayBackBuffer();
 	    		
 	            // Fixed framerate End
 	            if (preferredTicksPerFrame >= 0) {
@@ -463,23 +460,7 @@ public abstract class StandardApplet extends Applet {
         	display = DisplaySystem.getDisplaySystem();
         }
         
-    	this.addComponentListener(new ComponentAdapter() {
-    	    public void componentResized(ComponentEvent ce) {
-    		Callable<?> exe = new Callable<Object>() {
-    		    public Object call() {
-    			display.getRenderer().reinit(
-    				StandardApplet.this.getWidth(),
-    				StandardApplet.this.getHeight());
-    			camera.setFrustumPerspective(45.0f,
-    					(float) StandardApplet.this.getWidth()
-    						/ (float)StandardApplet.this.getHeight(), 1, 1000);
-    			return null;
-    		    }
-    		};
-    		GameTaskQueueManager.getManager()
-    			.getQueue(GameTaskQueue.RENDER).enqueue(exe);
-    	    }
-    	});
+    	this.addComponentListener(new AppletResizeListener(this));
     }
     
     protected void initSound() {

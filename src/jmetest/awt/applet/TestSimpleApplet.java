@@ -18,6 +18,7 @@ public class TestSimpleApplet extends SimpleApplet {
 	 */
 	@Override
 	public void init() {
+		System.setProperty("jme.stats", "set");
 		setSize(640, 480);
 		super.init();
 	}
@@ -31,4 +32,8 @@ public class TestSimpleApplet extends SimpleApplet {
 		b.updateModelBound();
     	rootNode.attachChild(b);
     }
+	@Override
+	protected void simpleUpdate() {
+		super.simpleUpdate();
+	}
 }

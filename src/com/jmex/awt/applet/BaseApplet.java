@@ -165,7 +165,7 @@ public abstract class BaseApplet extends Applet {
 					// render, do not use interpolation parameter
 					render(-1.0f);
 					// Swap buffers, process messages, handle input
-					Display.update();
+					display.getRenderer().displayBackBuffer();
 					Thread.yield();
 				}
 			}
