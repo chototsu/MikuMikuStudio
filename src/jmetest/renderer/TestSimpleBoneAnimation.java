@@ -149,6 +149,7 @@ public class TestSimpleBoneAnimation extends SimpleGame {
         times[4] = 1.6333f;
         
         BoneAnimation bac = new BoneAnimation();
+        bac.setInterpolationTypes(new int[] {0, 0, 0, 0, 0});
         bac.addBoneTransforms(bt);
         bac.setTimes(times);
         bac.setEndFrame(4);
