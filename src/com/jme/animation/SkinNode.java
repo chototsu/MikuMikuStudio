@@ -495,12 +495,13 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         InputCapsule cap = e.getCapsule(this);
         
         skins = (Node)cap.readSavable("skins", null);
-        skeleton = (Bone)cap.readSavable("skeleton", null);
-        cache = cap.readSavableArrayListArray2D("cache", null);
+        Bone readSkeleton = (Bone)cap.readSavable("skeleton", null);
         connectionPoints = cap.readSavableArrayList("connectionPoints", null);
         
-        if (skeleton != null) {
-            //skeleton.revertToBind();
+        if (readSkeleton != null) {
+            setSkeleton(readSkeleton);
+            cache = cap.readSavableArrayListArray2D("cache", null);
+            regenInfluenceOffsets();
             skeleton.addBoneListener(this);
         }
 

@@ -431,6 +431,7 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
     /**
      * <code>mult</code> multiplies this vector by a scalar. The resultant
      * vector is returned.
+     * "this" is not modified.
      *
      * @param scalar the value to multiply this vector by.
      * @return the new vector.
@@ -443,6 +444,7 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
      *
      * <code>mult</code> multiplies this vector by a scalar. The resultant
      * vector is supplied as the second parameter and returned.
+     * "this" is not modified.
      *
      * @param scalar the scalar to multiply this vector by.
      * @param product the product to store the result in.
