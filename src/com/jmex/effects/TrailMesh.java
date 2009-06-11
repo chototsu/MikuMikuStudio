@@ -83,7 +83,7 @@ public class TrailMesh extends TriMesh implements Savable {
     /**
      * Storage for each section in the trailmesh.
      */
-    private class TrailData {
+    public class TrailData {
         public Vector3f position = new Vector3f();
         public Vector3f tangent;
         public float width;
@@ -96,6 +96,9 @@ public class TrailMesh extends TriMesh implements Savable {
 
     // How often to update the trail front (controlling section spacing)
     private float updateSpeed = 20.0f;
+
+    // Whether the TrailData is updated or not    
+    private boolean invalid;
 
     // Temporary vectors
     private final Vector3f trailCamVec = new Vector3f();
@@ -179,6 +182,7 @@ public class TrailMesh extends TriMesh implements Savable {
             trail.tangent.set(tangent.x, tangent.y, tangent.z);
         }
         trail.width = width;
+        invalid = true;
     }
 
     /**
@@ -192,11 +196,18 @@ public class TrailMesh extends TriMesh implements Savable {
             return;
         }
 
-        if (updateMode == UpdateMode.Step) {
-            updateStep(camPos);
-        } else {
-            updateInterpolate(camPos);
+        if (invalid || facingMode == FacingMode.Billboard) {
+            if (updateMode == UpdateMode.Step) {
+                updateStep(camPos);
+            } else {
+                updateInterpolate(camPos);
+            }
+            invalid = false;
         }
+    }
+    
+    public void invalidate() {
+        invalid = true;
     }
 
     private void updateStep(Vector3f camPos) {
@@ -373,4 +384,14 @@ public class TrailMesh extends TriMesh implements Savable {
     public FacingMode getFacingMode() {
         return facingMode;
     }
+    
+    /**
+     * Get the mesh data to modify it manually.
+     * If data is modified, invalidate() method call is required.
+     * @return
+     */
+    public LinkedList<TrailData> getTrailData() {
+        return trailVectors;
+    }
+
 }
