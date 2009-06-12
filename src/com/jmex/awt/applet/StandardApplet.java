@@ -260,7 +260,7 @@ public abstract class StandardApplet extends Applet {
      * Creates the game thread, which first initializes the display, then runs
      * the game updates and renders.
      */
-    public final void start() {
+    public void start() {
     	logger.info("Applet started.");
     	gameThread = new Thread() {
     		public void run() {
