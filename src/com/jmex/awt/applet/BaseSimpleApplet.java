@@ -37,6 +37,7 @@ import com.jme.util.stat.graph.DefColorFadeController;
 import com.jme.util.stat.graph.GraphFactory;
 import com.jme.util.stat.graph.LineGrapher;
 import com.jme.util.stat.graph.TabledLabelGrapher;
+import com.jmex.audio.AudioSystem;
 
 /**
  * see {@link BaseSimpleGame} 
@@ -507,6 +508,9 @@ public abstract class BaseSimpleApplet extends BaseApplet {
 		KeyInput.destroyIfInitalized();
 		MouseInput.destroyIfInitalized();
 		JoystickInput.destroyIfInitalized();
+		if (AudioSystem.isCreated()) {
+			AudioSystem.getSystem().cleanup();
+		}
 	}
 
 	/**
