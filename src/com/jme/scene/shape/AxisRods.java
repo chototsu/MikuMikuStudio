@@ -125,6 +125,7 @@ public class AxisRods extends Node {
         this.length = length;
         this.width = width;
         this.rightHanded = rightHanded;
+        int dir = rightHanded ? 1 : -1;
         if (xAxis == null) {
             xAxis = new Arrow("xAxis", length, width);
             xAxis.setSolidColor(X_AXIS_COLOUR);
@@ -137,14 +138,20 @@ public class AxisRods extends Node {
             attachChild(yAxis);
             zAxis = new Arrow("zAxis", length, width);
             zAxis.setSolidColor(Z_AXIS_COLOUR);
-            int dir = rightHanded ? 1 : -1;
             zAxis.getLocalRotation().fromAngles(dir * 90 * FastMath.DEG_TO_RAD, 0, 0);
             zAxis.getLocalTranslation().addLocal(0, 0, dir * length * 0.5f);
             attachChild(zAxis);
         } else {
             xAxis.updateGeometry(length, width);
+            xAxis.getLocalRotation().fromAngles(0,0,-90*FastMath.DEG_TO_RAD);
+            xAxis.getLocalTranslation().set(length*.5f, 0, 0);
+            
             yAxis.updateGeometry(length, width);
+            yAxis.getLocalTranslation().set(0, length*.5f, 0);
+            
             zAxis.updateGeometry(length, width);
+            zAxis.getLocalRotation().fromAngles(dir * 90 * FastMath.DEG_TO_RAD, 0, 0);
+            zAxis.getLocalTranslation().set(0, 0, dir * length * 0.5f);
         }
     }
 

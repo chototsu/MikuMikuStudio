@@ -140,7 +140,12 @@ public class Arrow extends Node {
         } else {
             shaft.updateGeometry(4, 16, width * .75f, width * .75f, length,
                     false, false);
+            Quaternion q = new Quaternion();
+            q.fromAngles(90 * FastMath.DEG_TO_RAD, 0, 0);
+            shaft.rotatePoints(q);
+            shaft.rotateNormals(q);
             tip.updateGeometry(2 * width, length / 2f);
+            tip.translatePoints(0, length * .75f, 0);
         }
     }
 
