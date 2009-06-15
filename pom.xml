@@ -25,29 +25,36 @@
         </license>
     </licenses>
     <issueManagement>
-        <system>java.net</system>
-        <url>https://jme.dev.java.net/issues/buglist.cgi?component=jme</url>
+        <system>Google Code</system>
+        <url>http://code.google.com/p/jmonkeyengine/issues</url>
     </issueManagement>
-    <!--<ciManagement>
-       <system>Continuum</system>
-       <url>http://www.jmonkeyengine.com/continuum/</url>
-    </ciManagement>-->
+    <properties>
+		<lwjgl.version>2.1</lwjgl.version>
+	</properties>
     <dependencies>
         <!-- see lib/mvn-lib-install on how to install lwjgl jars -->
         <dependency>
+			<!--  we ned to add lib/jme-colladabinding.jar to the classpath for compiling -->
+            <groupId>com.jmonkeyengine.collada</groupId>
+            <artifactId>jme-collada</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jme-colladabinding.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
-            <version>2.0rc1</version>
+            <version>${lwjgl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl_util_applet</artifactId>
-            <version>2.0rc1</version>
+            <version>${lwjgl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl_util</artifactId>
-            <version>2.0rc1</version>
+            <version>${lwjgl.version}</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jogl</groupId>
