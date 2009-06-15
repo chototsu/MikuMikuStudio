@@ -591,6 +591,7 @@ public class Node extends Spatial implements Serializable, Savable {
 
     @Override
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+        if (this == scene) return false;  // No Collision with "self"
         if (getWorldBound() != null && isCollidable && scene.isCollidable()) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
                 if(children == null && !checkTriangles) {
