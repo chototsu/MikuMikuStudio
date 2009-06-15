@@ -321,7 +321,7 @@ public abstract class ImageGraphicsBaseImpl extends ImageGraphics {
 
             //fix for bug in JDK1.4:
             Color color = delegate.getColor();
-            delegate.setColor( TRANSPARENT );
+            delegate.setColor( delegate.getBackground() );
             Composite composite = delegate.getComposite();
             delegate.setComposite( AlphaComposite.Clear );
             delegate.fillRect( x, y, width, height );
