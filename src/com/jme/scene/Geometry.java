@@ -398,6 +398,36 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
             return;
         }
 
+        TexCoords src = texBuf.get(fromIndex);
+        float[] factors = new float[src.perVert];
+        for (int i = 0; i < factors.length; i++) {
+			factors[i] = factor;
+		}
+        copyTextureCoordinates(fromIndex, toIndex, factors);
+
+    }
+    
+    /**
+     * <code>copyTextureCoords</code> copys the texture coordinates of a given
+     * texture unit to another location. If the texture unit is not valid, then
+     * the coordinates are ignored. Coords are multiplied by the given factor.
+     * 
+     * @param fromIndex
+     *            the coordinates to copy.
+     * @param toIndex
+     *            the texture unit to set them to.
+     * @param factor
+     *            a multiple to apply when copying
+     */
+    public void copyTextureCoordinates(int fromIndex, int toIndex, float[] factor) {
+        if (texBuf == null)
+            return;
+
+        if (fromIndex < 0 || fromIndex >= texBuf.size()
+                || texBuf.get(fromIndex) == null) {
+            return;
+        }
+
         if (toIndex < 0 || toIndex == fromIndex) {
             return;
         }
@@ -416,8 +446,10 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
         dest.coords.clear();
         int oldLimit = src.coords.limit();
         src.coords.clear();
-        for (int i = 0, len = dest.coords.capacity(); i < len; i++) {
-            dest.coords.put(factor * src.coords.get());
+        for (int i = 0, len = dest.coords.capacity(); i < len; i+=dest.perVert) {
+            for (int j = 0; j < dest.perVert; j++) {
+                dest.coords.put(factor[j] * src.coords.get());
+            }
         }
         src.coords.limit(oldLimit);
         dest.coords.limit(oldLimit);
