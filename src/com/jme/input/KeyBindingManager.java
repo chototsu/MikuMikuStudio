@@ -34,6 +34,7 @@ package com.jme.input;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
@@ -123,6 +124,29 @@ public class KeyBindingManager {
 		keyMap = new HashMap<String, ArrayList<KeyCodes>>();
     }
 	
+	/**
+     * Gets all commands currently registered to the key binding manager.
+     * @return the commands currently registered
+     */
+    public Collection<String> getCommands() {
+        return keyMap.keySet();
+    }
+
+    /**
+     * Finds the associated key codes for this command.
+     * @param command
+     *      the command to look up
+     * @return an array list of KeyCodes associated with this command
+     */
+    public ArrayList<KeyCodes> getKeyCodesForCommand(String command) {
+        try {
+            return keyMap.get(command);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
 	/**
 	 * <code>set</code> sets the command to the given keycode overriding
      * any previous keycodes previously set for the same command.
