@@ -40,6 +40,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -637,45 +638,53 @@ public class JOGLRenderer extends Renderer {
      * <code>takeScreenShot</code> saves the current buffer to a file. The
      * file name is provided, and .png will be appended. True is returned if the
      * capture was successful, false otherwise.
-     *
+     * 
      * @param filename
      *            the name of the file to save.
-     * @return true if successful, false otherwise.
      */
-    public boolean takeScreenShot(String filename) {
+    public void takeScreenShot(final String filename) {
         if (null == filename) {
             throw new JmeException("Screenshot filename cannot be null");
         }
-        File out = new File(filename + ".png");
-        logger.info("Taking screenshot: " + out.getAbsolutePath());
-
         // Create a pointer to the image info and create a buffered image to
         // hold it.
-        ByteBuffer buff = BufferUtils.createByteBuffer(width * height * 3);
+        final ByteBuffer buff = BufferUtils.createByteBuffer(width * height * 3);
         grabScreenContents(buff, Image.Format.RGB8, 0, 0, width, height);
-        BufferedImage img = new BufferedImage(width, height,
-                BufferedImage.TYPE_INT_RGB);
+        final int w = width;
+        final int h = height;
+                
+        Thread saveThread = new Thread() {
+            
+            public void run() {
+                BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
-        // Grab each pixel information and set it to the BufferedImage info.
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+                // Grab each pixel information and set it to the BufferedImage info.
+                for (int x = 0; x < w; x++) {
+                    for (int y = 0; y < h; y++) {
+                        
+                        int index = 3 * ((h- y - 1) * w + x);
+                        if (index < 0) {
+                            System.out.println();
+                        }
+                        int argb = (((int) (buff.get(index+0)) & 0xFF) << 16) //r
+                                 | (((int) (buff.get(index+1)) & 0xFF) << 8)  //g
+                                 | (((int) (buff.get(index+2)) & 0xFF));      //b
 
-                int index = 3 * ((height - y - 1) * width + x);
-                int argb = (((int) (buff.get(index+0)) & 0xFF) << 16) //r
-                         | (((int) (buff.get(index+1)) & 0xFF) << 8)  //g
-                         | (((int) (buff.get(index+2)) & 0xFF));      //b
+                        img.setRGB(x, y, argb);
+                    }
+                }
 
-                img.setRGB(x, y, argb);
+                // write out the screenshot image to a file.
+                try {
+                    File out = new File(filename + ".png");
+                    logger.log(Level.INFO, "Taking screenshot: {0}", out.getAbsolutePath());
+                    ImageIO.write(img, "png", out);
+                } catch (IOException e) {
+                    logger.warning("Could not create file: " + filename + ".png");
+                }
             }
-        }
-
-        // write out the screenshot image to a file.
-        try {
-            return ImageIO.write(img, "png", out);
-        } catch (IOException e) {
-            logger.warning("Could not create file: " + filename + ".png");
-            return false;
-        }
+        };
+        saveThread.start();
     }
 
     /**

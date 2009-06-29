@@ -427,7 +427,7 @@ public abstract class Renderer {
      *            the name of the screenshot file.
      * @return true if the screen capture was successful, false otherwise.
      */
-    public abstract boolean takeScreenShot(String filename);
+    public abstract void takeScreenShot(String filename);
 
     /**
      * <code>grabScreenContents</code> reads a block of data as bytes from the

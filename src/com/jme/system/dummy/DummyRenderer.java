@@ -454,8 +454,7 @@ public final class DummyRenderer extends Renderer {
     }
 
     @Override
-    public boolean takeScreenShot(String filename) {
-        return false;
+    public void takeScreenShot(String filename) {
     }
 
     @Override
