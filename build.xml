@@ -121,7 +121,7 @@
   <target name="dist-font" depends="compile, -enforce.jar.deps"
           description="generate jme jar file (font)">
     <jar destfile="${jars}/jme-font.jar" basedir="${class}" update="no"
-         duplicate="fail" compress="true" includes="com/jmex/font2d/**/*.class, com/jmex/font3d/**/*.class" />
+         duplicate="fail" compress="true" includes="com/jmex/font2d/**/*.class, com/jmex/font3d/**/*.class, com/jmex/angelfont/**/*.class, com/jmex/angelfont/**/*.png, com/jmex/angelfont/**/*.fnt" />
   </target>
   <target name="dist-gamestates" depends="compile, -enforce.jar.deps"
           description="generate jme jar file (gamestates)">
