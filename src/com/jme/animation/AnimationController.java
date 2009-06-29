@@ -354,6 +354,7 @@ public class AnimationController extends Controller implements Savable {
                 for (int i = 0; i < animationSets.size(); i++) {
                     if (animationSets.get(i).getName().equalsIgnoreCase(name)) {
                         activeAnimation = animationSets.get(i);
+                        activeAnimation.reset();
                         if (old != activeAnimation) {
                             this.blendAnimation = null;
                         }
@@ -382,6 +383,7 @@ public class AnimationController extends Controller implements Savable {
                 for (int i = 0; i < animationSets.size(); i++) {
                     if (animationSets.get(i) == bac) {
                         activeAnimation = animationSets.get(i);
+                        activeAnimation.reset();
                         if (old != activeAnimation) {
                             this.blendAnimation = null;
                         }
@@ -409,6 +411,7 @@ public class AnimationController extends Controller implements Savable {
             BoneAnimation old = activeAnimation;
             if (animationSets != null && animationSets.size() > index) {
                 activeAnimation = animationSets.get(index);
+                activeAnimation.reset();
                 if (old != activeAnimation) {
                     this.blendAnimation = null;
                 }

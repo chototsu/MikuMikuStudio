@@ -557,7 +557,8 @@ public class BoneAnimation implements Serializable, Savable {
 
                 while (currentTime >= keyframeTime[currentFrame]) {
                     if (currentFrame >= endFrame) {
-                        currentTime -= keyframeTime[endFrame];
+                        currentTime += keyframeTime[startFrame]
+                                - keyframeTime[endFrame];
                         currentFrame = startFrame + 1;
                         prevFrame = startFrame;
                     } else {
