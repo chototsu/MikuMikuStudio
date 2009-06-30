@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import com.jme.image.Texture.MagnificationFilter;
+import com.jme.image.Texture.MinificationFilter;
 import com.jme.util.TextureManager;
 
 /**
@@ -87,6 +89,8 @@ public class BitmapFontLoader {
             } // if
 
             font.setFontTexture(TextureManager.loadTexture(textureFile, true));
+            font.getFontTexture().setMinificationFilter(MinificationFilter.Trilinear);
+            font.getFontTexture().setMagnificationFilter(MagnificationFilter.Bilinear);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(fontFile.openStream()));
             String regex = "[\\s=]+";

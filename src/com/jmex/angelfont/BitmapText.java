@@ -38,6 +38,8 @@ import java.nio.IntBuffer;
 import com.jme.renderer.Renderer;
 import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.BlendState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.RenderState.StateType;
 import com.jme.system.DisplaySystem;
@@ -93,6 +95,7 @@ public class BitmapText extends TriMesh {
         this.font = font;
         this.block = new StringBlock();
 
+        setRenderState(getDefaultBlendState());
         setRenderState(DisplaySystem.getDisplaySystem().getRenderer().createTextureState());
         ((TextureState) getRenderState(StateType.Texture)).setEnabled(true);
         ((TextureState) getRenderState(StateType.Texture)).setTexture(font.getFontTexture());
@@ -105,6 +108,17 @@ public class BitmapText extends TriMesh {
 
         updateGeometricState(0.0f, true);
     }
+
+    private BlendState getDefaultBlendState() {
+        BlendState bs = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
+        bs.setBlendEnabled(true);
+        bs.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        bs.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
+        bs.setTestEnabled(true);
+        bs.setTestFunction(BlendState.TestFunction.GreaterThan);
+        bs.setEnabled(true);
+        return bs;
+    } // getDefaultBlendState
 
     /**
      * Updates the {@link BitmapText} and merges the multiple characters,
@@ -155,7 +169,7 @@ public class BitmapText extends TriMesh {
 
         updateGeometricState(0.0f, true);
         updateRenderState();
-    } // assemble
+    } // update
 
     /**
      * 
