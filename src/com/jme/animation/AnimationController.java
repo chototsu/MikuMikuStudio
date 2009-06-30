@@ -558,4 +558,10 @@ public class AnimationController extends Controller implements Savable {
             throw new IllegalStateException("No animation is active");
         return activeAnimation.getCurrentTime();
     }
+
+    public void setActive(boolean active) {
+        if (activeAnimation != null)
+            activeAnimation.reactivate(getRepeatType());
+        super.setActive(active);
+    }
 }

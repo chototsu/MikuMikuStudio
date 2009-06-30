@@ -323,7 +323,7 @@ public class BoneAnimation implements Serializable, Savable {
      */
     private void changeFrame(int frame) {
         if(frame == 0 ) {
-            logger.info("0");
+            logger.finest("0");
         }
         if (frame != lastEventFrame) {
             ArrayList<AnimationEvent> eventList = AnimationEventManager
@@ -487,14 +487,13 @@ public class BoneAnimation implements Serializable, Savable {
     private boolean updateCurrentTime(float time, int repeat, float speed) {
         switch (repeat) {
             case Controller.RT_CLAMP: {
-                if (currentFrame >= endFrame) {
-                    currentFrame = endFrame;
-                    return false;
-                }
+                if (currentFrame > endFrame) return false;
+
+                // Use currentFrame of endFrame + 1 to indicated animation DONE
                 currentTime += time * speed;
 
                 if (currentTime > keyframeTime[endFrame]) {
-                    currentFrame = endFrame;
+                    currentFrame = endFrame + 1;
                     currentTime = 0;
                     return false;
                 }
@@ -506,34 +505,29 @@ public class BoneAnimation implements Serializable, Savable {
                 break;
             }
             case Controller.RT_CYCLE: {
-                if (currentFrame >= endFrame) {
-                    cycleMode *= -1;
+                currentTime += time * speed * cycleMode;
+
+                if (currentTime > keyframeTime[endFrame]) {
+                    cycleMode = -1;
+                    currentTime -= 2 * (currentTime - keyframeTime[endFrame]);
+                    // Hoping that setting the start/end frames this way allows
+                    // the while loops below to adjust them correctly
                     currentFrame = endFrame;
-                    prevFrame = endFrame - 1;
-                    currentTime = keyframeTime[currentFrame];
-                } else if (prevFrame <= startFrame) {
-                    cycleMode *= -1;
+                    prevFrame = endFrame + 1;
+                } else if (currentTime < keyframeTime[startFrame]) {
+                    cycleMode = 1;
+                    currentTime += 2 * (keyframeTime[startFrame] - currentTime);
+                    // See comment above about start/end frames.
                     currentFrame = startFrame + 1;
                     prevFrame = startFrame;
-                    currentTime = keyframeTime[currentFrame];
                 }
 
-                currentTime += (time) * speed * cycleMode;
-
                 if (cycleMode == 1) {
-                    if (currentTime > keyframeTime[endFrame]) {
-                        currentTime = keyframeTime[endFrame];
-                    }
-
-                    while (currentTime > keyframeTime[currentFrame]) {
+                   while (currentTime > keyframeTime[currentFrame]) {
                         currentFrame += cycleMode;
                         prevFrame += cycleMode;
                     }
                 } else {
-                    if (currentTime < keyframeTime[startFrame]) {
-                        currentTime = keyframeTime[startFrame];
-                    }
-
                     while (currentTime < keyframeTime[currentFrame]) {
                         currentFrame += cycleMode;
                         prevFrame += cycleMode;
@@ -543,28 +537,19 @@ public class BoneAnimation implements Serializable, Savable {
             }
 
             case Controller.RT_WRAP: {
-//                if (currentFrame >= endFrame) {
-//                    currentFrame = startFrame + 1;
-//                    prevFrame = startFrame;
-//                    currentTime = keyframeTime[startFrame];
-//                }
+                currentTime += time * speed;
 
-                currentTime += (time) * speed;
-
-                if (currentTime > keyframeTime[endFrame]) {
-                    currentTime = keyframeTime[endFrame];
+                if (currentFrame > endFrame) {
+                    currentTime += keyframeTime[startFrame]
+                            - keyframeTime[endFrame];
+                    currentFrame = startFrame + 1;
+                    prevFrame = startFrame;
+                    return true;
                 }
 
-                while (currentTime >= keyframeTime[currentFrame]) {
-                    if (currentFrame >= endFrame) {
-                        currentTime += keyframeTime[startFrame]
-                                - keyframeTime[endFrame];
-                        currentFrame = startFrame + 1;
-                        prevFrame = startFrame;
-                    } else {
-                        currentFrame++;
-                        prevFrame++;
-                    }
+                while (currentTime > keyframeTime[currentFrame]) {
+                    currentFrame++;
+                    prevFrame++;
                 }
                 break;
             }
@@ -1072,6 +1057,16 @@ public class BoneAnimation implements Serializable, Savable {
         currentFrame = startFrame + 1;
         prevFrame = startFrame;
         currentTime = keyframeTime[startFrame];
+    }
+
+    /**
+     * Ensures that an animation can continue running if you start updating
+     * it again.
+     */
+    public void reactivate(int repeatType) {
+        if (repeatType == Controller.RT_CLAMP) {
+            if (currentFrame > endFrame) reset();
+        }
     }
 
     public Spatial getDestSpatial() {
