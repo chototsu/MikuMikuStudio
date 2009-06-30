@@ -306,7 +306,13 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * <code>close</code> destroys the LWJGL Display context.
      */
     public void close() {
-        Display.destroy();
+        if (headlessDisplay != null) {
+            headlessDisplay.destroy();
+            headlessDisplay = null;
+        } else {
+            Display.destroy();
+        }
+        created = false;
     }
 
     /**
