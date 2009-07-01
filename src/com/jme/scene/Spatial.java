@@ -1769,5 +1769,41 @@ public abstract class Spatial implements Serializable, Savable {
     public Class<? extends Spatial> getClassTag() {
         return this.getClass();
     }
-}
 
+    /**
+     * Note that we are <i>matching</i> the pattern, therefore the pattern
+     * must match the entire pattern (i.e. it behaves as if it is sandwiched
+     * betweeh "^" and "$").
+     * You can set regex modes, like case insensitivity, by using the (?X)
+     * or (?X:Y) constructs.
+     *
+     * @param spatialSubclass Subclass which this must implement.
+     *                        Null causes all Spatials to qualify.
+     * @param nameRegex  Regular expression to match this name against.
+     *                        Null causes all Names to qualify.
+     * @return true if this implements the specified class and this's name
+     *         matches the specified pattern.
+     *
+     * @see java.util.regex.Pattern
+     */
+    public boolean matches(
+            Class<? extends Spatial> spatialSubclass, String nameRegex) {
+        if (spatialSubclass != null && !spatialSubclass.isInstance(this))
+            return false;
+        if (nameRegex != null && (name == null || !name.matches(nameRegex)))
+            return false;
+        return true;
+    }
+
+    /**
+     * A direct extension of String.matches(), which matches against the
+     * Spatial's name.
+     *
+     * @return false if the spatial name is null
+     * @see #matches(Class<? extends Spatial>, String)
+     * @see String#matches(String)
+     */
+    public boolean matches(String nameRegex) {
+        return matches(null, nameRegex);
+    }
+}
