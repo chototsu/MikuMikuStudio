@@ -38,11 +38,13 @@ import java.util.logging.Logger;
 
 import javax.media.opengl.GLAutoDrawable;
 import javax.swing.JFrame;
-
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
+import com.jme.input.KeyInput;
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -70,6 +72,8 @@ public class JMEJOGLAWTTest {
 
     private static final Logger logger = Logger.getLogger(JMEJOGLAWTTest.class
             .getName());
+    
+    private static Animator animator;
 
     static int width = 640, height = 480;
 
@@ -118,12 +122,12 @@ public class JMEJOGLAWTTest {
         // TODO Remove when complete (original SWT code).
         // canvas.init();
         // canvas.render();
+        
+        frame.setVisible(true);
 
         // FIXME Encapsulate this within the canvas in some fashion?
-        Animator animator = new Animator((GLAutoDrawable) jmeCanvas);
+        animator = new Animator((GLAutoDrawable) jmeCanvas);
         animator.start();
-
-        frame.setVisible(true);
 
         // TODO Remove when complete (original SWT code).
         // while (!shell.isDisposed()) {
@@ -155,6 +159,7 @@ public class JMEJOGLAWTTest {
             super(width, height);
         }
 
+        @Override
         public void simpleSetup() {
             // Normal Scene setup stuff...
             rotQuat = new Quaternion();
@@ -185,8 +190,26 @@ public class JMEJOGLAWTTest {
             startTime = System.currentTimeMillis() + 5000;
 
             input = new FirstPersonHandler(cam, 50, 1);
+            input.addAction(new InputAction() {
+                public void performAction(InputActionEvent evt) {
+                    DisplaySystem.getDisplaySystem().getRenderer().cleanup();
+                    TextureManager.doTextureCleanup();
+                    TextureManager.clearCache();
+                    // Run this on another thread than the opengl thread to
+                    // make sure the call to Animator.stop() completes before
+                    // exiting
+                    new Thread(new Runnable() {
+                        public void run() {
+                            animator.stop();
+                            System.exit(0);
+                        }
+                    }).start();
+                }
+            }, InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_ESCAPE,
+              InputHandler.AXIS_NONE, false );
         }
 
+        @Override
         public void simpleUpdate() {
             input.update(tpf);
 
