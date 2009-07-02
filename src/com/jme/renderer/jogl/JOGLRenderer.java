@@ -200,6 +200,10 @@ public class JOGLRenderer extends Renderer {
 
         supportsFogCoords = capabilities.GL_EXT_fog_coord;
     }
+    
+    public JOGLContextCapabilities getContextCapabilities() {
+        return capabilities ;
+    }
 
     /**
      * Reinitialize the renderer with the given width/height. Also calls resize

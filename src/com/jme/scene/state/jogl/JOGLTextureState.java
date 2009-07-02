@@ -61,6 +61,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.jogl.JOGLContextCapabilities;
+import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.Spatial.TextureCombineMode;
 import com.jme.scene.state.RenderState;
@@ -93,6 +94,12 @@ public class JOGLTextureState extends TextureState {
     private static final long serialVersionUID = 1L;
     private static boolean inited = false;
     private JOGLContextCapabilities caps;
+    
+    
+    public JOGLTextureState() {
+        this( ( ( JOGLRenderer ) DisplaySystem.getDisplaySystem().
+        getRenderer()).getContextCapabilities() );
+    }
     
     /**
      * Constructor instantiates a new <code>JOGLTextureState</code> object.

@@ -45,6 +45,7 @@ import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.jogl.JOGLContextCapabilities;
+import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Spatial;
 import com.jme.scene.Spatial.LightCombineMode;
@@ -68,6 +69,12 @@ public class JOGLLightState extends LightState {
     private static final long serialVersionUID = 1L;
 
     private JOGLContextCapabilities caps;
+    
+    
+    public JOGLLightState() {
+        this( ( ( JOGLRenderer )DisplaySystem.getDisplaySystem().
+        getRenderer()).getContextCapabilities() );
+    }
     
     /**
      * Constructor instantiates a new <code>JOGLLightState</code>.

@@ -37,6 +37,7 @@ import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.jogl.JOGLContextCapabilities;
+import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.jogl.records.BlendStateRecord;
 import com.jme.system.DisplaySystem;
@@ -55,6 +56,12 @@ public class JOGLBlendState extends BlendState {
 
     private static boolean inited = false;
 
+    
+    public JOGLBlendState() {
+        this( ( ( JOGLRenderer ) DisplaySystem.getDisplaySystem()
+        .getRenderer()).getContextCapabilities() );
+    }
+    
     /**
      * Constructor instantiates a new <code>JOGLBlendState</code> object with
      * default values.

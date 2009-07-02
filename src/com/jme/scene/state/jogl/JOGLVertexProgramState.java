@@ -45,6 +45,7 @@ import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.jogl.JOGLContextCapabilities;
+import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.jogl.records.VertexProgramStateRecord;
@@ -68,6 +69,11 @@ public class JOGLVertexProgramState extends VertexProgramState {
     private int programID = -1;
 
     private JOGLContextCapabilities caps;
+    
+    public JOGLVertexProgramState() {
+        this( ( ( JOGLRenderer ) DisplaySystem.getDisplaySystem().
+        getRenderer()).getContextCapabilities() );
+    }
     
     public JOGLVertexProgramState(JOGLContextCapabilities caps) {
         this.caps = caps;

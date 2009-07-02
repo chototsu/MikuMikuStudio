@@ -38,6 +38,7 @@ import javax.media.opengl.glu.GLU;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.jogl.JOGLContextCapabilities;
+import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.jogl.records.FogStateRecord;
 import com.jme.system.DisplaySystem;
@@ -55,6 +56,12 @@ public class JOGLFogState extends FogState {
     private static final long serialVersionUID = 2L;
 
     private static boolean inited = false;
+    
+    
+    public JOGLFogState() {
+        this( ( ( JOGLRenderer ) DisplaySystem.getDisplaySystem().
+        getRenderer()).getContextCapabilities() );
+    }
     
     /**
      * Constructor instantiates a new <code>JOGLFogState</code> object with

@@ -45,6 +45,7 @@ import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.jogl.JOGLContextCapabilities;
+import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.jogl.records.FragmentProgramStateRecord;
@@ -67,6 +68,11 @@ public final class JOGLFragmentProgramState extends FragmentProgramState {
 
     private JOGLContextCapabilities caps;
     
+    
+    public JOGLFragmentProgramState() {
+        this( ( ( JOGLRenderer ) DisplaySystem.getDisplaySystem().
+        getRenderer()).getContextCapabilities() );
+    }
     
     public JOGLFragmentProgramState(JOGLContextCapabilities caps) {
         this.caps = caps;

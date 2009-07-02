@@ -42,6 +42,7 @@ import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.jogl.JOGLContextCapabilities;
+import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.jogl.records.ShaderObjectsStateRecord;
@@ -76,6 +77,12 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
     private static int maxVertexAttribs;
 
     private static boolean inited = false;
+    
+    
+    public JOGLShaderObjectsState() {
+        this( ( ( JOGLRenderer ) DisplaySystem.getDisplaySystem().
+        getRenderer()).getContextCapabilities() );
+    }
 
     public JOGLShaderObjectsState(JOGLContextCapabilities caps) {
         super();

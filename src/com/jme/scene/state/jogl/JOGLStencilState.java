@@ -37,6 +37,7 @@ import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.jogl.JOGLContextCapabilities;
+import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.scene.state.StencilState;
 import com.jme.scene.state.jogl.records.StencilStateRecord;
 import com.jme.system.DisplaySystem;
@@ -50,8 +51,15 @@ import com.jme.system.DisplaySystem;
  * @version $Id$
  */
 public class JOGLStencilState extends StencilState {
+    
     private static final long serialVersionUID = 2L;
 
+    
+    public JOGLStencilState() {
+        this( ( ( JOGLRenderer ) DisplaySystem.getDisplaySystem().
+        getRenderer()).getContextCapabilities() );
+    }
+    
     public JOGLStencilState(JOGLContextCapabilities caps) {
         twoSidedSupport = caps.GL_EXT_stencil_two_side;
         stencilWrapSupport = caps.GL_EXT_stencil_wrap;
