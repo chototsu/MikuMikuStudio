@@ -1,4 +1,5 @@
 /*
+ * blaine
  * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
  *
@@ -40,9 +41,11 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -118,13 +121,12 @@ public class DOMInputCapsule implements InputCapsule {
     public byte readByte(String name, byte defVal) throws IOException {
         byte ret = defVal;
         try {
-            ret = Byte.parseByte(currentElem.getAttribute(name));
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return Byte.parseByte(currentElem.getAttribute(name));
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public byte[] readByteArray(String name, byte[] defVal) throws IOException {
@@ -139,19 +141,27 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            byte[] tmp = new byte[size];
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (int i = 0; i < size; i++) {
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of bytes.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
+            }
+            byte[] tmp = new byte[strings.length];
+            for (int i = 0; i < strings.length; i++) {
                 tmp[i] = Byte.parseByte(strings[i]);
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public byte[][] readByteArray2D(String name, byte[][] defVal) throws IOException {
@@ -166,29 +176,35 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            byte[][] tmp = new byte[size][];
+
+            String sizeString = tmpEl.getAttribute("size");
             NodeList nodes = currentElem.getChildNodes();
-            int strIndex = 0;
+            List<byte[]> byteArrays = new ArrayList<byte[]>();
+
             for (int i = 0; i < nodes.getLength(); i++) {
            	 	Node n = nodes.item(i);
 				if (n instanceof Element && n.getNodeName().contains("array")) {
-					if (strIndex < size) {
-						tmp[strIndex++] = readByteArray(n.getNodeName(), null);
-					} else {
-						throw new IOException(
-								"String array contains more elements than specified!");
-					}
+                // Very unsafe assumption
+                    byteArrays.add(readByteArray(n.getNodeName(), null));
 				}                
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (byteArrays.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + byteArrays.size());
+            }
+            currentElem = (Element) currentElem.getParentNode();
+            return byteArrays.toArray(new byte[0][]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        currentElem = (Element) currentElem.getParentNode();
-        return ret;
     }
 
     public int readInt(String name, int defVal) throws IOException {
@@ -198,10 +214,10 @@ public class DOMInputCapsule implements InputCapsule {
             if (s.length() > 0) {
                 ret = Integer.parseInt(s);
             }
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
         return ret;
     }
@@ -218,19 +234,27 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            int[] tmp = new int[size];
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (int i = 0; i < size; i++) {
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of ints.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
+            }
+            int[] tmp = new int[strings.length];
+            for (int i = 0; i < tmp.length; i++) {
                 tmp[i] = Integer.parseInt(strings[i]);
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public int[][] readIntArray2D(String name, int[][] defVal) throws IOException {
@@ -245,29 +269,38 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            int[][] tmp = new int[size][];
+            String sizeString = tmpEl.getAttribute("size");
+
+
+
+
             NodeList nodes = currentElem.getChildNodes();
-            int strIndex = 0;
+            List<int[]> intArrays = new ArrayList<int[]>();
+
             for (int i = 0; i < nodes.getLength(); i++) {
            	 	Node n = nodes.item(i);
 				if (n instanceof Element && n.getNodeName().contains("array")) {
-					if (strIndex < size) {
-						tmp[strIndex++] = readIntArray(n.getNodeName(), null);
-					} else {
-						throw new IOException(
-								"String array contains more elements than specified!");
-					}
+                // Very unsafe assumption
+                    intArrays.add(readIntArray(n.getNodeName(), null));
 				}                
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (intArrays.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + intArrays.size());
+            }
+            currentElem = (Element) currentElem.getParentNode();
+            return intArrays.toArray(new int[0][]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        currentElem = (Element) currentElem.getParentNode();
-        return ret;
     }
 
     public float readFloat(String name, float defVal) throws IOException {
@@ -277,10 +310,10 @@ public class DOMInputCapsule implements InputCapsule {
             if (s.length() > 0) {
                 ret = Float.parseFloat(s);
             }
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
         return ret;
     }
@@ -297,19 +330,25 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            float[] tmp = new float[size];
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (int i = 0; i < size; i++) {
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of floats.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
+            }
+            float[] tmp = new float[strings.length];
+            for (int i = 0; i < tmp.length; i++) {
                 tmp[i] = Float.parseFloat(strings[i]);
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public float[][] readFloatArray2D(String name, float[][] defVal) throws IOException {
@@ -336,23 +375,22 @@ public class DOMInputCapsule implements InputCapsule {
                     tmp[i][k] = Float.parseFloat(strings[i]);
                 }
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public double readDouble(String name, double defVal) throws IOException {
         double ret = defVal;
         try {
             ret = Double.parseDouble(currentElem.getAttribute(name));
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
         return ret;
     }
@@ -369,19 +407,27 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            double[] tmp = new double[size];
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (int i = 0; i < size; i++) {
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of doubles.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
+            }
+            double[] tmp = new double[strings.length];
+            for (int i = 0; i < tmp.length; i++) {
                 tmp[i] = Double.parseDouble(strings[i]);
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public double[][] readDoubleArray2D(String name, double[][] defVal) throws IOException {
@@ -396,38 +442,44 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            double[][] tmp = new double[size][];
+            String sizeString = tmpEl.getAttribute("size");
             NodeList nodes = currentElem.getChildNodes();
-            int strIndex = 0;
+            List<double[]> doubleArrays = new ArrayList<double[]>();
+
             for (int i = 0; i < nodes.getLength(); i++) {
-                Node n = nodes.item(i);
-                if (n instanceof Element && n.getNodeName().contains("array")) {
-                    if (strIndex < size) {
-                        tmp[strIndex++] = readDoubleArray(n.getNodeName(), null);
-                    } else {
-           			 throw new IOException("String array contains more elements than specified!");
-           		 }
-           	 }                
+           	 	Node n = nodes.item(i);
+				if (n instanceof Element && n.getNodeName().contains("array")) {
+                // Very unsafe assumption
+                    doubleArrays.add(readDoubleArray(n.getNodeName(), null));
+				}                
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (doubleArrays.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + doubleArrays.size());
+            }
+            currentElem = (Element) currentElem.getParentNode();
+            return doubleArrays.toArray(new double[0][]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        currentElem = (Element) currentElem.getParentNode();
-        return ret;
     }
 
     public long readLong(String name, long defVal) throws IOException {
         long ret = defVal;
         try {
             ret = Long.parseLong(currentElem.getAttribute(name));
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
         return ret;
     }
@@ -444,19 +496,27 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            long[] tmp = new long[size];
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (int i = 0; i < size; i++) {
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of longs.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
+            }
+            long[] tmp = new long[strings.length];
+            for (int i = 0; i < tmp.length; i++) {
                 tmp[i] = Long.parseLong(strings[i]);
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public long[][] readLongArray2D(String name, long[][] defVal) throws IOException {
@@ -471,39 +531,45 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            long[][] tmp = new long[size][];
+            String sizeString = tmpEl.getAttribute("size");
             NodeList nodes = currentElem.getChildNodes();
-            int strIndex = 0;
+            List<long[]> longArrays = new ArrayList<long[]>();
+
             for (int i = 0; i < nodes.getLength(); i++) {
-                Node n = nodes.item(i);
-                if (n instanceof Element && n.getNodeName().contains("array")) {
-                    if (strIndex < size) {
-                        tmp[strIndex++] = readLongArray(n.getNodeName(), null);
-                    } else {
-           			 throw new IOException("String array contains more elements than specified!");
-           		 }
-           	 }                
+           	 	Node n = nodes.item(i);
+				if (n instanceof Element && n.getNodeName().contains("array")) {
+                // Very unsafe assumption
+                    longArrays.add(readLongArray(n.getNodeName(), null));
+				}                
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (longArrays.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + longArrays.size());
+            }
+            currentElem = (Element) currentElem.getParentNode();
+            return longArrays.toArray(new long[0][]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        currentElem = (Element) currentElem.getParentNode();
-        return ret;
     }
 
     public short readShort(String name, short defVal) throws IOException {
-        String attribute = currentElem.getAttribute(name);
-        if (attribute == null || attribute.length() == 0) { return defVal; }
         try {
+            String attribute = currentElem.getAttribute(name);
+            if (attribute == null || attribute.length() == 0) { return defVal; }
             return Short.parseShort(attribute);
-        } catch (NumberFormatException e) {
-            IOException ex = new IOException("error parsing " + name);
-            ex.initCause(e);
-            throw ex;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
     }
 
@@ -519,19 +585,27 @@ public class DOMInputCapsule implements InputCapsule {
              if (tmpEl == null) {
                  return defVal;
              }
-             int size = Integer.parseInt(tmpEl.getAttribute("size"));
-             short[] tmp = new short[size];
-             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-             for (int i = 0; i < size; i++) {
-                 tmp[i] = Short.parseShort(strings[i]);
-             }
-             ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
-         }
-         return ret;
+            String sizeString = tmpEl.getAttribute("size");
+            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of shorts.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
+            }
+            short[] tmp = new short[strings.length];
+            for (int i = 0; i < tmp.length; i++) {
+                tmp[i] = Short.parseShort(strings[i]);
+            }
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
+        }
     }
 
     public short[][] readShortArray2D(String name, short[][] defVal) throws IOException {
@@ -546,28 +620,35 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            short[][] tmp = new short[size][];
+
+            String sizeString = tmpEl.getAttribute("size");
             NodeList nodes = currentElem.getChildNodes();
-            int strIndex = 0;
+            List<short[]> shortArrays = new ArrayList<short[]>();
+
             for (int i = 0; i < nodes.getLength(); i++) {
-                Node n = nodes.item(i);
-                if (n instanceof Element && n.getNodeName().contains("array")) {
-                    if (strIndex < size) {
-                        tmp[strIndex++] = readShortArray(n.getNodeName(), null);
-                    } else {
-           			 throw new IOException("String array contains more elements than specified!");
-           		 }
-           	 }                
+           	 	Node n = nodes.item(i);
+				if (n instanceof Element && n.getNodeName().contains("array")) {
+                // Very unsafe assumption
+                    shortArrays.add(readShortArray(n.getNodeName(), null));
+				}                
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (shortArrays.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + shortArrays.size());
+            }
+            currentElem = (Element) currentElem.getParentNode();
+            return shortArrays.toArray(new short[0][]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        currentElem = (Element) currentElem.getParentNode();
-        return ret;
     }
 
     public boolean readBoolean(String name, boolean defVal) throws IOException {
@@ -577,10 +658,8 @@ public class DOMInputCapsule implements InputCapsule {
             if (s.length() > 0) {
                 ret = Boolean.parseBoolean(s);
             }
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
         return ret;
     }
@@ -597,19 +676,25 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            boolean[] tmp = new boolean[size];
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (int i = 0; i < size; i++) {
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of bools.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
+            }
+            boolean[] tmp = new boolean[strings.length];
+            for (int i = 0; i < tmp.length; i++) {
                 tmp[i] = Boolean.parseBoolean(strings[i]);
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public boolean[][] readBooleanArray2D(String name, boolean[][] defVal) throws IOException {
@@ -624,38 +709,42 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            boolean[][] tmp = new boolean[size][];
+            String sizeString = tmpEl.getAttribute("size");
             NodeList nodes = currentElem.getChildNodes();
-            int strIndex = 0;
+            List<boolean[]> booleanArrays = new ArrayList<boolean[]>();
+
             for (int i = 0; i < nodes.getLength(); i++) {
-                Node n = nodes.item(i);
-                if (n instanceof Element && n.getNodeName().contains("array")) {
-                    if (strIndex < size) {
-                        tmp[strIndex++] = readBooleanArray(n.getNodeName(), null);
-                    } else {
-           			 throw new IOException("String array contains more elements than specified!");
-           		 }
-           	 }                
+           	 	Node n = nodes.item(i);
+				if (n instanceof Element && n.getNodeName().contains("array")) {
+                // Very unsafe assumption
+                    booleanArrays.add(readBooleanArray(n.getNodeName(), null));
+				}                
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (booleanArrays.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + booleanArrays.size());
+            }
+            currentElem = (Element) currentElem.getParentNode();
+            return booleanArrays.toArray(new boolean[0][]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        currentElem = (Element) currentElem.getParentNode();
-        return ret;
     }
 
     public String readString(String name, String defVal) throws IOException {
         String ret = defVal;
         try {
             ret = decodeString(currentElem.getAttribute(name));
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
         return ret;
     }
@@ -672,28 +761,34 @@ public class DOMInputCapsule implements InputCapsule {
              if (tmpEl == null) {
                  return defVal;
              }
-             int size = Integer.parseInt(tmpEl.getAttribute("size"));
-             String[] tmp = new String[size];
-             NodeList nodes = currentElem.getChildNodes();
-             int strIndex = 0;
-             for (int i = 0; i < nodes.getLength(); i++) {
-                Node n = nodes.item(i);
-                if (n instanceof Element && n.getNodeName().contains("String")) {
-                    if (strIndex < size) {
-                        tmp[strIndex++] = ((Element) n).getAttributeNode("value").getValue();
-                    } else {
-            			 throw new IOException("String array contains more elements than specified!");
-            		 }
-            	 }                
-             }
-             ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
-         }
-         currentElem = (Element) currentElem.getParentNode();
-         return ret;
+            String sizeString = tmpEl.getAttribute("size");
+            NodeList nodes = currentElem.getChildNodes();
+            List<String> strings = new ArrayList<String>();
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+           	 	Node n = nodes.item(i);
+				if (n instanceof Element && n.getNodeName().contains("String")) {
+                // Very unsafe assumption
+                    strings.add(((Element) n).getAttributeNode("value").getValue());
+				}                
+            }
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + strings.size());
+            }
+            currentElem = (Element) currentElem.getParentNode();
+            return strings.toArray(new String[0]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
+        }
     }
 
     public String[][] readStringArray2D(String name, String[][] defVal) throws IOException {
@@ -708,28 +803,34 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            String[][] tmp = new String[size][];
+            String sizeString = tmpEl.getAttribute("size");
             NodeList nodes = currentElem.getChildNodes();
-            int strIndex = 0;
+            List<String[]> stringArrays = new ArrayList<String[]>();
+
             for (int i = 0; i < nodes.getLength(); i++) {
-                Node n = nodes.item(i);
-                if (n instanceof Element && n.getNodeName().contains("array")) {
-                    if (strIndex < size) {
-                        tmp[strIndex++] = readStringArray(n.getNodeName(), null);
-                    } else {
-           			 throw new IOException("String array contains more elements than specified!");
-           		 }
-           	 }                
+           	 	Node n = nodes.item(i);
+				if (n instanceof Element && n.getNodeName().contains("array")) {
+                // Very unsafe assumption
+                    stringArrays.add(readStringArray(n.getNodeName(), null));
+				}                
             }
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (stringArrays.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + stringArrays.size());
+            }
+            currentElem = (Element) currentElem.getParentNode();
+            return stringArrays.toArray(new String[0][]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        currentElem = (Element) currentElem.getParentNode();
-        return ret;
     }
 
     public BitSet readBitSet(String name, BitSet defVal) throws IOException {
@@ -745,10 +846,10 @@ public class DOMInputCapsule implements InputCapsule {
             	}
             }
             ret = set;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
         return ret;
     }
@@ -780,10 +881,10 @@ public class DOMInputCapsule implements InputCapsule {
                 } else {
                     currentElem = null;
                 }
+            } catch (IOException ioe) {
+                throw ioe;
             } catch (Exception e) {
-                IOException ex = new IOException();
-                ex.initCause(e);
-                throw ex;
+                throw new IOException(e);
             }
         }
         return ret;
@@ -810,9 +911,8 @@ public class DOMInputCapsule implements InputCapsule {
             }
             tmp = (Savable) Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
             String refID = currentElem.getAttribute("reference_ID");
-            if (refID.length() > 0) {
-                referencedSavables.put(refID, tmp);
-            }
+            if (refID.length() < 1) refID = currentElem.getAttribute("id");
+            if (refID.length() > 0) referencedSavables.put(refID, tmp);
             if (tmp != null) {
                 tmp.read(importer);
                 ret = tmp;
@@ -838,10 +938,10 @@ public class DOMInputCapsule implements InputCapsule {
                 t = TextureManager.loadTexture(tKey);
                 ret.setTexture(t, i);
             }
+            currentElem = el;
         } catch (Exception e) {
             Logger.getLogger(DOMInputCapsule.class.getName()).log(Level.SEVERE, null, e);
         }
-        currentElem = el;
         return ret;
     }
     
@@ -883,25 +983,29 @@ public class DOMInputCapsule implements InputCapsule {
             if (name.equals("renderStateList")) {
                 ret = readRenderStateList(tmpEl, defVal);
             } else {
-                int size = Integer.parseInt(tmpEl.getAttribute("size"));
-                Savable[] tmp = new Savable[size];
-                currentElem = findFirstChildElement(tmpEl);
-                for (int i = 0; i < size; i++) {
-                    tmp[i] = (readSavableFromCurrentElem(null));
-                    if (i == size - 1) {
-                        break;
-                    }
-                    currentElem = findNextSiblingElement(currentElem);
+                String sizeString = tmpEl.getAttribute("size");
+                List<Savable> savables = new ArrayList<Savable>();
+                for (currentElem = findFirstChildElement(tmpEl);
+                        currentElem != null;
+                        currentElem = findNextSiblingElement(currentElem)) {
+                    savables.add(readSavableFromCurrentElem(null));
                 }
-                ret = tmp;
+                if (sizeString.length() > 0) {
+                    int requiredSize = Integer.parseInt(sizeString);
+                    if (savables.size() != requiredSize)
+                        throw new IOException("Wrong number of Savables.  size says "
+                                + requiredSize + ", data contains "
+                                + savables.size());
+                }
+                ret = savables.toArray(new Savable[0]);
             }
             currentElem = (Element) tmpEl.getParentNode();
+            return ret;
+        } catch (IOException ioe) {
+            throw ioe;
         } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            throw new IOException(e);
         }
-        return ret;
     }
 
     public Savable[][] readSavableArray2D(String name, Savable[][] defVal) throws IOException {
@@ -928,12 +1032,12 @@ public class DOMInputCapsule implements InputCapsule {
             }
             ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
+            return ret;
+        } catch (IOException ioe) {
+            throw ioe;
         } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            throw new IOException(e);
         }
-        return ret;
     }
 
     public ArrayList<Savable> readSavableArrayList(String name, ArrayList defVal) throws IOException {
@@ -944,28 +1048,31 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
 
-            String s = tmpEl.getAttribute("size");
-            int size = Integer.parseInt(s);
-            ArrayList<Savable> tmp = new ArrayList<Savable>();
-            currentElem = findFirstChildElement(tmpEl);
-            for (int i = 0; i < size; i++) {
-                tmp.add(readSavableFromCurrentElem(null));
-                if (i == size - 1) {
-                    break;
-                }
-                currentElem = findNextSiblingElement(currentElem);
+            String sizeString = tmpEl.getAttribute("size");
+            ArrayList<Savable> savables = new ArrayList<Savable>();
+            for (currentElem = findFirstChildElement(tmpEl);
+                    currentElem != null;
+                    currentElem = findNextSiblingElement(currentElem)) {
+                savables.add(readSavableFromCurrentElem(null));
             }
-            ret = tmp;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (savables.size() != requiredSize)
+                    throw new IOException("Wrong number of Savable rrays.  size says "
+                            + requiredSize + ", data contains "
+                            + savables.size());
+            }
             currentElem = (Element) tmpEl.getParentNode();
+            return savables;
+        } catch (IOException ioe) {
+            throw ioe;
         } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            throw new IOException(e);
         }
-        return ret;
     }
 
-    public ArrayList[] readSavableArrayListArray(String name, ArrayList[] defVal) throws IOException {
+    public ArrayList<Savable>[] readSavableArrayListArray(
+            String name, ArrayList[] defVal) throws IOException {
         ArrayList[] ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
@@ -974,28 +1081,34 @@ public class DOMInputCapsule implements InputCapsule {
             }
             currentElem = tmpEl;
             
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            ArrayList[] tmp = new ArrayList[size];
-            for (int i = 0; i < size; i++) {
-                StringBuilder buf = new StringBuilder("SavableArrayList_");
-                buf.append(i);
-                ArrayList al = readSavableArrayList(buf.toString(), null);
-                tmp[i] = al;
-                if (i == size - 1) {
-                    break;
-                }
+
+            String sizeString = tmpEl.getAttribute("size");
+            ArrayList<Savable> sal;
+            List<ArrayList<Savable>> savableArrayLists = new ArrayList<ArrayList<Savable>>();
+            int i = -1;
+            while ((sal = readSavableArrayList("SavableArrayList_" + ++i, null))
+                    != null) savableArrayLists.add(sal);
+
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (savableArrayLists.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + savableArrayLists.size());
             }
-            ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return savableArrayLists.toArray(new ArrayList[0]);
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
-    public ArrayList[][] readSavableArrayListArray2D(String name, ArrayList[][] defVal) throws IOException {
+    public ArrayList<Savable>[][] readSavableArrayListArray2D(String name, ArrayList[][] defVal) throws IOException {
         ArrayList[][] ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
@@ -1003,24 +1116,32 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
             currentElem = tmpEl;
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
+            String sizeString = tmpEl.getAttribute("size");
             
-            ArrayList[][] tmp = new ArrayList[size][];
-            for (int i = 0; i < size; i++) {
-                ArrayList[] arr = readSavableArrayListArray("SavableArrayListArray_" + i, null);
-                tmp[i] = arr;
+            ArrayList<Savable>[] arr;
+            List<ArrayList<Savable>[]> sall = new ArrayList<ArrayList<Savable>[]>();
+            int i = -1;
+            while ((arr = readSavableArrayListArray(
+                    "SavableArrayListArray_" + ++i, null)) != null) sall.add(arr);
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (sall.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + sall.size());
             }
-            ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
+            return sall.toArray(new ArrayList[0][]);
+        } catch (IOException ioe) {
+            throw ioe;
         } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            throw new IOException(e);
         }
-        return ret;
     }
 
-    public ArrayList readFloatBufferArrayList(String name, ArrayList<FloatBuffer> defVal) throws IOException {
+    public ArrayList<FloatBuffer> readFloatBufferArrayList(
+            String name, ArrayList<FloatBuffer> defVal) throws IOException {
         ArrayList<FloatBuffer> ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
@@ -1028,24 +1149,30 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
 
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            ArrayList<FloatBuffer> tmp = new ArrayList<FloatBuffer>(size);
-            currentElem = findFirstChildElement(tmpEl);
-            for (int i = 0; i < size; i++) {
+            String sizeString = tmpEl.getAttribute("size");
+            ArrayList<FloatBuffer> tmp = new ArrayList<FloatBuffer>();
+            for (currentElem = findFirstChildElement(tmpEl);
+                    currentElem != null;
+                    currentElem = findNextSiblingElement(currentElem)) {
                 tmp.add(readFloatBuffer(null, null));
-                if (i == size - 1) {
-                    break;
-                }
-                currentElem = findNextSiblingElement(currentElem);
             }
-            ret = tmp;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (tmp.size() != requiredSize)
+                    throw new IOException(
+                            "String array contains wrong element count.  "
+                            + "Specified size " + requiredSize
+                            + ", data contains " + tmp.size());
+            }
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public Map<? extends Savable, ? extends Savable> readSavableMap(String name, Map<? extends Savable, ? extends Savable> defVal) throws IOException {
@@ -1119,20 +1246,26 @@ public class DOMInputCapsule implements InputCapsule {
             if (tmpEl == null) {
                 return defVal;
             }
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            FloatBuffer tmp = BufferUtils.createFloatBuffer(size);
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (String s : strings) {
-                tmp.put(Float.parseFloat(s));
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of float buffers.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
             }
+            FloatBuffer tmp = BufferUtils.createFloatBuffer(strings.length);
+            for (String s : strings) tmp.put(Float.parseFloat(s));
             tmp.flip();
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException("error reading " + name);
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public IntBuffer readIntBuffer(String name, IntBuffer defVal) throws IOException {
@@ -1143,20 +1276,26 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
 
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            IntBuffer tmp = BufferUtils.createIntBuffer(size);
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (String s : strings) {
-                tmp.put(Integer.parseInt(s));
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of int buffers.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
             }
+            IntBuffer tmp = BufferUtils.createIntBuffer(strings.length);
+            for (String s : strings) tmp.put(Integer.parseInt(s));
             tmp.flip();
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public ByteBuffer readByteBuffer(String name, ByteBuffer defVal) throws IOException {
@@ -1167,20 +1306,26 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
 
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            ByteBuffer tmp = BufferUtils.createByteBuffer(size);
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (String s : strings) {
-                tmp.put(Byte.valueOf(s));
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of byte buffers.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
             }
+            ByteBuffer tmp = BufferUtils.createByteBuffer(strings.length);
+            for (String s : strings) tmp.put(Byte.valueOf(s));
             tmp.flip();
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
     public ShortBuffer readShortBuffer(String name, ShortBuffer defVal) throws IOException {
@@ -1191,20 +1336,26 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
 
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            ShortBuffer tmp = BufferUtils.createShortBuffer(size);
+            String sizeString = tmpEl.getAttribute("size");
             String[] strings = tmpEl.getAttribute("data").split("\\s+");
-            for (String s : strings) {
-                tmp.put(Short.valueOf(s));
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (strings.length != requiredSize)
+                    throw new IOException("Wrong number of short buffers.  size says "
+                            + requiredSize + ", data contains "
+                            + strings.length);
             }
+            ShortBuffer tmp = BufferUtils.createShortBuffer(strings.length);
+            for (String s : strings) tmp.put(Short.valueOf(s));
             tmp.flip();
-            ret = tmp;
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
     }
 
 	public ArrayList<ByteBuffer> readByteBufferArrayList(String name, ArrayList<ByteBuffer> defVal) throws IOException {
@@ -1215,24 +1366,29 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
 
-            int size = Integer.parseInt(tmpEl.getAttribute("size"));
-            ArrayList<ByteBuffer> tmp = new ArrayList<ByteBuffer>(size);
-            currentElem = findFirstChildElement(tmpEl);
-            for (int i = 0; i < size; i++) {
+            String sizeString = tmpEl.getAttribute("size");
+            ArrayList<ByteBuffer> tmp = new ArrayList<ByteBuffer>();
+            for (currentElem = findFirstChildElement(tmpEl);
+                    currentElem != null;
+                    currentElem = findNextSiblingElement(currentElem)) {
                 tmp.add(readByteBuffer(null, null));
-                if (i == size - 1) {
-                    break;
-                }
-                currentElem = findNextSiblingElement(currentElem);
             }
-            ret = tmp;
+            if (sizeString.length() > 0) {
+                int requiredSize = Integer.parseInt(sizeString);
+                if (tmp.size() != requiredSize)
+                    throw new IOException("Wrong number of short buffers.  size says "
+                            + requiredSize + ", data contains "
+                            + tmp.size());
+            }
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            return tmp;
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (NumberFormatException nfe) {
+            throw new IOException(nfe);
+        } catch (DOMException de) {
+            throw new IOException(de);
         }
-        return ret;
 	}
 
 	public <T extends Enum<T>> T readEnum(String name, Class<T> enumType,
@@ -1244,9 +1400,7 @@ public class DOMInputCapsule implements InputCapsule {
                 ret = Enum.valueOf(enumType, eVal);
             }
         } catch (Exception e) {
-            IOException ex = new IOException();
-            ex.initCause(e);
-            throw ex;
+            throw new IOException(e);
         }
         return ret;       
 	}
