@@ -352,6 +352,7 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public float[][] readFloatArray2D(String name, float[][] defVal) throws IOException {
+        /* Why does this one method ignore the 'size attr.? */
         float[][] ret = defVal;
         try {
             Element tmpEl;
@@ -762,7 +763,7 @@ public class DOMInputCapsule implements InputCapsule {
                  return defVal;
              }
             String sizeString = tmpEl.getAttribute("size");
-            NodeList nodes = currentElem.getChildNodes();
+            NodeList nodes = tmpEl.getChildNodes();
             List<String> strings = new ArrayList<String>();
 
             for (int i = 0; i < nodes.getLength(); i++) {
@@ -780,7 +781,6 @@ public class DOMInputCapsule implements InputCapsule {
                             + "Specified size " + requiredSize
                             + ", data contains " + strings.size());
             }
-            currentElem = (Element) currentElem.getParentNode();
             return strings.toArray(new String[0]);
         } catch (IOException ioe) {
             throw ioe;
