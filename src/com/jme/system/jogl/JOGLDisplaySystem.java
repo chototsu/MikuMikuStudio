@@ -282,6 +282,7 @@ public class JOGLDisplaySystem extends DisplaySystem {
                 logger.warning("Interruped while waiting for makeCurrent()");
             }
         }
+
         // Now it is time to request the focus because the canvas
         // is displayable, focusable, visible and its ancestor is
         // visible too
@@ -359,6 +360,11 @@ public class JOGLDisplaySystem extends DisplaySystem {
         final GLCapabilities caps = new GLCapabilities();
         caps.setHardwareAccelerated(true);
         caps.setDoubleBuffered(true);
+        DisplaySystem ds = DisplaySystem.getDisplaySystem();
+        caps.setAlphaBits(ds.getMinAlphaBits());
+        caps.setDepthBits(ds.getMinDepthBits());
+        caps.setStencilBits(ds.getMinStencilBits());
+        caps.setNumSamples(ds.getMinSamples());
 
         // Create the OpenGL canvas,
         final JOGLAWTCanvas glCanvas = new JOGLAWTCanvas(caps);
