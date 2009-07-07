@@ -37,7 +37,6 @@ import javax.media.opengl.glu.GLU;
 import com.jme.renderer.RenderContext;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.StippleState;
-import com.jme.scene.state.jogl.records.CullStateRecord;
 import com.jme.scene.state.jogl.records.StippleStateRecord;
 import com.jme.system.DisplaySystem;
 
@@ -56,8 +55,8 @@ public class JOGLStippleState extends StippleState {
     public void apply() {
         // ask for the current state record
         RenderContext<?> context = DisplaySystem.getDisplaySystem().getCurrentContext();
-        CullStateRecord record = (CullStateRecord) context.getStateRecord(StateType.Cull);
-        context.currentStates[StateType.Cull.ordinal()] = this;
+        StippleStateRecord record = (StippleStateRecord) context.getStateRecord(StateType.Stipple);
+        context.currentStates[StateType.Stipple.ordinal()] = this;
         final GL gl = GLU.getCurrentGL();
 
         if (isEnabled()) {
