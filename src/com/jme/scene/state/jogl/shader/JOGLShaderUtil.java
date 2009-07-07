@@ -183,8 +183,8 @@ public class JOGLShaderUtil {
         final GL gl = GLU.getCurrentGL();
 
         shaderUniform.matrixBuffer.rewind();
-        gl.glUniformMatrix2fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit(),
-                shaderUniform.rowMajor, shaderUniform.matrixBuffer); // TODO Check <count>
+        gl.glUniformMatrix2fv(shaderUniform.variableID, 1,
+                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
     }
 
     private static void updateShaderUniform(
@@ -192,8 +192,8 @@ public class JOGLShaderUtil {
         final GL gl = GLU.getCurrentGL();
 
         shaderUniform.matrixBuffer.rewind();
-        gl.glUniformMatrix3fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit(),
-                shaderUniform.rowMajor, shaderUniform.matrixBuffer); // TODO Check <count>
+        gl.glUniformMatrix3fv(shaderUniform.variableID, 1,
+                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
     }
 
     private static void updateShaderUniform(
@@ -201,8 +201,8 @@ public class JOGLShaderUtil {
         final GL gl = GLU.getCurrentGL();
 
         shaderUniform.matrixBuffer.rewind();
-        gl.glUniformMatrix4fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit(),
-                shaderUniform.rowMajor, shaderUniform.matrixBuffer); // TODO Check <count>
+        gl.glUniformMatrix4fv(shaderUniform.variableID, 1,
+                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
     }
 
     private static void updateShaderUniform(
@@ -210,7 +210,7 @@ public class JOGLShaderUtil {
         final GL gl = GLU.getCurrentGL();
         
         shaderUniform.matrixBuffer.rewind();
-        gl.glUniformMatrix4fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit(),
+        gl.glUniformMatrix4fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit() >> 4,
                 shaderUniform.rowMajor, shaderUniform.matrixBuffer);
     }
 
