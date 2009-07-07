@@ -200,7 +200,7 @@ public class JOGLRenderer extends Renderer {
 
         supportsFogCoords = capabilities.GL_EXT_fog_coord;
     }
-    
+
     public JOGLContextCapabilities getContextCapabilities() {
         return capabilities ;
     }
@@ -543,7 +543,8 @@ public class JOGLRenderer extends Renderer {
             if (Debug.stats) {
                 StatCollector.startStat(StatType.STAT_DISPLAYSWAP_TIMER);
             }
-            // TODO Check replacement for LWJGL Display.update()
+            // LWJGL Display.update() checks for errors and swaps the buffer.
+            checkCardError();
             GLContext.getCurrent().getGLDrawable().swapBuffers();
             if (Debug.stats) {
                 StatCollector.endStat(StatType.STAT_DISPLAYSWAP_TIMER);
@@ -1727,6 +1728,8 @@ public class JOGLRenderer extends Renderer {
         final GL gl = GLU.getCurrentGL();
 
         gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
+        gl.glEnable(GL.GL_POLYGON_OFFSET_LINE);
+        gl.glEnable(GL.GL_POLYGON_OFFSET_POINT);
         gl.glPolygonOffset(factor, offset);
     }
 
@@ -1735,6 +1738,8 @@ public class JOGLRenderer extends Renderer {
         final GL gl = GLU.getCurrentGL();
 
         gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+        gl.glDisable(GL.GL_POLYGON_OFFSET_LINE);
+        gl.glDisable(GL.GL_POLYGON_OFFSET_POINT);
     }
 
     /**
