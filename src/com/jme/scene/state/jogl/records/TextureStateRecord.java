@@ -45,6 +45,9 @@ import com.jme.image.Texture.CombinerFunctionRGB;
 import com.jme.image.Texture.CombinerOperandAlpha;
 import com.jme.image.Texture.CombinerOperandRGB;
 import com.jme.image.Texture.CombinerSource;
+import com.jme.image.Texture.DepthTextureCompareFunc;
+import com.jme.image.Texture.DepthTextureCompareMode;
+import com.jme.image.Texture.DepthTextureMode;
 import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
 import com.jme.image.Texture.WrapMode;
@@ -373,6 +376,38 @@ public class TextureStateRecord extends StateRecord {
                 return GL.GL_DEPTH_COMPONENT;
         }
         throw new IllegalArgumentException("Incorrect format set: "+format);
+    }
+
+    public static int getGLDepthTextureMode(DepthTextureMode mode) {
+        switch (mode) {
+        case Alpha:
+                return GL.GL_ALPHA;
+        case Luminance:
+                return GL.GL_LUMINANCE;
+        case Intensity:
+        default:
+                return GL.GL_INTENSITY;
+        }
+    }
+    
+    public static int getGLDepthTextureCompareMode(DepthTextureCompareMode mode) {
+        switch (mode) {
+        case RtoTexture:
+                return GL.GL_COMPARE_R_TO_TEXTURE_ARB;
+        case None:
+        default:
+                return GL.GL_NONE;
+        }
+    }
+    
+    public static int getGLDepthTextureCompareFunc(DepthTextureCompareFunc func) {
+        switch (func) {
+        case GreaterThanEqual:
+                return GL.GL_GEQUAL;
+        case LessThanEqual:
+        default:
+                return GL.GL_LEQUAL;
+        }
     }
 
     public static int getGLMagFilter(MagnificationFilter magFilter) {

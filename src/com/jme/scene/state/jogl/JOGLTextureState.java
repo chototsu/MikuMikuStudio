@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.media.opengl.GL;
@@ -128,6 +129,9 @@ public class JOGLTextureState extends TextureState {
 
             // Check for support of automatic mipmap generation
             automaticMipMaps = automaticMipMapsDetected = caps.GL_SGIS_generate_mipmap;
+
+            supportsDepthTexture = caps.GL_ARB_depth_texture;
+            supportsShadow = caps.GL_ARB_shadow;
 
             // If we do support multitexturing, find out how many textures we
             // can handle.
@@ -273,9 +277,8 @@ public class JOGLTextureState extends TextureState {
             if (!supportsNonPowerTwo
                     && (!FastMath.isPowerOfTwo(image.getWidth()) || !FastMath
                             .isPowerOfTwo(image.getHeight()))) {
-                logger
-                        .warning("(card unsupported) Attempted to apply texture with size that is not power of 2: "
-                                + image.getWidth() + " x " + image.getHeight());
+                logger.log(Level.WARNING, "(card unsupported) Attempted to apply texture with size that is not power of 2: "
+                        + "{0}x{1}", new Integer[] {image.getWidth(), image.getHeight()});
 
                 final int maxSize = com.jme.util.jogl.JOGLUtil.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE);
 
@@ -290,7 +293,7 @@ public class JOGLTextureState extends TextureState {
                 if (h > maxSize) {
                     h = maxSize;
                 }
-                logger.warning("Rescaling image to " + w + " x " + h + " !!!");
+                logger.log(Level.WARNING, "Rescaling image to {0} x {1} !!!", new Integer[]{w, h});
 
                 // must rescale image to get "top" mipmap texture image
                 int format = TextureStateRecord.getGLPixelFormat(image
@@ -404,7 +407,7 @@ public class JOGLTextureState extends TextureState {
                             }
                         } else {
                             logger
-                                    .warning("This card does not support Cubemaps.");
+                                     .warning("This card does not support Cubemaps.");
                         }
                         break;
                 }
@@ -559,8 +562,7 @@ public class JOGLTextureState extends TextureState {
                                 }
                             }
                         } else {
-                            logger
-                                    .warning("This card does not support Cubemaps.");
+                            logger.warning("This card does not support Cubemaps.");
                             return;
                         }
                         break;
@@ -572,7 +574,65 @@ public class JOGLTextureState extends TextureState {
                 // Get mipmap data sizes and amount of mipmaps to send to
                 // opengl. Then loop through all mipmaps and send them.
                 int[] mipSizes = image.getMipMapSizes();
-                ByteBuffer data = image.getData(0);
+                ByteBuffer data = null;
+                if (type == Type.CubeMap) {
+                    if (supportsTextureCubeMap) {
+                            for (TextureCubeMap.Face face : TextureCubeMap.Face.values()) {
+                                    data = image.getData(face.ordinal());
+                                    int pos = 0;
+                                    int max = 1;
+
+                                    if (mipSizes == null) {
+                                            mipSizes = new int[] { data.capacity() };
+                                    } else if (texture.getMinificationFilter().usesMipMapLevels()) {
+                                            max = mipSizes.length;
+                                    }
+
+                                    for (int m = 0; m < max; m++) {
+                                            int width = Math.max(1, image.getWidth() >> m);
+                                            int height = type != Type.OneDimensional ? Math.max(1, image.getHeight() >> m) : 0;
+
+                                data.position(pos);
+                                data.limit(pos + mipSizes[m]);
+
+                                if (TextureStateRecord.isCompressedType(image.getFormat())) {
+                                    gl.glCompressedTexImage2D(
+                                                    getGLCubeMapFace(face),
+                                                    m,
+                                                    TextureStateRecord
+                                                    .getGLDataFormat(image
+                                                                    .getFormat()),
+                                                                    width, height,
+                                                                    hasBorder ? 1 : 0, GL.GL_UNSIGNED_BYTE, data);
+                                } else {
+                                    gl.glTexImage2D(
+                                                    getGLCubeMapFace(face),
+                                                    m,
+                                                    TextureStateRecord
+                                                    .getGLDataFormat(image
+                                                                    .getFormat()),
+                                                                    width, height,
+                                                                    hasBorder ? 1 : 0,
+                                                                    TextureStateRecord.getGLPixelFormat(image.getFormat()),
+                                                                                    GL.GL_UNSIGNED_BYTE, data);
+                                }
+                                pos += mipSizes[m];
+                                    }
+                            }
+                    } else {
+                            logger.warning("This card does not support CubeMaps.");
+                            return;
+                    }
+            } else {
+                data = image.getData(0);
+                int pos = 0;
+                int max = 1;
+                
+                if (mipSizes == null) {
+                    mipSizes = new int[] { data.capacity() };
+                } else if (texture.getMinificationFilter().usesMipMapLevels()) {
+                    max = mipSizes.length;
+                }
                 if (type == Type.ThreeDimensional) {
                     if (supportsTexture3D) {
                         // concat data into single buffer:
@@ -601,13 +661,6 @@ public class JOGLTextureState extends TextureState {
                         return;
                     }
                 }
-                int max = 1;
-                int pos = 0;
-                if (mipSizes == null) {
-                    mipSizes = new int[] { data.capacity() };
-                } else if (texture.getMinificationFilter().usesMipMapLevels()) {
-                    max = mipSizes.length;
-                }
 
                 for (int m = 0; m < max; m++) {
                     int width = Math.max(1, image.getWidth() >> m);
@@ -630,7 +683,7 @@ public class JOGLTextureState extends TextureState {
                                                         .getGLDataFormat(image
                                                                 .getFormat()),
                                                 width, height, hasBorder ? 1
-                                                        : 0, data.limit(), data); // TODO Check <size>
+                                                        : 0, mipSizes[m], data); // TODO Check <size>
                             } else {
                                 gl.glTexImage2D(GL.GL_TEXTURE_2D, m,
                                         TextureStateRecord
@@ -652,7 +705,7 @@ public class JOGLTextureState extends TextureState {
                                                 TextureStateRecord
                                                         .getGLDataFormat(image
                                                                 .getFormat()),
-                                                width, hasBorder ? 1 : 0, data.limit(), data); // TODO Check <size>
+                                                width, hasBorder ? 1 : 0, mipSizes[m], data); // TODO Check <size>
                             } else {
                                 gl.glTexImage1D(GL.GL_TEXTURE_1D, m,
                                         TextureStateRecord
@@ -675,7 +728,7 @@ public class JOGLTextureState extends TextureState {
                                                         .getGLDataFormat(image
                                                                 .getFormat()),
                                                 width, height, depth,
-                                                hasBorder ? 1 : 0, data.limit(), data); // TODO Check <size>
+                                                hasBorder ? 1 : 0, mipSizes[m], data); // TODO Check <size>
                             } else {
                                 gl.glTexImage3D(GL.GL_TEXTURE_3D, m,
                                         TextureStateRecord
@@ -688,43 +741,16 @@ public class JOGLTextureState extends TextureState {
                                         GL.GL_UNSIGNED_BYTE, data);
                             }
                             break;
-                        case CubeMap:
-                            if (supportsTextureCubeMap) {
-                                for (TextureCubeMap.Face face : TextureCubeMap.Face
-                                        .values()) {
-                                    if (TextureStateRecord
-                                            .isCompressedType(image.getFormat())) {
-                                        gl
-                                                .glCompressedTexImage2D(
-                                                        getGLCubeMapFace(face),
-                                                        m,
-                                                        TextureStateRecord
-                                                                .getGLDataFormat(image
-                                                                        .getFormat()),
-                                                        width, height,
-                                                        hasBorder ? 1 : 0, data.limit(), data); // TODO Check <size>
-                                    } else {
-                                        gl.glTexImage2D(
-                                                getGLCubeMapFace(face), m,
-                                                TextureStateRecord
-                                                        .getGLDataFormat(image
-                                                                .getFormat()),
-                                                width, height, hasBorder ? 1
-                                                        : 0, TextureStateRecord
-                                                        .getGLPixelFormat(image
-                                                                .getFormat()),
-                                                GL.GL_UNSIGNED_BYTE, data);
-                                    }
-                                }
-                            }
-                            break;
                     }
 
                     pos += mipSizes[m];
                 }
+            }
+            if (data != null) {
                 data.clear();
             }
         }
+    }
     }
 
     /**
@@ -860,6 +886,7 @@ public class JOGLTextureState extends TextureState {
                     // texture specific params
                     applyFilter(texture, texRecord, i, record);
                     applyWrap(texture, texRecord, i, record);
+                    applyShadow(texture, texRecord, i, record);
 
                     // Set our border color, if needed.
                     applyBorderColor(texture, texRecord, i, record);
@@ -1659,6 +1686,54 @@ public class JOGLTextureState extends TextureState {
             gl.glActiveTexture(GL.GL_TEXTURE0
                     + unit);
             record.currentUnit = unit;
+        }
+    }
+
+    /**
+     * Check if the filter settings of this particular texture have been changed
+     * and apply as needed.
+     * 
+     * @param texture
+     *            our texture object
+     * @param texRecord
+     *            our record of the last state of the texture in gl
+     * @param record
+     */
+    public static void applyShadow(Texture texture, TextureRecord texRecord,
+            int unit, TextureStateRecord record) {
+        final GL gl = GLU.getCurrentGL();
+
+        Type type = texture.getType();
+
+        if (supportsDepthTexture) {
+                int depthMode = TextureStateRecord.getGLDepthTextureMode(texture.getDepthMode());
+                // set up magnification filter
+                if (!texRecord.isValid() || texRecord.depthTextureMode != depthMode) {
+                    checkAndSetUnit(unit, record);
+                    gl.glTexParameteri(getGLType(type), GL.GL_DEPTH_TEXTURE_MODE_ARB,
+                                depthMode);
+                    texRecord.depthTextureMode = depthMode;
+                }
+        }
+        
+        if (supportsShadow) {
+                int depthCompareMode = TextureStateRecord.getGLDepthTextureCompareMode(texture.getDepthCompareMode());
+                // set up magnification filter
+                if (!texRecord.isValid() || texRecord.depthTextureFunc != depthCompareMode) {
+                    checkAndSetUnit(unit, record);
+                    gl.glTexParameteri(getGLType(type), GL.GL_TEXTURE_COMPARE_MODE_ARB,
+                                depthCompareMode);
+                    texRecord.depthTextureFunc = depthCompareMode;
+                }
+                
+                int depthCompareFunc = TextureStateRecord.getGLDepthTextureCompareFunc(texture.getDepthCompareFunc());
+                // set up magnification filter
+                if (!texRecord.isValid() || texRecord.depthTextureFunc != depthCompareFunc) {
+                    checkAndSetUnit(unit, record);
+                    gl.glTexParameteri(getGLType(type), GL.GL_TEXTURE_COMPARE_FUNC_ARB,
+                                depthCompareFunc);
+                    texRecord.depthTextureFunc = depthCompareFunc;
+                }
         }
     }
 
