@@ -61,11 +61,11 @@ public final class JOGLContextCapabilities {
     // TODO Due to JOGL buffer check, you can't use smaller sized
     // buffers (min_size = 16) for glGetFloat().
     private final FloatBuffer floatBuf = BufferUtils.createFloatBuffer(16);
-    
+
     public boolean GL_VERSION_1_1;
 
     public boolean GL_VERSION_1_2;
-    
+
     public boolean GL_VERSION_1_3;
     
     public boolean GL_VERSION_1_4;
@@ -87,6 +87,8 @@ public final class JOGLContextCapabilities {
     public boolean GL_EXT_blend_minmax;
 
     public boolean GL_EXT_blend_subtract;
+
+    public boolean GL_ARB_depth_texture;
 
     public boolean GL_EXT_fog_coord;
     
@@ -158,6 +160,8 @@ public final class JOGLContextCapabilities {
 
     public boolean GL_ARB_vertex_buffer_object;
 
+    public boolean GL_ARB_shadow;
+
     public JOGLContextCapabilities(GLAutoDrawable autodrawable) {
         init(autodrawable.getGL());
     }
@@ -167,7 +171,6 @@ public final class JOGLContextCapabilities {
     }
 
     public void init(final GL gl) {
-
         // See Renderer
         GL_ARB_vertex_buffer_object = gl
                 .isExtensionAvailable("GL_ARB_vertex_buffer_object");
@@ -205,6 +208,10 @@ public final class JOGLContextCapabilities {
         GL_ARB_vertex_shader = gl.isExtensionAvailable("GL_ARB_vertex_shader");
         GL_ARB_shading_language_100 = gl
                 .isExtensionAvailable("GL_ARB_shading_language_100");
+
+        // See TextureState
+        GL_ARB_depth_texture = gl.isExtensionAvailable("GL_ARB_depth_texture");
+        GL_ARB_shadow = gl.isExtensionAvailable("GL_ARB_shadow");
 
         try {
             gl.glGetIntegerv(GL.GL_MAX_VERTEX_ATTRIBS_ARB, intBuf);
