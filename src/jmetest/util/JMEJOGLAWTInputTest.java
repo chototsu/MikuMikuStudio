@@ -101,7 +101,6 @@ public class JMEJOGLAWTInputTest {
                          }
                      KeyInput.get().addListener(new KeyInputListener(){
 
-                         @Override
                          public void onKey(char character, int keyCode, boolean pressed) {
                              logger.info("[onKey] "+character+" "+keyCode+" "+pressed);
                          }
