@@ -146,6 +146,7 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
      * <code>multLocal</code> multiplies this matrix with another matrix and stores
      * the result back in this, returning this.  if null is passed, nothing happens
      * This function changes this matrix to what the child would look like if this were applied as it's parent
+     *
      * @param child The matrix to multiply by
      * @param tempStore A temporary Vector3f object for this TransformMatrix to use during the calculation.
      * @return this matrix after multiplication
@@ -443,7 +444,10 @@ public class TransformMatrix  implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * Applies this TransformMatrix to the given spatial, by updating the spatial's local translation, rotation, scale.
+     * Applies this TransformMatrix to the given spatial, by updating the
+     * spatial's local translation, rotation, scale.
+     * The spatial's transform values are replaced absolutely, not relatively.
+     *
      * @param spatial The spatial to update
      */
     public void applyToSpatial(Spatial spatial) {

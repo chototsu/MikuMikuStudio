@@ -776,17 +776,20 @@ public class Quaternion implements Externalizable, Savable, Cloneable {
     }
 
     /**
-     * <code>mult</code> multiplies this quaternion by a parameter quaternion.
-     * The result is returned as a new quaternion. It should be noted that
-     * quaternion multiplication is not cummulative so q * p != p * q.
+     * <code>mult</code> multiplies this quaternion by a parameter quaternion
+     * (q).
+     * 'this' is not modified.
+     * It should be noted that quaternion multiplication is not cummulative so
+     * q * p != p * q.
      *
      * It IS safe for q and res to be the same object.
      *
-     * @param q
-     *            the quaternion to multiply this quaternion by.
-     * @param res
-     *            the quaternion to store the result in.
-     * @return the new quaternion.
+     * @param q the quaternion to multiply this quaternion by.
+     * @param res the quaternion to store the result in (may be null).
+     *            If non-null, the input values of 'res' will be ignored and
+     *            replaced.
+     * @return If specified res is null, then a new Quaternion;
+     *         otherwise returns the populated 'res'.
      */
     public Quaternion mult(Quaternion q, Quaternion res) {
         if (res == null)
@@ -872,6 +875,7 @@ public class Quaternion implements Externalizable, Savable, Cloneable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter vector. The
      * result is returned as a new vector.
+     * 'this' is not modified.
      *
      * @param v
      *            the vector to multiply this quaternion by.
@@ -884,9 +888,11 @@ public class Quaternion implements Externalizable, Savable, Cloneable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter vector. The
      * result is stored in the supplied vector
+     * This method is very poorly named, since the specified vector is
+     * modified and, contrary to the other *Local methods in this and other jME
+     * classes, <b>'this' remains unchanged</b>.
      *
-     * @param v
-     *            the vector to multiply this quaternion by.
+     * @param v the vector which this Quaternion multiplies.
      * @return v
      */
     public Vector3f multLocal(Vector3f v) {
@@ -953,6 +959,7 @@ public class Quaternion implements Externalizable, Savable, Cloneable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter vector. The
      * result is returned as a new vector.
+     * 'this' is not modified.
      * 
      * @param v
      *            the vector to multiply this quaternion by.

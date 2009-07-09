@@ -159,8 +159,9 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
      * resultant vector which is returned. If the provided vector is null, null
      * is returned.
      *
-     * @param vec
-     *            the vector to add to this.
+     * Neither 'this' nor 'vec' are modified.
+     *
+     * @param vec the vector to add to this.
      * @return the resultant vector.
      */
     public Vector3f add(Vector3f vec) {
@@ -480,9 +481,9 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
      * <code>multLocal</code> multiplies a provided vector to this vector
      * internally, and returns a handle to this vector for easy chaining of
      * calls. If the provided vector is null, null is returned.
+     * The provided 'vec' is not modified.
      *
-     * @param vec
-     *            the vector to mult to this vector.
+     * @param vec the vector to mult to this vector.
      * @return this
      */
     public Vector3f multLocal(Vector3f vec) {

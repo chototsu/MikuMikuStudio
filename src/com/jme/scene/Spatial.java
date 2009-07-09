@@ -578,8 +578,7 @@ public abstract class Spatial implements Serializable, Savable {
 
     protected void updateWorldTranslation() {
         if (parent != null) {
-            worldTranslation = parent.localToWorld(localTranslation,
-                    worldTranslation);
+            parent.localToWorld(localTranslation, worldTranslation);
         } else {
             worldTranslation.set(localTranslation);
         }
