@@ -146,7 +146,7 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -251,7 +251,7 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -359,7 +359,7 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -399,7 +399,7 @@ public class DOMInputCapsule implements InputCapsule {
 
             float[][] tmp = new float[size_outer][size_inner];
 
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             for (int i = 0; i < size_outer; i++) {
                 tmp[i] = new float[size_inner];
                 for (int k = 0; k < size_inner; k++) {
@@ -447,7 +447,7 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -548,7 +548,7 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -649,7 +649,7 @@ public class DOMInputCapsule implements InputCapsule {
                  return defVal;
              }
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -750,7 +750,7 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -925,7 +925,7 @@ public class DOMInputCapsule implements InputCapsule {
         try {
             BitSet set = new BitSet();
             String bitString = currentElem.getAttribute(name);
-            String[] strings = bitString.split("\\s+");
+            String[] strings = parseTokens(bitString);
             for (int i = 0; i < strings.length; i++) {
             	int isSet = Integer.parseInt(strings[i]);
                 if (isSet == 1) {
@@ -1355,7 +1355,7 @@ public class DOMInputCapsule implements InputCapsule {
                 return defVal;
             }
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -1388,7 +1388,7 @@ public class DOMInputCapsule implements InputCapsule {
             }
 
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -1422,7 +1422,7 @@ public class DOMInputCapsule implements InputCapsule {
             }
 
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -1456,7 +1456,7 @@ public class DOMInputCapsule implements InputCapsule {
             }
 
             String sizeString = tmpEl.getAttribute("size");
-            String[] strings = tmpEl.getAttribute("data").split("\\s+");
+            String[] strings = parseTokens(tmpEl.getAttribute("data"));
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
@@ -1533,4 +1533,13 @@ public class DOMInputCapsule implements InputCapsule {
         }
         return ret;       
 	}
+
+    private static final String[] zeroStrings = new String[0];
+
+    protected String[] parseTokens(String inString) {
+        String[] outStrings = inString.split("\\s+");
+        return (outStrings.length == 1 && outStrings[0].length() == 0)
+               ? zeroStrings
+               : outStrings;
+    }
 }
