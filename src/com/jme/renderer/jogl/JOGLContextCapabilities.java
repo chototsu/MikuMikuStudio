@@ -37,7 +37,6 @@ import java.nio.IntBuffer;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLException;
 
 import com.jme.util.geom.BufferUtils;
 
@@ -208,54 +207,68 @@ public final class JOGLContextCapabilities {
         GL_ARB_vertex_shader = gl.isExtensionAvailable("GL_ARB_vertex_shader");
         GL_ARB_shading_language_100 = gl
                 .isExtensionAvailable("GL_ARB_shading_language_100");
-
+        if(GL_ARB_shading_language_100){
+            GL_SHADING_LANGUAGE_VERSION_ARB = gl
+            .glGetString(GL.GL_SHADING_LANGUAGE_VERSION_ARB);
+        } else {
+            GL_SHADING_LANGUAGE_VERSION_ARB = "";
+        }
+        
         // See TextureState
         GL_ARB_depth_texture = gl.isExtensionAvailable("GL_ARB_depth_texture");
         GL_ARB_shadow = gl.isExtensionAvailable("GL_ARB_shadow");
-
-        try {
+           
+        if(gl.isExtensionAvailable( "GL_ARB_vertex_shader" )) {
             gl.glGetIntegerv(GL.GL_MAX_VERTEX_ATTRIBS_ARB, intBuf);
             GL_MAX_VERTEX_ATTRIBS_ARB = intBuf.get(0);
-        } catch(GLException gle) {
-            GL_MAX_VERTEX_ATTRIBS_ARB=0;
-        }
-        
-
-        try {
             gl.glGetIntegerv(GL.GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, intBuf);
             GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB = intBuf.get(0);
-        } catch(GLException gle){
-            GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB=0;
-        }
-
-        try {
-            gl.glGetIntegerv(GL.GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, intBuf);
-            GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB = intBuf.get(0);
-        } catch(GLException gle) {
-            GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB=0;
-        }
-
-        try {
-            gl.glGetIntegerv(GL.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, intBuf);
-            GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB = intBuf.get(0);
-        } catch(GLException gle) {
-            GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB=0;
-        }
-
-        try {
             gl.glGetIntegerv(GL.GL_MAX_VARYING_FLOATS_ARB, intBuf);
             GL_MAX_VARYING_FLOATS_ARB = intBuf.get(0);
-        } catch(GLException gle) {
-            GL_MAX_VARYING_FLOATS_ARB=0;
+            gl.glGetIntegerv(GL.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, intBuf);
+            GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB = intBuf.get(0);
+            gl.glGetIntegerv(GL.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, intBuf);
+            GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB = intBuf.get(0);
+            gl.glGetIntegerv(GL.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, intBuf);
+            GL_MAX_TEXTURE_IMAGE_UNITS_ARB = intBuf.get(0);
+            gl.glGetIntegerv(GL.GL_MAX_TEXTURE_COORDS_ARB, intBuf);
+            GL_MAX_TEXTURE_COORDS_ARB = intBuf.get(0);
+        } else {
+            GL_MAX_VERTEX_ATTRIBS_ARB = 0;
+            GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB = 0;
+            GL_MAX_VARYING_FLOATS_ARB = 0;
+            GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB = 0;
+            GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB = 0;
+            GL_MAX_TEXTURE_IMAGE_UNITS_ARB = 0;
+            GL_MAX_TEXTURE_COORDS_ARB = 0;
         }
-
+        if( gl.isExtensionAvailable( "GL_ARB_fragment_shader" )) {
+            gl.glGetIntegerv(GL.GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, intBuf);
+            GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB = intBuf.get(0);
+        } else {
+            GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB = 0;
+        }
+        
+        if( gl.isExtensionAvailable( "GL_EXT_texture_filter_anisotropic" )) {
+            // FIXME I don't think this was necessary: floatBuf.rewind();
+            gl.glGetFloatv(GL.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, floatBuf);
+            GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = floatBuf.get(0);
+        } else {
+            GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0;
+        }
         // See StencilState
         GL_EXT_stencil_two_side = gl
                 .isExtensionAvailable("GL_EXT_stencil_two_side");
         GL_EXT_stencil_wrap = gl.isExtensionAvailable("GL_EXT_stencil_wrap");
-
+        
         // See TextureState
         GL_ARB_multitexture = gl.isExtensionAvailable("GL_ARB_multitexture");
+        if(GL_ARB_multitexture) {
+            gl.glGetIntegerv(GL.GL_MAX_TEXTURE_UNITS, intBuf);
+            GL_MAX_TEXTURE_UNITS = intBuf.get(0);
+        } else {
+            GL_MAX_TEXTURE_UNITS = 1;
+        }    
         GL_ARB_texture_env_dot3 = gl
                 .isExtensionAvailable("GL_ARB_texture_env_dot3");
         GL_ARB_texture_env_combine = gl
@@ -273,46 +286,6 @@ public final class JOGLContextCapabilities {
                 .isExtensionAvailable("GL_ARB_texture_non_power_of_two");
         GL_ARB_texture_rectangle = gl
                 .isExtensionAvailable("GL_ARB_texture_rectangle");
-
-        gl.glGetIntegerv(GL.GL_MAX_TEXTURE_UNITS, intBuf);
-        GL_MAX_TEXTURE_UNITS = intBuf.get(0);
-
-        try {
-            gl.glGetIntegerv(GL.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, intBuf);
-            GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB = intBuf.get(0);
-        } catch(GLException gle) {
-            GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB=0;
-        }
-
-        try {
-            gl.glGetIntegerv(GL.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, intBuf);
-            GL_MAX_TEXTURE_IMAGE_UNITS_ARB = intBuf.get(0);
-        } catch(GLException gle) {
-            GL_MAX_TEXTURE_IMAGE_UNITS_ARB=0;
-        }
-
-        try {
-            gl.glGetIntegerv(GL.GL_MAX_TEXTURE_COORDS_ARB, intBuf);
-            GL_MAX_TEXTURE_COORDS_ARB = intBuf.get(0);
-        } catch(GLException gle) {
-            GL_MAX_TEXTURE_COORDS_ARB=0;
-        }
-
-        try {
-            GL_SHADING_LANGUAGE_VERSION_ARB = gl
-            .glGetString(GL.GL_SHADING_LANGUAGE_VERSION_ARB);
-        } catch(GLException gle) {
-            GL_SHADING_LANGUAGE_VERSION_ARB="";
-        }
-
-        // FIXME I don't think this was necessary: floatBuf.rewind();
-        try {
-            gl.glGetFloatv(GL.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, floatBuf);
-            GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = floatBuf.get(0);
-        } catch(GLException gle) {
-            GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT=0;
-        }
-
         // See VertexProgram
         GL_ARB_vertex_program = gl
                 .isExtensionAvailable("GL_ARB_vertex_program");
@@ -324,7 +297,7 @@ public final class JOGLContextCapabilities {
                 .isExtensionAvailable("GL_EXT_texture_mirror_clamp");
         GL_ARB_texture_border_clamp = gl
                 .isExtensionAvailable("GL_ARB_texture_border_clamp");
-
+        
         GL_EXT_compiled_vertex_array = gl.isExtensionAvailable("GL_EXT_compiled_vertex_array");
     }
 
