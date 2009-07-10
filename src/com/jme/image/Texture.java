@@ -1177,6 +1177,8 @@ public abstract class Texture implements Savable {
         if (this.textureId != that.textureId)
             return false;
         if (this.textureId == 0) {
+            if (this.key != null && !this.key.equals(that.key))
+                return false;
             if (this.getImage() != null
                     && !this.getImage().equals(that.getImage()))
                 return false;
