@@ -532,7 +532,9 @@ public final class StandardGame extends AbstractGame implements Runnable {
      */
     public void setUncaughtExceptionHandler(UncaughtExceptionHandler exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
-        gameThread.setUncaughtExceptionHandler(this.exceptionHandler);
+        if (gameThread != null) {
+            gameThread.setUncaughtExceptionHandler(this.exceptionHandler);
+        }
     }
 
     /**
