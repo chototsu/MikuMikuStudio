@@ -539,7 +539,7 @@ public class BoneAnimation implements Serializable, Savable {
             case Controller.RT_WRAP: {
                 currentTime += time * speed;
 
-                if (currentFrame > endFrame) {
+                if (currentFrame >= endFrame) {
                     currentTime += keyframeTime[startFrame]
                             - keyframeTime[endFrame];
                     currentFrame = startFrame + 1;
@@ -547,7 +547,7 @@ public class BoneAnimation implements Serializable, Savable {
                     return true;
                 }
 
-                while (currentTime > keyframeTime[currentFrame]) {
+                while (currentTime > keyframeTime[currentFrame] && currentFrame < endFrame) {
                     currentFrame++;
                     prevFrame++;
                 }
