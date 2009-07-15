@@ -684,7 +684,7 @@ public class LWJGLTextureState extends TextureState {
                     
                     if (mipSizes == null) {
                         mipSizes = new int[] { data.capacity() };
-                    } else if (texture.getMinificationFilter().usesMipMapLevels()) {
+                    } else {
                         max = mipSizes.length;
                     }
                     
