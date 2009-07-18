@@ -32,7 +32,8 @@
 		<lwjgl.version>2.1</lwjgl.version>
 	</properties>
     <dependencies>
-        <!-- see lib/mvn-lib-install on how to install lwjgl jars -->
+      <!-- see lib/mvn-lib-install.sh on how to update lwjgl jars in
+           jME repository  -->
         <dependency>
 			<!--  we ned to add lib/jme-colladabinding.jar to the classpath for compiling -->
             <groupId>com.jmonkeyengine.collada</groupId>

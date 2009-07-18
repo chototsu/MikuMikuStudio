@@ -1,3 +1,6 @@
+# Version numbers here must be updated to agree with the versions specified
+# in the dependency sectin of our "pom.xml" file.
+
 mvn install:install-file -Dfile=lib/lwjgl/lwjgl.jar -DgroupId=org.lwjgl -DartifactId=lwjgl -Dversion=2.1 -Dpackaging=jar
 mvn install:install-file -Dfile=lib/lwjgl/lwjgl_util.jar -DgroupId=org.lwjgl -DartifactId=lwjgl_util -Dversion=2.1 -Dpackaging=jar
 mvn install:install-file -Dfile=lib/lwjgl/lwjgl_util_applet.jar -DgroupId=org.lwjgl -DartifactId=lwjgl_util_applet -Dversion=2.1 -Dpackaging=jar
