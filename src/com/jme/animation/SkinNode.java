@@ -320,11 +320,11 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
     
     public void setSkeleton(Bone b) {
-        if (skeleton != null)
-            skeleton.removeBoneListener(this);
-
         skeleton = b;
-        skeleton.addBoneListener(this);
+        if (skeleton != null) {
+            skeleton.removeBoneListener(this);
+            skeleton.addBoneListener(this);
+        }
         newSkeletonAssigned = true;
     }
 
@@ -430,8 +430,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
             geom.setHasDirtyVertices(true);
             for (int vert = 0, max = cache[index].length; vert < max; vert++) {
                 ArrayList<BoneInfluence> infs = cache[index][vert];
-                if (infs == null)
-                    continue;
+                if (infs == null) continue;
                 vertex.zero();
                 normal.zero();
 
@@ -497,10 +496,10 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         skins = (Node)cap.readSavable("skins", null);
         Bone readSkeleton = (Bone)cap.readSavable("skeleton", null);
         connectionPoints = cap.readSavableArrayList("connectionPoints", null);
+        cache = cap.readSavableArrayListArray2D("cache", null);
         
         if (readSkeleton != null) {
             setSkeleton(readSkeleton);
-            cache = cap.readSavableArrayListArray2D("cache", null);
             regenInfluenceOffsets();
             skeleton.addBoneListener(this);
         }
@@ -541,6 +540,10 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         normalizeWeights(geomIndex);
     }
     
+    /**
+     * This method DOES NOT REMOVE THE Geometry.
+     * It just removes the Influences of the indicated Geometry.
+     */
     @SuppressWarnings("unchecked")
     public void removeGeometry(int geomIndex) {
     	if (geomIndex >= cache.length)
