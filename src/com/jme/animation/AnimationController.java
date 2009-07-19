@@ -75,8 +75,6 @@ public class AnimationController extends Controller implements Savable {
 
     private BoneAnimation activeAnimation;
 
-    //volatile private boolean updateSingleFrame;
-
     /**
      * Resets the active animation to the start, then disables the
      * AnimationController so the animation will no longer animate.
@@ -91,13 +89,6 @@ public class AnimationController extends Controller implements Savable {
         setActive(false);
     }
 
-    /*
-    public void queueSingleFrameUpdate() {
-        setActive(true);
-        updateSingleFrame = true;
-    }
-    */
-    
 //    private class ModifierData {
 //        public BoneAnimation animation;
 //        public float blendTime;
@@ -456,15 +447,6 @@ public class AnimationController extends Controller implements Savable {
 
     @Override
     public void update(float time) {
-        /*
-        if (updateSingleFrame)  {
-            if (activeAnimation != null) 
-            activeAnimation.staticUpdate(time, getRepeatType(), getSpeed());
-            setActive(false);
-            updateSingleFrame = false;
-            return;
-        }
-        */
     	//We are blending into nothing, so just set this as active.
     	if(blendAnimation != null && activeAnimation == null) {
     		activeAnimation = blendAnimation;

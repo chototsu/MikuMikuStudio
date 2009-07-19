@@ -547,11 +547,8 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * Looks like this method is rubbish.
-     *
-     * returns true if this animation is valid (i.e. contains valid information)
-     * 
-     * @return
+     * @deprecated It looks like the return value is very inaccurate.
+     * @return true if this animation is valid (i.e. contains valid information)
      */
     public boolean isValid() {
         // TODO:  Check *.length == *.length for the per-frame array fields.
@@ -1046,18 +1043,17 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     public void reset() {
-        currentTime = keyframeTime[startFrame];
-        updateFrames();
+        setCurrentFrame(startFrame);
     }
 
     /**
      * Ensures that an animation can continue running if you start updating
      * it again.
+     *
+     * @deprecated This method is entirely unnecessary after the frame number
+     * refactor.
      */
     public void reactivate(int repeatType) {
-        if (repeatType == Controller.RT_CLAMP) {
-            if (currentFrame > endFrame) reset();
-        }
     }
 
     public Spatial getDestSpatial() {

@@ -35,6 +35,8 @@ package com.jme.animation;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
@@ -43,6 +45,7 @@ import com.jme.renderer.Camera;
 import com.jme.scene.ConnectionPoint;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -66,6 +69,8 @@ import com.jme.util.geom.VertMap;
 public class SkinNode extends Node implements Savable, BoneChangeListener {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(
+            SkinNode.class.getName());
 
     protected static Vector3f vertex = new Vector3f();
     protected static Vector3f normal = new Vector3f();
@@ -565,4 +570,145 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 	public boolean isExternalControl() {
 		return externalControl;
 	}
+
+    /**
+     * Assimilate all skin Geometries from the specified 'otherSkinNode',
+     * leaving this other SkinNode castrated.
+     *
+     * Convenience wrapper for ALL skin geos.
+     * After running this method, you should remove 'otherSkinNode' from any
+     * scene graph it's attached to, unless you plan to add Geometry skin nodes
+     * to it again.
+     *
+     * @see #assimilate(SkinNode, String)
+     */
+    public void assimilate(SkinNode otherSkinNode) {
+        assimilate(otherSkinNode, null);
+    }
+
+    /**
+     * Assimilates the specified skin mesh Geometries from the specified
+     * 'otherSkinNode' into this one, removing them from 'otherSkinNode'.
+     *
+     * For this first implementation, we have some rather stringent
+     * requirements.  If use cases justify accommodating other states, these
+     * requirements can be relaxed with further development work.
+     *
+     * <b>IMPORTANT:  The calling signature is tentative.
+     *    It's likely that checked exceptions will be added, so expect to
+     *    need to update your exception-handling until this method has
+     *    stabilized.</b>
+     *
+     * @param otherSkinNode Node from which the Geometries and BoneInfluences
+     *                      will be taken.
+     * @param geoNameRegex To specify which Geometries to assimilate.
+     *                     Null to assimilate all skin Geometries from
+     *                     'otherSkinNode'.
+     * @throws RuntimeException for various state validation failures.
+     *         This is easier to use, but not as robust.
+     *         This is likely to change soon.
+     */
+    public void assimilate(SkinNode otherSkinNode, String geoNameRegex) {
+        /* URGENT TODOs:
+         *     Find out if need to stop, clear, reset animations or the
+         *      AnimationController before doing this stuff.
+         *     Verify that imported SkinNodes never use SkinNode.bindMatrix
+         *     Verify that imported SkinNodes never use BI.nOffset, BI.vOffset.
+         */
+        Node otherSkins = otherSkinNode.getSkins();
+        if (otherSkins == null) {
+            logger.warning("Not merging SkinNode '" + otherSkinNode.getName()
+                    + "' into '" + getName()
+                    + "' since no skin meshes for former");
+            return;
+        }
+        AnimationController ac =
+                (skeleton == null) ? null : skeleton.getAnimationController();
+        if (ac != null && ac.getActiveAnimation() != null) {
+            if (ac.isActive())
+                throw new IllegalStateException("Can not assimilate a SkinNode "
+                        + "while an animation is active");
+            ac.reset();
+            updateSkin();
+        }
+        ArrayList<BoneInfluence>[][] otherCache = otherSkinNode.getCache();
+        if (otherCache == null)
+            throw new IllegalArgumentException(
+                    "Other skin has skin mesh(es), but no influence cache: "
+                    + otherSkinNode.getName());
+        if (otherSkins.getQuantity() != otherSkinNode.getCache().length)
+            throw new IllegalArgumentException(
+                    "SkinNode '" + otherSkinNode.getName()
+                    + "' has skin geo vs. cache count mismatch: "
+                    + otherSkins.getQuantity() + " vs. "
+                    + otherSkinNode.getCache().length);
+        logger.fine("Merging SkinNode '" + otherSkinNode.getName()
+                + "' into '" + getName() + "'");
+        logger.fine("Other bindMatrix = " + otherSkinNode.bindMatrix);
+
+        Spatial s;
+        ArrayList<BoneInfluence>[] transferredInfluences;
+
+        for (int q = otherSkins.getQuantity();
+                q > 0; q = otherSkins.getQuantity()) {
+            s = otherSkins.getChild(q - 1);
+            if (geoNameRegex != null && !s.getName().matches(geoNameRegex))
+                continue;
+            if (!(s instanceof Geometry))
+                throw new IllegalStateException(
+                        "SkinNode '" + otherSkinNode.getName()
+                        + "' has non-Geometry children of its 'skins'node': "
+                        + s.getName() + " is a " + s.getClass().getName());
+            transferredInfluences = otherCache[q - 1];
+            assimilate(otherSkinNode.removeSkinGeometry(s.getName()),
+                    transferredInfluences);
+        }
+
+        assignSkeletonBoneInfluences();
+          // Maps influence bone id Strings to Bone instances
+        regenInfluenceOffsets();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void assimilate(
+            Geometry newSkinGeo, ArrayList<BoneInfluence>[] newInfluences) {
+        addSkin(newSkinGeo);
+        // Node.attachChild will automatically remove from previous parent.
+        // This will NOT remove the corresponding cache (BoneInfluences) if
+        // the previous parent was a SkinNode.
+        ArrayList<BoneInfluence>[][] newCache = (ArrayList<BoneInfluence>[][])
+                new ArrayList[skins.getQuantity()][];
+        for (int i = 0; i < cache.length; i++) newCache[i] = cache[i];
+        newCache[newCache.length - 1] = (ArrayList<BoneInfluence>[])
+                new ArrayList[newInfluences.length];
+        cache = newCache;
+        for (int i = 0; i < newInfluences.length; i++)
+            for (BoneInfluence bi : newInfluences[i])
+                addBoneInfluence(newCache.length - 1, i, bi.boneId, bi.weight);
+    }
+
+     /**
+      * Detaches a skin mesh from the SkinNode, removing the associated
+      * BoneInfluences along with it.
+      *
+      * Returns null if there is no such named skin Geometry attached.
+      * Unlike the removeGeometry method, this one really does remove the
+      * specified Geometry.
+      *
+      * @see #removeGeometry(int)
+      */
+     public Geometry removeSkinGeometry(String name) {
+         if (skins == null) return null;
+         int childCount = skins.getQuantity();
+         Spatial s;
+         for (int i = 0; i < childCount; i++) {
+             s = skins.getChild(i);
+             if (!(s instanceof Geometry) || !s.getName().equals(name))
+                 continue;
+             removeGeometry(i);
+             s.removeFromParent();
+             return (Geometry) s;
+         }
+         return null;
+     }
 }
