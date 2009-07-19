@@ -41,13 +41,18 @@ import com.jme.scene.Spatial;
 import com.jme.util.geom.VertMap;
 
 /**
- * A non-parented SkinNode which is enforced to the be used only for holding
+ * A non-parented SkinNode which is enforced to be used only for holding
  * SkinNode Geometry skins.
  *
  * Specifically, this SkinNode will throw if you attempt to parent it, or if
- * you attempt to set skeleton, bind matris, controller, or animation.
+ * you attempt to set skeleton, controller, animation, or other
+ * non-skin-geometry properties.
+ *
+ * This class is intended to be used for classes dedicated for usage as a
+ * SkinNode.assimilate() targets.
  *
  * @author Blaine Simpson (blaine dot simpson at admc dot com)
+ * @see SkinNode.assimilate(SkinNode)
  */
 public class SkinTransferNode extends SkinNode {
     private static final long serialVersionUID = 1L;
