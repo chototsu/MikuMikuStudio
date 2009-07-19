@@ -66,6 +66,9 @@ import com.jme.util.export.Savable;
  * Though it implements no interface, the intention is that an update method
  * of this class should be called by a Controller.
  *
+ * This class takes per-frame data specifying the interpolation type, but
+ * nobody has ever undertaken the effort to make this class work that way.
+ *
  * @see #optimize
  * @see BoneTransform
  * @see Controller
@@ -289,10 +292,10 @@ public class BoneAnimation implements Serializable, Savable {
          */
         if (keyframeTime != null) {
             if (frame > endFrame  || frame < startFrame) {
-                logger.log(Level.SEVERE, "{0}: Invalid frame index {1}.  "
+                logger.log(Level.SEVERE, "Invalid frame index {1}.  "
                         + "Note between start and end key frames {2} "
                         + "and {3} inclusive",
-                         new Object[] {name, frame, startFrame, endFrame});
+                         new Object[] {frame, startFrame, endFrame});
                 return;
             }
             currentFrame = frame;
@@ -423,17 +426,23 @@ public class BoneAnimation implements Serializable, Savable {
                         checkForClampFinish(repeat);
                     }
                 } else if (oldFrame != currentFrame) {
+                    int savedCurrentFrame = currentFrame;
+                    // Hack because we treat 'prevFrame' as if it is the
+                    // currentFrame in this non-interp block.
+                    // We must restore the real current frame when done.
                     if(props == null || !props.isAllowTranslation()) {
                         for (int i = 0; i < boneTransforms.size(); i++) {
-                            boneTransforms.get(i).setCurrentFrame(currentFrame, blendRate);
+                            boneTransforms.get(i).setCurrentFrame(
+                                    prevFrame, blendRate);
                         }
                     } else {
                         for (int i = 0; i < boneTransforms.size(); i++) {
-                            boneTransforms.get(i).setCurrentFrame(currentFrame,
+                            boneTransforms.get(i).setCurrentFrame(prevFrame,
                                     blendRate, sourceBone, destSpatial,
                                     estimateCallsPerFrame(time), props);
                         }
                     }
+                    currentFrame = savedCurrentFrame;
                     checkForClampFinish(repeat);
                 }
             }
@@ -451,7 +460,7 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     private void checkForClampFinish(int repeatMode) {
-        if (repeatMode == Controller.RT_CLAMP
+        if (repeatMode != Controller.RT_CLAMP
                 && keyframeTime[endFrame] == currentTime)
             currentFrame = endFrame + 1;
     }
@@ -539,11 +548,12 @@ public class BoneAnimation implements Serializable, Savable {
                     + "bounds of animation.  " + currentTime + " vs. "
                     + keyframeTime[startFrame] + " to "
                     + keyframeTime[endFrame]);
-        // Following statement is to verbose for general usage.
-        /*
-        logger.finest(
-            "Frames " + cycleMode + " => " + currentFrame + " / " + prevFrame);
-        */
+        // Following statement is so verbose that even with finest level, we
+        // don't wanto to log this unless user specifically requests it.
+        if (System.getProperty("com.jme.animation.BoneAnimation.TRACE")
+                != null)
+            logger.log(Level.FINEST, "Frames: direction {0}, {1} => {2}",
+                    new Integer[] { cycleMode, prevFrame, currentFrame} );
     }
 
     /**
@@ -622,7 +632,14 @@ public class BoneAnimation implements Serializable, Savable {
      *        the interpolation types to set, or null for no interpolation.
      */
     public void setInterpolationTypes(int[] types) {
-        this.interpolationType = types;
+        interpolationType = types;
+        if (interpolationType == null || interpolationType.length < 2)
+            return;
+        for (int i = 1; i < interpolationType.length; i++)
+            if (interpolationType[i] != interpolationType[0])
+                throw new IllegalArgumentException(
+                        "Sorry, but at this time only one interpolation type "
+                        + "may be used in a single animation sequence");
     }
 
     public int[] getInterpolationTypes() { return this.interpolationType; }
