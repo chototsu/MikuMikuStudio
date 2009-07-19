@@ -255,8 +255,14 @@ public abstract class AbstractGame {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
                     logger.warning( "Error waiting for dialog system, using defaults.");
+                } catch (UnsatisfiedLinkError t){
+                    if( t.getLocalizedMessage()!=null && t.getLocalizedMessage().contains("java.library.path") ){
+                	logger.severe("\n\nNative library not set - go to \nhttp://www.jmonkeyengine.com/wiki/doku.php?id=no_lwjgl_in_java.library.path \nfor details.");
+                    }
+                    t.printStackTrace();
+                } catch (Throwable t){
+                    t.printStackTrace();
                 }
-                
                 dialogCheck = dialogRef.get();
             }
 
