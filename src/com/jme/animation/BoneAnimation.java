@@ -72,15 +72,6 @@ import com.jme.util.export.Savable;
  * @see #update
  */
 public class BoneAnimation implements Serializable, Savable {
-    /* TODO:  Rename the private field name which have names which indicate
-     * the wrong plurality.  E.g. "keyframeTime" does not hold a time, it
-     * holds a list of times, and should therefore be named "keyframeTimes",
-     * analogously to the public methods for this same item.
-     * ARG: Looks like at least one of these misleading field names is
-     * persisted, so probably neeed to retain the persisted name for backward
-     * compatibility, even though it is misleading.  We can, nevertheless,
-     * correct the variable names.
-     */
     private static final Logger logger = Logger.getLogger(BoneAnimation.class
             .getName());
     
@@ -108,6 +99,8 @@ public class BoneAnimation implements Serializable, Savable {
     private int currentFrame = 1;
 
     private int prevFrame = 0;
+    // prevFrame is not the previous frame we visited, but the FROM frame
+    // of TO-FROM interpolations.
 
     private int endFrame;
 
@@ -119,7 +112,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     private float lastTime;
 
-    private int cycleMode = 1;
+    volatile private int cycleMode = 1;
 
     // children animations of this animation
     private ArrayList<BoneAnimation> children;
@@ -249,6 +242,9 @@ public class BoneAnimation implements Serializable, Savable {
         return null;
     }
 
+    /**
+     * This is only used for Blend animations.
+     */
     public void setInitialFrame(int frame) {
         if (frame >= endFrame) {
             currentFrame = frame;
@@ -270,31 +266,38 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * setCurrentFrame will set the current position of the animation to the
-     * supplied frame. If the frame is outside of the start/end frame subset,
-     * the frame will work towards the start frame.
+     * supplied frame.
+     * <P>
+     * This method is used internally only for non-interpolated animation.
+     * For internal management, The frames fields are primarily manipulated by
+     * other methods.
+     * </P> <P>
+     * This method is to be used if you know you really want the frame changed.
+     * Instead of checking whether the frame has changed, it assumes you are
+     * smart enough to invoke only when needed.
+     * This avoids the possibility that this method may mistakenly not update.
+     * </P>
      * 
      * @param frame
      *            the frame to set the current animation frame to.
      */
     public void setCurrentFrame(int frame) {
-        if (prevFrame == frame) {
-            return;
-        }
+        /*
+         * We do not set 'prevFrame' as it needs to be set for motion
+         * interpolation.  That's ok because we do no interpolation here, and
+         * prevFrame is always set by the update() call before it is used.
+         */
         if (keyframeTime != null) {
-            if (frame >= keyframeTime.length + 1 || frame < 0) {
-                logger.log(Level.SEVERE, "{0}: Invalid frame index {1}. " 
-                        + "Intialized to only " + "have: {2}  keyframes."
-                        , new Object[] {name, frame, keyframeTime.length});
+            if (frame > endFrame  || frame < startFrame) {
+                logger.log(Level.SEVERE, "{0}: Invalid frame index {1}.  "
+                        + "Note between start and end key frames {2} "
+                        + "and {3} inclusive",
+                         new Object[] {name, frame, startFrame, endFrame});
                 return;
             }
-            // because we interpolate we are working towards the current frame.
-            prevFrame = frame;
-            if (prevFrame < keyframeTime.length - 1) {
-                currentFrame = prevFrame + 1;
-            } else {
-                currentFrame = startFrame;
-            }
-            currentTime = keyframeTime[prevFrame];
+            currentFrame = frame;
+            currentTime = keyframeTime[currentFrame];
+            prevFrame = -1;
 
             // set the bone to the current frame
             if (boneTransforms != null) {
@@ -308,7 +311,7 @@ public class BoneAnimation implements Serializable, Savable {
         // call the children of this animation if any
         if (children != null) {
             for (int i = 0; i < children.size(); i++) {
-                children.get(i).setCurrentFrame(frame);
+                children.get(i).setCurrentFrame(currentFrame);
             }
         }
 
@@ -322,9 +325,6 @@ public class BoneAnimation implements Serializable, Savable {
      *            the current frame.
      */
     private void changeFrame(int frame) {
-        if(frame == 0 ) {
-            logger.finest("0");
-        }
         if (frame != lastEventFrame) {
             ArrayList<AnimationEvent> eventList = AnimationEventManager
                     .getInstance().getAnimationEventList(this, frame);
@@ -353,12 +353,26 @@ public class BoneAnimation implements Serializable, Savable {
         this.boneTransforms.add(bt);
     }
 
+    private float estimateCallsPerFrame(float time) {
+        return (keyframeTime[currentFrame] - keyframeTime[prevFrame]) / time;
+
+    }
+
+    /**
+     * A wrapper class for non-blending updates.
+     *
+     * @see #update(float, int, float, float)
+     */
+    public void update(float time, int repeat, float speed) {
+        update(time, repeat, speed, BoneTransform.NOBLEND);
+    }
+
     /**
      * update is called during the update phase of the game cycle.
      * If this animation is not active, this method immediately
      * returns. The update of the bone is dependent on the repeat type
      * (see 'repeat' param below).
-     * This version of update() does not support Blending.
+     * If blendRate is set to NOBLEND, no blending is performed.
      *
      * @param time
      * The time
@@ -377,70 +391,19 @@ public class BoneAnimation implements Serializable, Savable {
      * @see update(float, int, float, float)
      * @see Controller
      */
-    public void update(float time, int repeat, float speed) {
-        if (boneTransforms != null && keyframeTime != null) {
-            if (endFrame >= keyframeTime.length) {
-                endFrame = keyframeTime.length - 1;
-            }
-            int oldFrame = currentFrame;
-            if (updateCurrentTime(time, repeat, speed)) {
-                if (interpolationType != null) {
-                    lastTime += time;
-                    if (lastTime >= interpolationRate) {
-                        if (interpolationRate > 0) {
-                            lastTime = lastTime % interpolationRate;
-                        } else {
-                        	lastTime = 0.0f;
-                        }
-                        float result = (currentTime - keyframeTime[prevFrame])
-                                / (keyframeTime[currentFrame] - keyframeTime[prevFrame]);
-                        for (int i = 0; i < boneTransforms.size(); i++) {
-                            boneTransforms.get(i).update(prevFrame,
-                                    currentFrame, interpolationType[prevFrame],
-                                    result);
-                        }
-                    }
-                } else if (oldFrame != currentFrame) {
-                    if(props == null || !props.isAllowTranslation()) {
-                        for (int i = 0; i < boneTransforms.size(); i++) {
-                            boneTransforms.get(i).setCurrentFrame(currentFrame);
-                        }
-                    } else {
-                        for (int i = 0; i < boneTransforms.size(); i++) {
-                            boneTransforms.get(i).setCurrentFrame(currentFrame,
-                                    sourceBone, destSpatial,
-                                    estimateCallsPerFrame(time), props);
-                        }
-                    }
-                }
-            }
-        }
-
-        changeFrame(currentFrame);
-
-        // update the children!
-        if (children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                children.get(i).update(time, repeat, speed);
-            }
-        }
-    }
-
-    private float estimateCallsPerFrame(float time) {
-        return (keyframeTime[currentFrame] - keyframeTime[prevFrame]) / time;
-
-    }
-
-    /**
-     * This method of update() supports Blending.
-     *
-     * @see #update(float, int, float)
-     */
     public void update(float time, int repeat, float speed, float blendRate) {
+        if (startFrame >= endFrame)
+            throw new IllegalStateException(
+                    "Start frame " + startFrame
+                    + " is not lower than end frame " + endFrame);
         if (boneTransforms != null && keyframeTime != null) {
             if (endFrame >= keyframeTime.length) {
                 endFrame = keyframeTime.length - 1;
             }
+            int oldFrame =
+                    (blendRate == BoneTransform.NOBLEND) ? currentFrame : -1;
+            // The -1 ensures we will never skip transform update due to
+            // frame not changing.
             if (updateCurrentTime(time, repeat, speed)) {
                 if (interpolationType != null) {
                     lastTime += time;
@@ -457,8 +420,9 @@ public class BoneAnimation implements Serializable, Savable {
                                     currentFrame, interpolationType[prevFrame],
                                     result, blendRate);
                         }
+                        checkForClampFinish(repeat);
                     }
-                } else {
+                } else if (oldFrame != currentFrame) {
                     if(props == null || !props.isAllowTranslation()) {
                         for (int i = 0; i < boneTransforms.size(); i++) {
                             boneTransforms.get(i).setCurrentFrame(currentFrame, blendRate);
@@ -470,11 +434,13 @@ public class BoneAnimation implements Serializable, Savable {
                                     estimateCallsPerFrame(time), props);
                         }
                     }
+                    checkForClampFinish(repeat);
                 }
             }
         }
 
-        changeFrame(currentFrame);
+        if (currentFrame <= endFrame) changeFrame(currentFrame);
+        // Don't call if sitting at end of clamped animation
 
         // update the children!
         if (children != null) {
@@ -484,81 +450,105 @@ public class BoneAnimation implements Serializable, Savable {
         }
     }
 
+    private void checkForClampFinish(int repeatMode) {
+        if (repeatMode == Controller.RT_CLAMP
+                && keyframeTime[endFrame] == currentTime)
+            currentFrame = endFrame + 1;
+    }
+
     private boolean updateCurrentTime(float time, int repeat, float speed) {
+        if (repeat == Controller.RT_CLAMP && currentFrame > endFrame)
+            return false;
+            // For RT_CLAMP only, currentFrame > endFrame signifies anim DONE
+            // We need a way to signify to not waste processing for this
+            // "now static" position.
+        if (repeat != Controller.RT_CYCLE) cycleMode = 1;
+        currentTime += time * speed * cycleMode;
+
+        float halfCycleDuration =
+                keyframeTime[endFrame] - keyframeTime[startFrame];
+        // This is put here for easy development.
+        // For performance, should be set upon change of start or end frames.
+
         switch (repeat) {
-            case Controller.RT_CLAMP: {
-                if (currentFrame > endFrame) return false;
-
-                // Use currentFrame of endFrame + 1 to indicated animation DONE
-                currentTime += time * speed;
-
-                if (currentTime > keyframeTime[endFrame]) {
-                    currentFrame = endFrame + 1;
-                    currentTime = 0;
-                    return false;
-                }
-
-                while (currentTime >= keyframeTime[currentFrame]) {
-                    currentFrame++;
-                    prevFrame++;
-                }
+            case Controller.RT_CLAMP:
+                if (currentTime > keyframeTime[endFrame])
+                    currentTime = keyframeTime[endFrame];
+                    // It is safe to call with this situation repeatedly.
+                    // We'll keep setting the time back to the endFrame time.
+                    // To prevent the unnecessary work here, at some point
+                    // the caller should detect that we have set time to
+                    // keyframeTime[endFrame] and then set currentFrame to
+                    // > endFrame.
                 break;
-            }
-            case Controller.RT_CYCLE: {
-                currentTime += time * speed * cycleMode;
-
-                if (currentTime > keyframeTime[endFrame]) {
-                    cycleMode = -1;
-                    currentTime -= 2 * (currentTime - keyframeTime[endFrame]);
-                    // Hoping that setting the start/end frames this way allows
-                    // the while loops below to adjust them correctly
-                    currentFrame = endFrame;
-                    prevFrame = endFrame + 1;
-                } else if (currentTime < keyframeTime[startFrame]) {
-                    cycleMode = 1;
-                    currentTime += 2 * (keyframeTime[startFrame] - currentTime);
-                    // See comment above about start/end frames.
-                    currentFrame = startFrame + 1;
-                    prevFrame = startFrame;
+            case Controller.RT_CYCLE:
+                boolean invertOffset = false;
+                while (currentTime > keyframeTime[endFrame]) {
+                    cycleMode *= -1;
+                    currentTime -= halfCycleDuration;
+                    invertOffset = cycleMode < 0;
                 }
-
-                if (cycleMode == 1) {
-                   while (currentTime > keyframeTime[currentFrame]) {
-                        currentFrame += cycleMode;
-                        prevFrame += cycleMode;
-                    }
-                } else {
-                    while (currentTime < keyframeTime[currentFrame]) {
-                        currentFrame += cycleMode;
-                        prevFrame += cycleMode;
-                    }
+                while (currentTime < keyframeTime[startFrame]) {
+                    cycleMode *= -1;
+                    currentTime += halfCycleDuration;
+                    invertOffset = cycleMode > 0;
                 }
+                if (invertOffset) currentTime = keyframeTime[startFrame]
+                            + keyframeTime[endFrame] - currentTime;
                 break;
-            }
-
-            case Controller.RT_WRAP: {
-                currentTime += time * speed;
-
-                if (currentFrame >= endFrame) {
-                    currentTime += keyframeTime[startFrame]
-                            - keyframeTime[endFrame];
-                    currentFrame = startFrame + 1;
-                    prevFrame = startFrame;
-                    return true;
-                }
-
-                while (currentTime > keyframeTime[currentFrame] && currentFrame < endFrame) {
-                    currentFrame++;
-                    prevFrame++;
-                }
+            case Controller.RT_WRAP:
+                while (currentTime > keyframeTime[endFrame])
+                    currentTime -= halfCycleDuration;
                 break;
-            }
         }
+        updateFrames();
 
         return true;
     }
 
     /**
+     * Update prevFrame and currentFrame according to currentTime and
+     * cycleMode.
+     *
+     * <P>
+     * Assumes that currentTime has already been clamped to inside of our
+     * keyframeTime array values.
+     * </P>
+     * Assumes that currentTime has already been clamped to inside of our
+     */
+    protected void updateFrames() {
+        currentFrame = -1;
+        if (cycleMode > 0) {
+            for (int i = startFrame + 1; i <= endFrame; i++)
+                if (currentTime <= keyframeTime[i]) {
+                    currentFrame = i;
+                    break;
+                }
+            prevFrame = currentFrame - 1;
+        } else {
+            for (int i = endFrame - 1; i >= startFrame; i--)
+                if (currentTime >= keyframeTime[i]) {
+                    currentFrame = i;
+                    break;
+                }
+            prevFrame = currentFrame + 1;
+        }
+        if (currentFrame < 0)
+            throw new IllegalStateException(
+                    "Internal error.  Current time not within start/end time "
+                    + "bounds of animation.  " + currentTime + " vs. "
+                    + keyframeTime[startFrame] + " to "
+                    + keyframeTime[endFrame]);
+        // Following statement is to verbose for general usage.
+        /*
+        logger.finest(
+            "Frames " + cycleMode + " => " + currentFrame + " / " + prevFrame);
+        */
+    }
+
+    /**
+     * Looks like this method is rubbish.
+     *
      * returns true if this animation is valid (i.e. contains valid information)
      * 
      * @return
@@ -638,6 +628,8 @@ public class BoneAnimation implements Serializable, Savable {
         this.interpolationType = types;
     }
 
+    public int[] getInterpolationTypes() { return this.interpolationType; }
+
     /**
      * returns the name of this animation.
      * 
@@ -696,8 +688,8 @@ public class BoneAnimation implements Serializable, Savable {
     public void setEndFrame(int endFrame) {
         if (endFrame >= keyframeTime.length || endFrame < 0) {
             logger.log(Level.SEVERE, "Invalid endframe index {0}"  
-                    + ". Intialized to only " + "have: {1}"  
-                    + " keyframes.", new Integer[]{endFrame,keyframeTime.length} );
+                    + ". Intialized to only have: {1} keyframes.",
+                    new Integer[]{endFrame,keyframeTime.length});
             return;
         }
         this.endFrame = endFrame;
@@ -728,8 +720,8 @@ public class BoneAnimation implements Serializable, Savable {
     public void setStartFrame(int startFrame) {
         if (startFrame >= keyframeTime.length || startFrame < 0) {
             logger.log(Level.SEVERE, "Invalid endframe index {0}" 
-                    + ". Intialized to only " + "have: {1}" 
-                    + " keyframes.", new Integer[]{startFrame, keyframeTime.length});
+                    + ". Intialized to only " + "have: {1} keyframes.",
+                    new Integer[]{startFrame, keyframeTime.length});
             return;
         }
         this.startFrame = startFrame;
@@ -966,7 +958,6 @@ public class BoneAnimation implements Serializable, Savable {
         cap.writeSavableArrayList(boneTransforms, "boneTransforms", null);
         cap.write(currentTime, "currentTime", 0);
         cap.write(currentFrame, "currentFrame", 1);
-        cap.write(prevFrame, "prevFrame", 0);
         cap.write(endFrame, "endFrame", 0);
         cap.write(startFrame, "startFrame", 0);
         cap.write(interpolationRate, "interpolationRate", DEFAULT_RATE);
@@ -1000,7 +991,6 @@ public class BoneAnimation implements Serializable, Savable {
         boneTransforms = cap.readSavableArrayList("boneTransforms", null);
         currentTime = cap.readFloat("currentTime", 0);
         currentFrame = cap.readInt("currentFrame", 1);
-        prevFrame = cap.readInt("prevFrame", 0);
         endFrame = cap.readInt("endFrame", 0);
         startFrame = cap.readInt("startFrame", 0);
         interpolationRate = cap.readFloat("interpolationRate", DEFAULT_RATE);
@@ -1038,8 +1028,10 @@ public class BoneAnimation implements Serializable, Savable {
                 }
             }        
             if (iType != BoneAnimation.LINEAR) {
-                logger.log(Level.WARNING, "Unsupported interpolation type specified for "
-                        + "at least one frame: {0}. Continuing with specified type.", iType);
+                logger.log(Level.WARNING,
+                        "Unsupported interpolation type specified for "
+                        + "at least one frame: {0}. Continuing with specified "
+                        + "type.", iType);
             }
         }
     }
@@ -1054,9 +1046,8 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     public void reset() {
-        currentFrame = startFrame + 1;
-        prevFrame = startFrame;
         currentTime = keyframeTime[startFrame];
+        updateFrames();
     }
 
     /**

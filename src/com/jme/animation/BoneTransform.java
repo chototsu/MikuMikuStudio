@@ -113,30 +113,42 @@ public class BoneTransform implements Serializable, Savable {
      *            the frame to set the bone's transform to.
      */
     public void setCurrentFrame(int frame) {
-        setCurrentFrame(frame, null, null, 0, null);
+        setCurrentFrame(frame, NOBLEND, null, null, 0, null);
+    }
+    
+    public void setCurrentFrame(int frame, float blend) {
+        setCurrentFrame(frame, blend, null, null, 0, null);
     }
 
-    public void setCurrentFrame(int frame, Bone source, Spatial destination, float diffModifier, AnimationProperties props) {
-        
-        if (bone != null) {
+    /**
+     * setCurrentFrame will set the current frame from the bone. The frame
+     * supplied will define how to transform the bone. It is the responsibility
+     * of the caller to insure the frame supplied is valid.
+     * 
+     * @param frame
+     *            the frame to set the bone's transform to.
+     */
+    public void setCurrentFrame(int frame, float blend, Bone source, Spatial destination, float diffModifier, AnimationProperties props) {
+        if (bone == null) return;
+        if (props != null && bone == source && destination != null) {
+            tempVec1.set(translations[frame]);
+            if (frame != 0) {
+                tempVec1.subtractLocal(translations[frame - 1]);
+            }
+            if (props.isLockX()) {
+                tempVec1.x = 0;
+            }
+
+            if (props.isLockY()) {
+                tempVec1.y = 0;
+            }
+
+            if (props.isLockZ()) {
+                tempVec1.z = 0;
+            }
+        }
+        if (blend == NOBLEND) {
             if (props != null && bone == source && destination != null) {
-
-                tempVec1.set(translations[frame]);
-                if (frame != 0) {
-                    tempVec1.subtractLocal(translations[frame - 1]);
-                }
-                if (props.isLockX()) {
-                    tempVec1.x = 0;
-                }
-
-                if (props.isLockY()) {
-                    tempVec1.y = 0;
-                }
-
-                if (props.isLockZ()) {
-                    tempVec1.z = 0;
-                }
-
                 destination.getLocalTranslation().addLocal(
                         tempVec1.divide(diffModifier));
 
@@ -164,40 +176,8 @@ public class BoneTransform implements Serializable, Savable {
                 bone.getLocalTranslation().set(translations[frame]);
                 bone.propogateBoneChange(true);
             }
-        }
-    }
-    
-    public void setCurrentFrame(int frame, float blend) {
-        setCurrentFrame(frame, blend, null, null, 0, null);
-    }
-
-    /**
-     * setCurrentFrame will set the current frame from the bone. The frame
-     * supplied will define how to transform the bone. It is the responsibility
-     * of the caller to insure the frame supplied is valid.
-     * 
-     * @param frame
-     *            the frame to set the bone's transform to.
-     */
-    public void setCurrentFrame(int frame, float blend, Bone source, Spatial destination, float diffModifier, AnimationProperties props) {
-        if (bone != null) {
+        } else {
             if (props != null && bone == source && destination != null) {
-                tempVec1.set(translations[frame]);
-                if(frame != 0) {
-                    tempVec1.subtractLocal(translations[frame - 1]);
-                }
-                
-                if(props.isLockX()) {
-                    tempVec1.x = 0;
-                }
-                
-                if(props.isLockY()) {
-                    tempVec1.y = 0;
-                }
-                
-                if(props.isLockZ()) {
-                    tempVec1.z = 0;
-                }
                 tempVec1.divideLocal(diffModifier);
                 tempVec1.addLocal(destination.getLocalTranslation());
                 destination.getLocalTranslation().interpolate(tempVec1, blend);
@@ -214,6 +194,18 @@ public class BoneTransform implements Serializable, Savable {
         }
     }
 
+    static public final float NOBLEND = -1f;
+
+    /**
+     * Convenience wrapper for the main update method, with no Blending.
+     *
+     * @see #update(int, int, int, float, float)
+     */
+    public void update(int prevFrame, int currentFrame, int interpType,
+            float time) {
+        update(prevFrame, currentFrame, interpType, time, NOBLEND);
+    }
+
     /**
      * update sets the transform of the bone to a given interpolation between
      * two given frames.
@@ -228,24 +220,6 @@ public class BoneTransform implements Serializable, Savable {
      *            the time between frames
      */
     public void update(int prevFrame, int currentFrame, int interpType,
-            float time) {
-        if (bone == null) {
-            return;
-        }
-//        logger.info(bone.getName());
-        if (bone.getName().equals("Bip01-node")) {
-//            logger.info("BIP 01");
-        } else {
-            interpolateRotation(rotations[prevFrame], rotations[currentFrame],
-                    interpType, time, bone.getLocalRotation());
-            interpolateTranslation(translations[prevFrame],
-                    translations[currentFrame], interpType, time, bone
-                            .getLocalTranslation());
-            bone.propogateBoneChange(true);
-        }
-    }
-
-    public void update(int prevFrame, int currentFrame, int interpType,
             float time, float blend) {
         if (bone == null) {
             return;
@@ -255,12 +229,16 @@ public class BoneTransform implements Serializable, Savable {
 //            logger.info("BIP 01");
         } else {
             interpolateRotation(rotations[prevFrame], rotations[currentFrame],
-                    interpType, time, tempQuat1);
+                    interpType, time,
+                    (blend == NOBLEND) ? bone.getLocalRotation() : tempQuat1);
             interpolateTranslation(translations[prevFrame],
-                    translations[currentFrame], interpType, time, tempVec1);
+                    translations[currentFrame], interpType, time,
+                    (blend == NOBLEND) ? bone.getLocalTranslation() : tempVec1);
 
-            bone.getLocalRotation().slerp(tempQuat1, blend);
-            bone.getLocalTranslation().interpolate(tempVec1, blend);
+            if (blend != NOBLEND) {
+                bone.getLocalRotation().slerp(tempQuat1, blend);
+                bone.getLocalTranslation().interpolate(tempVec1, blend);
+            }
             bone.propogateBoneChange(true);
         }
     }
