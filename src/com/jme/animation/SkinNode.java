@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -70,13 +70,15 @@ import com.jme.util.geom.VertMap;
  * One of the removeSkinGeometry methods should be used to remove skins.
  * Simply detaching a skin from the scene may result in a memory hole, since
  * the bone influences for that skin will be retained.
+ * </P> <P>
+ * The 'skins' Node of a SkinNode should only parent Geometries.
+ * Do not parent it to anything else.
  * </P>
- * 
+ *
  * @author Joshua Slack
  * @author Mark Powell
  */
 public class SkinNode extends Node implements Savable, BoneChangeListener {
-
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(
             SkinNode.class.getName());
@@ -90,9 +92,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
     protected Bone skeleton = null;
     protected ArrayList<BoneInfluence>[][] cache = null;
-    
+
     protected ArrayList<ConnectionPoint> connectionPoints;
-    
+
     protected transient boolean newSkeletonAssigned = false;
     protected transient Matrix4f bindMatrix = new Matrix4f();
 
@@ -101,7 +103,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     private final Vector3f tmpScale = new Vector3f();
 
     private boolean externalControl = false;
-    
+
     /**
      * Empty Constructor to be used internally only.
      */
@@ -111,7 +113,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
     /**
      * Constructor creates a new SkinNode object with the supplied name.
-     * 
+     *
      * @param name
      *            the name of this SkinNode
      */
@@ -121,7 +123,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
     /**
      * getSkin returns the skins (Geometry objects) that the SkinNode is currently controlling.
-     * 
+     *
      * @return the skins contained in this SkinNode
      */
     public Node getSkins() {
@@ -129,19 +131,46 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     /**
+     * Returns a typed skin Geometry.
+     *
+     * @throws RuntimeException or Error subclass if 'skins' is null, if child
+     *                          not present, or is not a Geometry.
+     */
+    public Geometry getSkin(int i) {
+        return (Geometry) skins.getChild(i);
+    }
+
+    /**
      * setSkin sets the skin that the SkinNode will affect.
-     * 
+     *
      * @param skins
      *            the skins that this SkinNode will affect.
      */
     public void setSkins(Node skins) {
         this.skins = skins;
+        validateSkins();
         attachChild(skins);
     }
 
     /**
+     * Validates that the 'skins' node is either null or contains only
+     * Geometry children.
+     *
+     * @throws IllegalStateException if 'skins' contains a non-Geometry child.
+     */
+    protected void validateSkins() {
+        if (skins == null || skins.getQuantity() < 1) return;
+        for (Spatial child : skins.getChildren())
+            if (!(child instanceof Geometry))
+                throw new IllegalStateException(
+                        "'skins' contains non-Geometry child: "
+                        + child.getName()
+                        + " of type " + child.getClass().getName());
+    }
+
+    /**
      * addSkins sets the skin that the SkinNode will affect.
-     * 
+     *
      * @param skin
      *            an additional skin that this SkinNode will affect.
      */
@@ -159,7 +188,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      * to the vertex in the geometry, the index of the bone that has been or
      * will be set via setBones or addBone and the weight that this indexed bone
      * affects the vertex.
-     * 
+     *
      * @param geomIndex
      *            the geometry child that contains the vertex to be affected.
      * @param vert
@@ -185,47 +214,46 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         if (!infs.contains(i))
         	infs.add(i);
     }
-    
+
     public void setAnimation(BoneAnimation anim) {
-        
         if(skeleton != null && skeleton.getAnimationController() != null) {
         	skeleton.getAnimationController().setActiveAnimation(anim);
         }
     }
-    
+
     public void setAnimation(int index) {
         if(skeleton != null && skeleton.getAnimationController() != null) {
             skeleton.getAnimationController().setActiveAnimation(index);
         }
     }
-    
+
     public void setAnimation(String name) {
         if(skeleton != null && skeleton.getAnimationController() != null) {
             skeleton.getAnimationController().setActiveAnimation(name);
         }
     }
-    
+
     public String getAnimationString() {
     	if(skeleton != null && skeleton.getAnimationController() != null ) {
         	return skeleton.getAnimationController().getActiveAnimation().getName();
     	}
     	return null;
-    	
+
    	}
-    
+
     public void addBoneInfluence(int geomIndex, int vert, String boneId,
             float weight) {
     	if (weight == 0) return;
         if (cache == null) {
             recreateCache();
         }
-        
+
         if (vert > cache[geomIndex].length) {
             System.out.println("vert: " + vert);
             System.out.println("cache[" + geomIndex + "].length: " + cache[geomIndex].length);
-            
+
             for (int i=0;i<cache.length;i++) {
-                System.out.println("cache[" + i + "].length: " + cache[i].length);                
+                System.out.println("cache[" + i + "].length: " + cache[i].length);
             }
         }
         ArrayList<BoneInfluence> infs = cache[geomIndex][vert];
@@ -238,7 +266,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         if (!infs.contains(i))
         	infs.add(i);
     }
-    
+
     public ConnectionPoint addConnectionPoint(String name, Bone b) {
         ConnectionPoint cp = new ConnectionPoint(name, b);
         if(connectionPoints == null) {
@@ -248,7 +276,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         this.attachChild(cp);
         return cp;
     }
-    
+
     public ArrayList<ConnectionPoint> getConnectionPoints() {
         return connectionPoints;
     }
@@ -259,16 +287,17 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      */
     @SuppressWarnings("unchecked")
     public void recreateCache() {
+        validateSkins();
         cache = new ArrayList[skins.getQuantity()][];
         for (int x = 0; x < cache.length; x++) {
-        	cache[x] = new ArrayList[skins.getChild(x).getVertexCount()];
+        	cache[x] = new ArrayList[getSkin(x).getVertexCount()];
         }
     }
 
     /**
      * updateGeometricState overrides Spatials updateGeometric state to update
      * the assigned skeleton bone influences, if changed.
-     * 
+     *
      * @param time
      *            the time that has passed between calls.
      * @param initiator
@@ -288,7 +317,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
         super.updateGeometricState(time, initiator);
     }
-    
+
     /**
      * normalizeWeights insures that all vertex BoneInfluences equal 1. The total
      * BoneInfluence on a single vertex should be 1 otherwise the position of the
@@ -313,7 +342,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         }
         return rVal;
     }
-    
+
     public void normalizeWeights(int geomIndex) {
         if (cache == null)
             return;
@@ -332,7 +361,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
             }
         }
     }
-    
+
     public void setSkeleton(Bone b) {
         skeleton = b;
         if (skeleton != null) {
@@ -349,7 +378,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public void assignSkeletonBoneInfluences() {
         if (skeleton != null) {
             for(int i = 0; i < cache.length; i++) {
-                
                 for(int j = 0; j < cache[i].length; j++) {
                 	if(cache[i][j] != null) {
                         for(int k = 0; k < cache[i][j].size(); k++) {
@@ -362,7 +390,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
         newSkeletonAssigned = false;
     }
-    
+
     /**
      * regenInfluenceOffsets calculate the offset of a particular vertex from a
      * bone. This allows the bone's rotation to position the vertex in world
@@ -376,8 +404,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         Vector3f normal = new Vector3f();
 
         FloatBuffer verts, norms;
+        validateSkins();
         for (int index = cache.length; --index >= 0;) {
-            Geometry geom = (Geometry)skins.getChild(index);
+            Geometry geom = getSkin(index);
             verts = geom.getVertexBuffer();
             norms = geom.getNormalBuffer();
             verts.clear();
@@ -400,7 +429,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                         infl.vOffset = new Vector3f(vertex);
                         infl.bone.bindMatrix.inverseTranslateVect(infl.vOffset);
                         infl.bone.bindMatrix.inverseRotateVect(infl.vOffset);
-    
+
                         infl.nOffset = new Vector3f(normal);
                         infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
                     }
@@ -417,7 +446,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public synchronized void updateSkin() {
         if (cache == null || skins == null)
             return;
-        
+
         if (skeleton != null) {
         	if (skeleton.getParent() != null) {
         		tmpTranslation.set(skeleton.getParent().getWorldTranslation());
@@ -429,14 +458,14 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         		skeleton.getParent().getWorldScale().set(1,1,1);
         		skeleton.updateWorldVectors(true);
         	}
-        	
+
         	skeleton.update();
         }
-        
+
         FloatBuffer verts, norms;
 
         for (int index = cache.length; --index >= 0;) {
-            Geometry geom = (Geometry)skins.getChild(index);
+            Geometry geom = getSkin(index);
             verts = geom.getVertexBuffer();
             verts.clear();
             norms = geom.getNormalBuffer();
@@ -452,7 +481,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                     BoneInfluence inf = infs.get(x);
                     if (inf.bone != null) {
                         inf.bone.applyBone(inf, vertex, normal);
-                    } 
+                    }
                 }
 
                 if (verts.remaining() > 2)
@@ -462,14 +491,14 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 }
             }
         }
-        
+
         if (skeleton != null && skeleton.getParent() != null) {
     		skeleton.getParent().getWorldTranslation().set(tmpTranslation);
     		skeleton.getParent().getWorldRotation().set(tmpRotation);
     		skeleton.getParent().getWorldScale().set(tmpScale);
     		skeleton.updateWorldVectors(true);
-        }        
-    }   
+        }
+    }
 
     public ArrayList<BoneInfluence>[][] getCache() {
         return cache;
@@ -482,7 +511,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public void setBindMatrix(Matrix4f mat) {
         bindMatrix = mat;
     }
-    
+
     public void childChange(Geometry geometry, int index1, int index2) {
         if(skins != null && skins.hasChild(geometry)) {
             ArrayList<BoneInfluence>[] temp1 = cache[index1];
@@ -518,7 +547,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule cap = e.getCapsule(this);
-        
+
         skins = (Node)cap.readSavable("skins", null);
         Bone readSkeleton = (Bone)cap.readSavable("skeleton", null);
         connectionPoints = cap.readSavableArrayList("connectionPoints", null);
@@ -535,7 +564,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                     throw new IOException("Malformatted geometryRegions value");
                 geometryRegions.put(subSplit[0], subSplit[1]);
             }
-        
+
         if (readSkeleton != null) {
             setSkeleton(readSkeleton);
             regenInfluenceOffsets();
@@ -549,25 +578,26 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         bindMatrix.loadIdentity();
         updateSkin();
     }
-    
+
     public void boneChanged(BoneChangeEvent e) {
         needsRefresh = true;
     }
-    
+
     public void remapInfluences(VertMap[] mappings) {
         for (int x = 0; x < mappings.length; x++) {
             remapInfluences(mappings[x], x);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public void remapInfluences(VertMap mappings, int geomIndex) {
+        validateSkins();
     	ArrayList<BoneInfluence>[] infls = cache[geomIndex];
-        ArrayList<BoneInfluence>[] newInfls = new ArrayList[skins.getChild(geomIndex).getVertexCount()];
+        ArrayList<BoneInfluence>[] newInfls =
+                new ArrayList[getSkin(geomIndex).getVertexCount()];
         cache[geomIndex] = newInfls;
         for (int x = 0; x < infls.length; x++) {
         	for (int y = 0; y < infls[x].size(); y++) {
-            	
                 BoneInfluence bi = infls[x].get(y);
                 if (bi.bone != null)
                     addBoneInfluence(geomIndex, mappings.getNewIndex(x), bi.bone, bi.weight);
@@ -577,22 +607,18 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         }
         normalizeWeights(geomIndex);
     }
-    
+
     /**
      * This method DOES NOT REMOVE THE Geometry.
      * It just removes the Influences of the indicated Geometry.
      */
     @SuppressWarnings("unchecked")
     public void removeGeometry(int geomIndex) {
-    	if (geomIndex >= cache.length)
-    		return;
-        ArrayList<BoneInfluence>[][] newCache = new ArrayList[skins.getQuantity()-1][];
-        for (int x = 0; x < cache.length-1; x++) {
-            if (x < geomIndex)
-                newCache[x] = cache[x];
-            else
-                newCache[x] = cache[x+1];
-        }
+    	if (geomIndex >= cache.length) return;
+        ArrayList<BoneInfluence>[][] newCache =
+                new ArrayList[skins.getQuantity()-1][];
+        for (int x = 0; x < cache.length-1; x++)
+            newCache[x] = cache[(x < geomIndex) ? x : (x+1)];
         cache = newCache;
     }
 
@@ -652,7 +678,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
          *     Verify that imported SkinNodes never use BI.nOffset, BI.vOffset.
          */
         Node otherSkins = otherSkinNode.getSkins();
-        if (otherSkins == null) {
+        if (otherSkins == null || otherSkins.getQuantity() < 1) {
             logger.warning("Not merging SkinNode '" + otherSkinNode.getName()
                     + "' into '" + getName()
                     + "' since no skin meshes for former");
@@ -682,23 +708,22 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 + "' into '" + getName() + "'");
         logger.fine("Other bindMatrix = " + otherSkinNode.bindMatrix);
 
-        Spatial s;
         ArrayList<BoneInfluence>[] transferredInfluences;
 
         String skinRegion = (otherSkinNode instanceof SkinTransferNode)
             ?  ((SkinTransferNode) otherSkinNode).getSkinRegion() : null;
 
+        Geometry g;
+        validateSkins();
+        otherSkinNode.validateSkins();
         if (geoNameRegex == null && skinRegion != null
                 && skins != null && skins.getQuantity() > 0) {
             // This block culls old Geometries with the incoming skinRegion.
             int rmCount = 0;
-            Geometry g;
             cullRegionMappings();
             int childCount = skins.getQuantity();
             for (int i = childCount -1; i >= 0; i--) {
-                s = skins.getChild(i);
-                if (!(s instanceof Geometry)) continue;
-                g = (Geometry) s;
+                g = getSkin(i);
                 if (!geometryRegions.containsKey(g.getName())) continue;
                 if (!geometryRegions.get(g.getName()).equals(skinRegion))
                     continue;
@@ -714,21 +739,16 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         }
 
         for (int i = otherSkins.getQuantity() - 1; i >= 0; i--) {
-            s = otherSkins.getChild(i);
-            if (!(s instanceof Geometry))
-                throw new IllegalStateException(
-                        "SkinNode '" + otherSkinNode.getName()
-                        + "' has non-Geometry children of its 'skins'node': "
-                        + s.getName() + " is a " + s.getClass().getName());
+            g = otherSkinNode.getSkin(i);
             if (geoNameRegex == null) {
                 if (skinRegion != null
-                        && hasSkinGeometry(s.getName(), skinRegion)) continue;
+                        && hasSkinGeometry(g.getName(), skinRegion)) continue;
                 // We retained the old skin of same name and region above
             } else {
-                if (!s.getName().matches(geoNameRegex)) continue;
+                if (!g.getName().matches(geoNameRegex)) continue;
             }
             transferredInfluences = otherCache[i];
-            assimilate(otherSkinNode.removeSkinGeometry(s.getName()),
+            assimilate(otherSkinNode.removeSkinGeometry(g.getName()),
                     transferredInfluences, skinRegion);
         }
 
@@ -765,170 +785,154 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
       *
       * @see #removeSkinGeometry(int)
       */
-     public Geometry removeSkinGeometry(String geoName) {
-         if (skins == null) return null;
-         int childCount = skins.getQuantity();
-         Spatial s;
-         for (int i = 0; i < childCount; i++) {
-             s = skins.getChild(i);
-             if (!(s instanceof Geometry) || !s.getName().equals(geoName))
-                 continue;
-             return removeSkinGeometry(i);
-         }
-         return null;
-     }
+    public Geometry removeSkinGeometry(String geoName) {
+        if (skins == null) return null;
+        int childCount = skins.getQuantity();
+        Geometry g;
+        validateSkins();
+        for (int i = 0; i < childCount; i++)
+            if (getSkin(i).getName().equals(geoName))
+                return removeSkinGeometry(i);
+        return null;
+    }
 
-     /*
-     public List<String> getSkinGeometryNames() {
-         List<String> nameList = new ArrayList<String>();
-         if (skins != null)
-             for (child in skins.getChildren())
-                 if (child instanceof Geometry)
-                     nameList.append(child.getName());
-         return nameList;
-     }
+    /**
+     * @param skinRegion  null means match any (including no) skin region
      */
+    public boolean hasSkinGeometry(String geoName, String skinRegion) {
+        if (skins == null) return false;
+        validateSkins();
+        for (Spatial child : skins.getChildren())
+            if (child.getName().equals(geoName)
+                    && (skinRegion == null
+                    || (geometryRegions.containsKey(geoName)
+                    && geometryRegions.get(geoName).equals(skinRegion))))
+                return true;
+        return false;
+    }
 
-     /**
-      * @param skinRegion  null means match any (including no) skin region
-      */
-     public boolean hasSkinGeometry(String geoName, String skinRegion) {
-         if (skins == null) return false;
-         for (Spatial child : skins.getChildren())
-             if (child instanceof Geometry && child.getName().equals(geoName))
-                 if (skinRegion == null
-                     || (geometryRegions.containsKey(geoName)
-                     && geometryRegions.get(geoName).equals(skinRegion)))
-                     return true;
-         return false;
-     }
+    /**
+     * Detaches a skin mesh from the SkinNode, removing the associated
+     * BoneInfluences along with it.
+     *
+     * Unlike the removeGeometry method, this one really does remove the
+     * specified Geometry.
+     *
+     * @see #removeGeometry(int)
+     */
+    public Geometry removeSkinGeometry(int i) {
+        if (skins == null) return null;
+        validateSkins();
+        if (i >= skins.getQuantity())
+           throw new IllegalArgumentException(
+                    "Can't remove child index " + i
+                    + " when there are only " + skins.getQuantity()
+                    + " children");
+        Geometry g = getSkin(i);
+        removeGeometry(i);
+        g.removeFromParent();
+        logger.log(Level.FINE, "Removed skin '{0}'", g.getName());
+        return g;
+    }
 
-     /**
-      * Detaches a skin mesh from the SkinNode, removing the associated
-      * BoneInfluences along with it.
-      *
-      * Unlike the removeGeometry method, this one really does remove the
-      * specified Geometry.
-      *
-      * @see #removeGeometry(int)
-      */
-     public Geometry removeSkinGeometry(int i) {
-         if (skins == null) return null;
-         if (i >= skins.getQuantity())
-             throw new IllegalArgumentException(
-                     "Can't remove child index " + i
-                     + " when there are only " + skins.getQuantity()
-                     + " children");
-         Spatial s = skins.getChild(i);
-         if (!(s instanceof Geometry))
-             throw new IllegalArgumentException("Child with index " + i
-                     + " is not a Geometry:  " + s.getClass().getName());
-         removeGeometry(i);
-         s.removeFromParent();
-         logger.log(Level.FINE, "Removed skin '{0}'", s.getName());
-         return (Geometry) s;
-     }
+    /**
+     * Remove all skin Geometries, including associated BoneInfluences.
+     *
+     * @return Number of Geometries removed.  May be zero.
+     */
+    public int removeSkinGeometries() {
+        return deassimilate(null);
+    }
 
-     /**
-      * Remove all skin Geometries, including associated BoneInfluences.
-      *
-      * @return Number of Geometries removed.  May be zero.
-      */
-     public int removeSkinGeometries() {
-         return deassimilate(null);
-     }
+    /**
+     * Remove specified skin Geometries, including associated BoneInfluences.
+     *
+     * @param skinRegion All skin Geometries associated with this skinRegion
+     *                   name will be removed.
+     *                   <b>IMPORTANT:</b> null means to remove <b>all</b>
+     *                   skin Geometries, not just those with null skinRegion,
+     *                   nor just those added by assimilation.
+     *                   There is no method to remove just null skinRegion
+     *                   skins, since null means they should be managed
+     *                   obliviously to skinRegions.
+     * @return Number of Geometries removed.  May be zero.
+     */
+    public int deassimilate(String skinRegion) {
+        int rmCount = 0;
+        if (skins == null) return rmCount;
+        Geometry g;
+        cullRegionMappings();
+        validateSkins();
+        int childCount = skins.getQuantity();
+        for (int i = childCount -1; i >= 0; i--) {
+            g = getSkin(i);
+            if (skinRegion != null) {
+                if (!geometryRegions.containsKey(g.getName())) continue;
+                if (!geometryRegions.get(g.getName()).equals(skinRegion))
+                    continue;
+            }
+            removeSkinGeometry(i);
+            rmCount++;
+        }
+        return rmCount;
+    }
 
-     /**
-      * Remove specified skin Geometries, including associated BoneInfluences.
-      *
-      * @param skinRegion All skin Geometries associated with this skinRegion
-      *                   name will be removed.
-      *                   <b>IMPORTANT:</b> null means to remove <b>all</b>
-      *                   skin Geometries, not just those with null skinRegion,
-      *                   nor just those added by assimilation.
-      *                   There is no method to remove just null skinRegion
-      *                   skins, since null means they should be managed
-      *                   obliviously to skinRegions.
-      * @return Number of Geometries removed.  May be zero.
-      */
-     public int deassimilate(String skinRegion) {
-         int rmCount = 0;
-         if (skins == null) return rmCount;
-         Spatial s;
-         Geometry g;
-         cullRegionMappings();
-         int childCount = skins.getQuantity();
-         for (int i = childCount -1; i >= 0; i--) {
-             s = skins.getChild(i);
-             if (!(s instanceof Geometry)) continue;
-             g = (Geometry) s;
-             if (skinRegion != null) {
-                 if (!geometryRegions.containsKey(g.getName())) continue;
-                 if (!geometryRegions.get(g.getName()).equals(skinRegion))
-                     continue;
-             }
-             removeSkinGeometry(i);
-             rmCount++;
-         }
-         return rmCount;
-     }
+    /**
+     * We use a String key so that this structure won't delay garbage
+     * collection.
+     * Do not make this map public, since we update it lazily (only before we
+     * need to use it).  See cullRegionMappings() about that.
+     */
+    protected Map<String, String> geometryRegions
+            = new HashMap<String, String>();
 
-     /**
-      * We use a String key so that this structure won't delay garbage
-      * collection.
-      * Do not make this map public, since we update it lazily (only before we
-      * need to use it).  See cullRegionMappings() about that.
-      */
-     protected Map<String, String> geometryRegions
-             = new HashMap<String, String>();
+    /**
+     * We can't control how skin Geometries are removed, so we must cull
+     * unused region mappings before we use it.
+     *
+     * Note that we never cull an entry unless the named Geometry is missing.
+     * We will not cull because the skin region has not been loaded, or if
+     * the indicated Geometry is not a SkinTransferNode Geometry (in both
+     * cases, we have no way of knowing).
+     */
+    protected void cullRegionMappings() {
+        if (skins == null || skins.getQuantity() < 1) {
+            geometryRegions.clear();
+            return;
+        }
+        Set<String> zapKeys = new HashSet<String>();
 
-     /**
-      * We can't control how skin Geometries are removed, so we must cull
-      * unused region mappings before we use it.
-      *
-      * Note that we never cull an entry unless the named Geometry is missing.
-      * We will not cull because the skin region has not been loaded, or if
-      * the indicated Geometry is not a SkinTransferNode Geometry (in both
-      * cases, we have no way of knowing).
-      */
-     protected void cullRegionMappings() {
-         if (skins == null || skins.getQuantity() < 1) {
-             geometryRegions.clear();
-             return;
-         }
-         Set<String> zapKeys = new HashSet<String>();
+        // We can't use getChild(), descendantMatches(), etc., since we only
+        // want to check direct children, not grandchildren, etc.
+        EACH_KEY:
+        for (String key : geometryRegions.keySet()) {
+            for (Spatial child : skins.getChildren())
+                if (child.getName().equals(key)) continue EACH_KEY;
+            // There is no active skin with name of this key
+            zapKeys.add(key);
+        }
+        for (String key : zapKeys) {
+            geometryRegions.remove(key);
+            logger.log(Level.FINE, "Culled region mapping for '{0}'", key);
+        }
+    }
 
-         // We can't use getChild(), descendantMatches(), etc., since we only
-         // want to check direct children, not grandchildren, etc.
-         EACH_KEY:
-         for (String key : geometryRegions.keySet()) {
-             for (Spatial child : skins.getChildren())
-                 if (child.getName().equals(key)) continue EACH_KEY;
-             // There is no active skin with name of this key
-             zapKeys.add(key);
-         }
-         for (String key : zapKeys) {
-             geometryRegions.remove(key);
-             logger.log(Level.FINE, "Culled region mapping for '{0}'", key);
-         }
-     }
-
-     /**
-      * Use this to assign a skin region for a specific skin geometry.
-      * This is very useful both to change skin regions of geometries loaded
-      * from SkinTransferNodes, and also to assign skin regions to
-      * non-SkinTransferNode skin geometries (so that traditionally loaded
-      * Geometries can be automatically replaced by assimilations).
-      * <P>
-      * If the skinRegion for skinGeometry is already set to skin region, no
-      * harm done.
-      * </P>
-      *
-      * @param skinGeometry Should already be a skin geometry of this SkinNode.
-      *   If it isn't, it will have no effect and no indication will be given.
-      *   (The entry will get lazily culled in the future).
-      */
-     public void setSkinRegion(Geometry skinGeometry, String skinRegion) {
-         geometryRegions.put(skinGeometry.getName(), skinRegion);
-     }
+    /**
+     * Use this to assign a skin region for a specific skin geometry.
+     * This is very useful both to change skin regions of geometries loaded
+     * from SkinTransferNodes, and also to assign skin regions to
+     * non-SkinTransferNode skin geometries (so that traditionally loaded
+     * Geometries can be automatically replaced by assimilations).
+     * <P>
+     * If the skinRegion for skinGeometry is already set to skin region, no
+     * harm done.
+     * </P>
+     *
+     * @param skinGeometry Should already be a skin geometry of this SkinNode.
+     *   If it isn't, it will have no effect and no indication will be given.
+     *   (The entry will get lazily culled in the future).
+     */
+    public void setSkinRegion(Geometry skinGeometry, String skinRegion) {
+        geometryRegions.put(skinGeometry.getName(), skinRegion);
+    }
 }

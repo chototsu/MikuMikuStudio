@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -90,7 +90,7 @@ public class SkinTransferNode extends SkinNode {
     /**
      * Sets the target skin region.
      * If set to a non-null value, then when this SkinTransferNode is
-     * assimilated, these Geometries will <i>replace</i> all previously loaded 
+     * assimilated, these Geometries will <i>replace</i> all previously loaded
      * Geometries with the same skinRegion.
      */
     public void setSkinRegion(String skinRegion) {
@@ -113,7 +113,7 @@ public class SkinTransferNode extends SkinNode {
      * to the vertex in the geometry, the index of the bone that has been or
      * will be set via setBones or addBone and the weight that this indexed bone
      * affects the vertex.
-     * 
+     *
      * @param geomIndex
      *            the geometry child that contains the vertex to be affected.
      * @param vert
@@ -129,27 +129,27 @@ public class SkinTransferNode extends SkinNode {
                 "Only the 'boneId' variant of 'addBoneInfluence' may be used "
                 + "for " + SkinTransferNode.class.getName());
     }
-    
+
     public void setAnimation(BoneAnimation anim) {
         throw new IllegalStateException(
             "Animation may not be set for " + SkinTransferNode.class.getName());
     }
-    
+
     public void setAnimation(int index) {
         throw new IllegalStateException(
             "Animation may not be set for " + SkinTransferNode.class.getName());
     }
-    
+
     public void setAnimation(String name) {
         throw new IllegalStateException(
             "Animation may not be set for " + SkinTransferNode.class.getName());
     }
-    
+
     public String getAnimationString() {
     	return null;
-    	
+
    	}
-    
+
     public void setSkeleton(Bone b) {
         throw new IllegalStateException(
             "Skeleton may not be set for " + SkinTransferNode.class.getName());
@@ -163,7 +163,7 @@ public class SkinTransferNode extends SkinNode {
         throw new IllegalStateException(
             SkinTransferNode.class.getName() + "s do not have Skeletons");
     }
-    
+
     public void regenInfluenceOffsets() {
         throw new IllegalStateException(
             SkinTransferNode.class.getName() + "s do not have Skeletons");
@@ -172,13 +172,13 @@ public class SkinTransferNode extends SkinNode {
     public synchronized void updateSkin() {
         throw new IllegalStateException(
             SkinTransferNode.class.getName() + "s do not have Skeletons");
-    }   
+    }
 
     public void setBindMatrix(Matrix4f mat) {
         // TODO:  I think we should prohibit bind matrixes
         bindMatrix = mat;
     }
-    
+
     public void remapInfluences(VertMap mappings, int geomIndex) {
         throw new IllegalStateException(
             SkinTransferNode.class.getName() + "s do not have Skeletons");
@@ -192,7 +192,7 @@ public class SkinTransferNode extends SkinNode {
 
     public void write(JMEExporter e) throws IOException {
         super.write(e);
-        if (skinRegion != null) 
+        if (skinRegion != null)
             e.getCapsule(this).write(skinRegion, "region", null);
     }
 
@@ -218,9 +218,9 @@ public class SkinTransferNode extends SkinNode {
         if (matchSkinRegion != null &&
             (skinRegion == null || !matchSkinRegion.equals(skinRegion)))
                 return false;
+        validateSkins();
         for (Spatial child : skins.getChildren())
-            if (child instanceof Geometry && child.getName().equals(geoName))
-                return true;
+            if (child.getName().equals(geoName)) return true;
         return false;
     }
 }
