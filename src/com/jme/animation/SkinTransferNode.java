@@ -33,23 +33,38 @@
 package com.jme.animation;
 
 import java.util.ArrayList;
+import java.io.IOException;
 
 import com.jme.math.Matrix4f;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.util.geom.VertMap;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * A non-parented SkinNode which is enforced to be used only for holding
  * SkinNode Geometry skins.
- *
+ * </P> <P>
  * Specifically, this SkinNode will throw if you attempt to parent it, or if
  * you attempt to set skeleton, controller, animation, or other
  * non-skin-geometry properties.
- *
+ * </P> <P>
  * This class is intended to be used for classes dedicated for usage as a
  * SkinNode.assimilate() targets.
+ * </P> <P>
+ * Especially useful is the skinRegion attribute.
+ * Unlike normal SkinNodes, this class does not allow different skinRegions
+ * per Geometry, but the skinRegion of this SkinTransferNode applies to all its
+ * Geometries.
+ * When a SkinTransferNode is assimilated which has a non-null skinRegion, it
+ * will <i>replace</i> all currently loaded skin Geometries of that same
+ * skinRegion.
+ * (Except for same-named Geometries, which are retained instead of replaced).
+ * </P>
  *
  * @author Blaine Simpson (blaine dot simpson at admc dot com)
  * @see SkinNode.assimilate(SkinNode)
@@ -64,6 +79,22 @@ public class SkinTransferNode extends SkinNode {
 
     public SkinTransferNode(String name) {
         super(name);
+    }
+
+    protected String skinRegion;
+
+    public String getSkinRegion() {
+        return skinRegion;
+    }
+
+    /**
+     * Sets the target skin region.
+     * If set to a non-null value, then when this SkinTransferNode is
+     * assimilated, these Geometries will <i>replace</i> all previously loaded 
+     * Geometries with the same skinRegion.
+     */
+    public void setSkinRegion(String skinRegion) {
+        this.skinRegion = skinRegion;
     }
 
     /**
@@ -157,5 +188,39 @@ public class SkinTransferNode extends SkinNode {
             Geometry newSkinGeo, ArrayList<BoneInfluence>[] newInfluences) {
         throw new IllegalStateException(
                 "Can only assimilate FROM a " + SkinTransferNode.class.getName());
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        if (skinRegion != null) 
+            e.getCapsule(this).write(skinRegion, "region", null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        // TODO:  Make this into a simple assignment, once the defVal bug in
+        // DOMInputCapsule is fixed:
+        String tmpString = e.getCapsule(this).readString("region", null);
+        if (tmpString != null && tmpString.length() > 0)
+            skinRegion = tmpString;
+    }
+
+    public void setSkinRegion(Geometry skinGeometry, String skinRegion) {
+        throw new IllegalStateException(
+                "setSkinRegion is not available for SkinTransferNode, since "
+                + "all Geometries in a SkinTransferNode share the single "
+                + "skinRegion of the SkinTransferNode itself");
+    }
+
+    public boolean hasSkinGeometry(String geoName, String matchSkinRegion) {
+        if (skins == null) return false;
+        if (matchSkinRegion != null &&
+            (skinRegion == null || !matchSkinRegion.equals(skinRegion)))
+                return false;
+        for (Spatial child : skins.getChildren())
+            if (child instanceof Geometry && child.getName().equals(geoName))
+                return true;
+        return false;
     }
 }

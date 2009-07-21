@@ -34,6 +34,10 @@ package com.jme.animation;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +66,11 @@ import com.jme.util.geom.VertMap;
  * for each vertex of the skin the bone that affects it and the weight
  * (BoneInfluence) of that affect. This allows multiple bones to share a single
  * vertex (although the total weight must add up to 1).
+ * <P>
+ * One of the removeSkinGeometry methods should be used to remove skins.
+ * Simply detaching a skin from the scene may result in a memory hole, since
+ * the bone influences for that skin will be retained.
+ * </P>
  * 
  * @author Joshua Slack
  * @author Mark Powell
@@ -491,6 +500,18 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         cap.write(skeleton, "skeleton", null);
         cap.writeSavableArrayListArray2D(cache, "cache", null);
         cap.writeSavableArrayList(connectionPoints, "connectionPoints", null);
+
+        cullRegionMappings();
+        // TODO:  Get rid of this block and just store geometryRegions as
+        // a StringStringMap, once that class is migrated from the blenderjme
+        // code branch.
+        if (geometryRegions.size() < 1) return;
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String,String> me : geometryRegions.entrySet()) {
+            if (sb.length() > 0) sb.append(',');
+            sb.append(me.getKey() + ':' + me.getValue());
+        }
+        cap.write(sb.toString(), "geometryRegions", null);
     }
 
     @SuppressWarnings("unchecked")
@@ -502,6 +523,18 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         Bone readSkeleton = (Bone)cap.readSavable("skeleton", null);
         connectionPoints = cap.readSavableArrayList("connectionPoints", null);
         cache = cap.readSavableArrayListArray2D("cache", null);
+
+        // TODO:  Get rid of this block and read store geometryRegions as
+        // a StringStringMap, once that class is migrated from the blenderjme
+        // code branch.
+        String geoRegionsString = cap.readString("geometryRegions", null);
+        if (geoRegionsString != null && geoRegionsString.length() > 0)
+            for (String pair : geoRegionsString.split(",", -1)) {
+                String[] subSplit = pair.split(":", -1);
+                if (subSplit.length != 2)
+                    throw new IOException("Malformatted geometryRegions value");
+                geometryRegions.put(subSplit[0], subSplit[1]);
+            }
         
         if (readSkeleton != null) {
             setSkeleton(readSkeleton);
@@ -589,6 +622,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     /**
      * Assimilates the specified skin mesh Geometries from the specified
      * 'otherSkinNode' into this one, removing them from 'otherSkinNode'.
+     * If otherSkinNode is a non-null-skinRegion SkinTransferNode and no
+     * narrowing regex is supplied, we will REPLACE all current Geometries
+     * with that same skinRegion.
      *
      * For this first implementation, we have some rather stringent
      * requirements.  If use cases justify accommodating other states, these
@@ -649,19 +685,51 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         Spatial s;
         ArrayList<BoneInfluence>[] transferredInfluences;
 
-        for (int q = otherSkins.getQuantity();
-                q > 0; q = otherSkins.getQuantity()) {
-            s = otherSkins.getChild(q - 1);
-            if (geoNameRegex != null && !s.getName().matches(geoNameRegex))
-                continue;
+        String skinRegion = (otherSkinNode instanceof SkinTransferNode)
+            ?  ((SkinTransferNode) otherSkinNode).getSkinRegion() : null;
+
+        if (geoNameRegex == null && skinRegion != null
+                && skins != null && skins.getQuantity() > 0) {
+            // This block culls old Geometries with the incoming skinRegion.
+            int rmCount = 0;
+            Geometry g;
+            cullRegionMappings();
+            int childCount = skins.getQuantity();
+            for (int i = childCount -1; i >= 0; i--) {
+                s = skins.getChild(i);
+                if (!(s instanceof Geometry)) continue;
+                g = (Geometry) s;
+                if (!geometryRegions.containsKey(g.getName())) continue;
+                if (!geometryRegions.get(g.getName()).equals(skinRegion))
+                    continue;
+                if (otherSkinNode.hasSkinGeometry(g.getName(), skinRegion)) {
+                    logger.log(Level.INFO,
+                            "Retaining geometry '{0}'", g.getName());
+                    continue;
+                }
+                removeSkinGeometry(i);
+                rmCount++;
+            }
+            logger.log(Level.INFO, "Purged {0} Geos to be replaced", rmCount);
+        }
+
+        for (int i = otherSkins.getQuantity() - 1; i >= 0; i--) {
+            s = otherSkins.getChild(i);
             if (!(s instanceof Geometry))
                 throw new IllegalStateException(
                         "SkinNode '" + otherSkinNode.getName()
                         + "' has non-Geometry children of its 'skins'node': "
                         + s.getName() + " is a " + s.getClass().getName());
-            transferredInfluences = otherCache[q - 1];
+            if (geoNameRegex == null) {
+                if (skinRegion != null
+                        && hasSkinGeometry(s.getName(), skinRegion)) continue;
+                // We retained the old skin of same name and region above
+            } else {
+                if (!s.getName().matches(geoNameRegex)) continue;
+            }
+            transferredInfluences = otherCache[i];
             assimilate(otherSkinNode.removeSkinGeometry(s.getName()),
-                    transferredInfluences);
+                    transferredInfluences, skinRegion);
         }
 
         assignSkeletonBoneInfluences();
@@ -670,9 +738,11 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     @SuppressWarnings("unchecked")
-    protected void assimilate(
-            Geometry newSkinGeo, ArrayList<BoneInfluence>[] newInfluences) {
+    protected void assimilate(Geometry newSkinGeo,
+            ArrayList<BoneInfluence>[] newInfluences, String skinRegion) {
         addSkin(newSkinGeo);
+        if (skinRegion != null)
+            geometryRegions.put(newSkinGeo.getName(), skinRegion);
         // Node.attachChild will automatically remove from previous parent.
         // This will NOT remove the corresponding cache (BoneInfluences) if
         // the previous parent was a SkinNode.
@@ -688,27 +758,177 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
      /**
-      * Detaches a skin mesh from the SkinNode, removing the associated
+      * Detaches the named skin mesh from the SkinNode, removing the associated
       * BoneInfluences along with it.
       *
       * Returns null if there is no such named skin Geometry attached.
-      * Unlike the removeGeometry method, this one really does remove the
-      * specified Geometry.
       *
-      * @see #removeGeometry(int)
+      * @see #removeSkinGeometry(int)
       */
-     public Geometry removeSkinGeometry(String name) {
+     public Geometry removeSkinGeometry(String geoName) {
          if (skins == null) return null;
          int childCount = skins.getQuantity();
          Spatial s;
          for (int i = 0; i < childCount; i++) {
              s = skins.getChild(i);
-             if (!(s instanceof Geometry) || !s.getName().equals(name))
+             if (!(s instanceof Geometry) || !s.getName().equals(geoName))
                  continue;
-             removeGeometry(i);
-             s.removeFromParent();
-             return (Geometry) s;
+             return removeSkinGeometry(i);
          }
          return null;
+     }
+
+     /*
+     public List<String> getSkinGeometryNames() {
+         List<String> nameList = new ArrayList<String>();
+         if (skins != null)
+             for (child in skins.getChildren())
+                 if (child instanceof Geometry)
+                     nameList.append(child.getName());
+         return nameList;
+     }
+     */
+
+     /**
+      * @param skinRegion  null means match any (including no) skin region
+      */
+     public boolean hasSkinGeometry(String geoName, String skinRegion) {
+         if (skins == null) return false;
+         for (Spatial child : skins.getChildren())
+             if (child instanceof Geometry && child.getName().equals(geoName))
+                 if (skinRegion == null
+                     || (geometryRegions.containsKey(geoName)
+                     && geometryRegions.get(geoName).equals(skinRegion)))
+                     return true;
+         return false;
+     }
+
+     /**
+      * Detaches a skin mesh from the SkinNode, removing the associated
+      * BoneInfluences along with it.
+      *
+      * Unlike the removeGeometry method, this one really does remove the
+      * specified Geometry.
+      *
+      * @see #removeGeometry(int)
+      */
+     public Geometry removeSkinGeometry(int i) {
+         if (skins == null) return null;
+         if (i >= skins.getQuantity())
+             throw new IllegalArgumentException(
+                     "Can't remove child index " + i
+                     + " when there are only " + skins.getQuantity()
+                     + " children");
+         Spatial s = skins.getChild(i);
+         if (!(s instanceof Geometry))
+             throw new IllegalArgumentException("Child with index " + i
+                     + " is not a Geometry:  " + s.getClass().getName());
+         removeGeometry(i);
+         s.removeFromParent();
+         logger.log(Level.FINE, "Removed skin '{0}'", s.getName());
+         return (Geometry) s;
+     }
+
+     /**
+      * Remove all skin Geometries, including associated BoneInfluences.
+      *
+      * @return Number of Geometries removed.  May be zero.
+      */
+     public int removeSkinGeometries() {
+         return deassimilate(null);
+     }
+
+     /**
+      * Remove specified skin Geometries, including associated BoneInfluences.
+      *
+      * @param skinRegion All skin Geometries associated with this skinRegion
+      *                   name will be removed.
+      *                   <b>IMPORTANT:</b> null means to remove <b>all</b>
+      *                   skin Geometries, not just those with null skinRegion,
+      *                   nor just those added by assimilation.
+      *                   There is no method to remove just null skinRegion
+      *                   skins, since null means they should be managed
+      *                   obliviously to skinRegions.
+      * @return Number of Geometries removed.  May be zero.
+      */
+     public int deassimilate(String skinRegion) {
+         int rmCount = 0;
+         if (skins == null) return rmCount;
+         Spatial s;
+         Geometry g;
+         cullRegionMappings();
+         int childCount = skins.getQuantity();
+         for (int i = childCount -1; i >= 0; i--) {
+             s = skins.getChild(i);
+             if (!(s instanceof Geometry)) continue;
+             g = (Geometry) s;
+             if (skinRegion != null) {
+                 if (!geometryRegions.containsKey(g.getName())) continue;
+                 if (!geometryRegions.get(g.getName()).equals(skinRegion))
+                     continue;
+             }
+             removeSkinGeometry(i);
+             rmCount++;
+         }
+         return rmCount;
+     }
+
+     /**
+      * We use a String key so that this structure won't delay garbage
+      * collection.
+      * Do not make this map public, since we update it lazily (only before we
+      * need to use it).  See cullRegionMappings() about that.
+      */
+     protected Map<String, String> geometryRegions
+             = new HashMap<String, String>();
+
+     /**
+      * We can't control how skin Geometries are removed, so we must cull
+      * unused region mappings before we use it.
+      *
+      * Note that we never cull an entry unless the named Geometry is missing.
+      * We will not cull because the skin region has not been loaded, or if
+      * the indicated Geometry is not a SkinTransferNode Geometry (in both
+      * cases, we have no way of knowing).
+      */
+     protected void cullRegionMappings() {
+         if (skins == null || skins.getQuantity() < 1) {
+             geometryRegions.clear();
+             return;
+         }
+         Set<String> zapKeys = new HashSet<String>();
+
+         // We can't use getChild(), descendantMatches(), etc., since we only
+         // want to check direct children, not grandchildren, etc.
+         EACH_KEY:
+         for (String key : geometryRegions.keySet()) {
+             for (Spatial child : skins.getChildren())
+                 if (child.getName().equals(key)) continue EACH_KEY;
+             // There is no active skin with name of this key
+             zapKeys.add(key);
+         }
+         for (String key : zapKeys) {
+             geometryRegions.remove(key);
+             logger.log(Level.FINE, "Culled region mapping for '{0}'", key);
+         }
+     }
+
+     /**
+      * Use this to assign a skin region for a specific skin geometry.
+      * This is very useful both to change skin regions of geometries loaded
+      * from SkinTransferNodes, and also to assign skin regions to
+      * non-SkinTransferNode skin geometries (so that traditionally loaded
+      * Geometries can be automatically replaced by assimilations).
+      * <P>
+      * If the skinRegion for skinGeometry is already set to skin region, no
+      * harm done.
+      * </P>
+      *
+      * @param skinGeometry Should already be a skin geometry of this SkinNode.
+      *   If it isn't, it will have no effect and no indication will be given.
+      *   (The entry will get lazily culled in the future).
+      */
+     public void setSkinRegion(Geometry skinGeometry, String skinRegion) {
+         geometryRegions.put(skinGeometry.getName(), skinRegion);
      }
 }
