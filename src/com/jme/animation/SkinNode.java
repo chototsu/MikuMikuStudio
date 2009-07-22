@@ -234,7 +234,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     public String getAnimationString() {
-    	if(skeleton != null && skeleton.getAnimationController() != null ) {
+    	if (skeleton != null && skeleton.getAnimationController() != null
+        	&& skeleton.getAnimationController().getActiveAnimation() != null) {
         	return skeleton.getAnimationController().getActiveAnimation().getName();
     	}
     	return null;
@@ -651,10 +652,15 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      * If otherSkinNode is a non-null-skinRegion SkinTransferNode and no
      * narrowing regex is supplied, we will REPLACE all current Geometries
      * with that same skinRegion.
-     *
+     * </P> <P>
      * For this first implementation, we have some rather stringent
      * requirements.  If use cases justify accommodating other states, these
      * requirements can be relaxed with further development work.
+     * </P> <P>
+     * This method will not succeed if the rest animation and rest pose frame
+     * have not been set in the AnimationController (unless no
+     * AnimationController has been assigned for this SkinNode yet).
+     * </P>
      *
      * <b>IMPORTANT:  The calling signature is tentative.
      *    It's likely that checked exceptions will be added, so expect to
@@ -684,13 +690,18 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                     + "' since no skin meshes for former");
             return;
         }
+        BoneAnimation origAnim = null;
+        int origFrame = -1;
+        boolean origActive = false;
         AnimationController ac =
                 (skeleton == null) ? null : skeleton.getAnimationController();
-        if (ac != null && ac.getActiveAnimation() != null) {
-            if (ac.isActive())
-                throw new IllegalStateException("Can not assimilate a SkinNode "
-                        + "while an animation is active");
-            ac.reset();
+        if (ac == null) {
+            logger.fine("No Animation Controller in place");
+        } else {
+            origActive = ac.isActive();
+            origAnim = ac.getActiveAnimation();
+            if (origAnim != null) origFrame = origAnim.getCurrentFrame();
+            ac.rest();
             updateSkin();
         }
         ArrayList<BoneInfluence>[][] otherCache = otherSkinNode.getCache();
@@ -755,6 +766,28 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         assignSkeletonBoneInfluences();
           // Maps influence bone id Strings to Bone instances
         regenInfluenceOffsets();
+        if (ac != null) {
+            ac.setActive(origActive);
+            if (origAnim == null) {
+                ac.clearActiveAnimation();
+            } else {
+                ac.setActiveAnimation(origAnim);
+                if (origFrame > -1) {
+                    origAnim.setCurrentFrame(origFrame);
+                    updateSkin();
+                    /* There are cases where this updateSkin is unnecessary,
+                     * but it is very easy to miss cases where it is
+                     * necessary, so just do it!
+                     * The only case where this is undesirable is if an
+                     * animation is the activeAnimation but the Controller
+                     * itself has never been active while the animation has
+                     * been active.  In this case, we will switch the active
+                     * pose.  Unfortunately, it's impossible to detect this
+                     * border case.
+                     */
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")

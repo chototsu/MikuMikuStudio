@@ -488,6 +488,9 @@ public class AnimationController extends Controller implements Savable {
         cap.writeSavableArrayList(animationSets, "animationSets", null);
         cap.write(skeleton, "skeleton", null);
         cap.write(activeAnimation, "activeAnimation", null);
+        if (restPoseAnimation != null)
+            cap.write(restPoseAnimation.getName(), "restPoseAnimName", null);
+        if (restPoseFrame > -1) cap.write(restPoseFrame, "restPoseFrame", -1);
     }
 
     @SuppressWarnings("unchecked")
@@ -498,6 +501,45 @@ public class AnimationController extends Controller implements Savable {
         skeleton = (Bone) cap.readSavable("skeleton", null);
         activeAnimation = (BoneAnimation) cap.readSavable("activeAnimation",
                 null);
+        setRestPoseFrame(cap.readInt("restPoseFrame", -1));
+        String restPoseAnimName = cap.readString("restPoseAnimName", null);
+        if (restPoseAnimName != null) setRestPoseAnimName(restPoseAnimName);
+    }
+
+    protected int restPoseFrame = -1;
+    protected BoneAnimation restPoseAnimation;
+
+    /**
+     * This method does not activate or deactive the Controller itself, nor
+     * does it refresh any skins.  It just sets the current Animation and
+     * the frame of that Animation.
+     *
+     * @throws IllegalStateException if either the rest pose animation or
+     *                               frame have not been set.
+     */
+    public void rest() {
+        if (restPoseAnimation == null || restPoseFrame < 0)
+            throw new IllegalStateException(
+                    "Can not rest the Skeleton because the rest pose frame "
+                    + "has not been set up");
+        setActiveAnimation(restPoseAnimation);
+        activeAnimation.setCurrentFrame(restPoseFrame);
+    }
+
+    public void setRestPoseAnimName(String restPoseAnimName) {
+        restPoseAnimation = getAnimation(restPoseAnimName);
+    }
+
+    public String getRestPoseAnimName() {
+        return (restPoseAnimation == null) ? null : restPoseAnimation.getName();
+    }
+
+    public int getRestPoseFrame() {
+        return restPoseFrame;
+    }
+    
+    public void setRestPoseFrame(int restPoseFrame) {
+        this.restPoseFrame = restPoseFrame;
     }
 
     public BoneAnimation getBlendAnimation() {
@@ -571,11 +613,5 @@ public class AnimationController extends Controller implements Savable {
         if (activeAnimation == null)
             throw new IllegalStateException("No animation is active");
         return activeAnimation.getCurrentTime();
-    }
-
-    public void setActive(boolean active) {
-        if (activeAnimation != null)
-            activeAnimation.reactivate(getRepeatType());
-        super.setActive(active);
     }
 }
