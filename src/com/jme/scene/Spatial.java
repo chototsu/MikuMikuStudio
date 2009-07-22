@@ -1049,6 +1049,13 @@ public abstract class Spatial implements Serializable, Savable {
     public void read(JMEImporter im) throws IOException {
         InputCapsule capsule = im.getCapsule(this);
         name = capsule.readString("name", null);
+        /*
+         * The following makes it impossible to restore a Savable with no
+         * (null) name.  This is a bad practice and is only in place for
+         * backwards compatibility.  For jME 3.x, or any other clean break
+         * for compatibility, this should be dropped.
+         */
+        if (name == null) name = "";
         isCollidable = capsule.readBoolean("isCollidable", true);
         cullHint = capsule.readEnum("cullMode", CullHint.class,
                 CullHint.Inherit);

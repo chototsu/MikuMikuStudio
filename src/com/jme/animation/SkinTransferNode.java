@@ -199,11 +199,7 @@ public class SkinTransferNode extends SkinNode {
     @SuppressWarnings("unchecked")
     public void read(JMEImporter e) throws IOException {
         super.read(e);
-        // TODO:  Make this into a simple assignment, once the defVal bug in
-        // DOMInputCapsule is fixed:
-        String tmpString = e.getCapsule(this).readString("region", null);
-        if (tmpString != null && tmpString.length() > 0)
-            skinRegion = tmpString;
+        skinRegion = e.getCapsule(this).readString("region", null);
     }
 
     public void setSkinRegion(Geometry skinGeometry, String skinRegion) {

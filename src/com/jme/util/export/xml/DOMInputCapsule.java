@@ -67,6 +67,8 @@ import com.jme.util.geom.BufferUtils;
  * @author Doug Daniels (dougnukem) - adjustments for jME 2.0 and Java 1.5
  */
 public class DOMInputCapsule implements InputCapsule {
+    private static final Logger logger =
+        Logger.getLogger(DOMInputCapsule.class .getName());
 
     private Document doc;
     private Element currentElem;
@@ -119,9 +121,10 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public byte readByte(String name, byte defVal) throws IOException {
-        byte ret = defVal;
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
-            return Byte.parseByte(currentElem.getAttribute(name));
+            return Byte.parseByte(tmpString);
         } catch (NumberFormatException nfe) {
             IOException io = new IOException(nfe.toString());
             io.initCause(nfe);
@@ -134,7 +137,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public byte[] readByteArray(String name, byte[] defVal) throws IOException {
-    	byte[] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -173,7 +175,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public byte[][] readByteArray2D(String name, byte[][] defVal) throws IOException {
-    	byte[][] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -220,12 +221,10 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public int readInt(String name, int defVal) throws IOException {
-        int ret = defVal;
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
-            String s = currentElem.getAttribute(name);
-            if (s.length() > 0) {
-                ret = Integer.parseInt(s);
-            }
+            return Integer.parseInt(tmpString);
         } catch (NumberFormatException nfe) {
             IOException io = new IOException(nfe.toString());
             io.initCause(nfe);
@@ -235,11 +234,9 @@ public class DOMInputCapsule implements InputCapsule {
             io.initCause(de);
             throw io;
         }
-        return ret;
     }
 
     public int[] readIntArray(String name, int[] defVal) throws IOException {
-        int[] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -278,7 +275,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public int[][] readIntArray2D(String name, int[][] defVal) throws IOException {
-    	int[][] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -328,12 +324,10 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public float readFloat(String name, float defVal) throws IOException {
-        float ret = defVal;
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
-            String s = currentElem.getAttribute(name);
-            if (s.length() > 0) {
-                ret = Float.parseFloat(s);
-            }
+            return Float.parseFloat(tmpString);
         } catch (NumberFormatException nfe) {
             IOException io = new IOException(nfe.toString());
             io.initCause(nfe);
@@ -343,11 +337,9 @@ public class DOMInputCapsule implements InputCapsule {
             io.initCause(de);
             throw io;
         }
-        return ret;
     }
 
     public float[] readFloatArray(String name, float[] defVal) throws IOException {
-        float[] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -383,7 +375,6 @@ public class DOMInputCapsule implements InputCapsule {
 
     public float[][] readFloatArray2D(String name, float[][] defVal) throws IOException {
         /* Why does this one method ignore the 'size attr.? */
-        float[][] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -419,9 +410,10 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public double readDouble(String name, double defVal) throws IOException {
-        double ret = defVal;
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
-            ret = Double.parseDouble(currentElem.getAttribute(name));
+            return Double.parseDouble(tmpString);
         } catch (NumberFormatException nfe) {
             IOException io = new IOException(nfe.toString());
             io.initCause(nfe);
@@ -431,11 +423,9 @@ public class DOMInputCapsule implements InputCapsule {
             io.initCause(de);
             throw io;
         }
-        return ret;
     }
 
     public double[] readDoubleArray(String name, double[] defVal) throws IOException {
-    	double[] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -474,7 +464,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public double[][] readDoubleArray2D(String name, double[][] defVal) throws IOException {
-    	double[][] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -520,9 +509,10 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public long readLong(String name, long defVal) throws IOException {
-        long ret = defVal;
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
-            ret = Long.parseLong(currentElem.getAttribute(name));
+            return Long.parseLong(tmpString);
         } catch (NumberFormatException nfe) {
             IOException io = new IOException(nfe.toString());
             io.initCause(nfe);
@@ -532,11 +522,9 @@ public class DOMInputCapsule implements InputCapsule {
             io.initCause(de);
             throw io;
         }
-        return ret;
     }
 
     public long[] readLongArray(String name, long[] defVal) throws IOException {
-    	long[] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -575,7 +563,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public long[][] readLongArray2D(String name, long[][] defVal) throws IOException {
-    	long[][] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -621,10 +608,10 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public short readShort(String name, short defVal) throws IOException {
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
-            String attribute = currentElem.getAttribute(name);
-            if (attribute == null || attribute.length() == 0) { return defVal; }
-            return Short.parseShort(attribute);
+            return Short.parseShort(tmpString);
         } catch (NumberFormatException nfe) {
             IOException io = new IOException(nfe.toString());
             io.initCause(nfe);
@@ -637,7 +624,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public short[] readShortArray(String name, short[] defVal) throws IOException {
-    	short[] ret = defVal;
          try {
              Element tmpEl;
              if (name != null) {
@@ -676,7 +662,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public short[][] readShortArray2D(String name, short[][] defVal) throws IOException {
-    	short[][] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -723,22 +708,18 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public boolean readBoolean(String name, boolean defVal) throws IOException {
-        boolean ret = defVal;
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
-            String s = currentElem.getAttribute(name);
-            if (s.length() > 0) {
-                ret = Boolean.parseBoolean(s);
-            }
+            return Boolean.parseBoolean(tmpString);
         } catch (DOMException de) {
             IOException io = new IOException(de.toString());
             io.initCause(de);
             throw io;
         }
-        return ret;
     }
 
     public boolean[] readBooleanArray(String name, boolean[] defVal) throws IOException {
-        boolean[] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -773,7 +754,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public boolean[][] readBooleanArray2D(String name, boolean[][] defVal) throws IOException {
-    	boolean[][] ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -819,19 +799,18 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public String readString(String name, String defVal) throws IOException {
-        String ret = defVal;
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
-            ret = decodeString(currentElem.getAttribute(name));
+            return decodeString(tmpString);
         } catch (DOMException de) {
             IOException io = new IOException(de.toString());
             io.initCause(de);
             throw io;
         }
-        return ret;
     }
 
     public String[] readStringArray(String name, String[] defVal) throws IOException {
-    	 String[] ret = defVal;
          try {
              Element tmpEl;
              if (name != null) {
@@ -921,18 +900,18 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public BitSet readBitSet(String name, BitSet defVal) throws IOException {
-        BitSet ret = defVal;
+        String tmpString = currentElem.getAttribute(name);
+        if (tmpString == null || tmpString.length() < 1) return defVal;
         try {
             BitSet set = new BitSet();
-            String bitString = currentElem.getAttribute(name);
-            String[] strings = parseTokens(bitString);
+            String[] strings = parseTokens(tmpString);
             for (int i = 0; i < strings.length; i++) {
             	int isSet = Integer.parseInt(strings[i]);
                 if (isSet == 1) {
             		set.set(i);
             	}
             }
-            ret = set;
+            return set;
         } catch (NumberFormatException nfe) {
             IOException io = new IOException(nfe.toString());
             io.initCause(nfe);
@@ -942,43 +921,38 @@ public class DOMInputCapsule implements InputCapsule {
             io.initCause(de);
             throw io;
         }
-        return ret;
     }
 
     public Savable readSavable(String name, Savable defVal) throws IOException {
         Savable ret = defVal;
-        if (name != null && name.equals("")) {
-            System.out.println("-");
-        }
-        if (false) {
-        } else {
-            try {
-                Element tmpEl = null;
-                if (name != null) {
-                    tmpEl = findChildElement(currentElem, name);
-                    if (tmpEl == null) {
-                        return defVal;
-                    }
-                } else if (isAtRoot) {
-                    tmpEl = doc.getDocumentElement();
-                    isAtRoot = false;
-                } else {
-                    tmpEl = findFirstChildElement(currentElem);
+        if (name != null && name.equals(""))
+            logger.warning("Reading Savable String with name \"\"?");
+        try {
+            Element tmpEl = null;
+            if (name != null) {
+                tmpEl = findChildElement(currentElem, name);
+                if (tmpEl == null) {
+                    return defVal;
                 }
-                currentElem = tmpEl;
-                ret = readSavableFromCurrentElem(defVal);
-                if (currentElem.getParentNode() instanceof Element) {
-                    currentElem = (Element) currentElem.getParentNode();
-                } else {
-                    currentElem = null;
-                }
-            } catch (IOException ioe) {
-                throw ioe;
-            } catch (Exception e) {
-                IOException io = new IOException(e.toString());
-                io.initCause(e);
-                throw io;
+            } else if (isAtRoot) {
+                tmpEl = doc.getDocumentElement();
+                isAtRoot = false;
+            } else {
+                tmpEl = findFirstChildElement(currentElem);
             }
+            currentElem = tmpEl;
+            ret = readSavableFromCurrentElem(defVal);
+            if (currentElem.getParentNode() instanceof Element) {
+                currentElem = (Element) currentElem.getParentNode();
+            } else {
+                currentElem = null;
+            }
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (Exception e) {
+            IOException io = new IOException(e.toString());
+            io.initCause(e);
+            throw io;
         }
         return ret;
     }
@@ -1138,7 +1112,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public ArrayList<Savable> readSavableArrayList(String name, ArrayList defVal) throws IOException {
-        ArrayList<Savable> ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
             if (tmpEl == null) {
@@ -1172,7 +1145,6 @@ public class DOMInputCapsule implements InputCapsule {
 
     public ArrayList<Savable>[] readSavableArrayListArray(
             String name, ArrayList[] defVal) throws IOException {
-        ArrayList[] ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
             if (tmpEl == null) {
@@ -1246,7 +1218,6 @@ public class DOMInputCapsule implements InputCapsule {
 
     public ArrayList<FloatBuffer> readFloatBufferArrayList(
             String name, ArrayList<FloatBuffer> defVal) throws IOException {
-        ArrayList<FloatBuffer> ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
             if (tmpEl == null) {
@@ -1343,7 +1314,6 @@ public class DOMInputCapsule implements InputCapsule {
      * reads from currentElem if name is null
      */
     public FloatBuffer readFloatBuffer(String name, FloatBuffer defVal) throws IOException {
-        FloatBuffer ret = defVal;
         try {
             Element tmpEl;
             if (name != null) {
@@ -1414,7 +1384,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public ByteBuffer readByteBuffer(String name, ByteBuffer defVal) throws IOException {
-    	ByteBuffer ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
             if (tmpEl == null) {
@@ -1448,7 +1417,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
     public ShortBuffer readShortBuffer(String name, ShortBuffer defVal) throws IOException {
-    	ShortBuffer ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
             if (tmpEl == null) {
@@ -1482,7 +1450,6 @@ public class DOMInputCapsule implements InputCapsule {
     }
 
 	public ArrayList<ByteBuffer> readByteBufferArrayList(String name, ArrayList<ByteBuffer> defVal) throws IOException {
-		ArrayList<ByteBuffer> ret = defVal;
         try {
             Element tmpEl = findChildElement(currentElem, name);
             if (tmpEl == null) {
