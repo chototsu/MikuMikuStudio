@@ -221,26 +221,19 @@ public class BoneTransform implements Serializable, Savable {
      */
     public void update(int prevFrame, int currentFrame, int interpType,
             float time, float blend) {
-        if (bone == null) {
-            return;
-        }
-//        logger.info(bone.getName());
-        if (bone.getName().equals("Bip01-node")) {
-//            logger.info("BIP 01");
-        } else {
-            interpolateRotation(rotations[prevFrame], rotations[currentFrame],
-                    interpType, time,
-                    (blend == NOBLEND) ? bone.getLocalRotation() : tempQuat1);
-            interpolateTranslation(translations[prevFrame],
-                    translations[currentFrame], interpType, time,
-                    (blend == NOBLEND) ? bone.getLocalTranslation() : tempVec1);
+        if (bone == null) return;
+        interpolateRotation(rotations[prevFrame], rotations[currentFrame],
+                interpType, time,
+                (blend == NOBLEND) ? bone.getLocalRotation() : tempQuat1);
+        interpolateTranslation(translations[prevFrame],
+                translations[currentFrame], interpType, time,
+                (blend == NOBLEND) ? bone.getLocalTranslation() : tempVec1);
 
-            if (blend != NOBLEND) {
-                bone.getLocalRotation().slerp(tempQuat1, blend);
-                bone.getLocalTranslation().interpolate(tempVec1, blend);
-            }
-            bone.propogateBoneChange(true);
+        if (blend != NOBLEND) {
+            bone.getLocalRotation().slerp(tempQuat1, blend);
+            bone.getLocalTranslation().interpolate(tempVec1, blend);
         }
+        bone.propogateBoneChange(true);
     }
 
     /**
