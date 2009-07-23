@@ -58,6 +58,8 @@
          test classes.
     -->
 
+    <delete dir="tmp/rawtestoutput"/>
+    <delete dir="tmp/test-reports"/>
     <mkdir dir="tmp/rawtestoutput"/>
     <junit printsummary="true" failureproperty="junit.failure">
       <!-- N.b. use failureproperty instead of haltonfailure, because if we use
@@ -73,7 +75,8 @@
            to directly or indirectly by your test classes.  -->
 
       <batchtest todir="tmp/rawtestoutput">
-        <fileset dir="tmp/junit-classes" includes="**/*Test*"/>
+        <fileset dir="tmp/junit-classes"
+                 excludes="**/*$*" includes="**/*Test*"/>
         <formatter type="xml"/>
       </batchtest>
     </junit>

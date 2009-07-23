@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2003-2009 jMonkeyEngine
  * All rights reserved.
@@ -14,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -49,6 +48,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import com.jme.util.export.StringIntMap;
 
 /**
  * BoneAnimation defines a component that manipulates the position of a
@@ -69,15 +69,17 @@ import com.jme.util.export.Savable;
  * This class takes per-frame data specifying the interpolation type, but
  * nobody has ever undertaken the effort to make this class work that way.
  *
- * @see #optimize
+ * @see #optimize(boolean)
  * @see BoneTransform
  * @see Controller
- * @see #update
+ * @see #update(float, int, float, float)
+ * @author mpowell
+ * @author Blaine Simpson (blaine dot simpson at admc dot com)
  */
 public class BoneAnimation implements Serializable, Savable {
-    private static final Logger logger = Logger.getLogger(BoneAnimation.class
-            .getName());
-    
+    private static final Logger logger =
+            Logger.getLogger(BoneAnimation.class.getName());
+
     private static final float DEFAULT_RATE = 1f / 20f;
 
     public static final int LINEAR = 0;
@@ -127,7 +129,7 @@ public class BoneAnimation implements Serializable, Savable {
     private Bone sourceBone;
     private Spatial destSpatial;
     private AnimationProperties props;
-    
+
 
     public BoneAnimation() {
     }
@@ -135,7 +137,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * Contructor creates a new animation. The name is the name of the
      * animation.
-     * 
+     *
      * @param name
      *            the name of the animation.
      */
@@ -146,7 +148,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * Creates a new, linear-interpolating BoneAnimation with a name,
      * the bone it will control and the number of keyframes it will have.
-     * 
+     *
      * @param name
      *            the name of the animation
      * @param bone
@@ -163,7 +165,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * addBoneAnimation adds a child animation to this animation. This
      * child's update will be called with the parent's.
-     * 
+     *
      * @param ba
      *            the child animation to add to this animation.
      */
@@ -176,7 +178,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * adds an AnimationEvent to this animation for a specified frame.
-     * 
+     *
      * @param frame
      *            the frame number to trigger the event.
      * @param event
@@ -189,7 +191,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * add a sync tag to this animation.
-     * 
+     *
      * @param name
      *            the name of the sync tag.
      * @param frames
@@ -267,6 +269,24 @@ public class BoneAnimation implements Serializable, Savable {
         }
     }
 
+    protected StringIntMap frameNames;
+
+    public Set<String> getFrameNames() {
+        return (frameNames == null) ? null : frameNames.keySet();
+    }
+
+    public void setFrameNames(StringIntMap frameNames) {
+        this.frameNames = frameNames;
+    }
+
+    public void setCurrentFrame(String frameName) {
+        if (frameNames == null)
+            throw new IllegalStateException(
+                    "Can not use frame names, since they have not been "
+                    + "defined for this animation");
+        setCurrentFrame(frameNames.get(frameName));
+    }
+
     /**
      * setCurrentFrame will set the current position of the animation to the
      * supplied frame.
@@ -279,10 +299,13 @@ public class BoneAnimation implements Serializable, Savable {
      * Instead of checking whether the frame has changed, it assumes you are
      * smart enough to invoke only when needed.
      * This avoids the possibility that this method may mistakenly not update.
+     * </P> <P>
+     * This method works for posing plain Bones (with the Controller inactive),
+     * but for posing skin-and-bones you need to use SkinNode.pose().
      * </P>
-     * 
-     * @param frame
-     *            the frame to set the current animation frame to.
+     *
+     * @param frame the frame to set the current animation frame to.
+     * @see #SkinNode.pose(String, int)
      */
     public void setCurrentFrame(int frame) {
         /*
@@ -317,13 +340,12 @@ public class BoneAnimation implements Serializable, Savable {
                 children.get(i).setCurrentFrame(currentFrame);
             }
         }
-
     }
 
     /**
      * change frame determines if a new frame is selected and performs any
      * triggers that might be assigned to this frame.
-     * 
+     *
      * @param frame
      *            the current frame.
      */
@@ -345,7 +367,7 @@ public class BoneAnimation implements Serializable, Savable {
      * addBoneTransform adds a bone transform array pair that this bone
      * animation uses to update. This BoneTransform is added to the
      * list of bone transforms currently in place.
-     * 
+     *
      * @param bt
      *            the BoneTransform to add to this list.
      */
@@ -358,7 +380,6 @@ public class BoneAnimation implements Serializable, Savable {
 
     private float estimateCallsPerFrame(float time) {
         return (keyframeTime[currentFrame] - keyframeTime[prevFrame]) / time;
-
     }
 
     /**
@@ -574,7 +595,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * returns the number of children animations that are attached to this
      * animation.
-     * 
+     *
      * @return the number of children animations this bone animation
      *         is responsible for.
      */
@@ -589,7 +610,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * returns a child animation from a given index. If the index is
      * invalid, null is returned.
-     * 
+     *
      * @param i the index to obtain the animation.
      * @return the animation at a given index, null if the index is invalid.
      */
@@ -610,7 +631,7 @@ public class BoneAnimation implements Serializable, Savable {
      * size as the transforms array and the types array. This is left to the
      * user to insure, if they are not the same, an ArrayIndexOutOfBounds
      * exception will be thrown during update.
-     * 
+     *
      * @param times
      *            the times to set.
      */
@@ -627,7 +648,7 @@ public class BoneAnimation implements Serializable, Savable {
      * If the interpolation type array is null, interpolation work will be
      * skipped (performance benefit if interpolation not required).
      * </P>
-     * 
+     *
      * @param types
      *        the interpolation types to set, or null for no interpolation.
      */
@@ -646,7 +667,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * returns the name of this animation.
-     * 
+     *
      * @return the name of this animation
      */
     public String getName() {
@@ -655,7 +676,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * sets the name of this animation.
-     * 
+     *
      * @param name
      *            the name of this animation.
      */
@@ -666,7 +687,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * returns the current frame that animation is currently working towards or
      * set to.
-     * 
+     *
      * @return the current frame of this animation.
      */
     public int getCurrentFrame() {
@@ -675,7 +696,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * returns the current time of the animation.
-     * 
+     *
      * @return the current time of this animation.
      */
     public float getCurrentTime() {
@@ -685,7 +706,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * retrieves the end frame of the animation. The end frame defines where the
      * animation will "stop".
-     * 
+     *
      * @return the end frame of the animation.
      */
     public int getEndFrame() {
@@ -695,13 +716,13 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * sets the end frame of the animation. The end frame defines where the
      * animation will "stop".
-     * 
+     *
      * @param endFrame
      *            the end frame of the animation.
      */
     public void setEndFrame(int endFrame) {
         if (endFrame >= keyframeTime.length || endFrame < 0) {
-            logger.log(Level.SEVERE, "Invalid endframe index {0}"  
+            logger.log(Level.SEVERE, "Invalid endframe index {0}"
                     + ". Intialized to only have: {1} keyframes.",
                     new Integer[]{endFrame,keyframeTime.length});
             return;
@@ -717,7 +738,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * retrieves the start frame of the animation. The start frame defines where
      * the animation will "start".
-     * 
+     *
      * @return the start frame of the animation.
      */
     public int getStartFrame() {
@@ -727,13 +748,13 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * sets the start frame of the animation. The start frame defines where the
      * animation will "start".
-     * 
+     *
      * @param startFrame
      *            the start frame of the animation.
      */
     public void setStartFrame(int startFrame) {
         if (startFrame >= keyframeTime.length || startFrame < 0) {
-            logger.log(Level.SEVERE, "Invalid endframe index {0}" 
+            logger.log(Level.SEVERE, "Invalid endframe index {0}"
                     + ". Intialized to only " + "have: {1} keyframes.",
                     new Integer[]{startFrame, keyframeTime.length});
             return;
@@ -749,7 +770,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * returns true if this animation should interpolate between keyframes,
      * false otherwise.
-     * 
+     *
      * @return true if we will interpolation between frames.
      */
     public boolean isInterpolate() {
@@ -760,7 +781,7 @@ public class BoneAnimation implements Serializable, Savable {
      * sets whether this animation should interpolate between frames. It also
      * sets the children of this animation to the interpolation value. True will
      * interpolate between frames, false will not.
-     * 
+     *
      * @param interpolate true to interpolate, false otherwise.
      */
     public void setInterpolate(boolean interpolate) {
@@ -783,7 +804,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * retrieves the rate at which interpolation occurs, this is in unit
      * seconds. Therefore, 0.25 would be a quater of a second.
-     * 
+     *
      * @return the interpolation rate.
      */
     public float getInterpolationRate() {
@@ -793,7 +814,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * sets the rate at which interpolation occurs, this is in unit seconds.
      * Therefore, 0.25 would be a quater of a second.
-     * 
+     *
      * @param interpolationRate
      *            the interpolation rate.
      */
@@ -804,7 +825,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * hasChildren returns true if this BoneAnimation has child
      * BoneAnimations, false otherwise.
-     * 
+     *
      * @return true if this animation has child animations, false otherwise.
      */
     public boolean hasChildren() {
@@ -813,7 +834,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * returns the list of keyframe times for this animation.
-     * 
+     *
      * @return the list of keyframe times for this animation.
      */
     public float[] getKeyFrameTimes() {
@@ -822,7 +843,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * returns the list of BoneTransforms for this animation.
-     * 
+     *
      * @return the list of BoneTransforms for this animation.
      */
     public ArrayList<BoneTransform> getBoneTransforms() {
@@ -918,7 +939,7 @@ public class BoneAnimation implements Serializable, Savable {
     /**
      * return the list of interpolation types assigned to this animation,
      * or null if this animation does not interpolate.
-     * 
+     *
      * @return the list of interpolation types assigned to this animation.
      */
     private int[] getInterpolationType() {
@@ -937,13 +958,12 @@ public class BoneAnimation implements Serializable, Savable {
      * examined to assign transforms as needed. If no bones are properly
      * assigned to a transform, false is returned. If the assignment is
      * successful, true is returned.
-     * 
+     *
      * @param b
      *            the skeleton to assign.
      * @return true if this was successful, false otherwise.
      */
     public boolean assignSkeleton(Bone b) {
-
         boolean ok = true;
         if (boneTransforms != null) {
             for (int i = 0; i < boneTransforms.size(); i++) {
@@ -974,6 +994,7 @@ public class BoneAnimation implements Serializable, Savable {
         cap.write(currentFrame, "currentFrame", 1);
         cap.write(endFrame, "endFrame", 0);
         cap.write(startFrame, "startFrame", 0);
+        if (frameNames != null) cap.write(frameNames, "frameNames", null);
         cap.write(interpolationRate, "interpolationRate", DEFAULT_RATE);
         cap.write(lastTime, "lastTime", 0);
         cap.write(cycleMode, "cycleMode", 1);
@@ -1010,6 +1031,7 @@ public class BoneAnimation implements Serializable, Savable {
         interpolationRate = cap.readFloat("interpolationRate", DEFAULT_RATE);
         lastTime = cap.readFloat("lastTime", 0);
         cycleMode = cap.readInt("cycleMode", 1);
+        frameNames = (StringIntMap) cap.readSavable("frameNames", null);
         // interpolate = cap.readBoolean("interpolate", true);
         // We ignore the "interpolate" setting, since it is entirely
         // superfluous to the interpolationType field.
@@ -1040,7 +1062,7 @@ public class BoneAnimation implements Serializable, Savable {
                     iType = interpolationType[i];
                     break;
                 }
-            }        
+            }
             if (iType != BoneAnimation.LINEAR) {
                 logger.log(Level.WARNING,
                         "Unsupported interpolation type specified for "

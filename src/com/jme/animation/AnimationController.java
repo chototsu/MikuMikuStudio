@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Logger;
-
 import com.jme.math.FastMath;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
@@ -55,12 +54,9 @@ import com.jme.util.export.Savable;
  * is not immediately switched, but instead morphs with an incoming animation via
  * crossfading for a specified period of time. When the blend is complete, the
  * active animation is set to the incoming animation.
- * 
- * The 
- * 
- * @see com.jme.animation.BoneAnimation
- * @author mpowell
  *
+ * @see BoneAnimation
+ * @author mpowell
  */
 public class AnimationController extends Controller implements Savable {
     private static final Logger logger =
@@ -70,7 +66,7 @@ public class AnimationController extends Controller implements Savable {
     private ArrayList<BoneAnimation> animationSets;
 
     private Bone skeleton;
-    
+
     private Spatial modelNode;
 
     private BoneAnimation activeAnimation;
@@ -106,7 +102,7 @@ public class AnimationController extends Controller implements Savable {
     private int previousTest = -1;
 
     private AnimationProperties props;
-    
+
     public AnimationController() {
     }
 
@@ -124,7 +120,7 @@ public class AnimationController extends Controller implements Savable {
             bac.assignSkeleton(skeleton);
         }
     }
-    
+
     public boolean hasAnimation(String name) {
         if (animationSets != null) {
             for (int i = 0; i < animationSets.size(); i++) {
@@ -133,10 +129,10 @@ public class AnimationController extends Controller implements Savable {
                 }
             }
         }
-        
+
         return false;
     }
-    
+
     public BoneAnimation getAnimation(String name) {
         if (animationSets != null) {
             for (int i = 0; i < animationSets.size(); i++) {
@@ -145,7 +141,7 @@ public class AnimationController extends Controller implements Savable {
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -159,7 +155,6 @@ public class AnimationController extends Controller implements Savable {
                 activeAnimation = animationSets.get(0);
             }
         }
-
     }
 
     public void removeAnimation(int index) {
@@ -174,7 +169,6 @@ public class AnimationController extends Controller implements Savable {
         } else if (bac == activeAnimation) {
             activeAnimation = animationSets.get(0);
         }
-
     }
 
     public BoneAnimation getActiveAnimation() {
@@ -212,7 +206,6 @@ public class AnimationController extends Controller implements Savable {
 
     public void setBlendAnimation(BoneAnimation blendAnimation,
             float blendTime, boolean sync) {
-    	
     	// don't blend between the same animation
         if (blendAnimation == this.blendAnimation) {
             return;
@@ -231,17 +224,17 @@ public class AnimationController extends Controller implements Savable {
 //                activeAnimationsList.add(modifierData);
 //            }
 
-            blendAnimation.reset();            
+            blendAnimation.reset();
 
             this.blendAnimation = blendAnimation;
-    
+
             if (sync) {
                 needsSync = true;
                 calculateSyncFrame();
             } else {
                 needsSync = false;
             }
-            
+
             currentBlendTime = 0f;
             endBlendTime = blendTime;
         }
@@ -250,7 +243,6 @@ public class AnimationController extends Controller implements Savable {
     private void calculateSyncFrame() {
         if (activeAnimation != null && blendAnimation != null
                 && previousTest != activeAnimation.getCurrentFrame()) {
-
             previousTest = activeAnimation.getCurrentFrame();
 
             // Make sure current animation has sync tags.
@@ -317,28 +309,26 @@ public class AnimationController extends Controller implements Savable {
             // frame.
         }
     }
-    
+
     public void updateProps() {
         if(props.isAllowTranslation() && skeleton != null && modelNode != null) {
             if(blendAnimation != null) {
                 blendAnimation.setSourceBone(skeleton);
                 blendAnimation.setDestSpatial(modelNode);
                 blendAnimation.setAnimationProperties(props);
-                
             }
-            
+
             if(activeAnimation != null) {
                 activeAnimation.setSourceBone(skeleton);
                 activeAnimation.setDestSpatial(modelNode);
                 activeAnimation.setAnimationProperties(props);
-                
             }
         } else {
             if(blendAnimation != null) {
                 blendAnimation.setSourceBone(null);
                 blendAnimation.setDestSpatial(null);
             }
-            
+
             if(activeAnimation != null) {
                 activeAnimation.setSourceBone(null);
                 activeAnimation.setDestSpatial(null);
@@ -349,7 +339,7 @@ public class AnimationController extends Controller implements Savable {
     public void setActiveAnimation(String name) {
         setActiveAnimation(name, false, 0, null);
     }
-    
+
     public void setActiveAnimation(String name, boolean blend, float time,
             AnimationProperties props) {
         this.props = props;
@@ -379,6 +369,8 @@ public class AnimationController extends Controller implements Savable {
 
             // Invalid animation, set active to null
             clearActiveAnimation();
+            // Terrible behavior to just silently fail to do what was requested.
+            // We are making it difficult to detect and troubleshoot problems.
         }
     }
 
@@ -452,12 +444,12 @@ public class AnimationController extends Controller implements Savable {
     		activeAnimation = blendAnimation;
     		blendAnimation = null;
     	}
-    	
+
         if (blendAnimation != null && !needsSync) {
             currentBlendTime += time / endBlendTime;
             if (currentBlendTime >= 1.0f) {
 //                activeAnimationsList.clear();
-                
+
                 activeAnimation = blendAnimation;
                 blendAnimation = null;
                 updateProps();
@@ -468,7 +460,7 @@ public class AnimationController extends Controller implements Savable {
             activeAnimation.update(time, getRepeatType(), getSpeed());
 //            for (ModifierData modifierData : activeAnimationsList) {
 //                modifierData.animation.update(time, getRepeatType(), getSpeed(),
-//                        modifierData.blendTime);                
+//                        modifierData.blendTime);
 //            }
 
             if (blendAnimation != null) {
@@ -537,7 +529,7 @@ public class AnimationController extends Controller implements Savable {
     public int getRestPoseFrame() {
         return restPoseFrame;
     }
-    
+
     public void setRestPoseFrame(int restPoseFrame) {
         this.restPoseFrame = restPoseFrame;
     }

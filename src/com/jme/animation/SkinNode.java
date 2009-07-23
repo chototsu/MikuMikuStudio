@@ -55,6 +55,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import com.jme.util.export.StringStringMap;
 import com.jme.util.geom.VertMap;
 
 /**
@@ -68,7 +69,7 @@ import com.jme.util.geom.VertMap;
  * vertex (although the total weight must add up to 1).
  * <P>
  * One of the removeSkinGeometry methods should be used to remove skins.
- * Simply detaching a skin from the scene may result in a memory hole, since
+ * Simply detaching a skin from the scene may result in a memory leak, since
  * the bone influences for that skin will be retained.
  * </P> <P>
  * The 'skins' Node of a SkinNode should only parent Geometries.
@@ -532,16 +533,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         cap.writeSavableArrayList(connectionPoints, "connectionPoints", null);
 
         cullRegionMappings();
-        // TODO:  Get rid of this block and just store geometryRegions as
-        // a StringStringMap, once that class is migrated from the blenderjme
-        // code branch.
-        if (geometryRegions.size() < 1) return;
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String,String> me : geometryRegions.entrySet()) {
-            if (sb.length() > 0) sb.append(',');
-            sb.append(me.getKey() + ':' + me.getValue());
-        }
-        cap.write(sb.toString(), "geometryRegions", null);
+        if (geometryRegions.size() > 0)
+            cap.write(geometryRegions, "geometryRegions", null);
     }
 
     @SuppressWarnings("unchecked")
@@ -553,18 +546,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         Bone readSkeleton = (Bone)cap.readSavable("skeleton", null);
         connectionPoints = cap.readSavableArrayList("connectionPoints", null);
         cache = cap.readSavableArrayListArray2D("cache", null);
-
-        // TODO:  Get rid of this block and read store geometryRegions as
-        // a StringStringMap, once that class is migrated from the blenderjme
-        // code branch.
-        String geoRegionsString = cap.readString("geometryRegions", null);
-        if (geoRegionsString != null && geoRegionsString.length() > 0)
-            for (String pair : geoRegionsString.split(",", -1)) {
-                String[] subSplit = pair.split(":", -1);
-                if (subSplit.length != 2)
-                    throw new IOException("Malformatted geometryRegions value");
-                geometryRegions.put(subSplit[0], subSplit[1]);
-            }
+        geometryRegions = (StringStringMap)
+                cap.readSavable("geometryRegions", null);
 
         if (readSkeleton != null) {
             setSkeleton(readSkeleton);
@@ -916,8 +899,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      * Do not make this map public, since we update it lazily (only before we
      * need to use it).  See cullRegionMappings() about that.
      */
-    protected Map<String, String> geometryRegions
-            = new HashMap<String, String>();
+    protected StringStringMap geometryRegions = new StringStringMap();
 
     /**
      * We can't control how skin Geometries are removed, so we must cull
@@ -967,5 +949,85 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      */
     public void setSkinRegion(Geometry skinGeometry, String skinRegion) {
         geometryRegions.put(skinGeometry.getName(), skinRegion);
+    }
+
+    /**
+     * Stops the current animation and poses the skins to the static pose of
+     * the specified and frame.
+     */
+    public void pose(int frameNum) {
+        AnimationController ac =
+                (skeleton == null) ? null : skeleton.getAnimationController();
+        if (ac == null)
+            throw new IllegalStateException(
+                    "Can't pose without an AnimationController set");
+        BoneAnimation animation = ac.getActiveAnimation();
+        if (animation == null)
+            throw new IllegalStateException(
+                "Controller has no active animation");
+        ac.setActive(false);
+        animation.setCurrentFrame(frameNum);
+        //updateSkin();
+        needsRefresh = true;
+    }
+
+    /**
+     * Stops the current animation and poses the skins to the static pose of
+     * the specified and frame.
+     */
+    public void pose(String frameName) {
+        AnimationController ac =
+                (skeleton == null) ? null : skeleton.getAnimationController();
+        if (ac == null)
+            throw new IllegalStateException(
+                    "Can't pose without an AnimationController set");
+        BoneAnimation animation = ac.getActiveAnimation();
+        if (animation == null)
+            throw new IllegalStateException(
+                "Controller has no active animation");
+        ac.setActive(false);
+        animation.setCurrentFrame(frameName);
+        //updateSkin();
+        needsRefresh = true;
+    }
+
+    /**
+     * Stops any running animation and poses the skins to the static pose of
+     * the specified animation and frame.
+     */
+    public void pose(String animationName, int frameNum) {
+        if (animationName == null)
+            throw new IllegalArgumentException(
+                    "Target animation must be specified");
+        String origAnimationName = getAnimationString();
+        AnimationController ac =
+                (skeleton == null) ? null : skeleton.getAnimationController();
+        if (ac == null)
+            throw new IllegalStateException(
+                    "Can't pose without an AnimationController set");
+        if (ac.getActiveAnimation() == null)
+            throw new IllegalStateException(
+                "Controller has no such animation as '" + animationName + "'");
+        pose(frameNum);
+    }
+
+    /**
+     * Stops any running animation and poses the skins to the static pose of
+     * the specified animation and frame.
+     */
+    public void pose(String animationName, String frameName) {
+        if (animationName == null)
+            throw new IllegalArgumentException(
+                    "Target animation must be specified");
+        String origAnimationName = getAnimationString();
+        AnimationController ac =
+                (skeleton == null) ? null : skeleton.getAnimationController();
+        if (ac == null)
+            throw new IllegalStateException(
+                    "Can't pose without an AnimationController set");
+        if (ac.getActiveAnimation() == null)
+            throw new IllegalStateException(
+                "Controller has no such animation as '" + animationName + "'");
+        pose(frameName);
     }
 }
