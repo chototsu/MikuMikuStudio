@@ -67,16 +67,6 @@ import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.geom.GeometryTool;
 
-/*
- * Modified by Skye Book (sbook), 7/16/09:
- * Added in argument in the constructor to name the node that gets
- * returned in the buildStructure method.  
- * 
- * Rationale: When getting the parent of a picked mesh, the generic
- * name "obj file" is fairly useless when dealing with scenes that
- * have been created from multiple obj files.
- */
-
 /**
  * Started Date: Jul 17, 2004<br>
  * <br>
@@ -88,6 +78,10 @@ import com.jme.util.geom.GeometryTool;
  * Textures will be loaded from the directory indicated in the model unless you
  * specify a directory to load them from via setting a property: eg.
  * setProperty("texdir", new File("c:/my texdir/").toURL());
+ * 
+ *  * Modified by Skye Book (sbook), 7/16/09:
+ * Added in argument in the constructor to name the node that gets
+ * returned in the buildStructure method.  
  * 
  * @author Jack Lindamood
  * @author Joshua Slack - revamped to improve speed
