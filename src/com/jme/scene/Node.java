@@ -717,8 +717,12 @@ public class Node extends Spatial implements Serializable, Savable {
      * By design, it is always safe to code loops like:<CODE><PRE>
      *     for (Spatial spatial : node.descendantMatches(AClass.class, "regex"))
      * </PRE></CODE>
+     * </P> <P>
+     * "Descendants" does not include self, per the definition of the word.
+     * To test for descendants AND self, you must do a
+     * <code>node.matches(aClass, aRegex)</code> + 
+     * <code>node.descendantMatches(aClass, aRegex)</code>.
      * <P>
-     *
      *
      * @param spatialSubclass Subclass which matching Spatials must implement.
      *                        Null causes all Spatials to qualify.
@@ -732,15 +736,12 @@ public class Node extends Spatial implements Serializable, Savable {
     public List<Spatial> descendantMatches(
             Class<? extends Spatial> spatialSubclass, String nameRegex) {
         List<Spatial> newList = new ArrayList<Spatial>();
-        if (matches(spatialSubclass, nameRegex)) newList.add(this);
         if (getQuantity() < 1) return newList;
         for (Spatial child : getChildren()) {
-            if (child instanceof Node) {
+            if (child.matches(spatialSubclass, nameRegex)) newList.add(child);
+            if (child instanceof Node)
                 newList.addAll(((Node) child).descendantMatches(
                         spatialSubclass, nameRegex));
-            } else if (child.matches(spatialSubclass, nameRegex)) {
-                newList.add(child);
-            }
         }
         return newList;
     }
