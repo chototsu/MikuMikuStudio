@@ -67,6 +67,16 @@ import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.geom.GeometryTool;
 
+/*
+ * Modified by Skye Book (sbook), 7/16/09:
+ * Added in argument in the constructor to name the node that gets
+ * returned in the buildStructure method.  
+ * 
+ * Rationale: When getting the parent of a picked mesh, the generic
+ * name "obj file" is fairly useless when dealing with scenes that
+ * have been created from multiple obj files.
+ */
+
 /**
  * Started Date: Jul 17, 2004<br>
  * <br>
@@ -153,7 +163,43 @@ public class ObjToJme extends FormatConverter {
         while ((in = inFile.readLine()) != null) {
             processLine(in);
         }
-        BinaryExporter.getInstance().save(buildStructure(),jMEFormat);
+        BinaryExporter.getInstance().save(buildStructure(null),jMEFormat);
+        nullAll();
+    }
+    
+    /**
+     * Converts an .obj file to .jme format. If you wish to use a .mtl to load
+     * the obj's material information please specify the base url where the .mtl
+     * is located with setProperty("mtllib",new URL(baseURL))
+     * 
+     * @param format
+     *             The .obj file's stream.
+     * @param jMEFormat
+     *             The .jme file's stream.
+     * @param returnedNodeName
+     * 			   Allows the Node returned from the buildStructure method to
+     * 			   be named.
+     * @throws IOException
+     *             If anything bad happens.
+     */
+    public void convert(InputStream format, OutputStream jMEFormat, String returnedNodeName)
+            throws IOException {
+        renderer = DisplaySystem.getDisplaySystem().getRenderer();
+        defaultMaterialGroup = new MaterialGrouping();
+        vertexList.clear();
+        textureList.clear();
+        normalList.clear();
+        genNormalList.clear();
+        materialSets.clear();
+        materialNames.clear();
+        inFile = new BufferedReader(new InputStreamReader(format));
+        String in;
+        curGroup = defaultMaterialGroup;
+        materialSets.put(defaultMaterialGroup, new ArraySet());
+        while ((in = inFile.readLine()) != null) {
+            processLine(in);
+        }
+        BinaryExporter.getInstance().save(buildStructure(returnedNodeName),jMEFormat);
         nullAll();
     }
 
@@ -181,8 +227,16 @@ public class ObjToJme extends FormatConverter {
      * 
      * @return The TriMesh or Node that represents the .obj file.
      */
-    private Spatial buildStructure() {
-        Node toReturn = new Node("obj file");
+    private Spatial buildStructure(String returnedNodeName) {
+    	Node toReturn;
+    	if (returnedNodeName == null || returnedNodeName == "")
+    	{
+    		toReturn = new Node("obj file");
+    	}
+    	else
+    	{
+    		toReturn = new Node(returnedNodeName);
+    	}
         Object[] o = materialSets.keySet().toArray();
         for (int i = 0; i < o.length; i++) {
             MaterialGrouping thisGroup = (MaterialGrouping) o[i];
