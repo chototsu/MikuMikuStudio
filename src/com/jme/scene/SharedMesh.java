@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
+import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -111,7 +112,7 @@ public class SharedMesh extends TriMesh {
         defaultColor = null;
 
         if (target instanceof SharedMesh) {
-            setTarget(((SharedMesh) target).getTarget());
+            setTarget(((SharedMesh) target).getDeepTarget());
             this.setName(target.getName());
             this.setCullHint(target.cullHint);
             this.setLightCombineMode(target.lightCombineMode);
@@ -131,9 +132,13 @@ public class SharedMesh extends TriMesh {
             setTarget(target);
         }
 
-        this.localRotation.set(target.getLocalRotation());
-        this.localScale.set(target.getLocalScale());
-        this.localTranslation.set(target.getLocalTranslation());
+        // Commented out the below as the "target"s local[RotTransScale] values may not be the values it was originally given.
+        // The values in the target object are used as temporary storage when calculating things for all other shared 
+        // objects and therefore cannot be considered a reliable value of the original objects positions and must be  
+        // set independently by the creating process on each new sharedmesh. 
+//        this.localRotation.set(target.getLocalRotation());
+//        this.localScale.set(target.getLocalScale());
+//        this.localTranslation.set(target.getLocalTranslation());
     }
 
     /**
@@ -159,6 +164,7 @@ public class SharedMesh extends TriMesh {
         setZOrder(target.getZOrder());
     }
 
+
     /**
      * <code>getTarget</code> returns the mesh that is being shared by this
      * object.
@@ -169,6 +175,23 @@ public class SharedMesh extends TriMesh {
         return target;
     }
 
+    
+    /**
+     * As a sharedmesh can be created from another sharedmesh, there is a possibility of the target 
+     * being nested more than one level down (sharedmesh->sharedmesh->sharedmesh->target).
+     * Adding this check will find the actual target in these cases, otherwise creating a 
+     * sharedmesh from a shared mesh should be disallowed.
+     * 
+     * @return the base mesh being shared.
+     */
+    public TriMesh getDeepTarget() {
+    	if( target instanceof SharedMesh )
+    		return ((SharedMesh)target).getTarget();
+        return target;
+    }
+    
+    
+    
     /**
      * <code>reconstruct</code> is not supported in SharedMesh.
      * 
