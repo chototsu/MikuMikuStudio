@@ -152,8 +152,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of bytes.  size says "
-                            + requiredSize + ", data contains "
+                    throw new IOException("Wrong number of bytes for '" + name
+                            + "'.  size says " + requiredSize
+                            + ", data contains "
                             + strings.length);
             }
             byte[] tmp = new byte[strings.length];
@@ -252,9 +253,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of ints.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of ints for '" + name
+                            + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             int[] tmp = new int[strings.length];
             for (int i = 0; i < tmp.length; i++) {
@@ -355,9 +356,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of floats.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of floats for '" + name
+                            + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             float[] tmp = new float[strings.length];
             for (int i = 0; i < tmp.length; i++) {
@@ -441,9 +442,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of doubles.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of doubles for '"
+                            + name + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             double[] tmp = new double[strings.length];
             for (int i = 0; i < tmp.length; i++) {
@@ -540,9 +541,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of longs.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of longs for '" + name
+                            + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             long[] tmp = new long[strings.length];
             for (int i = 0; i < tmp.length; i++) {
@@ -639,9 +640,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of shorts.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of shorts for '"
+                            + name + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             short[] tmp = new short[strings.length];
             for (int i = 0; i < tmp.length; i++) {
@@ -735,9 +736,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of bools.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of bools for '" + name
+                            + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             boolean[] tmp = new boolean[strings.length];
             for (int i = 0; i < tmp.length; i++) {
@@ -1060,9 +1061,9 @@ public class DOMInputCapsule implements InputCapsule {
                 if (sizeString.length() > 0) {
                     int requiredSize = Integer.parseInt(sizeString);
                     if (savables.size() != requiredSize)
-                        throw new IOException("Wrong number of Savables.  size says "
-                                + requiredSize + ", data contains "
-                                + savables.size());
+                        throw new IOException("Wrong number of Savables for '"
+                                + name + "'.  size says " + requiredSize
+                                + ", data contains " + savables.size());
                 }
                 ret = savables.toArray(new Savable[0]);
             }
@@ -1128,9 +1129,10 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (savables.size() != requiredSize)
-                    throw new IOException("Wrong number of Savable rrays.  size says "
-                            + requiredSize + ", data contains "
-                            + savables.size());
+                    throw new IOException(
+                            "Wrong number of Savable arrays for '" + name
+                            + "'.  size says " + requiredSize
+                            + ", data contains " + savables.size());
             }
             currentElem = (Element) tmpEl.getParentNode();
             return savables;
@@ -1329,9 +1331,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of float buffers.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of float buffers for '"
+                            + name + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             FloatBuffer tmp = BufferUtils.createFloatBuffer(strings.length);
             for (String s : strings) tmp.put(Float.parseFloat(s));
@@ -1362,9 +1364,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of int buffers.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of int buffers for '"
+                            + name + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             IntBuffer tmp = BufferUtils.createIntBuffer(strings.length);
             for (String s : strings) tmp.put(Integer.parseInt(s));
@@ -1395,9 +1397,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of byte buffers.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of byte buffers for '"
+                            + name + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             ByteBuffer tmp = BufferUtils.createByteBuffer(strings.length);
             for (String s : strings) tmp.put(Byte.valueOf(s));
@@ -1428,9 +1430,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (strings.length != requiredSize)
-                    throw new IOException("Wrong number of short buffers.  size says "
-                            + requiredSize + ", data contains "
-                            + strings.length);
+                    throw new IOException("Wrong number of short buffers for '"
+                            + name + "'.  size says " + requiredSize
+                            + ", data contains " + strings.length);
             }
             ShortBuffer tmp = BufferUtils.createShortBuffer(strings.length);
             for (String s : strings) tmp.put(Short.valueOf(s));
@@ -1466,9 +1468,9 @@ public class DOMInputCapsule implements InputCapsule {
             if (sizeString.length() > 0) {
                 int requiredSize = Integer.parseInt(sizeString);
                 if (tmp.size() != requiredSize)
-                    throw new IOException("Wrong number of short buffers.  size says "
-                            + requiredSize + ", data contains "
-                            + tmp.size());
+                    throw new IOException("Wrong number of short buffers for '"
+                            + name + "'.  size says " + requiredSize
+                            + ", data contains " + tmp.size());
             }
             currentElem = (Element) tmpEl.getParentNode();
             return tmp;

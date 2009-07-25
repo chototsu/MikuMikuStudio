@@ -661,10 +661,17 @@ public class DOMOutputCapsule implements OutputCapsule {
         StringBuilder buf = new StringBuilder();
         int pos = value.position();
         value.rewind();
+        int ctr = 0;
         while (value.hasRemaining()) {
+            ctr++;
             buf.append(value.get());
             buf.append(" ");
         }
+        if (ctr != value.limit())
+            throw new IOException("'" + name
+                + "' buffer contention resulted in write data consistency.  "
+                + ctr + " values written when should have written "
+                + value.limit());
         buf.setLength(Math.max(0, buf.length() - 1));
         value.position(pos);
         el.setAttribute(dataAttributeName, buf.toString());
@@ -684,10 +691,17 @@ public class DOMOutputCapsule implements OutputCapsule {
         StringBuilder buf = new StringBuilder();
         int pos = value.position();
         value.rewind();
+        int ctr = 0;
         while (value.hasRemaining()) {
+            ctr++;
             buf.append(value.get());
             buf.append(" ");
         }
+        if (ctr != value.limit())
+            throw new IOException("'" + name
+                + "' buffer contention resulted in write data consistency.  "
+                + ctr + " values written when should have written "
+                + value.limit());
         buf.setLength(buf.length() - 1);
         value.position(pos);
         el.setAttribute(dataAttributeName, buf.toString());
@@ -703,10 +717,17 @@ public class DOMOutputCapsule implements OutputCapsule {
         StringBuilder buf = new StringBuilder();
         int pos = value.position();
         value.rewind();
+        int ctr = 0;
         while (value.hasRemaining()) {
+            ctr++;
             buf.append(value.get());
             buf.append(" ");
         }
+        if (ctr != value.limit())
+            throw new IOException("'" + name
+                + "' buffer contention resulted in write data consistency.  "
+                + ctr + " values written when should have written "
+                + value.limit());
         buf.setLength(buf.length() - 1);
         value.position(pos);
         el.setAttribute(dataAttributeName, buf.toString());
@@ -726,10 +747,17 @@ public class DOMOutputCapsule implements OutputCapsule {
         StringBuilder buf = new StringBuilder();
         int pos = value.position();
         value.rewind();
+        int ctr = 0;
         while (value.hasRemaining()) {
+            ctr++;
             buf.append(value.get());
             buf.append(" ");
         }
+        if (ctr != value.limit())
+            throw new IOException("'" + name
+                + "' buffer contention resulted in write data consistency.  "
+                + ctr + " values written when should have written "
+                + value.limit());
         buf.setLength(buf.length() - 1);
         value.position(pos);
         el.setAttribute(dataAttributeName, buf.toString());
