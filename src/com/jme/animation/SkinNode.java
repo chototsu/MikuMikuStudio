@@ -84,8 +84,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     private static final Logger logger = Logger.getLogger(
             SkinNode.class.getName());
 
-    protected static Vector3f vertex = new Vector3f();
-    protected static Vector3f normal = new Vector3f();
+    protected Vector3f vertex = new Vector3f();
+    protected Vector3f normal = new Vector3f();
 
     protected boolean needsRefresh = true;
 
@@ -97,7 +97,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     protected ArrayList<ConnectionPoint> connectionPoints;
 
     protected transient boolean newSkeletonAssigned = false;
-    protected transient Matrix4f bindMatrix = new Matrix4f();
+    protected transient Matrix4f bindMatrix;
+    // Is this bindMatrix EVER useful?  It has never been persisted or
+    // restored by this class.  ??
 
     private final Vector3f tmpTranslation = new Vector3f();
     private final Quaternion tmpRotation = new Quaternion();
@@ -243,21 +245,11 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
    	}
 
-    public void addBoneInfluence(int geomIndex, int vert, String boneId,
-            float weight) {
+    public void addBoneInfluence(
+            int geomIndex, int vert, String boneId, float weight) {
     	if (weight == 0) return;
-        if (cache == null) {
-            recreateCache();
-        }
+        if (cache == null) recreateCache();
 
-        if (vert > cache[geomIndex].length) {
-            System.out.println("vert: " + vert);
-            System.out.println("cache[" + geomIndex + "].length: " + cache[geomIndex].length);
-
-            for (int i=0;i<cache.length;i++) {
-                System.out.println("cache[" + i + "].length: " + cache[i].length);
-            }
-        }
         ArrayList<BoneInfluence> infs = cache[geomIndex][vert];
         if (infs == null) {
             infs = new ArrayList<BoneInfluence>(1);
@@ -265,8 +257,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         }
         BoneInfluence i = new BoneInfluence(null, weight);
         i.boneId = boneId;
-        if (!infs.contains(i))
-        	infs.add(i);
+        if (!infs.contains(i)) infs.add(i);
     }
 
     public ConnectionPoint addConnectionPoint(String name, Bone b) {
@@ -353,11 +344,11 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
             if (infs == null)
                 continue;
             float total = 0;
-            for (int x = infs.size(); --x >= 0;) {
+            for (int x = infs.size() - 1; x >= 0; --x) {
                 BoneInfluence influence = infs.get(x);
                 total += influence.weight;
             }
-            for (int x = infs.size(); --x >= 0;) {
+            for (int x = infs.size() - 1; x >= 0; --x) {
                 BoneInfluence influence = infs.get(x);
                 influence.weight /= total;
             }
@@ -377,73 +368,124 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         return skeleton;
     }
 
+    /**
+     * Assigns Bone instance references to BoneInfluences, by looking up
+     * the boneId names.
+     */
     public void assignSkeletonBoneInfluences() {
-        if (skeleton != null) {
-            for(int i = 0; i < cache.length; i++) {
-                for(int j = 0; j < cache[i].length; j++) {
-                	if(cache[i][j] != null) {
-                        for(int k = 0; k < cache[i][j].size(); k++) {
-                            cache[i][j].get(k).assignBone(skeleton);
-                        }
-	                }
-            	}
-            }
-        }
-
+        if (skeleton == null) return;
+        if (cache == null) return;
+        validateSkins();
+        for (int index = cache.length - 1; index >= 0; --index)
+            assignSkeletonBoneInfluences(index);
         newSkeletonAssigned = false;
+    }
+
+    /**
+     Assigns Bone instance references for one specific skin Geometry.
+     *
+     * @see #assignSkeletonBoneInfluences()
+     */
+    public void assignSkeletonBoneInfluences(Geometry skinGeo) {
+        if (skeleton == null)
+            throw new IllegalStateException("No skeleton assigned yet");
+        if (cache == null)
+            throw new IllegalStateException("No skins initialized yet");
+
+        validateSkins();
+        for (int index = skins.getQuantity() - 1; index >= 0; --index)
+            if (getSkin(index) == skinGeo) {
+                assignSkeletonBoneInfluences(index);
+                return;
+            }
+        throw new IllegalArgumentException(
+                "Geometry is not one of our skins: " + skinGeo.getName());
+    }
+
+    protected void assignSkeletonBoneInfluences(int i) {
+        for (ArrayList<BoneInfluence> biList : cache[i])
+            if (biList != null)
+                for (int j = 0; j < biList.size(); j++)
+                    biList.get(j).assignBone(skeleton);
     }
 
     /**
      * regenInfluenceOffsets calculate the offset of a particular vertex from a
      * bone. This allows the bone's rotation to position the vertex in world
-     * space. This should only be called a single time during initialization.
+     * space. This nees to be called only be called a single time during
+     * initialization (or when a Geometry's local vertex locations change).
      */
     public void regenInfluenceOffsets() {
-        if (cache == null)
-            return;
+        if (cache == null) return;
 
+        validateSkins();
+        for (int index = cache.length - 1; index >= 0; --index)
+            regenInfluenceOffsets(index);
+    }
+
+    /**
+     * Regenerates the offsets for one specific skin Geometry.
+     *
+     * @see #regenInfluenceOffsets()
+     */
+    public void regenInfluenceOffsets(Geometry skinGeo) {
+        if (cache == null)
+            throw new IllegalStateException("No skins initialized yet");
+
+        validateSkins();
+        for (int index = skins.getQuantity() - 1; index >= 0; --index)
+            if (getSkin(index) == skinGeo) {
+                regenInfluenceOffsets(index);
+                return;
+            }
+        throw new IllegalArgumentException(
+                "Geometry is not one of our skins: " + skinGeo.getName());
+    }
+
+    protected void regenInfluenceOffsets(int index) {
+        FloatBuffer verts, norms;
         Vector3f vertex = new Vector3f();
         Vector3f normal = new Vector3f();
 
-        FloatBuffer verts, norms;
-        validateSkins();
-        for (int index = cache.length; --index >= 0;) {
-            Geometry geom = getSkin(index);
-            verts = geom.getVertexBuffer();
-            norms = geom.getNormalBuffer();
-            verts.clear();
-            norms.clear();
-            for (int vert = 0, max = cache[index].length; vert < max; vert++) {
-                ArrayList<BoneInfluence> infs = cache[index][vert];
+        Geometry geom = getSkin(index);
+        verts = geom.getVertexBuffer();
+        if (verts == null) {
+            logger.log(Level.FINE,
+                    "Skipping skin ''{0}'' because verts uninitialized",
+                    geom.getName());
+            return;
+        }
+        norms = geom.getNormalBuffer();
+        verts.clear();
+        norms.clear();
+        for (ArrayList<BoneInfluence> infs : cache[index]) {
+            vertex.set(verts.get(), verts.get(), verts.get());
+            normal.set(norms.get(), norms.get(), norms.get());
 
-                vertex.set(verts.get(), verts.get(), verts.get());
-                normal.set(norms.get(), norms.get(), norms.get());
+            if (infs == null) continue;
 
-                if (infs == null)
-                    continue;
-
+            if (bindMatrix != null) {
                 bindMatrix.mult(vertex, vertex);
                 bindMatrix.rotateVect(normal);
+            }
 
-                for (int x = infs.size(); --x >= 0;) {
-                    BoneInfluence infl = infs.get(x);
-                    if(infl.bone != null) {
-                        infl.vOffset = new Vector3f(vertex);
-                        infl.bone.bindMatrix.inverseTranslateVect(infl.vOffset);
-                        infl.bone.bindMatrix.inverseRotateVect(infl.vOffset);
+            for (int x = infs.size() - 1; x >= 0; --x) {
+                BoneInfluence infl = infs.get(x);
+                if (infl.bone == null) continue;
+                infl.vOffset = new Vector3f(vertex);
+                infl.bone.bindMatrix.inverseTranslateVect(infl.vOffset);
+                infl.bone.bindMatrix.inverseRotateVect(infl.vOffset);
 
-                        infl.nOffset = new Vector3f(normal);
-                        infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
-                    }
-                }
+                infl.nOffset = new Vector3f(normal);
+                infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
             }
         }
     }
 
     /**
      * updateSkin positions the vertices of the skin based on the bones and the
-     * BoneInfluences those bones have on the vertices. Each vertex is placed into
-     * world space for rendering.
+     * BoneInfluences those bones have on the vertices. Each vertex is placed
+     * into world space for rendering.
      */
     public synchronized void updateSkin() {
         if (cache == null || skins == null)
@@ -466,32 +508,52 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
         FloatBuffer verts, norms;
 
-        for (int index = cache.length; --index >= 0;) {
+        for (int index = cache.length - 1; index >= 0; --index) {
             Geometry geom = getSkin(index);
             verts = geom.getVertexBuffer();
+            if (verts == null) {
+                logger.log(Level.FINE,
+                        "Skipping skin ''{0}'' because verts uninitialized",
+                        geom.getName());
+                continue;
+            }
             verts.clear();
             norms = geom.getNormalBuffer();
             norms.clear();
             geom.setHasDirtyVertices(true);
+            int overVerts = 0;
+            int overNorms = 0;
             for (int vert = 0, max = cache[index].length; vert < max; vert++) {
                 ArrayList<BoneInfluence> infs = cache[index][vert];
                 if (infs == null) continue;
                 vertex.zero();
                 normal.zero();
 
-                for (int x = infs.size(); --x >= 0;) {
+                for (int x = infs.size() - 1; x >= 0; --x) {
                     BoneInfluence inf = infs.get(x);
-                    if (inf.bone != null) {
+                    if (inf.bone != null)
                         inf.bone.applyBone(inf, vertex, normal);
-                    }
                 }
 
                 if (verts.remaining() > 2)
                     verts.put(vertex.x).put(vertex.y).put(vertex.z);
-                if (norms.remaining() > 2) {
+                else
+                    overVerts++;
+                if (norms.remaining() > 2)
                     norms.put(normal.x).put(normal.y).put(normal.z);
-                }
+                else
+                    overNorms++;
             }
+            if (overVerts > 0)
+                logger.log(Level.WARNING,
+                        "Skin ''{0}'' short of cach by {1} vertexes", 
+                        new Object[] { geom.getName(), overVerts });
+            if (overNorms > 0)
+                logger.log(Level.WARNING,
+                        "Skin ''{0}'' short of cach by {1} normals", 
+                        new Object[] { geom.getName(), overNorms });
+            verts.flip();
+            norms.flip();
         }
 
         if (skeleton != null && skeleton.getParent() != null) {
@@ -511,7 +573,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     public void setBindMatrix(Matrix4f mat) {
-        bindMatrix = mat;
+        bindMatrix = (mat != null && mat.isIdentity()) ? null : mat;
     }
 
     public void childChange(Geometry geometry, int index1, int index2) {
@@ -559,7 +621,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     public void revertToBind() {
-        bindMatrix.loadIdentity();
+        bindMatrix = null;
         updateSkin();
     }
 
@@ -663,14 +725,16 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         /* URGENT TODOs:
          *     Find out if need to stop, clear, reset animations or the
          *      AnimationController before doing this stuff.
-         *     Verify that imported SkinNodes never use SkinNode.bindMatrix
-         *     Verify that imported SkinNodes never use BI.nOffset, BI.vOffset.
+         *     Consider how to valiate inported SkinNodes'
+         *      BI.nOffset, BI.vOffset, which should always be derived, as they
+         *      should never be persisted for hot skins.
          */
         Node otherSkins = otherSkinNode.getSkins();
         if (otherSkins == null || otherSkins.getQuantity() < 1) {
-            logger.warning("Not merging SkinNode '" + otherSkinNode.getName()
-                    + "' into '" + getName()
-                    + "' since no skin meshes for former");
+            logger.log(Level.WARNING,
+                    "Not merging SkinNode ''{0}'' into ''{1}'' "
+                    + "since no skin meshes for former", new String[] {
+                    otherSkinNode.getName(), getName()});
             return;
         }
         BoneAnimation origAnim = null;
@@ -698,9 +762,11 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                     + "' has skin geo vs. cache count mismatch: "
                     + otherSkins.getQuantity() + " vs. "
                     + otherSkinNode.getCache().length);
-        logger.fine("Merging SkinNode '" + otherSkinNode.getName()
-                + "' into '" + getName() + "'");
-        logger.fine("Other bindMatrix = " + otherSkinNode.bindMatrix);
+        logger.log(Level.FINE, "Merging SkinNode ''{0}'' into ''{1}''",
+                new String[] { otherSkinNode.getName(), getName()});
+        if (otherSkinNode.bindMatrix != null)
+            throw new IllegalArgumentException(
+                    "Skin bindMatrixes are not supported for assimilation");
 
         ArrayList<BoneInfluence>[] transferredInfluences;
 
@@ -723,7 +789,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                     continue;
                 if (otherSkinNode.hasSkinGeometry(g.getName(), skinRegion)) {
                     logger.log(Level.INFO,
-                            "Retaining geometry '{0}'", g.getName());
+                            "Retaining geometry ''{0}''", g.getName());
                     continue;
                 }
                 removeSkinGeometry(i);
@@ -746,9 +812,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                     transferredInfluences, skinRegion);
         }
 
-        assignSkeletonBoneInfluences();
-          // Maps influence bone id Strings to Bone instances
-        regenInfluenceOffsets();
         if (ac != null) {
             ac.setActive(origActive);
             if (origAnim == null) {
@@ -791,6 +854,10 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         for (int i = 0; i < newInfluences.length; i++)
             for (BoneInfluence bi : newInfluences[i])
                 addBoneInfluence(newCache.length - 1, i, bi.boneId, bi.weight);
+        assignSkeletonBoneInfluences(newSkinGeo);
+        regenInfluenceOffsets(newSkinGeo);
+        logger.log(Level.INFO,
+                "Assimilating Geometry ''{0}''", newSkinGeo.getName());
     }
 
      /**
@@ -847,7 +914,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         Geometry g = getSkin(i);
         removeGeometry(i);
         g.removeFromParent();
-        logger.log(Level.FINE, "Removed skin '{0}'", g.getName());
+        logger.log(Level.FINE, "Removed skin ''{0}''", g.getName());
         return g;
     }
 
@@ -928,7 +995,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         }
         for (String key : zapKeys) {
             geometryRegions.remove(key);
-            logger.log(Level.FINE, "Culled region mapping for '{0}'", key);
+            logger.log(Level.FINE, "Culled region mapping for ''{0}''", key);
         }
     }
 

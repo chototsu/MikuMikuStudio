@@ -315,9 +315,9 @@ public class BoneAnimation implements Serializable, Savable {
          */
         if (keyframeTime != null) {
             if (frame > endFrame  || frame < startFrame) {
-                logger.log(Level.SEVERE, "Invalid frame index {1}.  "
-                        + "Note between start and end key frames {2} "
-                        + "and {3} inclusive",
+                logger.log(Level.SEVERE, "Invalid frame index {0}.  "
+                        + "Note between start and end key frames {1} "
+                        + "and {2} inclusive",
                          new Object[] {frame, startFrame, endFrame});
                 return;
             }
