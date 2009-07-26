@@ -75,8 +75,12 @@ abstract public class AbstractStringKeyMap<V>
      * Subclasses must super.read(e), and can then use unsavedKeys to
      * populate the map.
      */
-     public void read(JMEImporter e) throws IOException {
-         clear();
-         unsavedKeys = e.getCapsule(this).readStringArray("keys", null);
-     }
+    public void read(JMEImporter e) throws IOException {
+        clear();
+        unsavedKeys = e.getCapsule(this).readStringArray("keys", null);
+    }
+
+    public Class<? extends AbstractStringKeyMap> getClassTag() {
+        return this.getClass();
+    }
 }

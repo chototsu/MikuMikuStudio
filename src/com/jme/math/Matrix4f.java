@@ -665,15 +665,22 @@ public class Matrix4f  implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * <code>loadIdentity</code> sets this matrix to the identity matrix,
+     * Legacy wrapper.
+     * This name implies that an identity matrix is "loaded", but one is not.
+     * Instead, the elements of 'this' identity are set.
+     */
+    public void loadIdentity() {
+        setIdentity();
+    }
+
+    /**
+     * Sets this matrix to the identity matrix,
      * namely all zeros with ones along the diagonal.
      *  
      */
-    public void loadIdentity() {
-        m01 = m02 = m03 = 0.0f;
-        m10 = m12 = m13 = 0.0f;
-        m20 = m21 = m23 = 0.0f;
-        m30 = m31 = m32 = 0.0f;
+    public void setIdentity() {
+        m01 = m02 = m03 = m10 = m12 = m13
+            = m20 = m21 = m23 = m30 = m31 = m32 = 0.0f;
         m00 = m11 = m22 = m33 = 1.0f;
     }
 
@@ -1229,10 +1236,8 @@ public class Matrix4f  implements Serializable, Savable, Cloneable {
      * @return this matrix
      */
     public Matrix4f zero() {
-        m00 = m01 = m02 = m03 = 0.0f;
-        m10 = m11 = m12 = m13 = 0.0f;
-        m20 = m21 = m22 = m23 = 0.0f;
-        m30 = m31 = m32 = m33 = 0.0f;
+        m00 = m01 = m02 = m03 = m10 = m11 = m12 = m13
+                = m20 = m21 = m22 = m23 = m30 = m31 = m32 = m33 = 0.0f;
         return this;
     }
     

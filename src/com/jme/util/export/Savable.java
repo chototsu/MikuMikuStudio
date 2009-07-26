@@ -37,5 +37,11 @@ import java.io.IOException;
 public interface Savable {
     void write(JMEExporter ex) throws IOException;
     void read(JMEImporter im) throws IOException;
+
+    /**
+     * This method should be named getClassName(), since "tag" is XML-specific,
+     * but the type returned here is important for every persistence
+     * impementation.
+     */
     Class getClassTag();
 }

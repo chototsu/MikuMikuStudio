@@ -98,9 +98,7 @@ public class SkinTransferNode extends SkinNode {
     }
 
     /**
-     * Overrides Spatial.setParent().
-     *
-     * @see Spatial.setParent(Node)
+     * Do not use thos method with SkinTransferNodes.
      */
     protected void setParent(Node parent) {
         throw new IllegalStateException(
@@ -108,20 +106,7 @@ public class SkinTransferNode extends SkinNode {
     }
 
     /**
-     * addBoneInfluence defines how a vertex will be affected by a bone. This is
-     * given with four values, the geometry child the vertex is found, the index
-     * to the vertex in the geometry, the index of the bone that has been or
-     * will be set via setBones or addBone and the weight that this indexed bone
-     * affects the vertex.
-     *
-     * @param geomIndex
-     *            the geometry child that contains the vertex to be affected.
-     * @param vert
-     *            the index to the vertex.
-     * @param bone
-     *            the bone that affects the vertex.
-     * @param weight
-     *            the weight that the bone will affect the vertex.
+     * Do not use thos method with SkinTransferNodes.
      */
     public void addBoneInfluence(int geomIndex, int vert, Bone bone,
             float weight) {
@@ -130,16 +115,25 @@ public class SkinTransferNode extends SkinNode {
                 + "for " + SkinTransferNode.class.getName());
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void setAnimation(BoneAnimation anim) {
         throw new IllegalStateException(
             "Animation may not be set for " + SkinTransferNode.class.getName());
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void setAnimation(int index) {
         throw new IllegalStateException(
             "Animation may not be set for " + SkinTransferNode.class.getName());
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void setAnimation(String name) {
         throw new IllegalStateException(
             "Animation may not be set for " + SkinTransferNode.class.getName());
@@ -150,6 +144,9 @@ public class SkinTransferNode extends SkinNode {
 
    	}
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void setSkeleton(Bone b) {
         throw new IllegalStateException(
             "Skeleton may not be set for " + SkinTransferNode.class.getName());
@@ -159,35 +156,53 @@ public class SkinTransferNode extends SkinNode {
         return null;
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void assignSkeletonBoneInfluences() {
         throw new IllegalStateException(
             SkinTransferNode.class.getName() + "s do not have Skeletons");
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void regenInfluenceOffsets() {
         throw new IllegalStateException(
             SkinTransferNode.class.getName() + "s do not have Skeletons");
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public synchronized void updateSkin() {
         throw new IllegalStateException(
             SkinTransferNode.class.getName() + "s do not have Skeletons");
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void setBindMatrix(Matrix4f mat) {
-        // TODO:  I think we should prohibit bind matrixes
-        bindMatrix = mat;
+        throw new IllegalStateException(
+            SkinTransferNode.class.getName() + "s do not have bind matrixes");
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void remapInfluences(VertMap mappings, int geomIndex) {
         throw new IllegalStateException(
             SkinTransferNode.class.getName() + "s do not have Skeletons");
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     protected void assimilate(
             Geometry newSkinGeo, ArrayList<BoneInfluence>[] newInfluences) {
         throw new IllegalStateException(
-                "Can only assimilate FROM a " + SkinTransferNode.class.getName());
+            "Can only assimilate FROM a " + SkinTransferNode.class.getName());
     }
 
     public void write(JMEExporter e) throws IOException {
@@ -199,9 +214,15 @@ public class SkinTransferNode extends SkinNode {
     @SuppressWarnings("unchecked")
     public void read(JMEImporter e) throws IOException {
         super.read(e);
+        if (bindMatrix != null)
+            throw new IOException(
+            SkinTransferNode.class.getName() + "s may not have bind matrixes");
         skinRegion = e.getCapsule(this).readString("region", null);
     }
 
+    /**
+     * Do not use thos method with SkinTransferNodes.
+     */
     public void setSkinRegion(Geometry skinGeometry, String skinRegion) {
         throw new IllegalStateException(
                 "setSkinRegion is not available for SkinTransferNode, since "

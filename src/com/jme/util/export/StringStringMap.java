@@ -83,6 +83,4 @@ public class StringStringMap extends AbstractStringKeyMap<String> {
        for (int i = 0; i < unsavedKeys.length; i++)
            put(unsavedKeys[i], vals[i]);
     }
-
-    public Class getClassTag() { return StringStringMap.class; }
 }
