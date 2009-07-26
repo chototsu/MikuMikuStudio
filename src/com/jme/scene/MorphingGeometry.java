@@ -12,13 +12,12 @@ import com.jme.animation.SkinNode;
  * <P>
  * <b>Each morph Geometry must have the same quantity of vertexes (and normals
  *  and vertex colors).</b>  Most other data, including the vertex indexes,
- *  are taken from the Primary Morph, ignoring these data from the other morphs.
+ *  are taken from the Base Morph, ignoring these data from the other morphs.
  * <P> </P>
- * Data which is not morphed comes directly from the first (primary) morph
+ * Data which is not morphed comes directly from the first (base) morph
  * Geometry.
  * <P> </P>
- * The primary skin is the base, and is modified by each additional skin morph
- * in order.
+ * The base skin is modified by each additional skin morph in order.
  * </P>
  *
  * @author Blaine Simpson (blaine dot simpson at admc dot com)
@@ -27,8 +26,8 @@ public interface MorphingGeometry
         extends ListenableStringFloatMap.FloatListener {
     /**
      * Add a component Geometry morph with same quantity of vertexes as the
-     * primary morph.
-     * Do not use this method to set the primary morph.
+     * base morph.
+     * Do not use this method to set the base morph.
      *
      * @param morphKey  Key in the influences map for the influence for this
      *                  morph.

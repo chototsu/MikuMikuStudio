@@ -49,7 +49,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     // because of the atrocious J2SE support for Maps which "preserve" order
     // but do not "apply" an order (I.e. to just preserve the order in which
     // the items are added).
-    protected TriMesh primaryMorph;
+    protected TriMesh baseMorph;
     volatile private boolean dirty = true;
 
     /** This one may be a reference to a remotely managed map */
@@ -164,12 +164,12 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
      * overridden if the following delegateInfluences() call finds a provider.
      * </P>
      */
-    public MorphingTriMesh(TriMesh primaryMorph) {
-        super(primaryMorph.getName());
-        this.primaryMorph = primaryMorph;
+    public MorphingTriMesh(TriMesh baseMorph) {
+        super(baseMorph.getName());
+        this.baseMorph = baseMorph;
         initBase();
         logger.log(Level.FINE,
-                "Primary morph set for MorphingTriMesh '{0}'", getName());
+                "Base morph set for MorphingTriMesh '{0}'", getName());
     }
 
     /**
@@ -177,41 +177,41 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
      * @see #MorphingGeometry#addMorph(String, Geometry)
      */
     public void addMorph(String morphKey, Geometry morphGeo) {
-        if (primaryMorph == null)
+        if (baseMorph == null)
             throw new IllegalStateException(
-                    "Primary morph must be set before adding any others");
-        // Validate that compatible with the primary morph.
+                    "Base morph must be set before adding any others");
+        // Validate that compatible with the base morph.
         if (!(morphGeo instanceof TriMesh))
             throw new IllegalArgumentException(
                     "This class can only handle TriMeshes as morphs");
         TriMesh morph = (TriMesh) morphGeo;
-        if (morph.getVertexCount() != primaryMorph.getVertexCount())
+        if (morph.getVertexCount() != baseMorph.getVertexCount())
             throw new IllegalArgumentException(
                     "Trimesh " + morph.getName()
-                    + " incompatible with primary Trimesh "
-                    + primaryMorph.getName() + ".  Vertex counts "
+                    + " incompatible with base Trimesh "
+                    + baseMorph.getName() + ".  Vertex counts "
                     + morph.getVertexCount() + " vs. "
-                    + primaryMorph.getVertexCount());
-        if (morph.getMaxIndex() != primaryMorph.getMaxIndex())
+                    + baseMorph.getVertexCount());
+        if (morph.getMaxIndex() != baseMorph.getMaxIndex())
             throw new IllegalArgumentException(
                     "Trimesh " + morph.getName()
-                    + " incompatible with primary Trimesh "
-                    + primaryMorph.getName() + ".  Max indexes "
+                    + " incompatible with base Trimesh "
+                    + baseMorph.getName() + ".  Max indexes "
                     + morph.getMaxIndex() + " vs. "
-                    + primaryMorph.getMaxIndex());
+                    + baseMorph.getMaxIndex());
         if ((morph.getNormalBuffer() == null
-                && primaryMorph.getNormalBuffer() != null)
+                && baseMorph.getNormalBuffer() != null)
                 || (morph.getNormalBuffer() != null
-                && primaryMorph.getNormalBuffer() == null))
+                && baseMorph.getNormalBuffer() == null))
             throw new IllegalArgumentException(
-                "Normal buffer conflicts with Primary morph");
+                "Normal buffer conflicts with Base morph");
 
         enforceEquality("fog coords",
-                primaryMorph.getFogBuffer(), morph.getFogBuffer());
+                baseMorph.getFogBuffer(), morph.getFogBuffer());
         enforceEquality("tangent",
-                primaryMorph.getTangentBuffer(), morph.getTangentBuffer());
+                baseMorph.getTangentBuffer(), morph.getTangentBuffer());
         enforceEquality("binormal",
-                primaryMorph.getBinormalBuffer(), morph.getBinormalBuffer());
+                baseMorph.getBinormalBuffer(), morph.getBinormalBuffer());
 
         dirty = true;
         morphs.add(morph);
@@ -242,46 +242,46 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
 
     /**
      * Replaces data other than merge data, by copying from the virgin
-     * primary morph TriMesh.
+     * base morph TriMesh.
      */
     public void initBase() {
-        if (primaryMorph == null)
+        if (baseMorph == null)
             throw new IllegalStateException(
                     "Can't initBase when no Geometry has been assigned");
         logger.fine("Initializing base...");
         dirty = true;
-        TriMesh primary = primaryMorph; // Just for brevity below
+        TriMesh base = baseMorph; // Just for brevity below
         RenderState renderState;
 
-        // Set scalars according to primary morph
-        setName(primary.getName());
-        setMode(primary.getMode());
-        setDefaultColor(primary.getDefaultColor());
-        setLightState(primary.getLightState());
-        setCastsShadows(primary.isCastsShadows());
-        for (Controller c : primary.getControllers()) addController(c);
-        setLocalTranslation(new Vector3f(primary.getLocalTranslation()));
-        setLocalScale(new Vector3f(primary.getLocalScale()));
-        setLocalRotation(new Quaternion(primary.getLocalRotation()));
-        setZOrder(primary.getZOrder(), false);
-        setCullHint(primary.getLocalCullHint());
-        setTextureCombineMode(primary.getLocalTextureCombineMode());
-        setLightCombineMode(primary.getLocalLightCombineMode());
-        setRenderQueueMode(primary.getRenderQueueMode());
-        setNormalsMode(primary.getLocalNormalsMode());
-        setIsCollidable(primary.isCollidable());
-        setRenderQueueMode(primary.getLocalRenderQueueMode());
+        // Set scalars according to base morph
+        setName(base.getName());
+        setMode(base.getMode());
+        setDefaultColor(base.getDefaultColor());
+        setLightState(base.getLightState());
+        setCastsShadows(base.isCastsShadows());
+        for (Controller c : base.getControllers()) addController(c);
+        setLocalTranslation(new Vector3f(base.getLocalTranslation()));
+        setLocalScale(new Vector3f(base.getLocalScale()));
+        setLocalRotation(new Quaternion(base.getLocalRotation()));
+        setZOrder(base.getZOrder(), false);
+        setCullHint(base.getLocalCullHint());
+        setTextureCombineMode(base.getLocalTextureCombineMode());
+        setLightCombineMode(base.getLocalLightCombineMode());
+        setRenderQueueMode(base.getRenderQueueMode());
+        setNormalsMode(base.getLocalNormalsMode());
+        setIsCollidable(base.isCollidable());
+        setRenderQueueMode(base.getLocalRenderQueueMode());
         for (RenderState.StateType rsType : RenderState.StateType.values()) {
             clearRenderState(rsType);
-            renderState = primary.getRenderState(rsType);
+            renderState = base.getRenderState(rsType);
             if (renderState != null) setRenderState(renderState);
         }
-        setIndexBuffer(primaryMorph.getIndexBuffer());
-        setTextureCoords(primaryMorph.getTextureCoords());
-        setColorBuffer(primaryMorph.getColorBuffer());
-        setVBOInfo(primaryMorph.getVBOInfo());
+        setIndexBuffer(baseMorph.getIndexBuffer());
+        setTextureCoords(baseMorph.getTextureCoords());
+        setColorBuffer(baseMorph.getColorBuffer());
+        setVBOInfo(baseMorph.getVBOInfo());
 
-        setLocks(primary.getLocks());
+        setLocks(base.getLocks());
         logger.info("Base initialized successfully");
     }
 
@@ -325,11 +325,11 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
                 new String[] {getName(), Arrays.toString(infs)});
 
         setVertexBuffer(mergeBuffers(
-                primaryMorph.getVertexBuffer(), vertBuffers, infs));
+                baseMorph.getVertexBuffer(), vertBuffers, infs));
         setNormalBuffer(mergeBuffers(
-                primaryMorph.getNormalBuffer(), normBuffers, infs));
+                baseMorph.getNormalBuffer(), normBuffers, infs));
 
-        //setModelBound(primary.getModelBound()); // Regenereate a BV
+        //setModelBound(base.getModelBound()); // Regenereate a BV
         setHasDirtyVertices(true);  // necessary?
         // Need to scaleTextureCoordinates()?
         dirty = false;
@@ -361,25 +361,25 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
      *
      * @return null if all the input buffers are null.
      */
-    protected FloatBuffer mergeBuffers(FloatBuffer primaryBuffer,
+    protected FloatBuffer mergeBuffers(FloatBuffer baseBuffer,
             List<FloatBuffer> morphBuffers, float[] influences) {
         for (int i = 0; i < morphBuffers.size(); i++) {
-            if (primaryBuffer == null && morphBuffers.get(i) != null)
+            if (baseBuffer == null && morphBuffers.get(i) != null)
                 throw new IllegalStateException("Buffer mismatch (A)");
-            if (primaryBuffer != null && morphBuffers.get(i) == null)
+            if (baseBuffer != null && morphBuffers.get(i) == null)
                 throw new IllegalStateException("Buffer mismatch (B)");
         }
-        if (primaryBuffer == null) return null;
+        if (baseBuffer == null) return null;
         FloatBuffer outBuffer =
-                BufferUtils.createFloatBuffer(primaryBuffer.capacity());
+                BufferUtils.createFloatBuffer(baseBuffer.capacity());
         float f0, f;
         while (outBuffer.hasRemaining()) {
-            f = f0 = primaryBuffer.get();
+            f = f0 = baseBuffer.get();
             for (int i = 0; i < morphBuffers.size(); i++)
                 f += influences[i] * (morphBuffers.get(i).get() - f0);
             outBuffer.put(f);
         }
-        primaryBuffer.flip();
+        baseBuffer.flip();
         for (FloatBuffer fb : morphBuffers) fb.flip();
         outBuffer.flip();
         return outBuffer;
@@ -391,7 +391,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         capsule.writeSavableArrayList(
                 new ArrayList(morphs), "morphs", null);
         capsule.write(morphKeys.toArray(new String[0]), "morphKeys", null);
-        capsule.write(primaryMorph, "primaryMorph", null);
+        capsule.write(baseMorph, "baseMorph", null);
         capsule.write(localMorphInfluencesMap, "morphInfluences", null);
     }
 
@@ -401,7 +401,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         morphs = capsule.readSavableArrayList("morphs", null);
         String[] morphKeysArray = capsule.readStringArray("morphKeys", null);
         if (morphKeysArray != null) morphKeys = Arrays.asList(morphKeysArray);
-        primaryMorph = (TriMesh) capsule.readSavable("primaryMorph", null);
+        baseMorph = (TriMesh) capsule.readSavable("baseMorph", null);
         if (getVertexBuffer() == null) initBase();
             // A good clue that the MorphingTriMesh needs to be initialized.
         setMorphInfluencesMap((ListenableStringFloatMap)
