@@ -363,10 +363,10 @@ public class MeshAnimationController extends Controller implements Savable {
 //                resultNorm.x += temp.x * weight;
 //                resultNorm.y += temp.y * weight;
 //                resultNorm.z += temp.z * weight;
-
-                ib.position(ib.position()+fourMinusMaxWeights);
-                wb.position(wb.position()+fourMinusMaxWeights);
             }
+
+            ib.position(ib.position()+fourMinusMaxWeights);
+            wb.position(wb.position()+fourMinusMaxWeights);
 
             // overwrite vertex with transformed pos
             vb.position(vb.position()-3);
