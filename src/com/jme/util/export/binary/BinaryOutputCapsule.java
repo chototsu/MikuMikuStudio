@@ -870,7 +870,6 @@ public class BinaryOutputCapsule implements OutputCapsule {
         if (value == defVal)
             return;
         if (value == null) {
-            write(NULL_OBJECT);
             return;
         } else {
             write(value.name(), name, null);
