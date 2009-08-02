@@ -175,6 +175,7 @@
                         <exclude>**/JMESWTTest.java</exclude>
                         <exclude>**/JMEAppletTest.java</exclude>
                         <exclude>**/JMEJOGLAWTTest.java</exclude>
+                        <exclude>**/JMEJOGLAWTInputTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
