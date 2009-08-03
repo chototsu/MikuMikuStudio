@@ -72,14 +72,19 @@ public class AbsoluteResourceLocator implements ResourceLocator {
     private static final Logger logger =
             Logger.getLogger(AbsoluteResourceLocator.class.getName());
 
-    private Pattern baseUriPattern = null;
-    private URL pathlessBaseUrl = null;
+    private Pattern baseUriPattern;
+    private URL pathlessBaseUrl;
 
     /**
      * Instantiate a locator for any resource present at the specified
      * absolute resource path.
      */
     public AbsoluteResourceLocator() {
+        try {
+            pathlessBaseUrl = new URL("file:");
+        } catch (MalformedURLException mue) {
+            throw new RuntimeException(mue);
+        }
     }
 
     /**
@@ -98,15 +103,14 @@ public class AbsoluteResourceLocator implements ResourceLocator {
      * </P>
      *
      * @param baseURI <B>IMPORTANT</B>:  The whole purpose here is to specify
-     *        a path with an absolue path to validate against.
+     *        a path with an absolute path to validate against.
      *        Therefore, to cover an entire web site, you must use
      *        <CODE>http://pub.admc.com/</CODE>, not
      *        <CODE>http://pub.admc.com</CODE>.
      * @throws IllegalArgumentException if the specified baseUri does not have
-     *         an absolue URI path, or is otherwise unacceptable.
+     *         an absolute URI path, or is otherwise unacceptable.
      */
     public AbsoluteResourceLocator(URI baseUri) {
-logger.severe("base url: " + baseUri);
         String basePath = baseUri.getPath();
         // Every test I run shows a real getPath(), but there may be URI types,
         // current or future, which I have not tested, therefore...

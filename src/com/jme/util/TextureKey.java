@@ -52,6 +52,12 @@ import com.jme.util.resource.ResourceLocatorTool;
  * @version $Id$
  */
 final public class TextureKey implements Savable {
+    /* There is a problem with the way that URLS are resolved in this class.
+     * The URL should only be resolved to read from them (and the resolved URL
+     * not saved).
+     * Resolving it at read() time means we have to save rooted URL.  If the
+     * read in URL is relative, we losing the benefits of that relativity and
+     * if we later write(), we will save 'location' with an absolute URL. */
 
     protected URL location = null;
     protected boolean flipped;

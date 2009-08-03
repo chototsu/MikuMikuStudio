@@ -75,6 +75,12 @@ public class RelativeResourceLocator implements ResourceLocator {
     }
 
     /*
+     * This returns rooted URLs, so you can use them to load resources.
+     *
+     * For persistence purposes, you should store the input to this method,
+     * not the output, because the input may be relative whereas the output is
+     * rooted to ensure it can load its resource successfully.
+     *
      * @returns null if resource not found, according to algorithm specified
      *          in the class JavaDoc.
      * @see RelativeResourceLocator

@@ -130,6 +130,15 @@ public class XMLImporter implements JMEImporter, ResourceLocator {
         return new XMLImporter();
     }
 
+    /*
+     * This returns rooted URLs, so you can use them to load resources.
+     *
+     * For persistence purposes, you should store the input to this method,
+     * not the output, because the input may be relative whereas the output is
+     * rooted to ensure it can load its resource successfully.
+     *
+     * @see com.jme.util.resource.RelativeRsoruceLocator#locateResource(String)
+     */
     public URL locateResource(String resourceName) {
         if (baseUri == null || resourceName == null
                 || resourceName.length() < 1 || resourceName.charAt(0) == '/'

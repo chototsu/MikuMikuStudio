@@ -47,5 +47,16 @@ import com.jme.util.export.Savable;
  */
 public interface BinaryLoaderModule {
     public String getKey();
+
+    /**
+     * The inputCapsule parameter is not used at all.
+     *
+     * The DOMOutputStream class calls this method with a null parameter, so
+     * if you make use of the parameter, either handle null 'inputCapsule'
+     * or rearrange the class hierarchy to satisfy DOMOuptutStream.
+     *
+     * @param inputCapsule  A value which is currently ignored by all
+     *                      implementation classes.
+     */
     public Savable load(InputCapsule inputCapsule) throws IOException;
 }

@@ -56,8 +56,12 @@ import com.jme.util.export.binary.modules.BinaryWireframeStateModule;
 import com.jme.util.export.binary.modules.BinaryZBufferStateModule;
 
 /**
- * @author mpowell
+ * This class is mis-named and is located in an inappropriate package:
+ * It is not binary-specific (it is in fact used for XML format too), and it
+ * is not a java.lang.ClassLoader, which is what "class loader" is for Java
+ * developers.
  *
+ * @author mpowell
  */
 public class BinaryClassLoader {
 

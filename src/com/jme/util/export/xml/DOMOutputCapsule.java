@@ -458,12 +458,16 @@ public class DOMOutputCapsule implements OutputCapsule {
         Element el = writtenSavables.get(object);
         
         String className = null;
-        if(!object.getClass().getName().equals(name)){
-            className = object.getClass().getName();
+        if(!object.getClassTag().getName().equals(name)){
+            className = object.getClassTag().getName();
         }
         try {
             doc.createElement(name);
         } catch (DOMException e) {
+            // Ridiculous fallback behavior.
+            // Would be far better to throw than to totally disregard the
+            // specified "name" and write a class name instead!
+            // (Besides the fact we are clobbering the managed .getClassTag()).
             name = "Object";
             className = object.getClass().getName();
         }

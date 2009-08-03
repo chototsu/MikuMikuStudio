@@ -58,6 +58,7 @@ import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.Savable;
+import com.jme.util.export.binary.BinaryClassLoader;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -977,7 +978,7 @@ public class DOMInputCapsule implements InputCapsule {
             } else if (currentElem.hasAttribute("class")) {
                 className = currentElem.getAttribute("class");
             }
-            tmp = (Savable) Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
+            tmp = BinaryClassLoader.fromName(className, null);
             String refID = currentElem.getAttribute("reference_ID");
             if (refID.length() < 1) refID = currentElem.getAttribute("id");
             if (refID.length() > 0) referencedSavables.put(refID, tmp);
