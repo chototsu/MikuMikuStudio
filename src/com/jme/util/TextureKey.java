@@ -52,14 +52,8 @@ import com.jme.util.resource.ResourceLocatorTool;
  * @version $Id$
  */
 final public class TextureKey implements Savable {
-    /* There is a problem with the way that URLS are resolved in this class.
-     * The URL should only be resolved to read from them (and the resolved URL
-     * not saved).
-     * Resolving it at read() time means we have to save rooted URL.  If the
-     * read in URL is relative, we losing the benefits of that relativity and
-     * if we later write(), we will save 'location' with an absolute URL. */
-
-    protected URL location = null;
+    protected URL location;
+    protected URL persistedUrl;
     protected boolean flipped;
     protected int code = Integer.MAX_VALUE;
     protected Image.Format format = Image.Format.Guess;
@@ -70,12 +64,15 @@ final public class TextureKey implements Savable {
     }
 
     public TextureKey(URL location, boolean flipped, Image.Format imageType) {
+        persistedUrl = location;
         this.location = location;
         this.flipped = flipped;
         this.format = imageType;
     }
 
     public boolean equals(Object other) {
+        /* Question:  should TextureKeys be considered equal because the
+         * persisted URLs match, or because the resolved URLs match? */
         if (other == this) {
             return true;
         }
@@ -103,6 +100,8 @@ final public class TextureKey implements Savable {
     }
 
     public int hashCode() {
+        /* Question:  should TextureKeys be considered equal because the
+         * persisted URLs match, or because the resolved URLs match? */
         if (code == Integer.MAX_VALUE) {
             code = 37;
             if (location != null) {
@@ -123,10 +122,10 @@ final public class TextureKey implements Savable {
 
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
-        if (location != null) {
-            capsule.write(location.getProtocol(), "protocol", null);
-            capsule.write(location.getHost(), "host", null);
-            capsule.write(location.getFile(), "file", null);
+        if (persistedUrl != null) {
+            capsule.write(persistedUrl.getProtocol(), "protocol", null);
+            capsule.write(persistedUrl.getHost(), "host", null);
+            capsule.write(persistedUrl.getFile(), "file", null);
         }
         capsule.write(flipped, "flipped", false);
         capsule.write(format, "format", Image.Format.Guess);
@@ -138,10 +137,17 @@ final public class TextureKey implements Savable {
         String protocol = capsule.readString("protocol", null);
         String host = capsule.readString("host", null);
         String file = capsule.readString("file", null);
-        if (file != null)
+        if (host != null && protocol == null)
+            throw new IOException(
+                    "'host' specified with no 'protocol' specied");
+        if (file != null) {
+            persistedUrl = (protocol == null)
+                         ? new URL(file)
+                         : new URL(protocol, host, file);
             location = ResourceLocatorTool.locateResource(
                     ResourceLocatorTool.TYPE_TEXTURE, URLDecoder.decode(file,
                             "UTF-8"));
+        }
         if (location == null && protocol != null && host != null
                 && file != null) {
             location = new URL(protocol, host, file);
@@ -192,6 +198,7 @@ final public class TextureKey implements Savable {
      *            The location to set.
      */
     public void setLocation(URL location) {
+        persistedUrl = location;
         this.location = location;
     }
 
@@ -205,9 +212,9 @@ final public class TextureKey implements Savable {
 
     @Override
     public String toString() {
-        String x = "tkey: loc:" + location + " flip: " + flipped + " code: "
+        return "tkey: persistedUrl:" + persistedUrl
+                + "loc:" + location + " flip: " + flipped + " code: "
                 + hashCode() + " imageType: " + format + " fileType: "
                 + fileType;
-        return x;
     }
 }
