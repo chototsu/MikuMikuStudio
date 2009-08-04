@@ -186,7 +186,7 @@ public class SharedMesh extends TriMesh {
      */
     public TriMesh getDeepTarget() {
     	if( target instanceof SharedMesh )
-    		return ((SharedMesh)target).getTarget();
+    		return ((SharedMesh)target).getDeepTarget();
         return target;
     }
     
