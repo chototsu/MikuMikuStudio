@@ -39,9 +39,10 @@ public interface Savable {
     void read(JMEImporter im) throws IOException;
 
     /**
-     * This method should be named getClassName(), since "tag" is XML-specific,
-     * but the type returned here is important for every persistence
-     * impementation.
+     * The peristed type for the object.
+     *
+     * Note that tag here does not mean XML tag, but the class that the object
+     * is <i>tagged</i> with.
      */
     Class getClassTag();
 }
