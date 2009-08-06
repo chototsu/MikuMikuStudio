@@ -37,7 +37,6 @@ import java.net.URL;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-import com.jme.app.SimpleGame;
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.intersection.CollisionResults;
