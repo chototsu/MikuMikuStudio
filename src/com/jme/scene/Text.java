@@ -246,7 +246,7 @@ public class Text extends Geometry {
     public static TextureState getDefaultFontTextureState() {
         if ( defaultFontTextureState == null ) {
             defaultFontTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-           final URL defaultUrl = SimpleGame.class.getClassLoader().getResource(DEFAULT_FONT);
+           final URL defaultUrl = Text.class.getClassLoader().getResource(DEFAULT_FONT);
            if ( defaultUrl == null )
            {
               logger.warning("Default font not found: " + DEFAULT_FONT);
