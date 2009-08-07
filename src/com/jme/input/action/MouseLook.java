@@ -39,7 +39,9 @@ import com.jme.renderer.Camera;
 
 /**
  * <code>MouseLook</code> defines a mouse action that detects mouse movement
- * and converts it into camera rotations and camera tilts.
+ * and converts it into camera rotations and camera tilts.  Allows for looking
+ * to be enabled only on button press, as well as defining which button activates
+ * the looking.
  * 
  * @author Mark Powell
  * @version $Id$
@@ -60,6 +62,8 @@ public class MouseLook extends MouseInputAction {
     private InputActionEvent event;
     
     private boolean buttonPressRequired = false;
+    
+    private int mouseButtonForRequired = 0;
 
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
@@ -134,7 +138,7 @@ public class MouseLook extends MouseInputAction {
     public void performAction(InputActionEvent evt) {
         float time = 0.01f * speed;
 
-        if(!buttonPressRequired || MouseInput.get().isButtonDown(0)) {
+        if(!buttonPressRequired || MouseInput.get().isButtonDown(mouseButtonForRequired)) {
             if (mouse.getLocalTranslation().x > 0) {
                 event.setTime(time * mouse.getLocalTranslation().x);
                 rotateRight.performAction(event);
@@ -153,7 +157,21 @@ public class MouseLook extends MouseInputAction {
 
     }
 
-    public boolean isButtonPressRequired() {
+    /**
+	 * @return the mouseButtonForRequired
+	 */
+	public int getMouseButtonForRequired() {
+		return mouseButtonForRequired;
+	}
+
+	/**
+	 * @param mouseButtonForRequired the mouseButtonForRequired to set
+	 */
+	public void setMouseButtonForRequired(int mouseButtonForRequired) {
+		this.mouseButtonForRequired = mouseButtonForRequired;
+	}
+
+	public boolean isButtonPressRequired() {
         return buttonPressRequired;
     }
 
