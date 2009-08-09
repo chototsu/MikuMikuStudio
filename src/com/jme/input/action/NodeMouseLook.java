@@ -33,6 +33,7 @@
 package com.jme.input.action;
 
 import com.jme.input.Mouse;
+import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
@@ -62,6 +63,10 @@ public class NodeMouseLook extends MouseInputAction {
 
     //the event to distribute to the look actions.
     private static InputActionEvent event;
+    
+    private boolean buttonPressRequired = false;
+
+	private int mouseButtonForRequired = 0;
 
     /**
      * Constructor creates a new <code>NodeMouseLook</code> object. It takes
@@ -127,6 +132,26 @@ public class NodeMouseLook extends MouseInputAction {
         rotateLeft.setSpeed(speed);
 
     }
+    
+    /**
+     * Sets the option for requiring the user to click the mouse
+     * button specified by <code>mouseButtonForRequired</code> in
+     * order to rotate the node.
+	 * @param buttonPressRequired the buttonPressRequired to set
+	 */
+	public void setButtonPressRequired(boolean buttonPressRequired) {
+		this.buttonPressRequired = buttonPressRequired;
+	}
+
+	/**
+	 * Sets which mouse button needs to be pressed in order to rotate
+	 * the node (that is, assuming <code>buttonPressRequired</code> is
+	 * set to true).
+	 * @param mouseButtonForRequired the mouseButtonForRequired to set
+	 */
+	public void setMouseButtonForRequired(int mouseButtonForRequired) {
+		this.mouseButtonForRequired = mouseButtonForRequired;
+	}
 
     /**
      * <code>performAction</code> checks for any movement of the mouse, and
@@ -138,19 +163,22 @@ public class NodeMouseLook extends MouseInputAction {
     public void performAction(InputActionEvent evt) {
         float time = 0.01f * speed;
 
-        if (mouse.getLocalTranslation().x > 0) {
-            event.setTime(time * mouse.getLocalTranslation().x);
-            rotateRight.performAction(event);
-        } else if (mouse.getLocalTranslation().x < 0) {
-            event.setTime(time * mouse.getLocalTranslation().x * -1);
-            rotateLeft.performAction(event);
-        }
-        if (mouse.getLocalTranslation().y > 0) {
-            event.setTime(time * mouse.getLocalTranslation().y);
-            lookUp.performAction(event);
-        } else if (mouse.getLocalTranslation().y < 0) {
-            event.setTime(time * mouse.getLocalTranslation().y * -1);
-            lookDown.performAction(event);
+        if (buttonPressRequired && MouseInput.get().isButtonDown(mouseButtonForRequired) || !buttonPressRequired)
+        {
+        	if (mouse.getLocalTranslation().x > 0) {
+        		event.setTime(time * mouse.getLocalTranslation().x);
+        		rotateRight.performAction(event);
+        	} else if (mouse.getLocalTranslation().x < 0) {
+        		event.setTime(time * mouse.getLocalTranslation().x * -1);
+        		rotateLeft.performAction(event);
+        	}
+        	if (mouse.getLocalTranslation().y > 0) {
+        		event.setTime(time * mouse.getLocalTranslation().y);
+        		lookUp.performAction(event);
+        	} else if (mouse.getLocalTranslation().y < 0) {
+        		event.setTime(time * mouse.getLocalTranslation().y * -1);
+        		lookDown.performAction(event);
+        	}
         }
     }
 
