@@ -38,11 +38,10 @@ package com.jme.util;
  * @author Matthew D. Hicks
  */
 public class NanoTimer extends Timer {
-    private static final long TIMER_RESOLUTION = 1000000000L;
-    private static final float INVERSE_TIMER_RESOLUTION = 1f/1000000000L;
+    protected static final long TIMER_RESOLUTION = 1000000000L;
     
     private long startTime;
-    private long previousTime;
+    protected long previousTime;
     private float tpf;
     private float fps;
     
@@ -57,7 +56,7 @@ public class NanoTimer extends Timer {
      * @return the current time in seconds
      */
     public float getTimeInSeconds() {
-        return getTime() * INVERSE_TIMER_RESOLUTION;
+        return getTime() / TIMER_RESOLUTION;
     }
 
     public long getTime() {
