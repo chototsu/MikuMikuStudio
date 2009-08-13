@@ -72,13 +72,15 @@
   </target>
 
   <target name="run-testchooser" depends="compile-test" description="Runs the TestChooser">
+    <condition property="jogl.arch.suffix" value="amd64">
+      <os arch="amd64"/>
+    </condition>
+    <property name="jogl.arch.suffix" value="i586"/>
     <pathconvert property="native.libpath" setonempty="false">
       <filelist dir="${libs}">
-        <file name="jogl/native/windows_amd64"/>
+        <file name="jogl/native/windows_${jogl.arch.suffix}"/>
         <file name="jogl/native/macosx"/>
-        <file name="jogl/native/linux_i586"/>
-        <file name="jogl/native/linux_amd64"/>
-        <file name="jogl/native/windows_i586"/>
+        <file name="jogl/native/linux_${jogl.arch.suffix}"/>
         <file name="lwjgl/native/linux"/>
         <file name="lwjgl/native/macosx"/>
         <file name="lwjgl/native/windows"/>
