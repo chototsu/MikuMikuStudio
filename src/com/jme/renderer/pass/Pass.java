@@ -88,9 +88,13 @@ public abstract class Pass implements Serializable {
         if (!enabled) return;
         context  = DisplaySystem.getDisplaySystem().getCurrentContext();
         applyPassStates();
-        r.setPolygonOffset(zFactor, zOffset);
-        doRender(r);
-        r.clearPolygonOffset();
+        if (zFactor != 0 || zOffset != 0) {
+            r.setPolygonOffset(zFactor, zOffset);
+            doRender(r);
+            r.clearPolygonOffset();
+        } else {
+            doRender(r);
+        }
         resetOldStates();
         context = null;
     }
