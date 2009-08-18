@@ -102,10 +102,9 @@ public class RelativeResourceLocator implements ResourceLocator {
             spec = spec.replaceAll("\\+", "%20");
 
             URL rVal = new URL(baseUri.toURL(), spec);
-            // open a stream to see if this is a valid resource
-            // XXX: Perhaps this is wasteful?  Also, what info will determine
-            // validity?
-            rVal.openStream().close();
+            rVal.openConnection().connect();  // Validates presence
+             // In the case of http, the http server will probably return an
+             // error page, but we can do nothing about that here.
             return rVal;
         } catch (IOException e) {
         } catch (IllegalArgumentException e) {

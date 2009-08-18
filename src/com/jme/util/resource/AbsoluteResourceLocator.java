@@ -200,9 +200,9 @@ public class AbsoluteResourceLocator implements ResourceLocator {
         // No-op if baseUri set, but requested resource name doesn't match it.
 
         try {
-            // open a stream to see if this is a valid resource
-            // XXX: Perhaps this is wasteful?  Also, what info will determine validity?
-            resourceUrl.openStream().close();
+            resourceUrl.openConnection().connect();  // Validates presence
+             // In the case of http, the http server will probably return an
+             // error page, but we can do nothing about that here.
             return resourceUrl;
         } catch (MalformedURLException mue) {
         } catch (IOException ioe) {
