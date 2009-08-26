@@ -84,7 +84,7 @@ public class BitmapFontLoader {
                 throw new IOException("The given URL to the requested font file is null!");
             } // if
 
-            if (fontFile == null) {
+            if (textureFile == null) {
                 throw new IOException("The given URL to the requested font texture file is null!");
             } // if
 
