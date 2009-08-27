@@ -136,8 +136,9 @@ public class ColorRGBA implements Externalizable, Savable, Cloneable {
     public float a;
 
     /**
-     * Constructor instantiates a new <code>ColorRGBA</code> object. This
-     * color is the default "white" with all values 1.
+     * The <code>ColorRGBA</code> constructor instantiates a new
+     * <code>ColorRGBA</code> object. The default color created
+     * is white.
      *
      */
     public ColorRGBA() {

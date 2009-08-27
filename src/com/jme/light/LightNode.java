@@ -68,7 +68,7 @@ public class LightNode extends Node {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      */
     public LightNode(String name) {
         super(name);

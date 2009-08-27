@@ -42,7 +42,7 @@ import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>DirectionalLight</code> defines a light that is assumed to be
- * infintely far away (something similar to the sun). This means the direction
+ * infinitely far away (something similar to the sun). This means the direction
  * of the light rays are all parallel. The direction the light is coming from
  * is defined by the class.
  * @author Mark Powell

@@ -116,7 +116,7 @@ public abstract class Light implements Serializable, Savable {
     }
 
     /**
-     * <code>setConstant</code> sets the value for the constant attentuation.
+     * <code>setConstant</code> sets the value for the constant attenuation.
      * @param constant the value for the constant attenuation.
      */
     public void setConstant(float constant) {
@@ -132,7 +132,7 @@ public abstract class Light implements Serializable, Savable {
     }
 
     /**
-     * <code>setLinear</code> sets the value for the linear attentuation.
+     * <code>setLinear</code> sets the value for the linear attenuation.
      * @param linear the value for the linear attenuation.
      */
     public void setLinear(float linear) {
@@ -141,7 +141,7 @@ public abstract class Light implements Serializable, Savable {
 
     /**
      * <code>getQuadratic</code> returns the value for the quadratic
-     * attentuation.
+     * attenuation.
      * @return the value for the quadratic attenuation.
      */
     public float getQuadratic() {
