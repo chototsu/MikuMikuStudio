@@ -127,4 +127,10 @@ public class TrianglePickData extends PickData {
 //        logger.warning("Couldn't detect nearest triangle intersection!");
 		return Float.POSITIVE_INFINITY;
 	}
+
+	public Vector3f getIntersectionPoint() {
+		return intersectionPoint;
+	}
+	
+	
 }
