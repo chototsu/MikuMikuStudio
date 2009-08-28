@@ -284,6 +284,11 @@ public class BoneAnimation implements Serializable, Savable {
             throw new IllegalStateException(
                     "Can not use frame names, since they have not been "
                     + "defined for this animation");
+        Integer frameNum = frameNames.get(frameName);
+        if (frameNum == null)
+            throw new IllegalArgumentException(
+                    "No frame with name '" + frameName
+                    + "' defined for Animation '" + name + "'.");
         setCurrentFrame(frameNames.get(frameName));
     }
 
@@ -313,6 +318,8 @@ public class BoneAnimation implements Serializable, Savable {
          * interpolation.  That's ok because we do no interpolation here, and
          * prevFrame is always set by the update() call before it is used.
          */
+        logger.log(Level.FINE,
+                "Current frame for ''{0}'' => {1}", new Object[] {name, frame});
         if (keyframeTime != null) {
             if (frame > endFrame  || frame < startFrame) {
                 logger.log(Level.SEVERE, "Invalid frame index {0}.  "
