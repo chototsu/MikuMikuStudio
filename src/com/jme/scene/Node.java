@@ -579,7 +579,7 @@ public class Node extends Spatial implements Serializable, Savable {
 
     @Override
     public void findCollisions(Spatial scene, CollisionResults results) {
-        if (getWorldBound() != null && isCollidable && scene.isCollidable()) {
+        if (getWorldBound() != null && isCollidable() && scene.isCollidable()) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {
@@ -592,7 +592,7 @@ public class Node extends Spatial implements Serializable, Savable {
     @Override
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
         if (this == scene) return false;  // No Collision with "self"
-        if (getWorldBound() != null && isCollidable && scene.isCollidable()) {
+        if (getWorldBound() != null && isCollidable() && scene.isCollidable()) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
                 if(children == null && !checkTriangles) {
                     return true;
@@ -614,7 +614,7 @@ public class Node extends Spatial implements Serializable, Savable {
         if(children == null) {
             return;
         }
-        if (getWorldBound() != null && isCollidable) {
+        if (getWorldBound() != null && isCollidable()) {
             if (getWorldBound().intersects(toTest)) {
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {

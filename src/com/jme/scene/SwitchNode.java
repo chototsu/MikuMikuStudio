@@ -160,7 +160,7 @@ public class SwitchNode extends Node {
      */
     @Override
     public void findCollisions(Spatial scene, CollisionResults results) {
-        if (this == scene || !isCollidable || !scene.isCollidable()) {
+        if (this == scene || !isCollidable() || !scene.isCollidable()) {
             return;
         }
 
@@ -176,7 +176,7 @@ public class SwitchNode extends Node {
      */
     @Override
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        if (this == scene || !isCollidable || !scene.isCollidable()) {
+        if (this == scene || !isCollidable() || !scene.isCollidable()) {
             return false;
         }
 

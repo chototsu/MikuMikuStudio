@@ -254,7 +254,7 @@ public class TriMesh extends Geometry implements Serializable {
      * if it has true is returned, otherwise false is returned.
      */
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        if (this == scene || !isCollidable || !scene.isCollidable()) {
+        if (this == scene || !isCollidable() || !scene.isCollidable()) {
             return false;
         }
         if (getWorldBound().intersects(scene.getWorldBound())) {
@@ -286,7 +286,7 @@ public class TriMesh extends Geometry implements Serializable {
      * hit.
      */
     public void findCollisions(Spatial scene, CollisionResults results) {
-        if (this == scene || !isCollidable || !scene.isCollidable()) {
+        if (this == scene || !isCollidable() || !scene.isCollidable()) {
             return;
         }
 
@@ -316,7 +316,7 @@ public class TriMesh extends Geometry implements Serializable {
         CollisionTree checkCT = CollisionTreeManager.getInstance()
                 .getCollisionTree(toCheck);
 
-        if (thisCT == null || checkCT == null || !isCollidable
+        if (thisCT == null || checkCT == null || !isCollidable()
                 || !toCheck.isCollidable()) {
             return false;
         }
@@ -409,7 +409,7 @@ public class TriMesh extends Geometry implements Serializable {
      *            the indices to the triangles.
      */
     public void findTrianglePick(Ray toTest, ArrayList<Integer> results) {
-        if (worldBound == null || !isCollidable) {
+        if (worldBound == null || !isCollidable()) {
             return;
         }
 

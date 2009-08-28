@@ -642,7 +642,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      */
     @Override
     public void findPick(Ray ray, PickResults results) {
-        if (getWorldBound() == null || !isCollidable) {
+        if (getWorldBound() == null || !isCollidable()) {
             return;
         }
         if (getWorldBound().intersects(ray)) {

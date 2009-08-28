@@ -241,7 +241,7 @@ public abstract class Spatial implements Serializable, Savable {
      * Defines if this spatial will be used in intersection operations or not.
      * Default is true
      */
-    protected boolean isCollidable = true;
+    protected int collisionBits = 1;
 
     public transient float queueDistance = Float.NEGATIVE_INFINITY;
 
@@ -1023,7 +1023,7 @@ public abstract class Spatial implements Serializable, Savable {
     public void write(JMEExporter ex) throws IOException {
         OutputCapsule capsule = ex.getCapsule(this);
         capsule.write(name, "name", null);
-        capsule.write(isCollidable, "isCollidable", true);
+        capsule.write(collisionBits, "collisionBits", 1);
         capsule.write(cullHint, "cullMode", CullHint.Inherit);
 
         capsule.write(renderQueueMode, "renderQueueMode",
@@ -1056,7 +1056,17 @@ public abstract class Spatial implements Serializable, Savable {
          * for compatibility, this should be dropped.
          */
         if (name == null) name = "";
-        isCollidable = capsule.readBoolean("isCollidable", true);
+        boolean collisionBoolean = capsule.readBoolean("isCollidable", true);
+        collisionBits = capsule.readInt("collisionBits", 1);
+
+        // Handle legacy model files that have stored 'isCollidable' instead of
+        // 'collisionBits'.
+        if (!collisionBoolean && collisionBits == 1) collisionBits = 0;
+        /* Our exporter routines do not allow us to always detect whether
+         * 'isCollidable' was actually persisted.
+         * However, if 'isCollidable' has a non-default val and 'collisionBits'
+         * has default val, we know that legacy value was stored.  */
+
         cullHint = capsule.readEnum("cullMode", CullHint.class,
                 CullHint.Inherit);
 
@@ -1123,13 +1133,17 @@ public abstract class Spatial implements Serializable, Savable {
     /**
      * Sets if this Spatial is to be used in intersection (collision and
      * picking) calculations. By default this is true.
+     *
+     * Turns on or off the first (least significant) bit in the collision bit
+     * set.
      * 
      * @param isCollidable
      *            true if this Spatial is to be used in intersection
      *            calculations, false otherwise.
      */
     public void setIsCollidable(boolean isCollidable) {
-        this.isCollidable = isCollidable;
+        collisionBits = isCollidable ? (collisionBits | 1)
+                                     : (collisionBits & (~1));
     }
 
     /**
@@ -1140,7 +1154,7 @@ public abstract class Spatial implements Serializable, Savable {
      *         false otherwise.
      */
     public boolean isCollidable() {
-        return this.isCollidable;
+        return (collisionBits & 1) != 0;
     }
 
     /**
