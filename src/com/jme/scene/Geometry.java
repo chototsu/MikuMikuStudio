@@ -613,7 +613,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * 
      * @param fill
      *            a Vector3f to fill with the results. If null, one is created.
-     *            It is more efficient to pass in a nonnull vector.
+     *            It is more efficient to pass in a non-null vector.
      * @return Vector3f a random vertex from the vertex list. Null is returned
      *         if the vertex list is not set.
      */
@@ -632,7 +632,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
     }
 
     /**
-     * Check if this geom intersects the ray if yes add it to the results.
+     * Check if this geometry intersects the ray if yes add it to the results.
      * 
      * @param ray
      *            ray to check intersection with. The direction of the ray must

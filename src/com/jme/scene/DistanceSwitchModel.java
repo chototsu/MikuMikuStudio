@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
  * selecting a child node based on the current distance from the containing node
  * to the camera. This can be used with the <code>DiscreteLodNode</code>
  * subclass of <code>SwitchNode</code> to all the detail level to decrease as
- * the camera travels futher away from the object. The number of children to
+ * the camera travels further away from the object. The number of children to
  * switch between is provided and the distances are also set. So, each child
  * would have a minimum distance and a maximum distance. The child selected is
  * the one that the camera to model distance is between the a particular child's

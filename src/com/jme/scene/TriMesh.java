@@ -107,7 +107,7 @@ public class TriMesh extends Geometry implements Serializable {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      */
     public TriMesh(String name) {
         super(name);
@@ -120,7 +120,7 @@ public class TriMesh extends Geometry implements Serializable {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      * @param vertices
      *            the vertices of the geometry.
      * @param normal
@@ -151,7 +151,7 @@ public class TriMesh extends Geometry implements Serializable {
      * Recreates the geometric information of this TriMesh from scratch. The
      * index and vertex array must not be null, but the others may be. Every 3
      * indices define an index in the <code>vertices</code> array that
-     * refrences a vertex of a triangle.
+     * references a vertex of a triangle.
      * 
      * @param vertices
      *            The vertex information for this TriMesh.

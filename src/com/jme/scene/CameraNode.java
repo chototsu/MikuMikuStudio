@@ -65,7 +65,7 @@ public class CameraNode extends Node {
 	 * 
 	 * @param name
 	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
+	 *            identification and comparison purposes.
 	 * @param camera
 	 *            the camera this node controls.
 	 */
@@ -75,7 +75,7 @@ public class CameraNode extends Node {
 	}
 
     /**
-     * Forces rotation and translation of this node to be consistant with the
+     * Forces rotation and translation of this node to be consistent with the
      * attached camera. (Assumes the node is in world space.)
      */
     public void updateFromCamera() {

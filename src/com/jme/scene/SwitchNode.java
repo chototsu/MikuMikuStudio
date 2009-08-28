@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>SwitchNode</code> defines a node that maintains a single active child
- * at a time. This allows the instantanious switching of children depending on
+ * at a time. This allows the instantaneous switching of children depending on
  * any number of factors. For example, multiple levels of detail models can be
  * loaded into the switch node and the active model can be set depending on the
  * distance from the camera.

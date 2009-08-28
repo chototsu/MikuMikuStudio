@@ -77,7 +77,7 @@ public class Text extends Geometry {
      * @see com.jme.util.TextureManager
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      * @param text
      *            The text to show.
      */
@@ -223,7 +223,7 @@ public class Text extends Geometry {
     }
     
     /**
-     * A default font cantained in the jME library.
+     * A default font contained in the jME library.
      */
     public static final String DEFAULT_FONT = "com/jme/app/defaultfont.tga";
     

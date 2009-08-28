@@ -40,7 +40,7 @@ import com.jme.util.export.Savable;
  * well as define what this criteria is. The interface simply defines a set
  * method that accepts an <code>Object</code>. What is done with the provided
  * object is defined by the implementor. The child that the switch node is to
- * make active should be difined from the <code>getSwitchChild</code> method.
+ * make active should be defined from the <code>getSwitchChild</code> method.
  * 
  * @see com.jme.scene.SwitchNode
  * @author Mark Powell

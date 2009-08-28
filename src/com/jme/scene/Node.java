@@ -204,7 +204,7 @@ public class Node extends Spatial implements Serializable, Savable {
 
     /**
      * <code>detachChild</code> removes a given child from the node's list.
-     * This child will no longe be maintained.
+     * This child will no longer be maintained.
      * 
      * @param child
      *            the child to remove.
@@ -229,7 +229,7 @@ public class Node extends Spatial implements Serializable, Savable {
 
     /**
      * <code>detachChild</code> removes a given child from the node's list.
-     * This child will no longe be maintained. Only the first child with a
+     * This child will no longer be maintained. Only the first child with a
      * matching name is removed.
      * 
      * @param childName
@@ -710,7 +710,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * </P> <P>
      * Note that we are <i>matching</i> the pattern, therefore the pattern
      * must match the entire pattern (i.e. it behaves as if it is sandwiched
-     * betweeh "^" and "$").
+     * between "^" and "$").
      * You can set regex modes, like case insensitivity, by using the (?X)
      * or (?X:Y) constructs.
      * </P> <P>

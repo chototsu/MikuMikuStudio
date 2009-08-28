@@ -210,7 +210,7 @@ public class Skybox extends Node {
         zbuff.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         setRenderState(zbuff);
 
-        // We don't want it making our skybox disapear, so force view
+        // We don't want it making our skybox disappear, so force view
         setCullHint(Spatial.CullHint.Never);
 
         for (int i = 0; i < 6; i++) {

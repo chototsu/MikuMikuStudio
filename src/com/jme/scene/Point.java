@@ -77,7 +77,7 @@ public class Point extends Geometry {
 	 * 
 	 * @param name
 	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
+	 *            identification and comparison purposes.
 	 * @param vertex
 	 *            the vertices or points.
 	 * @param normal
@@ -106,7 +106,7 @@ public class Point extends Geometry {
 	 * 
 	 * @param name
 	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
+	 *            identification and comparison purposes.
 	 * @param vertex
 	 *            the vertices or points.
 	 * @param normal
@@ -182,7 +182,7 @@ public class Point extends Geometry {
 
     /**
      * Sets the pixel width of the point when drawn. Non anti-aliased point
-     * sizes are rounded to the nearest whole number by opengl.
+     * sizes are rounded to the nearest whole number by OpenGL.
      * 
      * @param size
      *            The size to set.

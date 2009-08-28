@@ -67,7 +67,7 @@ public class BezierMesh extends TriMesh {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      */
     public BezierMesh(String name) {
         super(name);
@@ -79,7 +79,7 @@ public class BezierMesh extends TriMesh {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      * @param patch
      *            the <code>BezierPatch</code> used to define this mesh.
      */

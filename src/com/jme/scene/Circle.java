@@ -52,7 +52,7 @@ public class Circle extends Line {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      * @param samples
      *            sampling rate to generate circle
      * @param radius

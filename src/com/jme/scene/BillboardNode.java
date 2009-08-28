@@ -169,7 +169,7 @@ public class BillboardNode extends Node {
     }
 
     /**
-     * Alligns this Billboard Node so that it points to the camera position.
+     * Aligns this Billboard Node so that it points to the camera position.
      * 
      * @param camera
      *            Camera
@@ -205,8 +205,8 @@ public class BillboardNode extends Node {
     }
 
     /**
-     * Rotate the billboard so it points directly opposite the direction the
-     * camera's facing
+     * Rotate the billboard so it points directly opposite the direction
+     * that the camera is facing.
      * 
      * @param camera
      *            Camera
@@ -221,7 +221,7 @@ public class BillboardNode extends Node {
     }
 
     /**
-     * Rotate the billboard towards the camera, but keeping a given axis fixed.
+     * Rotate the billboard towards the camera, but keep the given axis fixed.
      * 
      * @param camera
      *            Camera

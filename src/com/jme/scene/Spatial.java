@@ -292,7 +292,7 @@ public abstract class Spatial implements Serializable, Savable {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      */
     public Spatial(String name) {
         this();
@@ -445,7 +445,7 @@ public abstract class Spatial implements Serializable, Savable {
      * <code>getWorldTranslation</code> retrieves the absolute translation of
      * the spatial.
      * 
-     * @return the world's tranlsation vector.
+     * @return the world's translation vector.
      */
     public Vector3f getWorldTranslation() {
         return worldTranslation;
@@ -486,7 +486,7 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
-     * <code>lookAt</code> is a convienence method for auto-setting the local
+     * <code>lookAt</code> is a convenience method for auto-setting the local
      * rotation based on a position and an up vector. It computes the rotation
      * to transform the z-axis to point onto 'position' and the y-axis to 'up'.
      * Unlike {@link Quaternion#lookAt} this method takes a world position to
@@ -714,7 +714,7 @@ public abstract class Spatial implements Serializable, Savable {
 
     /**
      * <code>setLocalRotation</code> sets the local rotation of this node,
-     * using a quaterion to build the matrix.
+     * using a quaternion to build the matrix.
      * 
      * @param quaternion
      *            the quaternion that defines the matrix.
@@ -1246,7 +1246,7 @@ public abstract class Spatial implements Serializable, Savable {
      * scenegraph location or lower will not have changes in vertex, texcoord,
      * normal or color data. This allows optimizations by the engine such as
      * creating display lists from the data. Calling this method does not
-     * provide a guarentee that data changes will not be allowed or will/won't
+     * provide a guarantee that data changes will not be allowed or will/won't
      * show up in the scene. It is merely a hint to the engine.
      * 
      * @param r
@@ -1263,7 +1263,7 @@ public abstract class Spatial implements Serializable, Savable {
      * scenegraph location or lower will not have changes in vertex, texcoord,
      * normal or color data. This allows optimizations by the engine such as
      * creating display lists from the data. Calling this method does not
-     * provide a guarentee that data changes will not be allowed or will/won't
+     * provide a guarantee that data changes will not be allowed or will/won't
      * show up in the scene. It is merely a hint to the engine. Calls
      * lockMeshes(Renderer) with the current display system's renderer.
      * 
@@ -1274,7 +1274,7 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
-     * Convienence function for locking all aspects of a Spatial.
+     * Convenience function for locking all aspects of a Spatial.
      * 
      * @see #lockBounds()
      * @see #lockTransforms()
@@ -1290,7 +1290,7 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
-     * Convienence function for locking all aspects of a Spatial. For lockMeshes
+     * Convenience function for locking all aspects of a Spatial. For lockMeshes
      * it calls:
      * <code>lockMeshes(DisplaySystem.getDisplaySystem().getRenderer());</code>
      * 
@@ -1373,7 +1373,7 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
-     * Convienence function for unlocking all aspects of a Spatial.
+     * Convenience function for unlocking all aspects of a Spatial.
      * 
      * @see #unlockBounds()
      * @see #unlockTransforms()
@@ -1391,7 +1391,7 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
-     * Convienence function for unlocking all aspects of a Spatial. For
+     * Convenience function for unlocking all aspects of a Spatial. For
      * unlockMeshes it calls:
      * <code>unlockMeshes(DisplaySystem.getDisplaySystem().getRenderer());</code>
      * 
@@ -1621,19 +1621,19 @@ public abstract class Spatial implements Serializable, Savable {
 
     /**
      * <code>setRenderQueueMode</code> determines at what phase of the
-     * rendering proces this Spatial will rendered. There are 4 different
+     * rendering process this Spatial will rendered. There are 4 different
      * phases: QUEUE_SKIP - The spatial will be drawn as soon as possible,
      * before the other phases of rendering. QUEUE_OPAQUE - The renderer will
      * try to find the optimal order for rendering all objects using this mode.
-     * You should use this mode for most normal objects, except transparant
+     * You should use this mode for most normal objects, except transparent
      * ones, as it could give a nice performance boost to your application.
      * QUEUE_TRANSPARENT - This is the mode you should use for object with
-     * transparancy in them. It will ensure the objects furthest away are
+     * Transparency in them. It will ensure the objects farthest away are
      * rendered first. That ensures when another transparent object is drawn on
      * top of previously drawn objects, you can see those (and the object drawn
-     * using SKIP and OPAQUE) through the tranparant parts of the newly drawn
+     * using SKIP and OPAQUE) through the transparent parts of the newly drawn
      * object. QUEUE_ORTHO - This is a special mode, for drawing 2D object
-     * without prespective (such as GUI or HUD parts) Lastly, there is a special
+     * without perspective (such as GUI or HUD parts) Lastly, there is a special
      * mode, QUEUE_INHERIT, that will ensure that this spatial uses the same
      * mode as the parent Node does.
      * 
@@ -1779,7 +1779,7 @@ public abstract class Spatial implements Serializable, Savable {
     /**
      * Note that we are <i>matching</i> the pattern, therefore the pattern
      * must match the entire pattern (i.e. it behaves as if it is sandwiched
-     * betweeh "^" and "$").
+     * between "^" and "$").
      * You can set regex modes, like case insensitivity, by using the (?X)
      * or (?X:Y) constructs.
      *
