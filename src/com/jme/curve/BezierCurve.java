@@ -216,19 +216,21 @@ public class BezierCurve extends Curve {
 	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
 	 *      com.jme.intersection.CollisionResults)
 	 */
-	public void findCollisions(Spatial scene, CollisionResults results) {
+	public void findCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits) {
 		// TODO Auto-generated method stub
 
 	}
 	
-	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+	public boolean hasCollision(
+            Spatial scene, boolean checkTriangles, int requiredOnBits) {
 		return false;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
 	 */
-	public void findPick(Ray toTest, PickResults results) {
+	public void findPick(Ray toTest, PickResults results, int requiredOnBits) {
 		// TODO Auto-generated method stub
 		
 	}

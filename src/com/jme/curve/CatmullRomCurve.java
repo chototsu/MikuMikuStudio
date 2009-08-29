@@ -262,7 +262,8 @@ public class CatmullRomCurve extends Curve {
 	 * com.jme.intersection.CollisionResults)
 	 */
 	@Override
-	public void findCollisions(Spatial scene, CollisionResults results) {
+	public void findCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits) {
 	} // findCollisions
 
 
@@ -272,7 +273,8 @@ public class CatmullRomCurve extends Curve {
 	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial, boolean)
 	 */
 	@Override
-	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+	public boolean hasCollision(
+            Spatial scene, boolean checkTriangles, int requiredOnBits) {
 		return false;
 	}
 
@@ -284,7 +286,8 @@ public class CatmullRomCurve extends Curve {
 	 * com.jme.intersection.PickResults)
 	 */
 	@Override
-	public void findPick(Ray toTest, PickResults results) {
+	public void findPick(
+            Ray toTest, PickResults results, int requiredOnBits) {
 
 	} // findPick
 } // CatmullRomCurve

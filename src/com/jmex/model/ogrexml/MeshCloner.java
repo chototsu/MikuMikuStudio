@@ -75,7 +75,7 @@ public final class MeshCloner {
             target.setRenderState(source.getRenderState(i));
         }
 
-        target.setIsCollidable(target.isCollidable());
+        target.setCollisionMask(target.getCollisionMask());
 
         target.setLocalTranslation(source.getLocalTranslation().clone());
         target.setLocalRotation(source.getLocalRotation().clone());

@@ -253,15 +253,18 @@ public class TriMesh extends Geometry implements Serializable {
      * determines if a collision between this trimesh and a given spatial occurs
      * if it has true is returned, otherwise false is returned.
      */
-    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        if (this == scene || !isCollidable() || !scene.isCollidable()) {
+    public boolean hasCollision(
+            Spatial scene, boolean checkTriangles, int requiredOnBits) {
+        if (this == scene || !isCollidable(requiredOnBits)
+                || !scene.isCollidable(requiredOnBits)) {
             return false;
         }
         if (getWorldBound().intersects(scene.getWorldBound())) {
             if (scene instanceof Node) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {
-                    if (hasCollision(parent.getChild(i), checkTriangles)) {
+                    if (hasCollision(parent.getChild(i),
+                                checkTriangles, requiredOnBits)) {
                         return true;
                     }
                 }
@@ -273,7 +276,7 @@ public class TriMesh extends Geometry implements Serializable {
                 return true;
             }
 
-            return hasTriangleCollision((TriMesh) scene);
+            return hasTriangleCollision((TriMesh) scene, requiredOnBits);
         }
 
         return false;
@@ -285,8 +288,10 @@ public class TriMesh extends Geometry implements Serializable {
      * the two trimesh OBBTrees are then compared to find the triangles that
      * hit.
      */
-    public void findCollisions(Spatial scene, CollisionResults results) {
-        if (this == scene || !isCollidable() || !scene.isCollidable()) {
+    public void findCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits) {
+        if (this == scene || !isCollidable(requiredOnBits)
+                || !scene.isCollidable(requiredOnBits)) {
             return;
         }
 
@@ -294,7 +299,7 @@ public class TriMesh extends Geometry implements Serializable {
             if (scene instanceof Node) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {
-                    findCollisions(parent.getChild(i), results);
+                    findCollisions(parent.getChild(i), results, requiredOnBits);
                 }
             } else {
                 results.addCollision(this, (Geometry) scene);
@@ -303,21 +308,30 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
+     * Convenience wrapper for hasTriangleCollision(TriMesh, int) using default
+     * collision mask (bit 1 set).
+     */
+    final public boolean hasTriangleCollision(TriMesh toCheck) {
+        return hasTriangleCollision(toCheck, 1);
+    }
+
+    /**
      * This function checks for intersection between this trimesh and the given
      * one. On the first intersection, true is returned.
      * 
-     * @param toCheck
-     *            The intersection testing mesh.
+     * @param toCheck The intersection testing mesh.
+     * @param requiredOnBits Collision will only be considered if both 'this'
+     *        and 'toCheck' have these bits of their collision masks set.
      * @return True if they intersect.
      */
-    public boolean hasTriangleCollision(TriMesh toCheck) {
+    public boolean hasTriangleCollision(TriMesh toCheck, int requiredOnBits) {
         CollisionTree thisCT = CollisionTreeManager.getInstance()
                 .getCollisionTree(this);
         CollisionTree checkCT = CollisionTreeManager.getInstance()
                 .getCollisionTree(toCheck);
 
-        if (thisCT == null || checkCT == null || !isCollidable()
-                || !toCheck.isCollidable()) {
+        if (thisCT == null || checkCT == null || !isCollidable(requiredOnBits)
+                || !toCheck.isCollidable(requiredOnBits)) {
             return false;
         }
         thisCT.getBounds().transform(worldRotation, worldTranslation,

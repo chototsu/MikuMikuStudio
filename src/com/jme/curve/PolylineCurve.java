@@ -185,13 +185,15 @@ public class PolylineCurve extends Curve {
 
 
   @Override
-  public void findCollisions(Spatial scene, CollisionResults results) {
+  public void findCollisions(
+          Spatial scene, CollisionResults results, int requiredOnBits) {
     // TODO Auto-generated method stub
   }
 
 
   @Override
-  public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+  public boolean hasCollision(
+          Spatial scene, boolean checkTriangles, int requiredOnBits) {
     // TODO Auto-generated method stub
     return false;
   }
@@ -202,7 +204,8 @@ public class PolylineCurve extends Curve {
    * 
    * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
    */
-  public void findPick(Ray toTest, PickResults results) {
+  public void findPick(
+          Ray toTest, PickResults results, int requiredOnBits) {
     // TODO Auto-generated method stub
 
   }

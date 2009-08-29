@@ -916,16 +916,29 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
+     * Convenience wrapper for
+     * calculateCollisions(Spatial, CollisionResults, int) using default
+     * collidability (first bit of the collidable bit mask).
+     *
+     * @see #calculateCollisions(Spatial, CollisionResults, int)
+     */
+    final public void calculateCollisions(
+            Spatial scene, CollisionResults results) {
+        calculateCollisions(scene, results, 1);
+    }
+
+    /**
      * <code>calculateCollisions</code> calls findCollisions to populate the
      * CollisionResults object then processes the collision results.
      * 
-     * @param scene
-     *            the scene to test against.
-     * @param results
-     *            the results object.
+     * @param scene the scene to test against.
+     * @param results the results object.
+     * @param requiredOnBits considered a collision only if these bits are 'on'
+     *    in both 'this' and the 'scene' spatial.
      */
-    public void calculateCollisions(Spatial scene, CollisionResults results) {
-        findCollisions(scene, results);
+    final public void calculateCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits) {
+        findCollisions(scene, results, requiredOnBits);
         results.processCollisions();
     }
 
@@ -944,42 +957,94 @@ public abstract class Spatial implements Serializable, Savable {
     public abstract void setModelBound(BoundingVolume modelBound);
 
     /**
+     * Convenience wrapper for
+     * findCollisions(Spatial, CollisionResults, int) using default
+     * collidability (first bit of the collidable bit mask).
+     *
+     * @see #findCollisions(Spatial, CollisionResults, int)
+     */
+    final public void findCollisions(Spatial scene, CollisionResults results) {
+        findCollisions(scene, results, 1);
+    }
+
+    /**
      * checks this spatial against a second spatial, any collisions are stored
      * in the results object.
      * 
-     * @param scene
-     *            the scene to test against.
-     * @param results
-     *            the results of the collisions.
+     * @param scene the scene to test against.
+     * @param results the results of the collisions.
+     * @param requiredOnBits considered a collision only if these bits are 'on'
+     *    in both 'this' and the 'scene' spatial.
      */
-    public abstract void findCollisions(Spatial scene, CollisionResults results);
+    public abstract void findCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits);
+
+    /**
+     * Convenience wrapper for
+     * hasCollision(Spatial, CollisionResults, int) using default
+     * collidability (first bit of the collidable bit mask).
+     *
+     * @see #hasCollisionsSpatial, CollisionResults, boolean)
+     */
+    final public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+        return hasCollision(scene, checkTriangles, 1);
+    }
 
     /**
      * Checks this spatial against a second spatial for collisions.
      * 
-     * @param scene
-     *            the scene to test against.
-     * @param checkTriangles
-     *            check for collisions on triangle accuracy level
+     * @param scene the scene to test against.
+     * @param checkTriangles check for collisions on triangle accuracy level
+     * @param requiredOnBits considered a collision only if these bits are 'on'
+     *    in both 'this' and the 'scene' spatial.
      * @return true if any collision were found
      */
-    public abstract boolean hasCollision(Spatial scene, boolean checkTriangles);
+    public abstract boolean hasCollision(
+            Spatial scene, boolean checkTriangles, int requiredOnBits);
 
-    public void calculatePick(Ray ray, PickResults results) {
-        findPick(ray, results);
+    /**
+     * Convenience wrapper for
+     * calculatePick(Ray, PickResults, int) using default
+     * collidability (first bit of the collidable bit mask).
+     *
+     * @see #calculatePick(Ray, PickResults, int)
+     */
+    final public void calculatePick(Ray ray, PickResults results) {
+        calculatePick(ray, results, 1);
+    }
+
+    /**
+     * @param requiredOnBits considered a collision only if these bits are 'on'
+     *    in 'this' spatial.
+     */
+    final public void calculatePick(
+            Ray ray, PickResults results, int requiredOnBits) {
+        findPick(ray, results, requiredOnBits);
         results.processPick();
+    }
+
+    /**
+     * Convenience wrapper for
+     * findPick(Ray, PickResults, int) using default
+     * collidability (first bit of the collidable bit mask).
+     *
+     * @see #findPick(Ray, PickResults, int)
+     */
+    final public void findPick(Ray toTest, PickResults results) {
+        findPick(toTest, results, 1);
     }
 
     /**
      * Tests a ray against this spatial, and stores the results in the result
      * object.
      * 
-     * @param toTest
-     *            ray to test picking against
-     * @param results
-     *            the results of the picking
+     * @param toTest ray to test picking against
+     * @param results the results of the picking
+     * @param requiredOnBits considered a collision only if these bits are 'on'
+     *    in 'this' spatial.
      */
-    public abstract void findPick(Ray toTest, PickResults results);
+    public abstract void findPick(
+            Ray toTest, PickResults results, int requiredOnBits);
 
     /**
      * Stores user define data for this Spatial.
@@ -1130,6 +1195,14 @@ public abstract class Spatial implements Serializable, Savable {
         return name;
     }
 
+    public void setCollisionMask(int collisionBits) {
+        this.collisionBits = collisionBits;
+    }
+
+    public int getCollisionMask() {
+        return collisionBits;
+    }
+
     /**
      * Sets if this Spatial is to be used in intersection (collision and
      * picking) calculations. By default this is true.
@@ -1154,7 +1227,14 @@ public abstract class Spatial implements Serializable, Savable {
      *         false otherwise.
      */
     public boolean isCollidable() {
-        return (collisionBits & 1) != 0;
+        return isCollidable(1);
+    }
+
+    /**
+     * @returns true if this Spatial matches all set bits in the specified value
+     */
+    public boolean isCollidable(int requiredOnBits) {
+        return ((requiredOnBits & collisionBits) ^ requiredOnBits) == 0;
     }
 
     /**

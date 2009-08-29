@@ -86,6 +86,10 @@ public class Node extends Spatial implements Serializable, Savable {
      */
     public Node(String name) {
         super(name);
+        setCollisionMask(-1);
+        // Newly constitued (not reconsituted) Nodes should allow for maximum
+        // collision nesting.  If anything other than -1, the node would block
+        // collisions for all descendant Spatials.
         logger.info("Node created.");
     }
 
@@ -578,28 +582,33 @@ public class Node extends Spatial implements Serializable, Savable {
     }
 
     @Override
-    public void findCollisions(Spatial scene, CollisionResults results) {
-        if (getWorldBound() != null && isCollidable() && scene.isCollidable()) {
+    public void findCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits) {
+        if (getWorldBound() != null && isCollidable(requiredOnBits)
+                && scene.isCollidable(requiredOnBits)) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {
-                    getChild(i).findCollisions(scene, results);
+                    getChild(i).findCollisions(scene, results, requiredOnBits);
                 }
             }
         }
     }
 
     @Override
-    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+    public boolean hasCollision(
+            Spatial scene, boolean checkTriangles, int requiredOnBits) {
         if (this == scene) return false;  // No Collision with "self"
-        if (getWorldBound() != null && isCollidable() && scene.isCollidable()) {
+        if (getWorldBound() != null && isCollidable(requiredOnBits)
+                && scene.isCollidable(requiredOnBits)) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
                 if(children == null && !checkTriangles) {
                     return true;
                 }
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {
-                    if (getChild(i).hasCollision(scene, checkTriangles)) {
+                    if (getChild(i).hasCollision(
+                            scene, checkTriangles, requiredOnBits)) {
                         return true;
                     }
                 }
@@ -610,11 +619,11 @@ public class Node extends Spatial implements Serializable, Savable {
     }
 
     @Override
-    public void findPick(Ray toTest, PickResults results) {
+    public void findPick(Ray toTest, PickResults results, int requiredOnBits) {
         if(children == null) {
             return;
         }
-        if (getWorldBound() != null && isCollidable()) {
+        if (getWorldBound() != null && isCollidable(requiredOnBits)) {
             if (getWorldBound().intersects(toTest)) {
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {

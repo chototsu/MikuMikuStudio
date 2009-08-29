@@ -634,15 +634,16 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
     /**
      * Check if this geometry intersects the ray if yes add it to the results.
      * 
-     * @param ray
-     *            ray to check intersection with. The direction of the ray must
+     * @param ray ray to check intersection with. The direction of the ray must
      *            be normalized (length 1).
+     * @param requiredOnBits Collision will only be considered if 'this'
+     *        has these bits of its collision mask set.
      * @param results
      *            result list
      */
     @Override
-    public void findPick(Ray ray, PickResults results) {
-        if (getWorldBound() == null || !isCollidable()) {
+    public void findPick(Ray ray, PickResults results, int requiredOnBits) {
+        if (getWorldBound() == null || !isCollidable(requiredOnBits)) {
             return;
         }
         if (getWorldBound().intersects(ray)) {

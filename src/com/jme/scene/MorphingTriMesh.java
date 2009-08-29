@@ -269,7 +269,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         setLightCombineMode(base.getLocalLightCombineMode());
         setRenderQueueMode(base.getRenderQueueMode());
         setNormalsMode(base.getLocalNormalsMode());
-        setIsCollidable(base.isCollidable());
+        setCollisionMask(base.getCollisionMask());
         setRenderQueueMode(base.getLocalRenderQueueMode());
         for (RenderState.StateType rsType : RenderState.StateType.values()) {
             clearRenderState(rsType);

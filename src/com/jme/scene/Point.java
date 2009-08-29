@@ -145,11 +145,13 @@ public class Point extends Geometry {
 	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
 	 *      com.jme.intersection.CollisionResults)
 	 */
-	public void findCollisions(Spatial scene, CollisionResults results) {
+	public void findCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits) {
 		; // unsupported
 	}
 	
-	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+	public boolean hasCollision(
+            Spatial scene, boolean checkTriangles, int requiredOnBits) {
 		return false;
 	}
 

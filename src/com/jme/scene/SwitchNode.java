@@ -100,11 +100,11 @@ public class SwitchNode extends Node {
 			activeChild = SN_INVALID_CHILD;
 		} else {
             if(activeChildData != null) {
-                activeChildData.setIsCollidable(false);
+                activeChildData.setCollisionMask(0);
             }
             this.activeChild = child;
 			activeChildData = getChild(activeChild);
-            activeChildData.setIsCollidable(true);
+            activeChildData.setCollisionMask(getCollisionMask());
 		}
    }
 
@@ -123,7 +123,7 @@ public class SwitchNode extends Node {
      */
     @Override
     public int attachChild(Spatial child) {
-        child.setIsCollidable(false);
+        child.setCollisionMask(0);
         return super.attachChild(child);
     }
     
@@ -135,7 +135,7 @@ public class SwitchNode extends Node {
      */
     @Override
     public int attachChildAt(Spatial child, int index) {
-        child.setIsCollidable(false);
+        child.setCollisionMask(0);
         return super.attachChildAt(child, index);
     }
 
@@ -159,14 +159,16 @@ public class SwitchNode extends Node {
      * collisions are checked for the currently active child.
      */
     @Override
-    public void findCollisions(Spatial scene, CollisionResults results) {
-        if (this == scene || !isCollidable() || !scene.isCollidable()) {
+    public void findCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits) {
+        if (this == scene || !isCollidable(requiredOnBits)
+                || !scene.isCollidable(requiredOnBits)) {
             return;
         }
 
         if (activeChild != SN_INVALID_CHILD) {
             if (activeChildData != null) {
-                activeChildData.findCollisions(scene, results);
+                activeChildData.findCollisions(scene, results, requiredOnBits);
             }
         }
     }
@@ -175,23 +177,26 @@ public class SwitchNode extends Node {
      * collisions are checked for the currently active child.
      */
     @Override
-    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        if (this == scene || !isCollidable() || !scene.isCollidable()) {
+    public boolean hasCollision(
+            Spatial scene, boolean checkTriangles, int requiredOnBits) {
+        if (this == scene || !isCollidable(requiredOnBits)
+                || !scene.isCollidable(requiredOnBits)) {
             return false;
         }
 
         if (activeChild != SN_INVALID_CHILD) {
             if (activeChildData != null) {
-                return activeChildData.hasCollision(scene, checkTriangles);
+                return activeChildData.hasCollision(
+                        scene, checkTriangles, requiredOnBits);
             }
         }
         return false;
     }
     
-    public void findPick(Ray toTest, PickResults results) {
+    public void findPick(Ray toTest, PickResults results, int requiredOnBits) {
         if (activeChild != SN_INVALID_CHILD) {
             if (activeChildData != null) {
-                activeChildData.findPick(toTest, results);
+                activeChildData.findPick(toTest, results, requiredOnBits);
             }
         }
     }

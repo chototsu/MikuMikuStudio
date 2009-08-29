@@ -209,12 +209,14 @@ public class ParticleLines extends ParticleSystem {
     }
 
     @Override
-    public void findCollisions(Spatial scene, CollisionResults results) {
+    public void findCollisions(
+            Spatial scene, CollisionResults results, int requiredOnBits) {
         ; // ignore
     }
 
     @Override
-    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+    public boolean hasCollision(
+            Spatial scene, boolean checkTriangles, int requiredOnBits) {
         return false;
     }
 

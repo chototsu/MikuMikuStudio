@@ -449,17 +449,18 @@ public class SharedMesh extends TriMesh {
      * This function checks for intersection between the target trimesh and the
      * given one. On the first intersection, true is returned.
      * 
-     * @param toCheck
-     *            The intersection testing mesh.
+     * @param toCheck The intersection testing mesh.
+     * @param requiredOnBits Collision will only be considered if both 'this'
+     *        and 'toCheck' have these bits of their collision masks set.
      * @return True if they intersect.
      */
     @Override
-    public boolean hasTriangleCollision(TriMesh toCheck) {
+    public boolean hasTriangleCollision(TriMesh toCheck, int requiredOnBits) {
         target.setLocalTranslation(worldTranslation);
         target.setLocalRotation(worldRotation);
         target.setLocalScale(worldScale);
         target.updateWorldBound();
-        return target.hasTriangleCollision(toCheck);
+        return target.hasTriangleCollision(toCheck, requiredOnBits);
     }
 
     /**
