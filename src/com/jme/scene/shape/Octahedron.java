@@ -66,8 +66,8 @@ public class Octahedron extends RegularPolyhedron {
     }
 
     /**
-     * Creates an octahedron with center at the origin. The lenght sides are
-     * given.
+     * Creates an octahedron with center at the origin. The length of the
+     * sides are given.
      * 
      * @param name
      *            The name of the octahedron.

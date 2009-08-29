@@ -33,7 +33,7 @@
 package com.jme.input.action;
 
 /**
- * An <code>InputAction</code> can be subscribed at an {@link com.jme.input.InputHandler} to get its
+ * An <code>InputAction</code> can be subscribed as an {@link com.jme.input.InputHandler} to get its
  * {@link InputActionInterface#performAction(InputActionEvent)} method called on specific event triggers.
  * It also defines an interface that sets the criteria for
  * input actions, e.g. the speed of the action.

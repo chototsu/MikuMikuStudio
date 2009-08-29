@@ -50,7 +50,7 @@ public class Teapot extends TriMesh implements Savable {
 
     /**
      * Instantiates a new <code>Teapot</code> object. All information must be
-     * applies later. For internal usage only
+     * applied later. For internal usage only
      */
     public Teapot() {
         super("teapot");

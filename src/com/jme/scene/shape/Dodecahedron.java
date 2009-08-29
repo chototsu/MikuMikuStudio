@@ -63,7 +63,6 @@ public class Dodecahedron extends RegularPolyhedron {
     public Dodecahedron() {}
 
     /**
-     * Creates an Dodecahedron (think of 12-sided dice) with center at the
      * origin. The length of the sides will be as specified in sideLength.
      * 
      * @param name

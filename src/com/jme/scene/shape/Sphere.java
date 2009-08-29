@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Sphere</code> represents a 3D object with all points equidistance
+ * <code>Sphere</code> represents a 3D object with all points equidistant
  * from a center point.
  * 
  * @author Joshua Slack
@@ -65,7 +65,7 @@ public class Sphere extends TriMesh {
     public enum TextureMode {
         /** Wrap texture radially and along z-axis */
         Original,
-        /** Wrap texure radially, but spherically project along z-axis */
+        /** Wrap texture radially, but spherically project along z-axis */
         Projected,
         /** Apply texture to each pole.  Eliminates polar distortion,
          * but mirrors the texture across the equator 
@@ -96,7 +96,7 @@ public class Sphere extends TriMesh {
     }
 
     /**
-     * Constructs a sphere. By default the Sphere has not geometry data or
+     * Constructs a sphere. By default the Sphere has no geometry data or
      * center.
      * 
      * @param name
@@ -146,7 +146,8 @@ public class Sphere extends TriMesh {
     }
 
     /**
-     * Constructs a sphere. Additional arg to evenly space latitudinal slices
+     * Constructs a sphere. Additional arguments to evenly space
+     * latitudinal slices
      * 
      * @param name
      *            Name of the sphere.

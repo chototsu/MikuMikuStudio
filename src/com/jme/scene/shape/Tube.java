@@ -45,7 +45,8 @@ import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * 
+ * A hollow cylindrical shape (the cylinder wall can have
+ * width).
  * @author Landei
  */
 public class Tube extends TriMesh implements Savable {

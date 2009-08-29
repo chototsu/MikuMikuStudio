@@ -45,7 +45,8 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * An ordinary (single holed) torus.
+ * An ordinary (single holed) torus.  Similar
+ * in shape to a donut.
  * <p>
  * The center is by default the origin.
  * 

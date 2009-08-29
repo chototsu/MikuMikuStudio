@@ -51,7 +51,7 @@ import com.jme.util.export.OutputCapsule;
  * modifications and enhancements made from there.<br>
  * <br>
  * This class is an automatically updating ClodMesh that updates records
- * acording to how much area the bounding volume takes up on the screen. Use it
+ * according to how much area the bounding volume takes up on the screen. Use it
  * just like a normal ClodMesh, but allow it to update itself.
  * 
  * @author Joshua Slack
@@ -78,7 +78,7 @@ public class AreaClodMesh extends ClodMesh {
 
 	/**
 	 * Creates a new AreaClodMesh with the given name.  This should only be used if
-	 * the users is going to call reconstruct and create on the clod mesh.
+	 * the user is going to call reconstruct and create on the clod mesh.
 	 * @param name The mesh's name.
 	 * @see #reconstruct(com.jme.math.Vector3f[], com.jme.math.Vector3f[], com.jme.renderer.ColorRGBA[], com.jme.math.Vector2f[], int[])
 	 * @see #create(com.jme.scene.lod.CollapseRecord[])
@@ -88,7 +88,7 @@ public class AreaClodMesh extends ClodMesh {
 	}
 
 	/**
-	 * Creates a clod mesh that mimics the given TriMesh's geometry information.  More specificly,
+	 * Creates a clod mesh that mimics the given TriMesh's geometry information.  More specifically,
 	 * RenderState and Controller information is <b>not</b> absorbed by this AreaClodMesh.  A null
 	 * for records causes the AreaClodMesh to generate its own records information.
 	 * @param name The name of this new mesh.
@@ -123,7 +123,7 @@ public class AreaClodMesh extends ClodMesh {
 
 	/**
 	 * This function is used during rendering to choose the correct target record for the
-	 * AreaClodMesh acording to the information in the renderer.  This should not be called
+	 * AreaClodMesh according to the information in the renderer.  This should not be called
 	 * manually.  Instead, allow it to be called automatically during rendering.
 	 * @param r The Renderer to use.
 	 * @return the target record this AreaClodMesh will use to collapse vertexes.

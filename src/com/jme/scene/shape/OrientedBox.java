@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
 /**
  * Started Date: Aug 22, 2004 <br>
  * <br>
- * This primitive represents a box that has options to orient it acording to its
+ * This primitive represents a box that has options to orient it according to its
  * X/Y/Z axis. It is used to create an OrientedBoundingBox mostly.
  * 
  * @author Jack Lindamood
@@ -74,10 +74,10 @@ public class OrientedBox extends TriMesh {
     /** Extents of the box along the x,y,z axis. */
     protected Vector3f extent = new Vector3f(0, 0, 0);
 
-    /** Texture coordintae values for the corners of the box. */
+    /** Texture coordinate values for the corners of the box. */
     protected Vector2f texTopRight, texTopLeft, texBotRight, texBotLeft;
 
-    /** Vector array used to store the array of 8 corners the box has. */
+    /** Vector array used to store the array of the 8 corners the box has. */
     public Vector3f[] vectorStore;
 
     /** X axis of the Oriented Box. */

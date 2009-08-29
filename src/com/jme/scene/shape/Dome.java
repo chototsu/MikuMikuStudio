@@ -79,7 +79,7 @@ public class Dome extends TriMesh {
     public Dome() {}
 
     /**
-     * Constructs a dome. By default the dome has not geometry data or center.
+     * Constructs a dome. By default the dome has no geometry data or center.
      * 
      * @param name
      *            The name of the dome.
@@ -89,7 +89,7 @@ public class Dome extends TriMesh {
     }
 
     /**
-     * Constructs a dome with center at the origin. For details, see the other
+     * Constructs a dome with it's center at the origin. For details, see the other
      * constructor.
      * 
      * @param name
@@ -171,7 +171,8 @@ public class Dome extends TriMesh {
     }
 
     /**
-     * Are the triangles connected in such a way as to present aview out from the dome or not.
+     * Are the triangles connected in such a way as to present a view out from the
+     * dome or not.
      * 
      * @return
      */

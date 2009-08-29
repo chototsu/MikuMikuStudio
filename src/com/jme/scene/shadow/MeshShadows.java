@@ -110,7 +110,7 @@ public class MeshShadows {
      * <code>createGeometry</code> creates or updates the ShadowVolume
      * geometries for the target TriMesh - one for each applicable Light in the
      * given LightState. Only Directional and Point lights are currently
-     * supported. ShadowVolume geometry is only regen'd when light or occluder
+     * supported. ShadowVolume geometry is only regenerated when light or occluder
      * aspects change.
      * 
      * @param lightState
