@@ -11,6 +11,9 @@ import com.jme.util.export.xml.XMLImporter;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
 
+/**
+ * @author Blaine Simpson (blaine dot simpson at admc dot com)
+ */
 public class ListenableSFMTest {
     public ListenableSFMTest() {}
 
