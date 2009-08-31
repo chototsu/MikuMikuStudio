@@ -1088,6 +1088,7 @@ public abstract class Spatial implements Serializable, Savable {
     public void write(JMEExporter ex) throws IOException {
         OutputCapsule capsule = ex.getCapsule(this);
         capsule.write(name, "name", null);
+        capsule.write(isCollidable(1), "isCollidable", true);
         capsule.write(collisionBits, "collisionBits", 1);
         capsule.write(cullHint, "cullMode", CullHint.Inherit);
 
