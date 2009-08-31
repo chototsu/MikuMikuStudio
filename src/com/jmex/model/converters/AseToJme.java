@@ -450,7 +450,7 @@ public class AseToJme extends FormatConverter{
                     return;
                 }
 
-                //read material properites.
+                //read material properties.
                 if (strWord.equals(MATERIAL_AMBIENT)) {
                     material.ambient[0] = Float.parseFloat(tokenizer.nextToken());
                     material.ambient[1] = Float.parseFloat(tokenizer.nextToken());
@@ -615,7 +615,7 @@ public class AseToJme extends FormatConverter{
                                 currentObject.materialID));
                     }
                 }
-                // If we hit a vertice index to a face
+                // If we hit a vertex index to a face
                 else if (word.equals(FACE)) {
                     // Make sure that is the data that we want to read in
                     if (desiredData.equals(FACE)) {
@@ -627,7 +627,7 @@ public class AseToJme extends FormatConverter{
                 else if (word.equals(TFACE)) {
                     // Make sure that is the data that we want to read in
                     if (desiredData.equals(TFACE)) {
-                        // Read in a texture indice for a face
+                        // Read in a texture index for a face
                         readTextureFace(currentObject);
                     }
                 }

@@ -100,7 +100,7 @@ public class MilkToJme extends FormatConverter{
 
 
     /**
-     * The node that represents the .ms3d file.  It's chidren are MS meshes
+     * The node that represents the .ms3d file.  It's Children are MS meshes
      */
     private Node finalNode;
 

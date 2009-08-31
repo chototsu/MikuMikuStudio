@@ -60,7 +60,7 @@ abstract public class FormatConverter {
      * Reads a given <code>format</code> and writes it to <code>jMEFormat</code> in the jME binary format.
      * @param format InputStream representing the format to read
      * @param jMEFormat OutputStream to write the jME binary equivalent too
-     * @throws IOException If anything goes wrong during the writting
+     * @throws IOException If anything goes wrong during the writing
      */
     public abstract void convert(InputStream format,OutputStream jMEFormat) throws IOException;
 

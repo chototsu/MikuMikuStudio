@@ -100,7 +100,7 @@ public class Md2ToJme extends FormatConverter {
     }
 
     /**
-     * 95% a Copy/paste of the .md2 loader by Mark Powell modifyed for
+     * 95% a Copy/paste of the .md2 loader by Mark Powell modified for
      * efficiency (use of empty TriMesh) and VertexController as well as a few
      * tiny adjustments here and there on memory.
      * 

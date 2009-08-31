@@ -167,7 +167,7 @@ import com.jmex.model.collada.schema.visual_sceneType;
  * (COLLAborative Design Activity) model. Making use of a DOM parse, the XML
  * formatted COLLADA file is parsed into Java Type classes and then processed by
  * jME. This processing is currently aimed at the 1.4.1 release of the COLLADA
- * Specification, and will, in most likelyhood, require updating with a new
+ * Specification, and will, in most likelihood, require updating with a new
  * release of COLLADA.
  * 
  * @author Mark Powell, Rikard Herlitz, and others
@@ -247,8 +247,8 @@ public class ColladaImporter {
 
     /**
      * load takes the model path as a string object and uses the
-     * COLLADASchemaDoc object to load it. This is then stored as a heirarchy of
-     * data objects. This heirarchy is passed to the processCollada method to
+     * COLLADASchemaDoc object to load it. This is then stored as a hierarchy of
+     * data objects. This hierarchy is passed to the processCollada method to
      * build the jME data structures necessary to view the model.
      * 
      * @param source
@@ -3333,9 +3333,9 @@ public class ColladaImporter {
      *            the meshType to process for the trimesh.
      * @param geom
      *            the geometryType of the TriMesh to build.
-     * @return the jME tri mesh representing the COLLADA mesh.
+     * @return the jME trimesh representing the COLLADA mesh.
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     private Spatial processPolygonMesh(meshType mesh, geometryType geom)
             throws Exception {
@@ -3781,7 +3781,7 @@ public class ColladaImporter {
      *            the meshType to process for the lines.
      * @param geom
      *            the geomType for the lines
-     * @return the jME tri mesh representing the COLLADA mesh.
+     * @return the jME trimesh representing the COLLADA mesh.
      */
     private Spatial processLines(meshType mesh, geometryType geom) {
         if (!squelch) {
@@ -3815,7 +3815,7 @@ public class ColladaImporter {
      * @param libScene
      *            the library of scenes
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     private void processVisualSceneLibrary(library_visual_scenesType libScene)
             throws Exception {
