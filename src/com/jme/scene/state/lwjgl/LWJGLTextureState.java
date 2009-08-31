@@ -1509,7 +1509,7 @@ public class LWJGLTextureState extends TextureState {
                     checkAndSetUnit(unit, record);
                     GL11.glTexGeni(GL11.GL_R, GL11.GL_TEXTURE_GEN_MODE,
                             ARBTextureCubeMap.GL_NORMAL_MAP_ARB);
-                    unitRecord.textureGenTMode = ARBTextureCubeMap.GL_NORMAL_MAP_ARB;
+                    unitRecord.textureGenRMode = ARBTextureCubeMap.GL_NORMAL_MAP_ARB;
                 }
 
                 if (!unitRecord.isValid() || unitRecord.textureGenQ) {
@@ -1550,13 +1550,13 @@ public class LWJGLTextureState extends TextureState {
                             ARBTextureCubeMap.GL_REFLECTION_MAP_ARB);
                     unitRecord.textureGenTMode = ARBTextureCubeMap.GL_REFLECTION_MAP_ARB;
                 }
-
+                
                 if (!unitRecord.isValid()
                         || unitRecord.textureGenRMode != ARBTextureCubeMap.GL_REFLECTION_MAP_ARB) {
                     checkAndSetUnit(unit, record);
                     GL11.glTexGeni(GL11.GL_R, GL11.GL_TEXTURE_GEN_MODE,
                             ARBTextureCubeMap.GL_REFLECTION_MAP_ARB);
-                    unitRecord.textureGenTMode = ARBTextureCubeMap.GL_REFLECTION_MAP_ARB;
+                    unitRecord.textureGenRMode = ARBTextureCubeMap.GL_REFLECTION_MAP_ARB;
                 }
 
                 if (!unitRecord.isValid() || unitRecord.textureGenQ) {
@@ -1648,14 +1648,14 @@ public class LWJGLTextureState extends TextureState {
                         || unitRecord.textureGenQMode != GL11.GL_OBJECT_LINEAR) {
                     GL11.glTexGeni(GL11.GL_Q, GL11.GL_TEXTURE_GEN_MODE,
                             GL11.GL_OBJECT_LINEAR);
-                    unitRecord.textureGenSMode = GL11.GL_OBJECT_LINEAR;
+                    unitRecord.textureGenQMode = GL11.GL_OBJECT_LINEAR;
                 }
 
                 if (!unitRecord.isValid()
                         || unitRecord.textureGenRMode != GL11.GL_OBJECT_LINEAR) {
                     GL11.glTexGeni(GL11.GL_R, GL11.GL_TEXTURE_GEN_MODE,
                             GL11.GL_OBJECT_LINEAR);
-                    unitRecord.textureGenTMode = GL11.GL_OBJECT_LINEAR;
+                    unitRecord.textureGenRMode = GL11.GL_OBJECT_LINEAR;
                 }
 
                 if (!unitRecord.isValid()

@@ -1472,7 +1472,7 @@ public class JOGLTextureState extends TextureState {
                     checkAndSetUnit(unit, record);
                     gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE,
                             GL.GL_NORMAL_MAP);
-                    unitRecord.textureGenTMode = GL.GL_NORMAL_MAP;
+                    unitRecord.textureGenRMode = GL.GL_NORMAL_MAP;
                 }
 
                 if (!unitRecord.isValid() || unitRecord.textureGenQ) {
@@ -1519,7 +1519,7 @@ public class JOGLTextureState extends TextureState {
                     checkAndSetUnit(unit, record);
                     gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE,
                             GL.GL_REFLECTION_MAP);
-                    unitRecord.textureGenTMode = GL.GL_REFLECTION_MAP;
+                    unitRecord.textureGenRMode = GL.GL_REFLECTION_MAP;
                 }
 
                 if (!unitRecord.isValid() || unitRecord.textureGenQ) {
@@ -1611,14 +1611,14 @@ public class JOGLTextureState extends TextureState {
                         || unitRecord.textureGenQMode != GL.GL_OBJECT_LINEAR) {
                     gl.glTexGeni(GL.GL_Q, GL.GL_TEXTURE_GEN_MODE,
                             GL.GL_OBJECT_LINEAR);
-                    unitRecord.textureGenSMode = GL.GL_OBJECT_LINEAR;
+                    unitRecord.textureGenQMode = GL.GL_OBJECT_LINEAR;
                 }
 
                 if (!unitRecord.isValid()
                         || unitRecord.textureGenRMode != GL.GL_OBJECT_LINEAR) {
                     gl.glTexGeni(GL.GL_R, GL.GL_TEXTURE_GEN_MODE,
                             GL.GL_OBJECT_LINEAR);
-                    unitRecord.textureGenTMode = GL.GL_OBJECT_LINEAR;
+                    unitRecord.textureGenRMode = GL.GL_OBJECT_LINEAR;
                 }
 
                 if (!unitRecord.isValid()
