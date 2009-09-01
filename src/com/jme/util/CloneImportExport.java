@@ -801,11 +801,11 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
             if (ignoreField(name)) {
                 return defVal;
             }
-            if (shallowCopyField(name)) {
-                return (BitSet) values.get(name);
-            }
-
-            return (BitSet) ((BitSet) values.get(name)).clone();
+            BitSet bitSetObj = (BitSet) values.get(name);
+            if (bitSetObj == null) return defVal;
+            return shallowCopyField(name)
+                   ? bitSetObj
+                   : (BitSet) bitSetObj.clone();
         }
 
         /**
@@ -886,7 +886,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 return defVal;
             }
 
-            return (Byte) values.get(name);
+            Byte byteObj = (Byte) values.get(name);
+            return (byteObj == null) ? defVal : byteObj.byteValue();
         }
 
         /**
@@ -956,6 +957,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
             }
 
             ByteBuffer buffer = (ByteBuffer) values.get(name);
+            if (buffer == null) return defVal;
             if (shallowCopyField(name)) {
                 return buffer;
             }
@@ -972,7 +974,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 return defVal;
             }
 
-            return (Double) values.get(name);
+            Double doubleObj = (Double) values.get(name);
+            return (doubleObj == null) ? defVal : doubleObj.doubleValue();
         }
 
         /**
@@ -1110,6 +1113,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
             }
 
             FloatBuffer buffer = (FloatBuffer) values.get(name);
+            if (buffer == null) return defVal;
             if (shallowCopyField(name)) {
                 return buffer;
             }
@@ -1183,7 +1187,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 return defVal;
             }
 
-            return (Integer) values.get(name);
+            Integer intObj = (Integer) values.get(name);
+            return (intObj == null) ? defVal : intObj.intValue();
         }
 
         /**
@@ -1252,6 +1257,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
             }
 
             IntBuffer buffer = (IntBuffer) values.get(name);
+            if (buffer == null) return defVal;
             if (shallowCopyField(name)) {
                 return buffer;
             }
@@ -1268,7 +1274,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 return defVal;
             }
 
-            return (Long) values.get(name);
+            Long longObj = (Long) values.get(name);
+            return (longObj == null) ? defVal : longObj.longValue();
         }
 
         /**
@@ -1549,7 +1556,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 return defVal;
             }
 
-            return (Short) values.get(name);
+            Short shortObj = (Short) values.get(name);
+            return (shortObj == null) ? defVal : shortObj.shortValue();
         }
 
         /**
@@ -1619,6 +1627,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
             }
 
             ShortBuffer buffer = (ShortBuffer) values.get(name);
+            if (buffer == null) return defVal;
             if (shallowCopyField(name)) {
                 return buffer;
             }
@@ -1635,7 +1644,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 return defVal;
             }
 
-            return (String) values.get(name);
+            String stringObj = (String) values.get(name);
+            return (stringObj == null) ? defVal : stringObj;
         }
 
         /**
@@ -1701,7 +1711,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 return defVal;
             }
 
-            return (T) values.get(name);
+            T enumObj = (T) values.get(name);
+            return (enumObj == null) ? defVal : enumObj;
         }
 
         public void writeSavableMap(
