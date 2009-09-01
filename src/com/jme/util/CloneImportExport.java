@@ -61,14 +61,15 @@ import com.jme.util.geom.BufferUtils;
  * a hash from Savable to info. This gives a local copy without any overhead of
  * streams, zipping or setup. Found to be slightly more performant. Note: Not
  * thread safe. Note: Ignored fields take precedence over shallow copy
- * specification Intended usage looks something like: <code>
- * 
+ * specification Intended usage looks something like:
+ *
+ * <pre><code>
  *		CloneImportExport ie = new CloneImportExport();
  *		ie.saveClone(node);
  *		Node copy1 = (Node) ie.loadClone();
  *		Node copy2 = (Node) ie.loadClone();
  *		Node copy3 = (Node) ie.loadClone();
- * </code>
+ * </code></pre>
  * 
  * @author kevin
  * @version $Id$
