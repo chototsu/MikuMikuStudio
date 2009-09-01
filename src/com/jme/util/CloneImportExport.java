@@ -816,7 +816,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 return defVal;
             }
 
-            return (Boolean) values.get(name);
+            Boolean boolObj = (Boolean) values.get(name);
+            return (boolObj == null) ? defVal : boolObj.booleanValue();
         }
 
         /**
