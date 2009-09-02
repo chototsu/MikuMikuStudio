@@ -44,6 +44,7 @@ import com.jme.image.Texture;
  * 
  * @author dhdd, Andreas Grabner
  * @author Momoko_Fan (enhancements)
+ * @author Core_Dump, dhdd (\n for new line feature)
  */
 public class BitmapFont {
 
@@ -101,24 +102,75 @@ public class BitmapFont {
         boolean useKerning = block.isKerning();
         target.ensureSize(text.length());
         int numActive = 0;
+        Align alignment = block.getAlignment();
+        float lastLineWidth = 0f;
 
         float incrScale = rightToLeft ? -1f : 1f;
 
         for (int i = 0; i < text.length(); i++) {
             char theChar = text.charAt(i);
             BitmapCharacter c = charSet.getCharacter((int) theChar);
-            if (c == null) {
-                // logger.warning("Character '" + text.charAt(i) +
-                // "' is not in alphabet, skipping it.");
-            } else if (theChar == '\n' || theChar == '\r' || theChar == '\t') {
-                // dont print these characters
-                continue;
+            if (c == null && (text.charAt(i) != '\n' && text.charAt(i) != '\r')) {
+                Logger.getLogger("").log(Level.FINE,
+                        "Character '" + text.charAt(i) + "' is not in alphabet, skipping it.");
+            } else if(text.charAt(i) == ' ' && firstCharOfLine) {
+                Logger.getLogger("").log(Level.FINE,
+                        "Character '" + text.charAt(i) + "' is blank, skipping it because first char in line.");
             } else {
-                float xOffset = c.getXOffset() * sizeScale;
-                float yOffset = c.getYOffset() * sizeScale;
-                float xAdvance = c.getXAdvance() * sizeScale;
-                float width = c.getWidth() * sizeScale;
-                float height = c.getHeight() * sizeScale;
+                float xOffset = 0;
+                float yOffset = 0;
+                float xAdvance = 0;
+                float width = 0;
+                float height = 0;
+                if (c != null) {
+                    xOffset = c.getXOffset() * sizeScale;
+                    yOffset = c.getYOffset() * sizeScale;
+                    xAdvance = c.getXAdvance() * sizeScale;
+                    width = c.getWidth() * sizeScale;
+                    height = c.getHeight() * sizeScale;
+                }
+                
+                if (text.charAt(i) == '\n' || text.charAt(i) == '\r') {
+                    x = 0;
+                    y -= charSet.getLineHeight() * sizeScale;
+                    // float offset = 0f;
+                    
+                    // Justify the last (now complete) line
+                    if (alignment == Align.Center) {
+                        for (int k = 0; k < target.getQuantity(); k++) {
+                            FontQuad q = target.getQuad(k);
+                            if (q.getLineNumber() == lineNumber) {
+                                q.setX(q.getX() - lineWidth / 2f);
+                            } // if
+                        } // for
+                    } // if
+                    if (alignment == Align.Right) {
+                        for (int k = 0; k < target.getQuantity(); k++) {
+                            FontQuad q = target.getQuad(k);
+                            if (q.getLineNumber() == lineNumber) {
+                                q.setX(q.getX() - lineWidth);
+                            } // if
+                        } // for
+                    } // if
+                    if (rightToLeft) {
+                        // move all characters so that the current X = 0
+                        for (int k = 0; k < target.getQuantity(); k++) {
+                            FontQuad q = target.getQuad(k);
+                            if (q.getLineNumber() == lineNumber) {
+                                q.setX(q.getX() + lineWidth);
+                            } // if
+                        } // for
+                    } // if
+                    
+                    // New line without any "carry-down" word
+                    firstCharOfLine = true;
+                    lastLineWidth = lineWidth;
+                    lineWidth = 0f;
+                    wordNumber = 1;
+                    lineNumber++;
+                    continue;
+                } // End new line check
+                
 
                 // Adjust for kerning
                 float kernAmount = 0f;
@@ -179,7 +231,6 @@ public class BitmapFont {
             } // else
         } // for
 
-        Align alignment = block.getAlignment();
         // Justify the last (now complete) line
         if (alignment == Align.Center) {
             for (int k = 0; k < target.getQuantity(); k++) {
@@ -245,18 +296,25 @@ public class BitmapFont {
 
         for (int i = 0; i < text.length(); i++) {
             BitmapCharacter c = charSet.getCharacter((int) text.charAt(i));
-
-            if (c == null) {
+            if (c == null && (text.charAt(i) != '\n' && text.charAt(i) != '\r')) {
                 Logger.getLogger("").log(Level.FINE,
                         "Character '" + text.charAt(i) + "' is not in alphabet, skipping it.");
+            } else if(text.charAt(i) == ' ' && firstCharOfLine) {
+                Logger.getLogger("").log(Level.FINE,
+                        "Character '" + text.charAt(i) + "' is blank, skipping it because first char in line.");
             } else {
-                float xOffset = c.getXOffset() * sizeScale;
-                float yOffset = c.getYOffset() * sizeScale;
-                float xAdvance = c.getXAdvance() * sizeScale;
-                float width = c.getWidth() * sizeScale;
-                float height = c.getHeight() * sizeScale;
-
-                // Newline
+              	float xOffset = 0;
+                float yOffset = 0;
+                float xAdvance = 0;
+                float width = 0;
+                float height = 0;
+            	if (c != null) {
+            		xOffset = c.getXOffset() * sizeScale;
+            		yOffset = c.getYOffset() * sizeScale;
+            		xAdvance = c.getXAdvance() * sizeScale;
+            		width = c.getWidth() * sizeScale;
+            		height = c.getHeight() * sizeScale;
+            	}
                 if (text.charAt(i) == '\n' || text.charAt(i) == '\r' || (lineWidth + xAdvance >= maxWidth)) {
                     x = block.getTextBox().x;
                     y -= charSet.getLineHeight() * sizeScale;
@@ -300,32 +358,31 @@ public class BitmapFont {
 
                             newLineLastChar = q.getCharacter();
                         } // for
-
-                        // Justify the previous (now complete) line
-                        if (alignment == Align.Center) {
-                            for (int k = 0; k < target.getQuantity(); k++) {
-                                FontQuad q = target.getQuad(k);
-
-                                if (q.getLineNumber() == lineNumber) {
-                                    q.setX(q.getX() + block.getTextBox().width / 2f - lastLineWidth / 2f);
-                                } // if
-                            } // for
-                        } // if
-                        if (alignment == Align.Right) {
-                            for (int k = 0; k < target.getQuantity(); k++) {
-                                FontQuad q = target.getQuad(k);
-                                if (q.getLineNumber() == lineNumber) {
-                                    q.setX(q.getX() + block.getTextBox().width - lastLineWidth);
-                                } // if
-                            } // for
-                        } // if
-
                     } else {
                         // New line without any "carry-down" word
                         firstCharOfLine = true;
                         lastLineWidth = lineWidth;
                         lineWidth = 0f;
                     } // else
+                    
+                	// Justify the previous (now complete) line
+                	if (alignment == Align.Center) {
+                		for (int k = 0; k < target.getQuantity(); k++) {
+                			FontQuad q = target.getQuad(k);
+                			
+                			if (q.getLineNumber() == lineNumber) {
+                				q.setX(q.getX() + block.getTextBox().width / 2f - lastLineWidth / 2f);
+                			} // if
+                		} // for
+                	} // if
+                	if (alignment == Align.Right) {
+                		for (int k = 0; k < target.getQuantity(); k++) {
+                			FontQuad q = target.getQuad(k);
+                			if (q.getLineNumber() == lineNumber) {
+                				q.setX(q.getX() + block.getTextBox().width - lastLineWidth);
+                			} // if
+                		} // for
+                	} // if
 
                     wordNumber = 1;
                     lineNumber++;

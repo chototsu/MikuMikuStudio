@@ -35,6 +35,7 @@ package jmetest.text;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
+import com.jme.input.MouseInput;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial.CullHint;
@@ -56,15 +57,19 @@ import com.jmex.game.state.GameStateManager;
 public class TestBitmapFont {
 
     public static void main(String[] args) throws Exception {
-        final StandardGame game = new StandardGame("Test 3D Flat Text");
+        final StandardGame game = new StandardGame("Test BitmapFont & BitmapText");
         game.start();
 
-        final String txtB = "This extension provides a mechanism to specify vertex attrib and "
+        final String txtB = "This extension provides a mechanism\n to specify vertex attrib and "
                 + "element array locations using GPU addresses.";
+        
+        final String txtC = "This extension provides a mechanism to specify vertex attrib and "
+            + "element array locations using GPU addresses.";
 
         GameTaskQueueManager.getManager().update(new Callable<Void>() {
 
             public Void call() throws Exception {
+                MouseInput.get().setCursorVisible(true);
                 final DebugGameState debug = new DebugGameState();
                 GameStateManager.getInstance().attachChild(debug);
                 debug.setActive(true);
@@ -104,20 +109,21 @@ public class TestBitmapFont {
                 txt3.setSize(32);
                 txt3.setAlignment(Align.Right);
                 txt3.setDefaultColor(ColorRGBA.blue.clone());
-                txt3.setText(txtB);
+                txt3.setText(txtC);
                 txt3.update();
 
                 BitmapText txt4 = new BitmapText(fnt, false);
                 txt4.setSize(32);
-                txt4.setText("Text without restriction. Text without restriction. Text without restriction. Text without restriction");
+                txt4.setAlignment(Align.Center);
+                txt4.setText("Text without restriction.\n Text without\n restriction.\n Text without restriction. Text without restriction");
                 txt4.setDefaultColor(ColorRGBA.red.clone());
                 txt4.update();
-                txt4.setLocalTranslation(40, -game.getDisplay().getHeight() + txt2.getLineHeight() * 2, 0);
+                txt4.setLocalTranslation(140, -game.getDisplay().getHeight() + txt2.getLineHeight() * 5, 0);
 
-                txt4.setText("Shortened it! :)");
+                txt4.setText("Shortened it!\n :)");
                 txt4.update();
 
-                txt4.setText("Elongated it to test! :)");
+                txt4.setText("Elongated\n it to test! :)");
                 txt4.update();
 
                 orthoNode.setLocalTranslation(0, game.getDisplay().getHeight(), 0);
