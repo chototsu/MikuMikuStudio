@@ -523,9 +523,32 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
             geom.setHasDirtyVertices(true);
             int overVerts = 0;
             int overNorms = 0;
+            if (cache[index].length * 3 > verts.capacity())
+                throw new IllegalStateException(
+                        "Skin has more influences than vertexes.  "
+                        + cache[index].length + " vs. " + verts.capacity()
+                        + "/3");
+            if (cache[index].length * 3 > norms.capacity())
+                throw new IllegalStateException(
+                        "Skin has more influences than normals.  "
+                        + cache[index].length + " vs. " + norms.capacity()
+                        + "/3");
+            if (cache[index].length * 3 < verts.capacity())
+                logger.log(Level.WARNING,
+                        "Skin has fewer influences than vertexes.  {0} vs {1}/3",
+                        new Object[] { cache[index].length, verts.capacity() });
+            if (cache[index].length * 3 < norms.capacity())
+                logger.log(Level.WARNING,
+                        "Skin has fewer influences than normals.  {0} vs {1}/3",
+                        new Object[] { cache[index].length, norms.capacity() });
+
             for (int vert = 0, max = cache[index].length; vert < max; vert++) {
                 ArrayList<BoneInfluence> infs = cache[index][vert];
-                if (infs == null) continue;
+                if (infs == null || infs.size() < 1) {
+                    verts.position(verts.position() + 3);
+                    norms.position(norms.position() + 3);
+                    continue;
+                }
                 vertex.zero();
                 normal.zero();
 
@@ -535,23 +558,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                         inf.bone.applyBone(inf, vertex, normal);
                 }
 
-                if (verts.remaining() > 2)
-                    verts.put(vertex.x).put(vertex.y).put(vertex.z);
-                else
-                    overVerts++;
-                if (norms.remaining() > 2)
-                    norms.put(normal.x).put(normal.y).put(normal.z);
-                else
-                    overNorms++;
+                verts.put(vertex.x).put(vertex.y).put(vertex.z);
+                norms.put(normal.x).put(normal.y).put(normal.z);
             }
-            if (overVerts > 0)
-                logger.log(Level.WARNING,
-                        "Skin ''{0}'' short of cach by {1} vertexes", 
-                        new Object[] { geom.getName(), overVerts });
-            if (overNorms > 0)
-                logger.log(Level.WARNING,
-                        "Skin ''{0}'' short of cach by {1} normals", 
-                        new Object[] { geom.getName(), overNorms });
             verts.flip();
             norms.flip();
         }
