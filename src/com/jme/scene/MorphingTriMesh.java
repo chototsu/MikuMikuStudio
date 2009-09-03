@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -31,6 +32,11 @@ import com.jme.util.export.ListenableStringFloatMap;
 
 /**
  * A MorphingGeometry implementation for TriMesh component morph Geometries.
+ * <P>
+ * Only component TriMeshes of mode Triangles are supported.
+ * <P> </P>
+ * The base morph must have &gt;= vertexes as the other morphs.
+ * </P>
  *
  * TODO:  Optimize the instantiation procedure.  It's pretty complicated to get
  * to reconstitute or instantiate local and delegated influences properly
@@ -40,9 +46,12 @@ import com.jme.util.export.ListenableStringFloatMap;
  * @author Blaine Simpson (blaine dot simpson at admc dot com)
  */
 public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
+    static final long serialVersionUID = 90398457851313109L;
     private static final Logger logger =
             Logger.getLogger(MorphingTriMesh.class.getName());
 
+    protected Map<TriMesh, FloatBuffer> extrapolatedVertBuf;
+    protected Map<TriMesh, FloatBuffer> extrapolatedNormBuf;
     protected List<TriMesh> morphs = new ArrayList<TriMesh>();
     protected List<String> morphKeys = new ArrayList<String>();
     // Not using an ordered Map of some type for these paired lists, only
@@ -51,6 +60,27 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     // the items are added).
     protected TriMesh baseMorph;
     volatile private boolean dirty = true;
+    protected boolean needExtrapolation;
+
+    /**
+     * @return the extrapolated vertexBuffer for the specified Morph, if one
+     * was generated.  Otherwise, return the traditional vert buffer for it.
+     */
+    protected FloatBuffer getMorphVertBuffer(TriMesh m) {
+        return (extrapolatedVertBuf == null
+                || !extrapolatedVertBuf.containsKey(m))
+                ? m.getVertexBuffer() : extrapolatedVertBuf.get(m);
+    }
+
+    /**
+     * @return the extrapolated normBuffer for the specified Morph, if one
+     * was generated.  Otherwise, return the traditional norm buffer for it.
+     */
+    protected FloatBuffer getMorphNormBuffer(TriMesh m) {
+        return (extrapolatedNormBuf == null
+                || !extrapolatedNormBuf.containsKey(m))
+                ? m.getNormalBuffer() : extrapolatedNormBuf.get(m);
+    }
 
     /** This one may be a reference to a remotely managed map */
     protected ListenableStringFloatMap morphInfluencesMap;
@@ -185,14 +215,19 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
             throw new IllegalArgumentException(
                     "This class can only handle TriMeshes as morphs");
         TriMesh morph = (TriMesh) morphGeo;
-        if (morph.getVertexCount() != baseMorph.getVertexCount())
+        if (baseMorph.getMode() != morph.getMode())
+            throw new IllegalArgumentException(
+                    "Trimesh " + morph.getName()
+                    + " has mode which does not match the base morph: "
+                    + morph.getMode() + " vs. " + baseMorph.getMode());
+        if (morph.getVertexCount() > baseMorph.getVertexCount())
             throw new IllegalArgumentException(
                     "Trimesh " + morph.getName()
                     + " incompatible with base Trimesh "
                     + baseMorph.getName() + ".  Vertex counts "
                     + morph.getVertexCount() + " vs. "
                     + baseMorph.getVertexCount());
-        if (morph.getMaxIndex() != baseMorph.getMaxIndex())
+        if (morph.getMaxIndex() > baseMorph.getMaxIndex())
             throw new IllegalArgumentException(
                     "Trimesh " + morph.getName()
                     + " incompatible with base Trimesh "
@@ -205,6 +240,19 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
                 && baseMorph.getNormalBuffer() == null))
             throw new IllegalArgumentException(
                 "Normal buffer conflicts with Base morph");
+        if (morph.getNormalBuffer() != null
+                && (morph.getNormalBuffer().capacity() >
+                baseMorph.getNormalBuffer().capacity()))
+            throw new IllegalArgumentException(
+                    "Normal buffer count conflicts with Base morph.  "
+                    + morph.getNormalBuffer().capacity() + " vs. "
+                    + baseMorph.getNormalBuffer().capacity());
+        if (!needExtrapolation && (
+            morph.getVertexCount() < baseMorph.getVertexCount()
+            || (morph.getNormalBuffer() != null
+                && (morph.getNormalBuffer().capacity() <
+                baseMorph.getNormalBuffer().capacity()))
+        )) needExtrapolation = true;
 
         enforceEquality("fog coords",
                 baseMorph.getFogBuffer(), morph.getFogBuffer());
@@ -248,6 +296,25 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         if (baseMorph == null)
             throw new IllegalStateException(
                     "Can't initBase when no Geometry has been assigned");
+        if (baseMorph.getMode() != TriMesh.Mode.Triangles)
+            throw new IllegalStateException(
+                    MorphingTriMesh.class.getName()
+                    + " only supports Triangles mode at this time, not "
+                    + baseMorph.getMode());
+        if (baseMorph.getVertexBuffer() == null)
+            throw new IllegalStateException("Base morph is just a shell");
+        if (baseMorph.getVertexBuffer().capacity()
+                != baseMorph.getVertexCount() * 3)
+            throw new AssertionError(
+                    "Sanity check failed.  "
+                    + "Triangle mode base morph has screwey vertex count");
+        // By virtue of having mode Triangles, if the normals buf is non-null
+        // it should match the vert buffer in size
+        if (baseMorph.getNormalBuffer() != null
+                && baseMorph.getNormalBuffer().capacity()
+                != baseMorph.getVertexBuffer().capacity())
+            throw new AssertionError(
+                "Triangle mode base morph has normal/vertex count mismatch");
         logger.fine("Initializing base...");
         dirty = true;
         TriMesh base = baseMorph; // Just for brevity below
@@ -296,6 +363,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
      * @see #MorphingGeometry#forceMorph()
      */
     public void forceMorph() {
+        if (needExtrapolation) extrapolateMorphBuffers();
         try {
         if (morphs.size() != morphKeys.size())
             throw new AssertionError(
@@ -317,8 +385,8 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
             infs[i] = tmpF.floatValue();
         }
         for (TriMesh morph : morphs) {
-            vertBuffers.add(morph.getVertexBuffer());
-            normBuffers.add(morph.getNormalBuffer());
+            vertBuffers.add(getMorphVertBuffer(morph));
+            normBuffers.add(getMorphNormBuffer(morph));
             // If more buffers need to be merged, add them here
         }
         logger.log(Level.INFO, "Morphing ''{0}'' with influences:  {1}",
@@ -385,6 +453,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         return outBuffer;
     }
 
+    @SuppressWarnings("unchecked")
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
@@ -395,9 +464,13 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         capsule.write(localMorphInfluencesMap, "morphInfluences", null);
     }
 
+    @SuppressWarnings("unchecked")
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
+        needExtrapolation = true;
+        // I think we always need to do this, since we do not store the
+        // extrapolated buffers.
         morphs = capsule.readSavableArrayList("morphs", null);
         String[] morphKeysArray = capsule.readStringArray("morphKeys", null);
         if (morphKeysArray != null) morphKeys = Arrays.asList(morphKeysArray);
@@ -452,4 +525,98 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         if (morphInfluencesMap != null) autoMorph = true;
     }
      */
+
+    static final private float USNET = -1f;
+
+    /**
+     * Extrapolate component morph FloatBuffers to match the size of the
+     * base Morph geometry.
+     *
+     * This will be called automatically by forceMorph(), but in many cases it
+     * would be better to call this explicitly ahead-of-time rather than pausing
+     * a frame cycle mid-game.
+     */
+    protected void extrapolateMorphBuffers() {
+        needExtrapolation = false;
+
+        FloatBuffer baseVertBuffer = baseMorph.getVertexBuffer();
+        // First check if we really need to do anything
+        for (TriMesh tm : morphs) {
+            if (getMorphVertBuffer(tm).capacity() !=
+                    baseVertBuffer.capacity()) {
+                needExtrapolation = true;
+                break;
+            }
+            if (baseMorph.getNormalBuffer() != null
+                    && getMorphNormBuffer(tm).capacity() !=
+                    baseMorph.getNormalBuffer().capacity()) {
+                needExtrapolation = true;
+                break;
+            }
+        }
+        if (!needExtrapolation) return;
+        needExtrapolation = false;
+
+        if (extrapolatedVertBuf == null)
+                extrapolatedVertBuf = new HashMap<TriMesh, FloatBuffer>();
+        if (baseMorph.getNormalBuffer() != null && extrapolatedNormBuf == null)
+                extrapolatedNormBuf = new HashMap<TriMesh, FloatBuffer>();
+
+        FloatBuffer newVertBuffer, newNormBuffer;
+        FloatBuffer inVertBuf, inNormBuf;
+        Vector3f v3fBase;
+        int closestPos;
+        float closestDist;
+        float dist;
+        // addMorph has already enforced that either all morphs (incl. base)
+        // either have or do not have (null) a norm buffer.
+        for (TriMesh tm : morphs) {
+            if (getMorphVertBuffer(tm).capacity() ==
+                    baseVertBuffer.capacity()) continue;
+            logger.info("Extrapolating morph Buffers for '"
+                    + tm.getName() + "' to match the base Morph");
+            newVertBuffer =
+                    BufferUtils.createFloatBuffer(baseVertBuffer.capacity());
+            extrapolatedVertBuf.put(tm, newVertBuffer);
+            newNormBuffer = (baseMorph.getNormalBuffer() == null)
+                          ? null
+                          : BufferUtils.createFloatBuffer(
+                                  baseVertBuffer.capacity());
+            if (newNormBuffer != null)
+                extrapolatedNormBuf.put(tm, newNormBuffer);
+
+            inVertBuf = tm.getVertexBuffer();
+            inNormBuf = tm.getNormalBuffer();
+            baseVertBuffer.clear();
+            while (baseVertBuffer.hasRemaining()) {
+                v3fBase = new Vector3f(baseVertBuffer.get(),
+                        baseVertBuffer.get(), baseVertBuffer.get());
+                inVertBuf.clear();
+                closestPos = -1;
+                closestDist = Float.MAX_VALUE;
+                while (inVertBuf.hasRemaining()) {
+                    dist = v3fBase.distance(new Vector3f(inVertBuf.get(),
+                            inVertBuf.get(), inVertBuf.get()));
+                    if (dist < closestDist) {
+                        closestPos = inVertBuf.position() - 3;
+                        closestDist = dist;
+                    }
+                }
+                if (closestDist == Float.MAX_VALUE)
+                    throw new AssertionError(
+                            "No closest morph vert found for a base vertex");
+                newVertBuffer.put(inVertBuf.get(closestPos))
+                        .put(inVertBuf.get(closestPos + 1))
+                        .put(inVertBuf.get(closestPos + 2));
+                if (newNormBuffer != null)
+                    newNormBuffer.put(inNormBuf.get(closestPos))
+                            .put(inNormBuf.get(closestPos + 1))
+                            .put(inNormBuf.get(closestPos + 2));
+            }
+            inVertBuf.clear();
+            baseVertBuffer.clear();
+            newVertBuffer.clear();
+            if (newNormBuffer != null) newNormBuffer.clear();
+        }
+    }
 }
