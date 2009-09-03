@@ -211,6 +211,14 @@ public abstract class BaseApplet extends Applet {
     }
 	
 	/**
+	 * Checks if the applet is currently in Fullscreen mode.
+	 * @return true if the Display is in fullscreen mode
+	 */
+	public boolean isFullScreen() {
+		return Display.isFullscreen();
+	}
+	
+	/**
 	 * Get the exception handler if one hs been set.
 	 * 
 	 * @return the exception handler, or {@code null} if not set.
