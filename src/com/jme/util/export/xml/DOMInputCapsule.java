@@ -1155,22 +1155,27 @@ public class DOMInputCapsule implements InputCapsule {
             }
             currentElem = tmpEl;
             
-
             String sizeString = tmpEl.getAttribute("size");
-            ArrayList<Savable> sal;
-            List<ArrayList<Savable>> savableArrayLists = new ArrayList<ArrayList<Savable>>();
-            int i = -1;
-            while ((sal = readSavableArrayList("SavableArrayList_" + ++i, null))
-                    != null) savableArrayLists.add(sal);
+            int requiredSize = (sizeString.length() > 0)
+                             ? Integer.parseInt(sizeString)
+                             : -1;
 
-            if (sizeString.length() > 0) {
-                int requiredSize = Integer.parseInt(sizeString);
-                if (savableArrayLists.size() != requiredSize)
-                    throw new IOException(
-                            "String array contains wrong element count.  "
-                            + "Specified size " + requiredSize
-                            + ", data contains " + savableArrayLists.size());
+            ArrayList<Savable> sal;
+            List<ArrayList<Savable>> savableArrayLists =
+                    new ArrayList<ArrayList<Savable>>();
+            int i = -1;
+            while (true) {
+                sal = readSavableArrayList("SavableArrayList_" + ++i, null);
+                if (sal == null && savableArrayLists.size() >= requiredSize)
+                    break;
+                savableArrayLists.add(sal);
             }
+
+            if (requiredSize > -1 && savableArrayLists.size() != requiredSize)
+                throw new IOException(
+                        "String array contains wrong element count.  "
+                        + "Specified size " + requiredSize
+                        + ", data contains " + savableArrayLists.size());
             currentElem = (Element) tmpEl.getParentNode();
             return savableArrayLists.toArray(new ArrayList[0]);
         } catch (IOException ioe) {
