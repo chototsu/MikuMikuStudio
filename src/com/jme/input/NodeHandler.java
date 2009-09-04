@@ -58,12 +58,10 @@ public class NodeHandler extends InputHandler {
     /**
      * Constructor instantiates a new <code>NodeHandler</code> object. The
      * application is set for the use of the exit action. The node is set to
-     * control, while the api defines which input api is to be used.
+     * control.
      * @param node the node to control.
-     * @param api not used
      */
-    public NodeHandler(Spatial node, String api) { //todo: remove parameter api
-
+    public NodeHandler(Spatial node) {
         setKeyBindings();
         setUpMouse(node, 1 );
         setActions(node, 0.5f, 0.01f );
@@ -72,7 +70,7 @@ public class NodeHandler extends InputHandler {
     /**
      * Constructor instantiates a new <code>NodeHandler</code> object. The
      * application is set for the use of the exit action. The node is set to
-     * control, while the api defines which input api is to be used.
+     * control.
      * @param node the node to control.
      * @param keySpeed action speed for key actions (move)
      * @param mouseSpeed action speed for mouse actions (rotate)
