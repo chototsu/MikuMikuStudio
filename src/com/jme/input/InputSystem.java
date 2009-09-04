@@ -57,7 +57,7 @@ public class InputSystem {
      * Update the core input system - mouse, keyboard and joystick.
      * Thus all events are handled within this method call.<br>
      * To disable joystick support call {@link JoystickInput#setProvider(String)} with {@link #INPUT_SYSTEM_DUMMY} as
-     * parameter proir to creating the display.
+     * parameter prior to creating the display.
      * @see KeyInput#update()
      * @see MouseInput#update()
      * @see JoystickInput#update()

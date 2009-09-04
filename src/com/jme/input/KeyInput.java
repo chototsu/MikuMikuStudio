@@ -40,12 +40,12 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
 
 /**
  * <code>KeyInput</code> provides an interface for dealing with keyboard input.
- * There are public contstants for each key of the keyboard, which correspond
+ * There are public constants for each key of the keyboard, which correspond
  * to the LWJGL key bindings. This may require conversion by other subclasses
  * for specific APIs. <br>
- * The status of spcific keys can be queried via the {@link #isKeyDown}
+ * The status of specific keys can be queried via the {@link #isKeyDown}
  * method. For each key that is pressed or released an event is generated which
- * can be received by a {@link KeyInputListener}, these are subsribed via
+ * can be received by a {@link KeyInputListener}, these are subscribed via
  * {@link #addListener(KeyInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  *

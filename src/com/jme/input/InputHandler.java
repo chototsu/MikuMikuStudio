@@ -56,8 +56,8 @@ import com.jme.input.util.SyntheticButton;
 /**
  * <code>InputHandler</code> handles mouse, key and other inputs. Actions can be subscribed for specific event triggers.
  * {@link InputActionInterface#performAction(InputActionEvent)} is invoked within the {@link #update} method whenever the
- * trigger criterias match. For a usage example see TestInputHandler. InputHandler is also used to decouple event
- * occurence and action invocation (see {@link ActionTrigger}) - an event may occur in another thread (e.g. polling
+ * trigger criterion match. For a usage example see TestInputHandler. InputHandler is also used to decouple event
+ * occurrence and action invocation (see {@link ActionTrigger}) - an event may occur in another thread (e.g. polling
  * thread) but the action is still invoked in the thread that is calling the {@link #update} method.
  * <br>
  * You can add custom devices via the {@link #addDevice(InputHandlerDevice)} method.
@@ -183,7 +183,7 @@ public class InputHandler {
     }
 
     /**
-     * Registeres a single key as command in {@link KeyBindingManager} and adds an input
+     * Registers a single key as command in {@link KeyBindingManager} and adds an input
      * action to be invoked by this handler during update.
      *
      * @param inputAction    the input action to be added

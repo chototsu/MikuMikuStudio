@@ -43,11 +43,11 @@ import com.jme.input.lwjgl.LWJGLMouseInput;
 /**
  * <code>MouseInput</code> defines an interface to communicate with the mouse
  * input device.
- * The status of spcific buttons can be queried via the {@link #isButtonDown}
+ * The status of specific buttons can be queried via the {@link #isButtonDown}
  * method. Position data can be queried by various get methods.
  * For each button that is pressed or released as well as for movement of
  * mouse or wheel an event is generated which
- * can be received by a {@link MouseInputListener}, these are subsribed via
+ * can be received by a {@link MouseInputListener}, these are subscribed via
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
@@ -222,7 +222,7 @@ public abstract class MouseInput extends Input {
     public abstract void update();
 
     /**
-     * <code>setCursorVisible</code> sets the visiblity of the hardware cursor.
+     * <code>setCursorVisible</code> sets the visibility of the hardware cursor.
      * @param v true turns the cursor on false turns it off
      */
     public abstract void setCursorVisible(boolean v);
@@ -248,7 +248,7 @@ public abstract class MouseInput extends Input {
 	public abstract void setHardwareCursor(URL file, int xHotspot, int yHotspot);
 
     /**
-     * This method will set an animated harware cursor.
+     * This method will set an animated hardware cursor.
      * 
      * @param file
      *            in this method file is only used as a key for cursor cashing
@@ -281,7 +281,7 @@ public abstract class MouseInput extends Input {
     /**
      * Unsubscribe a listener. Disable event generation if no more listeners.
      * @see #addListener(com.jme.input.MouseInputListener)
-     * @param listener to be unsuscribed
+     * @param listener to be unsubscribed
      */
     public void removeListener( MouseInputListener listener ) {
         if ( listeners != null ) {
@@ -299,7 +299,7 @@ public abstract class MouseInput extends Input {
     }
 
 	/**
-	 * Check if a listener is allready added to this MouseInput
+	 * Check if a listener is already added to this MouseInput
 	 * @param listener listener to check for
 	 * @return true if listener is contained in the listenerlist
 	 */
@@ -327,7 +327,7 @@ public abstract class MouseInput extends Input {
     }
 
     /**
-     * @return absolte wheel rotation
+     * @return absolute wheel rotation
      */
     public abstract int getWheelRotation();
 

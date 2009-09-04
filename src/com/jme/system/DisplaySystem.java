@@ -318,7 +318,7 @@ public abstract class DisplaySystem {
     }
 
     /**
-     * Returns the set bitdepth for the display system.
+     * Returns the set bit depth for the display system.
      * 
      * @return the set bit depth
      */
@@ -404,7 +404,7 @@ public abstract class DisplaySystem {
      * <code>setVSyncEnabled</code> attempts to enable or disable monitor
      * vertical synchronization. The method is a "best attempt" to change the
      * monitor vertical refresh synchronization, and is <b>not </b> guaranteed
-     * to be successful. This is dependant on OS.
+     * to be successful. This is dependent on OS.
      * 
      * @param enabled
      *            <code>true</code> to synchronize, <code>false</code> to

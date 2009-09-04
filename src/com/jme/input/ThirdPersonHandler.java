@@ -131,7 +131,7 @@ public class ThirdPersonHandler extends InputHandler {
      */
     protected MovementPermitter permitter;
 
-    /** World up vector.  Currently 0,1,0 is the only guarenteed value to work. */
+    /** World up vector.  Currently 0,1,0 is the only guaranteed value to work. */
     protected Vector3f upVector = new Vector3f(0, 1, 0);
 
     /** An internal vector used for calculations to prevent object creation. */

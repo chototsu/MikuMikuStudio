@@ -48,7 +48,7 @@ import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 /**
  * Functionality common to all game types.
  * <p>
- * This class provides a basic API for gmes and also holds some implementation
+ * This class provides a basic API for games and also holds some implementation
  * details common to all game types. In particular it defines the various steps
  * in the game life-cycle:
  * 
@@ -178,7 +178,7 @@ public abstract class AbstractGame {
      *            <code>null</code> will result in no image being used.
      *            You would normally use .getResource...() to get (and verify)
      *            the URL.
-     *            For hacking or prototype, you can get image from filesystem
+     *            For hacking or prototype, you can get image from file system
      *            like new URL("file:" + filepath").
      */
     public void setConfigShowMode(ConfigShowMode mode, URL imageOverride) {

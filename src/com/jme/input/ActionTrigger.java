@@ -40,7 +40,7 @@ import com.jme.input.action.InputActionInterface;
 /**
  * Stores data about an action trigger. Subclasses provide the actual trigger functionality.
  * Triggers are used by {@link InputHandler} to decouple event
- * occurence and action invocation.
+ * occurrence and action invocation.
  * <br>
  * The most important methods of the trigger are {@link #activate()} and {@link #deactivate()}: they add and remove this
  * trigger from the list of active trigger in the InputHandler. For all active triggers the {@link #performAction}
@@ -301,5 +301,4 @@ public abstract class ActionTrigger {
             return "command";
         }
     }
-
 }

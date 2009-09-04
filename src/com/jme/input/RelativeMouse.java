@@ -69,7 +69,7 @@ public class RelativeMouse extends Mouse {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      */
     public RelativeMouse(String name) {
         super(name);

@@ -88,7 +88,7 @@ public abstract class Mouse extends Quad {
      * 
      * @param name
      *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            identification and comparison purposes.
      */
     public Mouse(String name) {
         super(name, 32, 32);
@@ -164,8 +164,8 @@ public abstract class Mouse extends Quad {
     public abstract void setSpeed(float speed);
 
     /**
-     * Returns this mouse's location relative to the hotspot offset. Basicly,
-     * where the mouse is on the screen.
+     * Returns this mouse's location relative to the hotspot offset. Put
+     * simply, where the mouse is on the screen.
      * 
      * @return The mouse's location.
      */

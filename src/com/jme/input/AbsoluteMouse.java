@@ -118,7 +118,7 @@ public class AbsoluteMouse extends Mouse {
      * limits of the mouse movements are provided.
      *
      * @param name   the name of the scene element. This is required for
-     *               identification and comparision purposes.
+     *               identification and comparison purposes.
      * @param limitWidth  the width of the mouse's limit.
      * @param limitHeight the height of the mouse's limit.
      */

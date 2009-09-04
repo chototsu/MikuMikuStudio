@@ -61,7 +61,7 @@ public abstract class InputHandlerDevice {
 
     /**
      * Query name of this device. Note: The name may not change, because it is used as key, that's why this method
-     * is final (avoid overrriding and returning another name).
+     * is final (avoid overriding and returning another name).
      *
      * @return name of this device
      */

@@ -41,10 +41,8 @@ import com.jme.renderer.Camera;
 import com.jme.scene.Spatial;
 
 /**
- * <p>
- * Camera handler that will smoothly follow a set scene element, allowing for
+ * <code>ChaseCamera</code> will smoothly follow a set scene element, allowing for
  * rotation about and zoom on that element.
- * </p>
  * 
  * <p>
  * see the javadoc for update(float time) for information on how positioning
@@ -207,7 +205,7 @@ public class ChaseCamera extends InputHandler {
      * <p>
      * The new position is determined by checking where the target has moved to
      * and getting an offset in relation to the XZ plane. Using this, the ideal
-     * spherical coordiantes for the camera are updated for the angle around the
+     * spherical coordinates for the camera are updated for the angle around the
      * up axis (azimuth). Thus, ideal height and distance from the target are
      * still the same regardless of how far the target has moved.
      * </p>
@@ -230,7 +228,7 @@ public class ChaseCamera extends InputHandler {
      *
      * <p>
      * Typically you want the ratio to come out equal to 1. Values less than 1
-     * will ocillate before coming to rest. Values over 1 will take longer than
+     * will oscillate before coming to rest. Values over 1 will take longer than
      * necessary to come to equilibrium.
      * </p>
      *
@@ -324,10 +322,10 @@ public class ChaseCamera extends InputHandler {
 
     protected void convertIdealSphereToCartesian() {
         if (worldUpVec.y == 1) {
-            // determine ideal position in cartesian space
+            // determine ideal position in Cartesian space
             FastMath.sphericalToCartesian(idealSphereCoords, idealPosition).addLocal(targetPos);
         } else if (worldUpVec.z == 1){
-            // determine ideal position in cartesian space
+            // determine ideal position in Cartesian space
             FastMath.sphericalToCartesianZ(idealSphereCoords, idealPosition).addLocal(targetPos);
         }
     }
@@ -339,7 +337,7 @@ public class ChaseCamera extends InputHandler {
         } else {
             float offX, offZ;
             if (stayBehindTarget && !looking) {
-                // set y to be opposite target facing dir.
+                // set y to be opposite target facing direction.
                 Vector3f rot = compVect;
                 target.getLocalRotation().getRotationColumn(2, rot);
                 rot.negateLocal();
