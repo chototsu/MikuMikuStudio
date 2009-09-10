@@ -578,10 +578,9 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
     }
 
     /**
-     * <code>copyToTexture</code> copies the pbuffer contents to
-     * the given Texture. What is copied is up to the Texture object's rttSource
-     * field.
-     * 
+     * <code>copyToTexture</code> copies the FBO contents to the given
+     * Texture. What is copied is up to the Texture object's rttSource field.
+     *
      * @param tex
      *            The Texture to copy into.
      * @param width
@@ -590,6 +589,26 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
      *            the height of the texture image
      */
     public void copyToTexture(Texture tex, int width, int height) {
+        copyToTexture(tex, 0, 0, width, height);
+    }
+    
+    /**
+     * <code>copyToTexture</code> copies the pbuffer contents to
+     * the given Texture. What is copied is up to the Texture object's rttSource
+     * field.
+     * 
+     * @param tex
+     *            The Texture to copy into.
+     * @param x
+     *            the x offset on the texture image
+     * @param y
+     *            the y offset on the texture image
+     * @param width
+     *            the width of the texture image
+     * @param height
+     *            the height of the texture image
+     */
+    public void copyToTexture(Texture tex, int x, int y, int width, int height) {
         LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
 
         int source = GL11.GL_RGBA;
@@ -738,7 +757,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             source = GL11.GL_LUMINANCE_ALPHA;
             break;
         }
-        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width,
+        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, x, y, width,
                 height, 0);
     }
 

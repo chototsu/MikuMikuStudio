@@ -199,6 +199,23 @@ public interface TextureRenderer {
      *            the height of the texture image
      */
     void copyToTexture(Texture tex, int width, int height);
+    
+    /**
+     * <code>copyToTexture</code> copies the FBO contents to the given
+     * Texture. What is copied is up to the Texture object's rttSource field.
+     * 
+     * @param tex
+     *            The Texture to copy into.
+     * @param x
+     *            the x offset on the texture image
+     * @param y
+     *            the y offset on the texture image
+     * @param width
+     *            the width of the texture image
+     * @param height
+     *            the height of the texture image
+     */
+    public void copyToTexture(Texture tex, int x, int y, int width, int height);
 
     /**
      * Any wrapping up and cleaning up of TextureRenderer information is performed here.
