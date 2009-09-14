@@ -194,8 +194,8 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
      * overridden if the following delegateInfluences() call finds a provider.
      * </P>
      */
-    public MorphingTriMesh(TriMesh baseMorph) {
-        super(baseMorph.getName());
+    public MorphingTriMesh(String name, TriMesh baseMorph) {
+        super(name);
         this.baseMorph = baseMorph;
         initBase();
         logger.log(Level.FINE,
@@ -266,7 +266,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         morphKeys.add(morphKey);
         if (morphInfluencesMap != null)
             morphInfluencesMap.addListener(this, Arrays.asList(morphKey));
-        logger.log(Level.FINE, "Added morph {0} to MorphingTriMesh '{1}':  {2}",
+        logger.log(Level.FINE, "Added morph #{0} to MorphingTriMesh '{1}':  {2}",
                 new Object[] {
                 morphs.size(), getName(), morph.getName()});
     }
@@ -321,7 +321,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         RenderState renderState;
 
         // Set scalars according to base morph
-        setName(base.getName());
+        //setName(base.getName());  Depend on Superclass to set/save name
         setMode(base.getMode());
         setDefaultColor(base.getDefaultColor());
         setLightState(base.getLightState());
