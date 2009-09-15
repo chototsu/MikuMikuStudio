@@ -118,6 +118,8 @@ public class BitmapFontLoader {
                             charSet.setWidth(Integer.parseInt(tokens[i + 1]));
                         } else if (token.equals("scaleH")) {
                             charSet.setHeight(Integer.parseInt(tokens[i + 1]));
+                        } else if (token.equals("yoffset")) {
+                            charSet.setyOffset(Integer.parseInt(tokens[i + 1]));
                         } // else if
                     }
                 } else if (tokens[0].equals("char")) {

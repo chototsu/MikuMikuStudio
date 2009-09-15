@@ -46,6 +46,7 @@ public class BitmapCharacterSet {
     private int renderedSize;
     private int width;
     private int height;
+    private int yOffset;
     private Map<Integer, BitmapCharacter> characters;
 
     public BitmapCharacterSet() {
@@ -98,5 +99,13 @@ public class BitmapCharacterSet {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public void setyOffset(int yOffset) {
+        this.yOffset = yOffset;
+    }
+
+    public int getyOffset() {
+        return yOffset;
     }
 }

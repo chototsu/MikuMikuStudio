@@ -124,7 +124,7 @@ public class BitmapFont {
                 float height = 0;
                 if (c != null) {
                     xOffset = c.getXOffset() * sizeScale;
-                    yOffset = c.getYOffset() * sizeScale;
+                    yOffset = (charSet.getyOffset() + c.getYOffset()) * sizeScale;
                     xAdvance = c.getXAdvance() * sizeScale;
                     width = c.getWidth() * sizeScale;
                     height = c.getHeight() * sizeScale;
@@ -310,7 +310,7 @@ public class BitmapFont {
                 float height = 0;
             	if (c != null) {
             		xOffset = c.getXOffset() * sizeScale;
-            		yOffset = c.getYOffset() * sizeScale;
+            		yOffset = (charSet.getyOffset() + c.getYOffset()) * sizeScale;
             		xAdvance = c.getXAdvance() * sizeScale;
             		width = c.getWidth() * sizeScale;
             		height = c.getHeight() * sizeScale;
@@ -331,7 +331,7 @@ public class BitmapFont {
                             BitmapCharacter localChar = q.getBitmapChar();
 
                             float localxOffset = localChar.getXOffset() * sizeScale;
-                            float localyOffset = localChar.getYOffset() * sizeScale;
+                            float localyOffset = (charSet.getyOffset() + localChar.getYOffset()) * sizeScale;
                             float localxAdvance = localChar.getXAdvance() * sizeScale;
 
                             // Move current word to the left side of the text
