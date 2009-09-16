@@ -91,11 +91,11 @@ final public class TextureManager {
 
     public static boolean COMPRESS_BY_DEFAULT = true;
 
-    private static Texture.MagnificationFilter DEFAULT_MAG_FILTER = Texture.MagnificationFilter.Bilinear;
+    public static Texture.MagnificationFilter DEFAULT_MAG_FILTER = Texture.MagnificationFilter.Bilinear;
 
-    private static Texture.MinificationFilter DEFAULT_MIN_FILTER = Texture.MinificationFilter.BilinearNoMipMaps;
+    public static Texture.MinificationFilter DEFAULT_MIN_FILTER = Texture.MinificationFilter.BilinearNoMipMaps;
 
-    private static float DEFAULT_ANISO_LEVEL = 0.0f;
+    public static float DEFAULT_ANISO_LEVEL = 0.0f;
     
     private static boolean createOnHeap = false;
 
