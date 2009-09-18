@@ -135,7 +135,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         for (ancestor = getParent(); ancestor != null;
                 ancestor = ancestor.getParent()) {
             logger.log(
-                    Level.FINEST, "Trying anc ''{0'}'...", ancestor.getName());
+                    Level.FINEST, "Trying anc ''{0}''...", ancestor.getName());
             if (!(ancestor instanceof MorphInfluencesMapProvider)) continue;
             newInfluencesMap =
                 ((MorphInfluencesMapProvider) ancestor).getMorphInfluencesMap();
@@ -152,7 +152,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
         }
         morphInfluencesMap = newInfluencesMap;
         morphInfluencesMap.addListener(this, morphKeys);
-        logger.log(Level.INFO, "Delegating influences to ''{1}''", ancestor);
+        logger.log(Level.INFO, "Delegating influences to ''{0}''", ancestor);
         return true;
     }
 
