@@ -61,6 +61,21 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     protected TriMesh baseMorph;
     volatile private boolean dirty = true;
     protected boolean needExtrapolation;
+    protected float morphInfluenceThreshold = .00001f;
+
+    /**
+     * @see #MorphingGeometry#getMorphInfluenceThreshold()
+     */
+    public void setMorphInfluenceThreshold(float morphInfluenceThreshold) {
+        this.morphInfluenceThreshold = morphInfluenceThreshold;
+    }
+
+    /**
+     * @see #MorphingGeometry#setMorphInfluenceThreshold(float)
+     */
+    public float getMorphInfluenceThreshold() {
+        return morphInfluenceThreshold;
+    }
 
     /**
      * @return the extrapolated vertexBuffer for the specified Morph, if one
@@ -372,8 +387,9 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
                     + morphs.size() + " vs. " + morphKeys.size());
         List<FloatBuffer> vertBuffers = new ArrayList<FloatBuffer>();
         List<FloatBuffer> normBuffers = new ArrayList<FloatBuffer>();
-        float[] infs = new float[morphKeys.size()];
+        List<Float> infList = new ArrayList<Float>();
         Float tmpF;
+        TriMesh morph;
         if (morphInfluencesMap == null)
             throw new IllegalStateException(
                     "morphInfluencesMap must be non-null");
@@ -383,13 +399,16 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
                 throw new IllegalStateException(
                         "Morph influence not set for required key: "
                         + morphKeys.get(i));
-            infs[i] = tmpF.floatValue();
-        }
-        for (TriMesh morph : morphs) {
+            if (tmpF.floatValue() < morphInfluenceThreshold) continue;
+            infList.add(tmpF);
+            morph = morphs.get(i);
             vertBuffers.add(getMorphVertBuffer(morph));
             normBuffers.add(getMorphNormBuffer(morph));
             // If more buffers need to be merged, add them here
         }
+        float[] infs = new float[infList.size()];
+        for (int i = 0; i < infs.length; i++)
+            infs[i] = infList.get(i).floatValue();
         logger.log(Level.INFO, "Morphing ''{0}'' with influences:  {1}",
                 new String[] {getName(), Arrays.toString(infs)});
 

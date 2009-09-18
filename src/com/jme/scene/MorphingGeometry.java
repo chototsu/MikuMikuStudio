@@ -96,4 +96,15 @@ public interface MorphingGeometry
      *         attached Skin geometry.
      */
     public SkinNode getSkinNode(); 
+
+    /**
+     * Morphs with corresponding influence values below this threshold will
+     * have no effect on the MorphingGeometry.
+     */
+    public void setMorphInfluenceThreshold(float morphInfluenceThreshold);
+
+    /**
+     * @see #setMorphInfluenceThreshold(float)
+     */
+    public float getMorphInfluenceThreshold();
 }
