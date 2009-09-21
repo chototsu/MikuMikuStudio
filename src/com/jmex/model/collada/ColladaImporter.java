@@ -400,7 +400,7 @@ public class ColladaImporter {
      * places an object into the resource library with a given key. If there is
      * an object referenced by this key and it is not the same object that is to
      * be added to the library, a warning is issued. If this object already
-     * exists in the library we do not readd it.
+     * exists in the library we do not read it.
      * 
      * @param key
      *            the key to obtain the object from the library.
@@ -522,7 +522,7 @@ public class ColladaImporter {
     }
 
     /**
-     * processCollada takes a COLLADAType object that contains the heirarchical
+     * processCollada takes a COLLADAType object that contains the hierarchical
      * information obtained from the XML structure of a COLLADA model. This root
      * object is processed and sets the data structures for jME to render the
      * model to *this* object.
@@ -545,7 +545,7 @@ public class ColladaImporter {
                 }
             }
         }
-        // user defined libraries may exist (for example, uv animations)
+        // user defined libraries may exist (for example, UV animations)
         if (root.hasextra()) {
             try {
                 ExtraPluginManager.processExtra(root, root.getextra());
@@ -720,8 +720,7 @@ public class ColladaImporter {
             }
         }
         // the scene tag actually takes instances of the visual scene defined
-        // above
-        // and attaches them to the model that is returned.
+        // above and attaches them to the model that is returned.
         if (root.hasscene()) {
             try {
                 processScene(root.getscene());
@@ -896,7 +895,7 @@ public class ColladaImporter {
      * @param scene
      *            the scene to process
      * @throws Exception
-     *             thrown if there is an error processing the xml.
+     *             thrown if there is an error processing the XML.
      */
     public void processScene(sceneType scene) throws Exception {
         if (scene.hasinstance_visual_scene()) {
@@ -1106,7 +1105,7 @@ public class ColladaImporter {
      *            the array to process.
      * @return the int array.
      * @throws Exception
-     *             thrown if there is a problem processing this xml document.
+     *             thrown if there is a problem processing this XML document.
      */
     private int[] processInterpolationArray(Name_arrayType array)
             throws Exception {
@@ -1207,7 +1206,7 @@ public class ColladaImporter {
     }
 
     /**
-     * the animation element catgorizes an animation hierarchy with each
+     * the animation element categorizes an animation hierarchy with each
      * controller defining the animation's keyframe and sampler functions. These
      * interact on single bones, where a collection of controllers will build up
      * a complete animation.
@@ -1215,7 +1214,7 @@ public class ColladaImporter {
      * @param animation
      *            the animation to parse.
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     private BoneAnimation processAnimation(animationType animation)
             throws Exception {
@@ -1223,7 +1222,7 @@ public class ColladaImporter {
         BoneTransform bt = new BoneTransform();
         /*
         out.setInterpolate(true);
-        TODO:  Build old baslines and test this example to find out,
+        TODO:  Build old baselines and test this example to find out,
         first:  did this example ever interpolate; and if so, then
         when did the interpolation break.
         */
@@ -1513,7 +1512,7 @@ public class ColladaImporter {
      * @param image
      *            the image to process.
      * @throws Exception
-     *             thrown if there is a problem with the imagetype.
+     *             thrown if there is a problem with the image type.
      */
     private void processImage(imageType image) throws Exception {
         if (image.hasdata()) {
@@ -1530,7 +1529,7 @@ public class ColladaImporter {
      * processMaterialLibrary will build a collection (Map) of MaterialStates,
      * with the defined material id as the key in the Map. This map and
      * corresponding key will then be used to apply materials to the appropriate
-     * node. The library only defines the id of the material and the url of the
+     * node. The library only defines the id of the material and the URL of the
      * instance effect that defines its qualities, it won't be until the
      * library_effects tag is processed that the material state information is
      * filled in.
@@ -1538,7 +1537,7 @@ public class ColladaImporter {
      * @param libraryMat
      *            the material library type.
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     private void processMaterialLibrary(library_materialsType libraryMat)
             throws Exception {
@@ -1555,7 +1554,7 @@ public class ColladaImporter {
      * 
      * @param mat
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     private void processMaterial(materialType mat) throws Exception {
         ColladaMaterial material = new ColladaMaterial();
@@ -1574,7 +1573,7 @@ public class ColladaImporter {
     }
 
     /**
-     * processEffects will build effects as defined by the techinque. The
+     * processEffects will build effects as defined by the technique. The
      * appropriate render state will be obtained from the materialMap hashmap
      * based on the the name of the effect. Currently, the id of the effect is
      * ignored as it is directly tied to the material id. However, in the future
@@ -1583,7 +1582,7 @@ public class ColladaImporter {
      * @param libraryEffects
      *            the library of effects to build.
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     private void processEffects(library_effectsType libraryEffects)
             throws Exception {
@@ -1653,11 +1652,11 @@ public class ColladaImporter {
      * properties, sampler properties, etc).
      * 
      * @param param
-     *            the xml element of the new parameter.
+     *            the XML element of the new parameter.
      * @param mat
      *            the material to store the parameters in.
      * @throws Exception
-     *             thrown if there is a problem reading the xml.
+     *             thrown if there is a problem reading the XML.
      */
     private void processNewParam(common_newparam_type param, ColladaMaterial mat)
             throws Exception {
@@ -1677,7 +1676,7 @@ public class ColladaImporter {
      * @param id
      *            the id on the sampler
      * @param sampler
-     *            the sampler xml element.
+     *            the sampler XML element.
      * @param mat
      *            the material to store the values in.
      * @throws Exception
@@ -2351,7 +2350,7 @@ public class ColladaImporter {
                 }
             }
         }
-        // set the emmission color value of the material
+        // set the emission color value of the material
         if (pt.hasemission()) {
             ms.setEmissive(getColor(pt.getemission().getcolor()));
         }
@@ -2415,7 +2414,7 @@ public class ColladaImporter {
                 }
             }
         }
-        // set the emmission color value of the material
+        // set the emission color value of the material
         if (lt.hasemission()) {
             ms.setEmissive(getColor(lt.getemission().getcolor()));
         }
@@ -2448,7 +2447,7 @@ public class ColladaImporter {
      *            the texture type to process.
      * @return the generated TextureState that handles this texture tag.
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     public TextureState processTexture(textureType texture,
             ColladaMaterial mat) throws Exception {
@@ -2520,7 +2519,7 @@ public class ColladaImporter {
      * @param geometryLibrary
      *            the geometries to process individually.
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     private void processGeometry(library_geometriesType geometryLibrary)
             throws Exception {
@@ -2938,9 +2937,9 @@ public class ColladaImporter {
      *            the meshType to process for the trimesh.
      * @param geom
      *            the geometryType of the TriMesh to build.
-     * @return the jME tri mesh representing the COLLADA mesh.
+     * @return the jME trimesh representing the COLLADA mesh.
      * @throws Exception
-     *             thrown if there is a problem processing the xml.
+     *             thrown if there is a problem processing the XML.
      */
     private Spatial processTriMesh(meshType mesh, geometryType geom)
             throws Exception {

@@ -74,7 +74,6 @@ public class ColladaToJme extends SimpleHeadlessApp {
         
         ColladaToJme ctj = new ColladaToJme();
         ctj.start();
-
     }
 
     protected void simpleInitGame() {
