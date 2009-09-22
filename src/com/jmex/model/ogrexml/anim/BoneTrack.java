@@ -117,7 +117,7 @@ public final class BoneTrack implements Serializable{
         // by default the mode is to clamp for times beyond the current timeline
         if (time < times[0]){
             target.setAnimTransforms(translations[0], rotations[0]);
-        }else if (time > times[times.length-1]){
+        }else if (time >= times[times.length-1]){
             target.setAnimTransforms(translations[translations.length-1],
                                      rotations[rotations.length-1]);
         } else{
