@@ -206,11 +206,11 @@ public class TestNormalmap extends SimpleGame {
 
         Node model = ColladaImporter.getModel();
 
-        // Remove materialstates for this test because the model/importer
+        // Remove MaterialState(s) for this test because the model/importer
         // creates lousy settings
         removeMaterialStates(model);
 
-        // Test materialstate (should be set through the import anyway)
+        // Test MaterialState (should be set through the import anyway)
         MaterialState ms = display.getRenderer().createMaterialState();
         ms.setColorMaterial(MaterialState.ColorMaterial.AmbientAndDiffuse);
         ms.setAmbient(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));

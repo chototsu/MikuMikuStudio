@@ -114,8 +114,8 @@ public class TestColladaLoading extends SimpleGame {
 	        skel.addController(ac);
         }
         
-        //attach the skeleton and the skin to the rootnode. Skeletons could possibly
-        //be used to update multiple skins, so they are seperate objects.
+        //attach the skeleton and the skin to the rootNode. Skeletons could possibly
+        //be used to update multiple skins, so they are separate objects.
         rootNode.attachChild(sn);
         rootNode.attachChild(skel);
         

@@ -53,7 +53,7 @@ import com.jmex.model.converters.MaxToJme;
 /**
  * Started Date: Jun 26, 2004<br>
  * <br>
- * This class test the ability to save adn write .3ds files
+ * This class test the ability to save and write .3ds files
  * 
  * @author Jack Lindamood
  */

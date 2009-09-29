@@ -66,7 +66,6 @@ import com.jmex.model.converters.MilkToJme;
 /**
  * <code>TestFireMilk</code>
  * @author Joshua Slack
- * @version
  */
 public class TestFireMilk extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestFireMilk.class
