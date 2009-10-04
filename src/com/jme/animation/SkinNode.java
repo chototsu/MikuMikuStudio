@@ -617,8 +617,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         Bone readSkeleton = (Bone)cap.readSavable("skeleton", null);
         connectionPoints = cap.readSavableArrayList("connectionPoints", null);
         cache = cap.readSavableArrayListArray2D("cache", null);
-        geometryRegions = (StringStringMap)
-                cap.readSavable("geometryRegions", null);
+        Savable sav = cap.readSavable("geometryRegions", null);
+        if (sav != null) geometryRegions = (StringStringMap) sav;
 
         if (readSkeleton != null) {
             setSkeleton(readSkeleton);
