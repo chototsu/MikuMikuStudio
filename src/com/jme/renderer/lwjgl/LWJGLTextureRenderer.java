@@ -103,7 +103,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (!inited) {
             isSupported = GLContext.getCapabilities().GL_EXT_framebuffer_object;
             supportsMultiDraw = GLContext.getCapabilities().GL_ARB_draw_buffers;
-            if (supportsMultiDraw) {
+            if (supportsMultiDraw && isSupported) {
                 IntBuffer buf = BufferUtils.createIntBuffer(16);
                 GL11.glGetInteger(EXTFramebufferObject.GL_MAX_COLOR_ATTACHMENTS_EXT, buf);
                 maxDrawBuffers = buf.get(0);

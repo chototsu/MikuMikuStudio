@@ -104,7 +104,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
         if (!inited) {
             isSupported = gl.isExtensionAvailable("GL_EXT_framebuffer_object");
             supportsMultiDraw = gl.isExtensionAvailable("GL_ARB_draw_buffers");
-            if (supportsMultiDraw) {
+            if (supportsMultiDraw && isSupported) {
                 IntBuffer buf = BufferUtils.createIntBuffer(16);
                 gl.glGetIntegerv(GL.GL_MAX_COLOR_ATTACHMENTS_EXT, buf); // TODO Check for integer
                 maxDrawBuffers = buf.get(0);
