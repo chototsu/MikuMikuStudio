@@ -99,7 +99,7 @@ public abstract class AbstractGame {
     /** Flag for running the system. */
     protected boolean finished;
 
-    private final static String JME_VERSION_TAG = "jME version 2.0 Stable (r4093)";
+    private final static String JME_VERSION_TAG = "jME2 Main Trunk @ Google Code";
     // The replacement for DEFAULT_IMAGE now resides in
     // BaseGame.BaseGameSettings clinit initializer.
     // Follow that example in your subclass, or set in your

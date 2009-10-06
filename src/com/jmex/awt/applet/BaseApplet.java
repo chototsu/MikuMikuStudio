@@ -34,7 +34,7 @@ public abstract class BaseApplet extends Applet {
 	 * Copied from AbstractGame; Perhaps it's better to make this public from
 	 * there, and reference it?
 	 */
-	private final static String JME_VERSION_TAG = "jME version 2.0 Stable (r4093)";
+	private final static String JME_VERSION_TAG = "jME2 Main Trunk @ Google Code";
 
 	/** The awt canvas to draw to */
 	protected Canvas displayParent;

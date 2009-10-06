@@ -49,7 +49,7 @@ public abstract class StandardApplet extends Applet {
         GRAPHICAL, HEADLESS
     }
     
-    private final static String JME_VERSION_TAG = "jME version 2.0 Stable (r4093)";
+    private final static String JME_VERSION_TAG = "jME2 Main Trunk @ Google Code";
 
     /** The awt canvas to draw to */
     protected Canvas displayParent;
