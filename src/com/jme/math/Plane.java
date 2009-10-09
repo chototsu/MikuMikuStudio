@@ -190,7 +190,7 @@ public class Plane implements Serializable, Savable, Cloneable {
     }
 
     /**
-     * <code>toString</code> returns a string thta represents the string
+     * <code>toString</code> returns a string that represents the string
      * representation of this plane. It represents the normal as a
      * <code>Vector3f</code> object, so the format is the following:
      * com.jme.math.Plane [Normal: org.jme.math.Vector3f [X=XX.XXXX, Y=YY.YYYY,
