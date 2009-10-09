@@ -36,7 +36,11 @@ import java.net.URL;
 import java.util.concurrent.Callable;
 
 import com.jme.input.MouseInput;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial.CullHint;
 import com.jme.util.GameTaskQueueManager;
@@ -113,25 +117,27 @@ public class TestBitmapFont {
                 txt3.update();
 
                 BitmapText txt4 = new BitmapText(fnt, false);
-                txt4.setSize(32);
+                txt4.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+                txt4.setSize(3);
                 txt4.setAlignment(Align.Center);
                 txt4.setText("Text without restriction.\n Text without\n restriction.\n Text without restriction. Text without restriction");
                 txt4.setDefaultColor(ColorRGBA.red.clone());
+                txt4.setLocalRotation(new Quaternion().fromAngleAxis(55 * FastMath.DEG_TO_RAD, new Vector3f(0, 1, 0)));
                 txt4.update();
-                txt4.setLocalTranslation(140, -game.getDisplay().getHeight() + txt2.getLineHeight() * 5, 0);
 
                 txt4.setText("Shortened it!\n :)");
                 txt4.update();
 
                 txt4.setText("Elongated\n it to test! :)");
                 txt4.update();
+                
+                debug.getRootNode().attachChild(txt4);
 
                 orthoNode.setLocalTranslation(0, game.getDisplay().getHeight(), 0);
                 orthoNode.setCullHint(CullHint.Never);
                 orthoNode.attachChild(txt);
                 orthoNode.attachChild(txt2);
                 orthoNode.attachChild(txt3);
-                orthoNode.attachChild(txt4);
 
                 debug.getRootNode().attachChild(orthoNode);
                 return null;
