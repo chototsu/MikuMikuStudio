@@ -193,26 +193,32 @@ public abstract class MaterialState extends RenderState {
     }
 
     /**
-     * <code>getShininess</code> retrieves the shininess value of the
+     * <code>getShininess</code> retrieves the unshininess value of the
      * material.
      * 
-     * @return the shininess value of the material.
+     * @return the un-shininess value of the material.
+     * @see #setShininess(float)
      */
     public float getShininess() {
         return shininess;
     }
 
     /**
-     * <code>setShininess</code> sets the shininess of the material.
+     * <code>setShininess</code> sets the un-shininess of the material.
+     * <P>
+     * This property has a misleading name, since higher magnitude corresponds
+     * to <i>unshininess</i>, not <i>shininess</i>.
+     * </P>
      * 
-     * @param shininess
-     *            the shininess of the material.  Must be between 0 and 128.
+     * @param unshininess  Between 0 (completely shiny) and 128 (no shininess)
+     *                     inclusive.
      */
-    public void setShininess(float shininess) {
-        if (shininess < 0 || shininess > 128) {
-            throw new IllegalArgumentException("Shininess must be between 0 and 128.");
+    public void setShininess(float unshininess) {
+        if (unshininess < 0 || unshininess > 128) {
+            throw new IllegalArgumentException(
+                    "Unshininess must be between 0 and 128.");
         }
-        this.shininess = shininess;
+        this.shininess = unshininess;
         setNeedsRefresh(true);
     }
 
