@@ -606,6 +606,7 @@ public class JOGLLightState extends LightState {
         lightState.setLocalViewer(pkLState.getLocalViewer());
         lightState.setSeparateSpecular(pkLState.getSeparateSpecular());
         lightState.setEnabled(pkLState.isEnabled());
+        lightState.setGlobalAmbient(pkLState.getGlobalAmbient());
         for (int i = 0, maxL = pkLState.getLightList().size(); i < maxL; i++) {
             Light pkLight = pkLState.get(i);
             if (pkLight != null) {
