@@ -523,24 +523,24 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
             geom.setHasDirtyVertices(true);
             int overVerts = 0;
             int overNorms = 0;
-            if (cache[index].length * 3 > verts.capacity())
+            if (cache[index].length * 3 > verts.limit())
                 throw new IllegalStateException(
                         "Skin has more influences than vertexes.  "
-                        + cache[index].length + " vs. " + verts.capacity()
+                        + cache[index].length + " vs. " + verts.limit()
                         + "/3");
-            if (cache[index].length * 3 > norms.capacity())
+            if (cache[index].length * 3 > norms.limit())
                 throw new IllegalStateException(
                         "Skin has more influences than normals.  "
-                        + cache[index].length + " vs. " + norms.capacity()
+                        + cache[index].length + " vs. " + norms.limit()
                         + "/3");
-            if (cache[index].length * 3 < verts.capacity())
+            if (cache[index].length * 3 < verts.limit())
                 logger.log(Level.WARNING,
                         "Skin has fewer influences than vertexes.  {0} vs {1}/3",
-                        new Object[] { cache[index].length, verts.capacity() });
-            if (cache[index].length * 3 < norms.capacity())
+                        new Object[] { cache[index].length, verts.limit() });
+            if (cache[index].length * 3 < norms.limit())
                 logger.log(Level.WARNING,
                         "Skin has fewer influences than normals.  {0} vs {1}/3",
-                        new Object[] { cache[index].length, norms.capacity() });
+                        new Object[] { cache[index].length, norms.limit() });
 
             for (int vert = 0, max = cache[index].length; vert < max; vert++) {
                 ArrayList<BoneInfluence> infs = cache[index][vert];
