@@ -691,14 +691,17 @@ public class Vector2f implements Externalizable, Savable, Cloneable {
     }
 
     /**
-     * <code>toString</code> returns the string representation of this vector
-     * object. The format of the string is such: com.jme.math.Vector2f
-     * [X=XX.XXXX, Y=YY.YYYY]
-     * 
+     * <code>toString</code> returns the string representation of this vector.
+     * The format is: <code>(xx.x..., yy.y...)</code>
+     * <p>
+     * If you want to display a class name, then use
+     * Vector2f.class.getName() or getClass().getName().
+     * </p>
+     *
      * @return the string representation of this vector.
      */
     public String toString() {
-        return Vector2f.class.getName() + " [X=" + x + ", Y=" + y + "]";
+        return "(" + x + ", " + y + ')';
     }
 
     /**

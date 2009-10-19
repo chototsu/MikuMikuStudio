@@ -1843,13 +1843,17 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
-     * Returns the Spatial's name followed by the class of the spatial <br>
-     * Example: "MyNode (com.jme.scene.Spatial)
-     * 
-     * @return Spatial's name followed by the class of the Spatial
+     * Returns the Spatial's name.
+     *
+     * <p>
+     * If you want to display a class name, then use
+     * Spatial.class.getName() or getClass().getName().
+     * That's that those methods are there for.
+     * </p>
      */
     public String toString() {
-        return name + " (" + this.getClass().getName() + ')';
+        String nameString = getName(); // A subclass may overwrite getName()!
+        return (nameString == null) ? "<NONAME>" : nameString;
     }
 
     public Matrix4f getLocalToWorldMatrix(Matrix4f store) {

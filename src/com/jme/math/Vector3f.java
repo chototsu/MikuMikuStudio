@@ -903,15 +903,16 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
 
     /**
      * <code>toString</code> returns the string representation of this vector.
-     * The format is:
-     *
-     * org.jme.math.Vector3f [X=XX.XXXX, Y=YY.YYYY, Z=ZZ.ZZZZ]
+     * The format is: <code>(xx.x..., yy.y..., zz.z...)</code>
+     * <p>
+     * If you want to display a class name, then use
+     * Vector3f.class.getName() or getClass().getName().
+     * </p>
      *
      * @return the string representation of this vector.
      */
     public String toString() {
-        return Vector3f.class.getName()
-                + " [X=" + x + ", Y=" + y + ", Z=" + z + "]";
+        return "(" + x + ", " + y + ", " + z + ')';
     }
 
 
