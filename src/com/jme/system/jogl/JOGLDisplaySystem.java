@@ -355,6 +355,15 @@ public class JOGLDisplaySystem extends DisplaySystem {
         return new JOGLTextureRenderer(width, height, this, renderer);
     }
 
+    @Override
+    public TextureRenderer createTextureRenderer(int width, int height, int samples, Target target) {
+        if (!isCreated()) {
+            return null;
+        }
+
+        return new JOGLTextureRenderer(width, height, this, renderer);
+    }
+
     public static JOGLAWTCanvas createGLCanvas() {
         // Initialize the OpenGL requested capabilities.
         final GLCapabilities caps = new GLCapabilities();

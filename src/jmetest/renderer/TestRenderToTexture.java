@@ -162,7 +162,8 @@ public class TestRenderToTexture extends SimpleGame {
     fakeScene.setRenderState(ts);
 
     // Ok, now lets create the Texture object that our monkey cube will be rendered to.
-    tRenderer = display.createTextureRenderer(512, 512, TextureRenderer.Target.Texture2D);
+//    tRenderer = display.createTextureRenderer(512, 512, 0, TextureRenderer.Target.Texture2D);
+    tRenderer = display.createTextureRenderer(512, 512, 4, TextureRenderer.Target.Texture2D);
     tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
     fakeTex = new Texture2D();
     fakeTex.setWrap(Texture.WrapMode.Clamp);

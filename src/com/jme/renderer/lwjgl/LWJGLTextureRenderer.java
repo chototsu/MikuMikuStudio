@@ -32,6 +32,9 @@
 
 package com.jme.renderer.lwjgl;
 
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -42,6 +45,8 @@ import java.util.logging.Logger;
 
 import org.lwjgl.opengl.ARBDrawBuffers;
 import org.lwjgl.opengl.ARBTextureFloat;
+import org.lwjgl.opengl.EXTFramebufferBlit;
+import org.lwjgl.opengl.EXTFramebufferMultisample;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -82,11 +87,14 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     private ColorRGBA backgroundColor = new ColorRGBA(1, 1, 1, 1);
 
-    private int active, fboID, depthRBID, width, height;
-
+    private int active, fboID, width, height, fboIDMS;
+    private int depthRBID, colorRBID;
     private static boolean inited = false;
     private static boolean isSupported = true;
     private static boolean supportsMultiDraw = false;
+    private static boolean supportsMultiSample = true;
+    private static int maxSamples = 0;
+    private int samplesUsed = 0;
     private static int maxDrawBuffers = 1;
     private static IntBuffer attachBuffer = null;
     private boolean usingDepthRB = false;
@@ -95,12 +103,24 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     
     private final LWJGLRenderer parentRenderer;
 
-    public LWJGLTextureRenderer(int width, int height,
-            LWJGLDisplaySystem display, LWJGLRenderer parentRenderer) {
+    public LWJGLTextureRenderer(int width, int height, LWJGLDisplaySystem display, LWJGLRenderer parentRenderer) {
+        this(width, height, 0, display, parentRenderer);
+    }
+
+    public LWJGLTextureRenderer(int width, int height, int samples, LWJGLDisplaySystem display,
+            LWJGLRenderer parentRenderer) {
+        this.samplesUsed = samples;
         this.display = display;
         this.parentRenderer = parentRenderer;
-        
+
         if (!inited) {
+            supportsMultiSample = GLContext.getCapabilities().GL_EXT_framebuffer_multisample;
+            if (supportsMultiSample) {
+                IntBuffer buf = BufferUtils.createIntBuffer(16);
+                GL11.glGetInteger(EXTFramebufferMultisample.GL_MAX_SAMPLES_EXT, buf);
+                maxSamples = buf.get(0);
+                logger.log(Level.FINER, "FBO Max Samples: {0}", maxSamples);
+            }
             isSupported = GLContext.getCapabilities().GL_EXT_framebuffer_object;
             supportsMultiDraw = GLContext.getCapabilities().GL_ARB_draw_buffers;
             if (supportsMultiDraw && isSupported) {
@@ -110,7 +130,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 if (maxDrawBuffers > 1) {
                     attachBuffer = BufferUtils.createIntBuffer(maxDrawBuffers);
                     for (int i = 0; i < maxDrawBuffers; i++) {
-                        attachBuffer.put(EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT+i);
+                        attachBuffer.put(EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT + i);
                     }
 
                 } else {
@@ -148,11 +168,22 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             }
         }
 
-        logger.log(Level.FINE, "Creating FBO sized: {0} x {1}", new Integer[] {width, height});
+        this.width = width;
+        this.height = height;
+        this.samplesUsed = Math.min(maxSamples, samplesUsed);
 
         IntBuffer buffer = BufferUtils.createIntBuffer(1);
         EXTFramebufferObject.glGenFramebuffersEXT(buffer); // generate id
         fboID = buffer.get(0);
+        logger.log(Level.FINE, "Creating FBO {0} sized: {1} x {2}", new Integer[] { fboID, width, height });
+
+        if (samplesUsed > 0) {
+            buffer = BufferUtils.createIntBuffer(1);
+            EXTFramebufferObject.glGenFramebuffersEXT(buffer); // generate id
+            fboIDMS = buffer.get(0);
+            logger.log(Level.FINE, "Creating multisampled FBO {0} sized: {1} x {2}", new Integer[] { fboIDMS, width,
+                    height });
+        }
 
         if (fboID <= 0) {
             logger.log(Level.SEVERE, "Invalid FBO id returned! {0}", fboID);
@@ -160,16 +191,62 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             return;
         }
 
-        EXTFramebufferObject.glGenRenderbuffersEXT(buffer); // generate id
-        depthRBID = buffer.get(0);
-        EXTFramebufferObject.glBindRenderbufferEXT(
-                EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
-        EXTFramebufferObject.glRenderbufferStorageEXT(
-                EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-                GL11.GL_DEPTH_COMPONENT, width, height);
+        if (samplesUsed > 0 && fboIDMS <= 0) {
+            logger.log(Level.SEVERE, "Invalid FBO id returned! {0}", fboIDMS);
+            isSupported = false;
+            return;
+        }
 
-        this.width = width;
-        this.height = height;
+        if (samplesUsed > 0) {
+            EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboIDMS);
+
+            buffer.clear();
+            EXTFramebufferObject.glGenRenderbuffersEXT(buffer);
+            colorRBID = buffer.get(0);
+            buffer.clear();
+            EXTFramebufferObject.glGenRenderbuffersEXT(buffer); // generate id
+            depthRBID = buffer.get(0);
+
+            EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, colorRBID);
+            EXTFramebufferMultisample.glRenderbufferStorageMultisampleEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+                    samplesUsed, GL11.GL_RGBA8, width, height);
+
+            EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
+            EXTFramebufferMultisample.glRenderbufferStorageMultisampleEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+                    samplesUsed, GL11.GL_DEPTH_COMPONENT, width, height);
+
+            EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, colorRBID);
+            EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
+            checkFBOComplete();
+            
+        } else {
+
+            EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboID);
+
+            buffer.clear();
+            EXTFramebufferObject.glGenRenderbuffersEXT(buffer);
+            colorRBID = buffer.get(0);
+            buffer.clear();
+            EXTFramebufferObject.glGenRenderbuffersEXT(buffer); // generate id
+            depthRBID = buffer.get(0);
+
+            EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, colorRBID);
+            EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, GL11.GL_RGBA8,
+                    width, height);
+
+            EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
+            EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+                    GL11.GL_DEPTH_COMPONENT, width, height);
+
+            EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, colorRBID);
+            EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
+
+            checkFBOComplete();
+        }
 
         initCamera();
     }
@@ -565,22 +642,40 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         try {
             activate();
-            
+
             setupForSingleTexDraw(tex, doClear);
 
             doDraw(toDraw);
-
+            if (samplesUsed > 0) {
+                copyFbo(fboIDMS, fboID);
+            } // if
             takedownForSingleTexDraw(tex);
 
-            deactivate();
         } catch (Exception e) {
-            logger.logp(Level.SEVERE, this.getClass().toString(),
-                    "render(Spatial, Texture, boolean)", "Exception", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "render(Spatial, Texture, boolean)", "Exception", e);
+        } finally {
+            deactivate();
         }
     }
 
-    public void render(ArrayList<? extends Spatial> toDraw,
-            ArrayList<Texture> texs) {
+    private void copyFbo(int from, int to) {
+
+        if (GLContext.getCapabilities().GL_EXT_framebuffer_blit) {
+            EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferBlit.GL_READ_FRAMEBUFFER_EXT, from);
+            EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferBlit.GL_DRAW_FRAMEBUFFER_EXT, to);
+
+            EXTFramebufferBlit.glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+
+            EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, from);
+            checkFBOComplete();
+        } else {
+            throw new UnsupportedOperationException("EXT_framebuffer_blit required.");
+            // TODO: support non-blit copies?
+        }
+
+    }
+
+    public void render(ArrayList<? extends Spatial> toDraw, ArrayList<Texture> texs) {
         render(toDraw, texs, true);
     }
 
@@ -589,22 +684,25 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             return;
         }
 
-        // if we only support 1 draw buffer at a time anyway, we'll have to render to each texture individually...
+        // if we only support 1 draw buffer at a time anyway, we'll have to
+        // render to each texture individually...
         if (maxDrawBuffers == 1 || texs.size() == 1) {
             try {
                 activate();
                 for (int i = 0; i < texs.size(); i++) {
                     Texture tex = texs.get(i);
-                    
+
                     setupForSingleTexDraw(tex, doClear);
 
                     doDraw(toDraw);
-
+                    if (samplesUsed > 0) {
+                        copyFbo(fboIDMS, fboID);
+                    } // if
                     takedownForSingleTexDraw(tex);
                 }
             } catch (Exception e) {
-                logger.logp(Level.SEVERE, this.getClass().toString(),
-                        "render(Spatial, Texture, boolean)", "Exception", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(), "render(Spatial, Texture, boolean)", "Exception",
+                        e);
             } finally {
                 deactivate();
             }
@@ -613,7 +711,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         try {
             activate();
 
-            // Otherwise, we can streamline this by rendering to multiple textures at once.
+            // Otherwise, we can streamline this by rendering to multiple
+            // textures at once.
             // first determine how many groups we need
             LinkedList<Texture> depths = new LinkedList<Texture>();
             LinkedList<Texture> colors = new LinkedList<Texture>();
@@ -659,20 +758,22 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                             EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
                     usingDepthRB = true;
                 }
-                
+
                 setDrawBuffers(colorsAdded);
                 setReadBuffer(colorsAdded != 0 ? EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT : GL11.GL_NONE);
-                
+
                 // Check FBO complete
                 checkFBOComplete();
-                
+
                 switchCameraIn(doClear);
-                
+
                 doDraw(toDraw);
-                
+                if (samplesUsed > 0) {
+                    copyFbo(fboIDMS, fboID);
+                } // if
                 switchCameraOut();
             }
-        
+
             // automatically generate mipmaps for our textures.
             for (int x = 0, max = texs.size(); x < max; x++) {
                 if (texs.get(x).getMinificationFilter().usesMipMapLevels()) {
@@ -680,12 +781,17 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                     EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
                 }
             }
-            
+
         } catch (Exception e) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
                     "render(Spatial, Texture)", "Exception", e);
         } finally {
             deactivate();
+        }
+
+        try {
+        } catch (Exception e) {
+            logger.logp(Level.SEVERE, this.getClass().toString(), "render(Spatial, Texture, boolean)", "Exception", e);
         }
     }
 
@@ -698,28 +804,36 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 tex.getRTTSource() == Texture.RenderToTextureType.Depth24 ||
                 tex.getRTTSource() == Texture.RenderToTextureType.Depth32) {
             // Setup depth texture into FBO
-            EXTFramebufferObject.glFramebufferTexture2DEXT(
-                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                    EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-                    GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
+
+            if (samplesUsed > 0) {
+                EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboID);
+            }
+
+            EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
+
+            if (samplesUsed > 0) {
+                EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboIDMS);
+            }
 
             setDrawBuffer(GL11.GL_NONE);
             setReadBuffer(GL11.GL_NONE);
         } else {
-            // Set textures into FBO
-            EXTFramebufferObject.glFramebufferTexture2DEXT(
-                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                    EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT,
-                    GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
 
-            // setup depth RB
-            EXTFramebufferObject.glFramebufferRenderbufferEXT(
-                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                    EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-                    EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
-   
+            if (samplesUsed > 0) {
+                EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboID);
+            }
+
+            // Set textures into FBO
+            EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
+
             setDrawBuffer(EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT);
             setReadBuffer(EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT);
+
+            if (samplesUsed > 0) {
+                EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboIDMS);
+            }
         }
 
         // Check FBO complete
@@ -757,10 +871,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
     }
 
-
     private void checkFBOComplete() {
-        int framebuffer = EXTFramebufferObject
-                .glCheckFramebufferStatusEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT);
+        int framebuffer = EXTFramebufferObject.glCheckFramebufferStatusEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT);
+        int fboIdToShow = samplesUsed > 0 ? fboIDMS : fboID;
         switch (framebuffer) {
             case EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT:
                 break;
@@ -799,6 +912,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                         "FrameBuffer: "
                                 + fboID
                                 + ", has caused a GL_FRAMEBUFFER_UNSUPPORTED_EXT exception");
+            case EXTFramebufferMultisample.GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT:
+                throw new RuntimeException(
+                        "FrameBuffer: "
+                                + fboIdToShow
+                                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT exception");
             default:
                 throw new RuntimeException(
                         "Unexpected reply from glCheckFramebufferStatusEXT: "
@@ -806,7 +924,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
     }
 
-    
     /**
      * <code>copyToTexture</code> copies the FBO contents to the given
      * Texture. What is copied is up to the Texture object's rttSource field.
@@ -1006,7 +1123,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         
         // swap to rtt settings
         parentRenderer.getQueue().swapBuckets();
-        parentRenderer.reinit((int)(width / viewportWidthFactor), (int)(height / viewportHeightFactor));
+        parentRenderer.reinit((int) (width / viewportWidthFactor), (int) (height / viewportHeightFactor));
 
         // clear the scene
         if (doClear) {
@@ -1051,10 +1168,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             return;
         }
         if (active == 0) {
-            GL11.glClearColor(backgroundColor.r, backgroundColor.g,
-                    backgroundColor.b, backgroundColor.a);
-            EXTFramebufferObject.glBindFramebufferEXT(
-                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboID);
+            int fboIdToUse = samplesUsed > 0 ? fboIDMS : fboID;
+            GL11.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+            EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboIdToUse);
         }
         active++;
     }
@@ -1064,12 +1180,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             return;
         }
         if (active == 1) {
-            GL11.glClearColor(parentRenderer.getBackgroundColor().r,
-                    parentRenderer.getBackgroundColor().g, parentRenderer
-                            .getBackgroundColor().b, parentRenderer
-                            .getBackgroundColor().a);
-            EXTFramebufferObject.glBindFramebufferEXT(
-                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT, 0);
+            GL11.glClearColor(parentRenderer.getBackgroundColor().r, parentRenderer.getBackgroundColor().g,
+                    parentRenderer.getBackgroundColor().b, parentRenderer.getBackgroundColor().a);
+            EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, 0);
         }
         active--;
     }
@@ -1100,6 +1213,13 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             id.rewind();
             EXTFramebufferObject.glDeleteFramebuffersEXT(id);
         }
+
+        if (fboIDMS > 0) {
+            IntBuffer id = BufferUtils.createIntBuffer(1);
+            id.put(fboIDMS);
+            id.rewind();
+            EXTFramebufferObject.glDeleteFramebuffersEXT(id);
+        }
     }
 
     public int getWidth() {
@@ -1114,4 +1234,3 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         // ignore. Does not matter to FBO.
     }
 }
-

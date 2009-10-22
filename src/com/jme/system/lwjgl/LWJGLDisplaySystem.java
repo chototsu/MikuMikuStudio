@@ -53,6 +53,7 @@ import com.jme.image.Image;
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
+import com.jme.renderer.TextureRenderer.Target;
 import com.jme.renderer.lwjgl.LWJGLPbufferTextureRenderer;
 import com.jme.renderer.lwjgl.LWJGLRenderer;
 import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
@@ -325,6 +326,25 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         }
 
         TextureRenderer textureRenderer = new LWJGLTextureRenderer( width, height,
+                this, renderer);
+
+        if (!textureRenderer.isSupported()) {
+            logger.info("FBO not supported, attempting Pbuffer.");
+
+            textureRenderer = new LWJGLPbufferTextureRenderer( width, height, 
+                    this, renderer, target);
+        }
+        
+        return textureRenderer;
+    }
+
+    @Override
+    public TextureRenderer createTextureRenderer(int width, int height, int samples, Target target) {
+        if ( !isCreated() ) {
+            return null;
+        }
+
+        TextureRenderer textureRenderer = new LWJGLTextureRenderer( width, height, samples,
                 this, renderer);
 
         if (!textureRenderer.isSupported()) {

@@ -39,6 +39,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
+import com.jme.renderer.TextureRenderer.Target;
 import com.jme.system.DisplaySystem;
 import com.jme.system.canvas.JMECanvas;
 
@@ -144,6 +145,11 @@ public class DummyDisplaySystem extends DisplaySystem {
     @Override
     public TextureRenderer createTextureRenderer(int width, int height,
             TextureRenderer.Target target) {
+        return null;
+    }
+
+    @Override
+    public TextureRenderer createTextureRenderer(int width, int height, int samples, Target target) {
         return null;
     }
 

@@ -773,6 +773,21 @@ public abstract class DisplaySystem {
      */
     public abstract TextureRenderer createTextureRenderer(int width,
             int height, TextureRenderer.Target target);
+    
+    /**
+     * Create a TextureRenderer using the underlying system.
+     * 
+     * @param width
+     *            width of texture
+     * @param height
+     *            height of texture
+     * @param samples
+     *            AA samples used when rendering to texture
+     * @param target
+     * @return A TextureRenderer for the display system.
+     */
+    public abstract TextureRenderer createTextureRenderer(int width,
+            int height, int samples, TextureRenderer.Target target);
 
     /**
      * Translate world to screen coordinates
