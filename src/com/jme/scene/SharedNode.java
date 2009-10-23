@@ -93,7 +93,7 @@ public class SharedNode extends Node {
 	 * @param target
 	 *            the Node to share the data.
 	 */
-	private void setTarget(Node target) {
+	protected void setTarget(Node target) {
         if (target.getChildren() != null) {
             for(int i = 0; i < target.getChildren().size(); i++) {
                 processTarget(this, target.getChild(i));
