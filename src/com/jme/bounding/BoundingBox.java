@@ -514,14 +514,16 @@ public class BoundingBox extends BoundingVolume {
 
     /**
      * <code>toString</code> returns the string representation of this object.
-     * The form is: "Radius: RRR.SSSS Center: <Vector>".
+     * <p>
+     * If you want to display a class name, then use
+     * Vector3f.class.getName() or getClass().getName().
+     * </p>
      * 
      * @return the string representation of this.
      */
     public String toString() {
-        return "com.jme.scene.BoundingBox [Center: " + center + "  xExtent: "
-                + xExtent + "  yExtent: " + yExtent + "  zExtent: " + zExtent
-                + "]";
+        return "center=" + center + ", extents=("
+                + xExtent + " ," + yExtent + ", " + zExtent + ')';
     }
 
     /**
