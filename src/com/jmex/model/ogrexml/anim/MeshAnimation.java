@@ -32,10 +32,18 @@
 
 package com.jmex.model.ogrexml.anim;
 
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+import java.io.IOException;
 import java.io.Serializable;
 
-public class MeshAnimation implements Serializable{
+public class MeshAnimation implements Serializable, Savable {
+
     private static final long serialVersionUID = 1L;
+
     private String name;
     private float length;
     private Track[] tracks;
@@ -61,10 +69,31 @@ public class MeshAnimation implements Serializable{
         return tracks;
     }
 
-    public void setTime(float time, OgreMesh[] targets){
+    public void setTime(float time, OgreMesh[] targets, float weight){
         for (int i = 0; i < tracks.length; i++){
-            tracks[i].setTime(time, targets);
+            tracks[i].setTime(time, targets, weight);
         }
+    }
+
+    @Override
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule out = e.getCapsule(this);
+        out.write(name, "name", "");
+        out.write(length, "length", -1f);
+        out.write(tracks, "tracks", null);
+    }
+
+    @Override
+    public void read(JMEImporter i) throws IOException {
+        InputCapsule in = i.getCapsule(this);
+        name = in.readString("name", "");
+        length = in.readFloat("length", -1f);
+        tracks = (Track[]) in.readSavableArray("tracks", null);
+    }
+
+    @Override
+    public Class getClassTag() {
+        return MeshAnimation.class;
     }
 
 }

@@ -215,10 +215,10 @@ public class OgreMesh extends TriMesh {
         super.write(e);
 
         OutputCapsule out = e.getCapsule(this);
-        out.write(hasBindPose(), "HadBindPose", false);
+        out.write(hasBindPose(), "hadBindPose", false);
         if (weightBuffer != null) {
-            out.write(weightBuffer.indexes, "BoneIndexes", null);
-            out.write(weightBuffer.weights, "BoneWeights", null);
+            out.write(weightBuffer.indexes, "boneIndexes", null);
+            out.write(weightBuffer.weights, "boneWeights", null);
             out.write(weightBuffer.maxWeightsPerVert, "maxWeightsPerVert", 0);
         }
     }
@@ -228,13 +228,13 @@ public class OgreMesh extends TriMesh {
         super.read(i);
 
         InputCapsule in = i.getCapsule(this);
-        if (in.readBoolean("HadBindPose", false)) {
+        if (in.readBoolean("hadBindPose", false)) {
             saveCurrentToBindPose();
         }
 
-        ByteBuffer indexes = in.readByteBuffer("BoneIndexes", null);
+        ByteBuffer indexes = in.readByteBuffer("boneIndexes", null);
         if (indexes != null) {
-            FloatBuffer weights = in.readFloatBuffer("BoneWeights", null);
+            FloatBuffer weights = in.readFloatBuffer("boneWeights", null);
             weightBuffer = new WeightBuffer(indexes, weights);
             weightBuffer.maxWeightsPerVert = in.readInt("maxWeightsPerVert", 0);
 

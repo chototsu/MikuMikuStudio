@@ -32,18 +32,26 @@
 
 package com.jmex.model.ogrexml.anim;
 
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
  * Bone animation updates each of it's tracks with the skeleton and time
  * to apply the animation.
  */
-public final class BoneAnimation implements Serializable{
-    private static final long serialVersionUID = 1L;
-    private final String name;
-    private final float length;
+public final class BoneAnimation implements Serializable, Savable {
 
-    private final BoneTrack[] tracks;
+    private static final long serialVersionUID = 1L;
+
+    private String name;
+    private float length;
+
+    private BoneTrack[] tracks;
 
     BoneAnimation(String name, float length, BoneTrack[] tracks){
         this.name = name;
@@ -63,10 +71,34 @@ public final class BoneAnimation implements Serializable{
         return tracks;
     }
 
-    void setTime(float time, Skeleton skeleton){
+    void setTime(float time, Skeleton skeleton, float weight){
         for (int i = 0; i < tracks.length; i++){
-            tracks[i].setTime(time, skeleton);
+            tracks[i].setTime(time, skeleton, weight);
         }
+    }
+
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule out = e.getCapsule(this);
+        out.write(name, "name", null);
+        out.write(length, "length", 0f);
+        out.write(tracks, "tracks", null);
+    }
+
+    public void read(JMEImporter i) throws IOException {
+        InputCapsule in = i.getCapsule(this);
+        name = in.readString("name", null);
+        length = in.readFloat("length", 0f);
+
+        Savable[] sav = in.readSavableArray("tracks", null);
+        if (sav != null){
+            tracks = new BoneTrack[sav.length];
+            System.arraycopy(sav, 0, tracks, 0, sav.length);
+        }
+    }
+
+    public Class getClassTag() {
+        return BoneAnimation.class;
     }
 
 }

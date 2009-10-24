@@ -205,7 +205,7 @@ public class TestMeshLoading extends SimpleGame {
                 MeshAnimationController animControl =
                         (MeshAnimationController) clone.getController(0);
                 animControl.setAnimation("Walk");
-                animControl.setTime(animControl.getAnimationLength("Walk")
+                animControl.setCurTime(animControl.getAnimationLength("Walk")
                         * FastMath.nextRandomFloat());
                 //clone.addController(new MeshLodController((animControl)));
 

@@ -100,6 +100,14 @@ public final class Skeleton implements Savable {
         rootBone.update();
     }
 
+    /**
+     * Used for binary loading as a Savable; the object must be constructed,
+     * then the parameters usually present in the constructor for this class are
+     * restored from the file the object was saved to.
+     */
+    public Skeleton() {
+    }
+
     private void createSkinningMatrices(){
         skinningMatrixes = new Matrix4f[boneList.length];
         for (int i = 0; i < skinningMatrixes.length; i++)
@@ -156,22 +164,11 @@ public final class Skeleton implements Savable {
 
     public void sendToShader(GLSLShaderObjectsState shader){
         Matrix4f[] skinningMats = computeSkinningMatrices();
-        // NOTE: Not supported by jME2 without a patch.
-        //shader.setUniform("boneMatrices", skinningMats, true);
-        throw new UnsupportedOperationException("Hardware skinning cannot be used without a jME2 patch");
-    }
-
-    /**
-     * Used for binary loading as a Savable; the object must be constructed,
-     * then the parameters usually present in the constructor for this class are
-     * restored from the file the object was saved to.
-     */
-    public Skeleton() {
-
+        shader.setUniform("boneMatrices", skinningMats, true);
     }
 
     public Class getClassTag() {
-        return this.getClass();
+        return Skeleton.class;
     }
 
     public void read(JMEImporter im) throws IOException {
@@ -180,8 +177,10 @@ public final class Skeleton implements Savable {
         Savable[] boneListAsSavable = input.readSavableArray("boneList", null);
 
         boneList = new Bone[boneListAsSavable.length];
-        for (int i = 0; i < boneListAsSavable.length; i++)
-            boneList[i] = (Bone) boneListAsSavable[i];
+        System.arraycopy(boneListAsSavable, 0, boneList, 0, boneListAsSavable.length);
+        
+//        for (int i = 0; i < boneListAsSavable.length; i++)
+//            boneList[i] = (Bone) boneListAsSavable[i];
 
         createSkinningMatrices();
         rootBone.update();

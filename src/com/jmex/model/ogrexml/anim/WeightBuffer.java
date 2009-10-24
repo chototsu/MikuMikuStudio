@@ -45,7 +45,8 @@ import java.nio.FloatBuffer;
  * The WeightBuffer can be sent to a shader or processed on the CPU
  * to do skinning.
  */
-public final class WeightBuffer implements Serializable{
+public final class WeightBuffer implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /**

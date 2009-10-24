@@ -32,14 +32,22 @@
 
 package com.jmex.model.ogrexml.anim;
 
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
  * Combines mesh and bone animations into one class for easier access
  */
-public class Animation implements Serializable{
+public class Animation implements Serializable, Savable {
+    
     private static final long serialVersionUID = 1L;
-    private final String name;
+    
+    private String name;
     private float length;
 
     private BoneAnimation boneAnim;
@@ -92,12 +100,12 @@ public class Animation implements Serializable{
         return length;
     }
 
-    void setTime(float time, OgreMesh[] targets, Skeleton skeleton){
+    void setTime(float time, OgreMesh[] targets, Skeleton skeleton, float weight){
         if (meshAnim != null)
-            meshAnim.setTime(time, targets);
+            meshAnim.setTime(time, targets, weight);
 
         if (boneAnim != null){
-            boneAnim.setTime(time, skeleton);
+            boneAnim.setTime(time, skeleton, weight);
         }
     }
 
@@ -109,5 +117,29 @@ public class Animation implements Serializable{
         return boneAnim;
     }
 
+    @Override
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule out = e.getCapsule(this);
+
+        out.write(name, "name", "");
+        out.write(length, "length", -1f);
+        out.write(boneAnim, "boneAnim", null);
+        out.write(meshAnim, "meshAnim", null);
+    }
+
+    @Override
+    public void read(JMEImporter i) throws IOException {
+        InputCapsule in = i.getCapsule(this);
+
+        name = in.readString("name", "");
+        length = in.readFloat("length", -1f);
+        boneAnim = (BoneAnimation) in.readSavable("boneAnim", null);
+        meshAnim = (MeshAnimation) in.readSavable("meshAnim", null);
+    }
+
+    @Override
+    public Class getClassTag() {
+        return Animation.class;
+    }
 
 }

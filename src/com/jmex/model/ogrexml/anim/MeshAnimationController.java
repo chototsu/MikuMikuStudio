@@ -38,17 +38,13 @@ import com.jme.math.Vector3f;
 import java.util.Map;
 import com.jme.scene.Controller;
 import com.jme.scene.state.GLSLShaderObjectsState;
-import com.jme.scene.state.RenderState;
+import com.jme.scene.state.RenderState.StateType;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Collection;
@@ -94,6 +90,34 @@ public class MeshAnimationController extends Controller implements Savable {
      */
     private int framesToSkip = 0;
     private int curFrame = 0;
+
+
+    /**
+     * Animation to blend from, e.g the animation
+     * that was set before setAnimation() was called.
+     */
+    private transient Animation blendFrom = null;
+
+    /**
+     * How much to blend the new animation,
+     * a value of 0 indicates apply only the previous animation
+     * while a value of 1 means apply only the current animation.
+     */
+    private transient float blendScale = 0f;
+
+    /**
+     * Multiply this by TPF to get an addition value for blendScale,
+     * makes sure blendScale only becomes 1 when the blend time has been
+     * reached.
+     */
+    private transient float blendMultiply = 0f;
+
+    /**
+     * Same as the <code>time</code> variable but for
+     * the blendFrom animation.
+     */
+    private transient float blendFromTime = 0f;
+
 
     public MeshAnimationController(OgreMesh[] meshes,
                                    Skeleton skeleton,
@@ -155,6 +179,14 @@ public class MeshAnimationController extends Controller implements Savable {
 
         reset();
     }
+    
+    /**
+     * Used only for Saving/Loading models (all parameters of the non-default
+     * constructor are restored from the saved model, but the object must be
+     * constructed beforehand)
+     */
+    public MeshAnimationController() {
+    }
 
     /**
      * Returns a bone with the specified name.
@@ -171,10 +203,16 @@ public class MeshAnimationController extends Controller implements Savable {
      *
      * @returns true if the animation has been successfuly set. False if no such animation exists.
      */
-    public boolean setAnimation(String name){
+    public boolean setAnimation(String name, float blendTime){
         if (name.equals("<bind>")){
             reset();
             return true;
+        }
+
+        if (blendTime > 0f){
+            blendFrom = animation;
+            blendMultiply = 1f / blendTime;
+            blendScale = 0f;
         }
 
         animation = animationMap.get(name);
@@ -188,6 +226,16 @@ public class MeshAnimationController extends Controller implements Savable {
         time = 0;
 
         return true;
+    }
+
+    /**
+     * Sets the currently active animation.
+     * Use the animation name "<bind>" to set the model into bind pose.
+     *
+     * @returns true if the animation has been successfuly set. False if no such animation exists.
+     */
+    public boolean setAnimation(String name){
+        return setAnimation(name, 0f);
     }
 
     /**
@@ -213,16 +261,6 @@ public class MeshAnimationController extends Controller implements Savable {
     }
 
     /**
-     * @deprecated  The name of this method incorrectly implies that a List
-     *              is returned.  Use the method getAnimationNames instead.
-     * @see #getAnimationNames();
-     */
-    @Deprecated
-    public Collection<String> getList(){
-        return getAnimationNames();
-    }
-
-    /**
      * @return Collection of list of all animations that are defined
      */
     public Collection<String> getAnimationNames(){
@@ -242,12 +280,8 @@ public class MeshAnimationController extends Controller implements Savable {
         this.framesToSkip = framesToSkip;
     }
 
-    /**
-     * @deprecated  Use setCurTime
-     * @see #setCurTime(float)
-     */
-    public void setTime(float time){
-        setCurTime(time);
+    public float getCurTime() {
+        return time;
     }
 
     /**
@@ -269,8 +303,10 @@ public class MeshAnimationController extends Controller implements Savable {
 
     void reset(){
         resetToBind();
-        skeleton.getRoot().reset();
-        skeleton.getRoot().update();
+        if (skeleton != null){
+            skeleton.getRoot().reset();
+            skeleton.getRoot().update();
+        }
         resetToBindEveryFrame = false;
         animation = null;
         time = 0;
@@ -287,7 +323,9 @@ public class MeshAnimationController extends Controller implements Savable {
     private void assignShaderLogic(){
         SkinningShaderLogic logic = new SkinningShaderLogic();
         for (OgreMesh target : targets){
-            GLSLShaderObjectsState glsl = (GLSLShaderObjectsState) target.getRenderState(RenderState.RS_GLSL_SHADER_OBJECTS);
+            GLSLShaderObjectsState glsl = 
+                    (GLSLShaderObjectsState) target.getRenderState(StateType.GLSLShaderObjects);
+
             if (glsl == null){
                 glsl = BoneAnimationLoader.createSkinningShader(skeleton.getBoneCount(),
                                                                 target.getWeightBuffer().maxWeightsPerVert);
@@ -304,13 +342,11 @@ public class MeshAnimationController extends Controller implements Savable {
         return !forceSWskinning && GLSLShaderObjectsState.isSupported();
     }
 
-    private void softwareSkinUpdate(OgreMesh mesh){
+    private void softwareSkinUpdate(OgreMesh mesh, Matrix4f[] offsetMatrices){
         Vector3f vt = new Vector3f();
         Vector3f nm = new Vector3f();
         Vector3f resultVert = new Vector3f();
         Vector3f resultNorm = new Vector3f();
-
-        Matrix4f offsetMatrices[] = skeleton.computeSkinningMatrices();
 
         // NOTE: This code assumes the vertex buffer is in bind pose
         // resetToBind() has been called this frame
@@ -383,44 +419,50 @@ public class MeshAnimationController extends Controller implements Savable {
         mesh.updateModelBound();
     }
 
+    public float clampWrapTime(float t, float max, int repeatMode){
+        if (t < 0f){
+            switch (repeatMode){
+                case RT_CLAMP:
+                    return 0;
+                case RT_CYCLE:
+                    return 0;
+                case RT_WRAP:
+                    return max - t;
+            }
+        }else if (t > max){
+            switch (repeatMode){
+                case RT_CLAMP:
+                    return max;
+                case RT_CYCLE:
+                    return max;
+                case RT_WRAP:
+                    return t - max;
+            }
+        }
+
+        return t;
+    }
+
     @Override
     public void update(float tpf) {
         if (!isActive() || animation == null)
             return;
 
         // do clamping/wrapping of time
-        if (time < 0f){
-            switch (getRepeatType()){
-                case RT_CLAMP:
-                    time = 0f;
-                    break;
-                case RT_CYCLE:
-                    time = 0f;
-                    break;
-                case RT_WRAP:
-                    time = animation.getLength() - time;
-                    break;
-            }
-        }else if (time > animation.getLength()){
-            switch (getRepeatType()){
-                case RT_CLAMP:
-                    time = animation.getLength();
-                    break;
-                case RT_CYCLE:
-                    time = animation.getLength();
-                    break;
-                case RT_WRAP:
-                    time = time - animation.getLength();
-                    break;
-            }
+        time = clampWrapTime(time, animation.getLength(), getRepeatType());
+        if (blendFrom != null){
+            blendFromTime = clampWrapTime(blendFromTime, blendFrom.getLength(), getRepeatType());
         }
-
+        
         if (framesToSkip > 0){
             // check frame skipping
             curFrame++;
 
             if (curFrame != framesToSkip){
                 time += tpf * getSpeed();
+                if (blendFrom != null)
+                    blendFromTime += tpf * getSpeed();
+
                 return;
             }else{
                 curFrame = 0;
@@ -434,76 +476,64 @@ public class MeshAnimationController extends Controller implements Savable {
             skeleton.getRoot().reset();
         }
 
-        animation.setTime(time, targets, skeleton);
+        if (blendFrom == null){
+            animation.setTime(time, targets, skeleton, 1f);
+        }else{
+            blendFrom.setTime(blendFromTime, targets, skeleton, 1f - blendScale);
+            animation.setTime(time, targets, skeleton, blendScale);
 
+            // here update the blending scale
+            blendScale += tpf * blendMultiply;
+            if (blendScale > 1f){
+                blendFrom = null;
+                blendScale = 0f;
+                blendMultiply = 0f;
+            }
+        }
+        
         if (animation.hasBoneAnimation()){
             skeleton.getRoot().update();
 
             if (!isHardwareSkinning()){
                 // here update the targets verticles if no hardware skinning supported
 
+                Matrix4f[] offsetMatrices = skeleton.computeSkinningMatrices();
+
                 // if hardware skinning is supported, the matrices and weight buffer
                 // will be sent by the SkinningShaderLogic object assigned to the shader
                 for (int i = 0; i < targets.length; i++){
-                    softwareSkinUpdate(targets[i]);
+                    softwareSkinUpdate(targets[i], offsetMatrices);
                 }
             }
         }
 
         time += tpf * getSpeed();
+        if (blendFrom != null)
+            blendFromTime += tpf * getSpeed();
     }
 
+    @Override
+    public void read(JMEImporter i) throws IOException{
+        super.read(i);
 
-    public float getCurTime() { return time; }
-
-    /**
-     * Used only for Saving/Loading models (all parameters of the non-default
-     * constructor are restored from the saved model, but the object must be
-     * constructed beforehand)
-     */
-    public MeshAnimationController() {
-
-    }
-
-    public void write(JMEExporter e) throws IOException {
-        super.write(e);
-        OutputCapsule output = e.getCapsule(this);
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(animationMap);
-        oos.flush();
-        oos.close();
-        bos.close();
-        // Convert the animation map to a byte array:
-        byte[] data = bos.toByteArray();
-        // Then save it as such
-        output.write(data, "MeshAnimationControllerData", null);
-
-        output.write(targets, "targets[]", null);
-        output.write(skeleton, "skeleton", null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule input = e.getCapsule(this);
-
-        byte[] data = input.readByteArray("MeshAnimationControllerData", null);
-        ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        try {
-            animationMap = (Map<String, Animation>) ois.readObject();
-        } catch (ClassNotFoundException e1) {
-            throw new RuntimeException(e1);
+        InputCapsule in = i.getCapsule(this);
+        Savable[] sav = in.readSavableArray("targets", null);
+        if (sav != null){
+            targets = new OgreMesh[sav.length];
+            System.arraycopy(sav, 0, targets, 0, sav.length);
         }
-
-        Savable[] targetsAsSavable = input.readSavableArray("targets[]", null);
-        skeleton = (Skeleton) input.readSavable("skeleton", null);
-
-        targets = new OgreMesh[targetsAsSavable.length];
-        int i = 0;
-        for (Savable s : targetsAsSavable)
-            targets[i++] = (OgreMesh) s;
+        skeleton = (Skeleton) in.readSavable("skeleton", null);
+        animationMap = (Map<String, Animation>) in.readStringSavableMap("animations", null);
     }
+
+    @Override
+    public void write(JMEExporter e) throws IOException{
+        super.write(e);
+
+        OutputCapsule out = e.getCapsule(this);
+        out.write(targets, "targets", null);
+        out.write(skeleton, "skeleton", null);
+        out.writeStringSavableMap(animationMap, "animations", null);
+    }
+
 }

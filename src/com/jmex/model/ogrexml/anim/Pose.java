@@ -33,24 +33,32 @@
 package com.jmex.model.ogrexml.anim;
 
 import com.jme.math.Vector3f;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
 
 /**
  * A pose is a list of offsets that say where a mesh verticles should be for this pose.
  */
-public final class Pose implements Serializable{
+public final class Pose implements Serializable, Savable {
+
     private static final long serialVersionUID = 1L;
-    private final String name;
-    private final int targetMeshIndex;
 
-    private final Vector3f[] offsets;
-    private final int[] indices;
+    private String name;
+    private int targetMeshIndex;
 
-    private final Vector3f tempVec  = new Vector3f();
-    private final Vector3f tempVec2 = new Vector3f();
+    private Vector3f[] offsets;
+    private int[] indices;
+
+    private transient final Vector3f tempVec  = new Vector3f();
+    private transient final Vector3f tempVec2 = new Vector3f();
 
     public Pose(String name, int targetMeshIndex, Vector3f[] offsets, int[] indices){
         this.name = name;
@@ -87,5 +95,26 @@ public final class Pose implements Serializable{
             BufferUtils.setInBuffer(tempVec2, vertbuf, vertIndex);
         }
     }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule out = e.getCapsule(this);
+        out.write(name, "name", "");
+        out.write(targetMeshIndex, "meshIndex", -1);
+        out.write(offsets, "offsets", null);
+        out.write(indices, "indices", null);
+    }
+
+    public void read(JMEImporter i) throws IOException {
+        InputCapsule in = i.getCapsule(this);
+        name = in.readString("name", "");
+        targetMeshIndex = in.readInt("meshIndex", -1);
+        offsets = (Vector3f[]) in.readSavableArray("offsets", null);
+        indices = in.readIntArray("indices", null);
+    }
+
+    public Class getClassTag() {
+        return Pose.class;
+    }
+
 
 }

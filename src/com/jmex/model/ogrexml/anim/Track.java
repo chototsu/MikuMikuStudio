@@ -32,15 +32,21 @@
 
 package com.jmex.model.ogrexml.anim;
 
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.Savable;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
  * A single track of mesh animation (either morph or pose based).
  * Currently morph animations are not supported (only pose).
  */
-public abstract class Track implements Serializable{
+public abstract class Track implements Serializable, Savable {
+    
     private static final long serialVersionUID = 1L;
-    protected final int targetMeshIndex;
+
+    protected int targetMeshIndex;
 
     public Track(int targetMeshIndex){
         this.targetMeshIndex = targetMeshIndex;
@@ -50,6 +56,19 @@ public abstract class Track implements Serializable{
         return targetMeshIndex;
     }
 
-    public abstract void setTime(float time, OgreMesh[] targets);
+    public abstract void setTime(float time, OgreMesh[] targets, float weight);
+
+    public void write(JMEExporter ex) throws IOException{
+        ex.getCapsule(this).write(targetMeshIndex, "meshIndex", 0);
+    }
+
+    public void read(JMEImporter im) throws IOException{
+        targetMeshIndex = im.getCapsule(this).readInt("meshIndex", 0);
+    }
+
+    public Class getClassTag(){
+        return Track.class;
+    }
+
 
 }

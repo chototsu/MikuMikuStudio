@@ -32,29 +32,51 @@
 
 package com.jmex.model.ogrexml.anim;
 
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
  * A single track of pose animation associated with a certain mesh.
  */
 public final class PoseTrack extends Track implements Serializable{
+    
     private static final long serialVersionUID = 1L;
+
     private PoseFrame[] frames;
     private float[]     times;
 
-    public static class PoseFrame implements Serializable{
+    public static class PoseFrame implements Serializable, Savable {
 
-        /**
-         * 
-         */
         private static final long serialVersionUID = 1L;
+
+        Pose[] poses;
+        float[] weights;
+
         public PoseFrame(Pose[] poses, float[] weights){
             this.poses = poses;
             this.weights = weights;
         }
 
-        final Pose[]  poses;
-        final float[] weights;
+        public void write(JMEExporter e) throws IOException {
+            OutputCapsule out = e.getCapsule(this);
+            out.write(poses, "poses", null);
+            out.write(weights, "weights", null);
+        }
+
+        public void read(JMEImporter i) throws IOException {
+            InputCapsule in = i.getCapsule(this);
+            poses = (Pose[]) in.readSavableArray("poses", null);
+            weights = in.readFloatArray("weights", null);
+        }
+
+        public Class getClassTag() {
+            return PoseFrame.class;
+        }
 
     }
 
@@ -77,13 +99,12 @@ public final class PoseTrack extends Track implements Serializable{
         target.setHasDirtyVertices(true);
     }
 
-    @Override
-    public void setTime(float time, OgreMesh[] targets) {
+    public void setTime(float time, OgreMesh[] targets, float weight) {
         OgreMesh target = targets[targetMeshIndex];
         if (time < times[0]){
-            applyFrame(target, 0, 1f);
+            applyFrame(target, 0, weight);
         }else if (time > times[times.length-1]){
-            applyFrame(target, times.length-1, 1f);
+            applyFrame(target, times.length-1, weight);
         } else{
             int startFrame = 0;
             for (int i = 0; i < times.length; i++){
@@ -93,9 +114,28 @@ public final class PoseTrack extends Track implements Serializable{
 
             int endFrame = startFrame + 1;
             float blend = (time - times[startFrame]) / (times[endFrame] - times[startFrame]);
-            applyFrame(target, startFrame, blend);
-            applyFrame(target, endFrame,   1-blend);
+            applyFrame(target, startFrame, blend * weight);
+            applyFrame(target, endFrame,   (1f-blend) * weight);
         }
+    }
+
+    @Override
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule out = e.getCapsule(this);
+        out.write(frames, "frames", null);
+        out.write(times, "times", null);
+    }
+
+    @Override
+    public void read(JMEImporter i) throws IOException {
+        InputCapsule in = i.getCapsule(this);
+        frames = (PoseFrame[]) in.readSavableArray("frames", null);
+        times = in.readFloatArray("times", null);
+    }
+
+    @Override
+    public Class getClassTag() {
+        return PoseTrack.class;
     }
 
 }
