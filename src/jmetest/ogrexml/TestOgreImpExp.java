@@ -32,49 +32,33 @@
 
 package jmetest.ogrexml;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.jme.app.AbstractGame.ConfigShowMode;
 import com.jme.app.SimpleGame;
-import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
-import com.jme.scene.Spatial.LightCombineMode;
-import com.jme.scene.Spatial.TextureCombineMode;
-import com.jme.scene.shape.Box;
-import com.jme.scene.state.BlendState;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryExporter;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ClasspathResourceLocator;
 import com.jme.util.resource.RelativeResourceLocator;
 import com.jme.util.resource.ResourceLocator;
 import com.jme.util.resource.ResourceLocatorTool;
-import com.jmex.effects.particles.ParticleFactory;
-import com.jmex.effects.particles.ParticleMesh;
-import com.jmex.model.ModelFormatException;
 import com.jmex.model.ogrexml.MaterialLoader;
 import com.jmex.model.ogrexml.OgreLoader;
-import com.jmex.model.ogrexml.anim.Bone;
 import com.jmex.model.ogrexml.anim.MeshAnimationController;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
-public class TestMeshLoading extends SimpleGame {
-
-    private static final Logger logger = Logger.getLogger(
-            TestMeshLoading.class.getName());
+public class TestOgreImpExp extends SimpleGame {
 
     private Node model;
 
     public static void main(String[] args){
-        TestMeshLoading app = new TestMeshLoading();
+        TestOgreImpExp app = new TestOgreImpExp();
         app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
@@ -99,75 +83,21 @@ public class TestMeshLoading extends SimpleGame {
             if (matURL == null)
                 throw new IllegalStateException(
                         "Required runtime resource missing: " + matUrlString);
+
             try {
                 ResourceLocatorTool.addResourceLocator(
                         ResourceLocatorTool.TYPE_TEXTURE,
                         new RelativeResourceLocator(matURL));
-                  // This causes relative references in the .material file to
-                  // resolve to the same dir as the material file.
-                  // Don't have to set up a relative locator for TYPE_MODEL
-                  // here, because OgreLoader.loadModel() takes care of that.
             } catch (URISyntaxException use) {
-                // Since we're generating the URI from a URL we know to be
-                // good, we won't get here.  This is just to satisfy the
-                // compiler.
-                throw new RuntimeException(use);
             }
             matLoader.load(matURL.openStream());
             if (matLoader.getMaterials().size() > 0)
                 loader.setMaterials(matLoader.getMaterials());
 
             model = (Node) loader.loadModel(meshURL);
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        } catch (ModelFormatException mfe) {
-            logger.log(Level.SEVERE, null, mfe);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-    }
-
-    protected Spatial loadParticle(){
-        BlendState as1 = display.getRenderer().createBlendState();
-        as1.setBlendEnabled(true);
-        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
-        as1.setDestinationFunction(BlendState.DestinationFunction.One);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
-        as1.setEnabled(true);
-
-        TextureState ts = display.getRenderer().createTextureState();
-        ts.setTexture(
-            TextureManager.loadTexture("flaresmall.jpg",
-            Texture.MinificationFilter.Trilinear,
-            Texture.MagnificationFilter.Bilinear));
-        ts.setEnabled(true);
-
-        ParticleMesh manager = ParticleFactory.buildParticles("particles", 200);
-        manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
-        manager.setMaximumAngle(0.20943952f);
-        manager.getParticleController().setSpeed(1.0f);
-        manager.setMinimumLifeTime(150.0f);
-        manager.setMaximumLifeTime(225.0f);
-        manager.setStartSize(8.0f);
-        manager.setEndSize(4.0f);
-        manager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
-        manager.setEndColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 0.0f));
-        manager.getParticleController().setControlFlow(false);
-        manager.setInitialVelocity(0.12f);
-        //manager.setGeometry((Geometry)(i.getChild(0)));
-
-        manager.warmUp(60);
-        manager.setRenderState(ts);
-        manager.setRenderState(as1);
-        manager.setLightCombineMode(LightCombineMode.Off);
-        manager.setTextureCombineMode(TextureCombineMode.Replace);
-        manager.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-
-        ZBufferState zstate = display.getRenderer().createZBufferState();
-        zstate.setEnabled(true);
-        zstate.setWritable(false);
-        manager.setRenderState(zstate);
-
-        return manager;
     }
 
     @Override
@@ -182,6 +112,26 @@ public class TestMeshLoading extends SimpleGame {
 
         loadMeshModel();
 
+        // export model to array
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            BinaryExporter.getInstance().save(model, bos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        model = null;
+
+        byte[] data = bos.toByteArray();
+        System.out.println("Ninja model takes "+data.length+" bytes");
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        try {
+            model = (Node) BinaryImporter.getInstance().load(bis);
+            rootNode.attachChild(model);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Quaternion q =  new Quaternion();
         q.fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y);
         model.setLocalRotation(q); // make it face forward
@@ -194,28 +144,10 @@ public class TestMeshLoading extends SimpleGame {
 
         MeshAnimationController animControl =
                 (MeshAnimationController) model.getController(0);
-        animControl.setAnimation("Walk");
-
-        Bone b = animControl.getBone("Joint22");
-        Node attachNode = b.getAttachmentsNode();
-        model.attachChild(attachNode);
-        Spatial particle = loadParticle();
-        attachNode.attachChild(particle);
-
-        b = animControl.getBone("Joint27");
-        attachNode = b.getAttachmentsNode();
-        model.attachChild(attachNode);
-        particle = loadParticle();
-        attachNode.attachChild(particle);
-
-        b = animControl.getBone("Joint17");
-        attachNode = b.getAttachmentsNode();
-        model.attachChild(attachNode);
-        particle = new Box("stick", new Vector3f(0, 0, -25), 2, 2, 30);
-        attachNode.attachChild(particle);
+        animControl.setAnimation("Attack1");
 
         cam.setLocation(new Vector3f(139.05014f, 206.22263f, 225.55989f));
-        cam.lookAt(model.getWorldBound().getCenter(), Vector3f.UNIT_Y);
+//        cam.lookAt(model.getWorldBound().getCenter(), Vector3f.UNIT_Y);
 
         rootNode.updateGeometricState(0, true);
         rootNode.updateRenderState();

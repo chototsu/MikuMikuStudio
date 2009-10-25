@@ -70,6 +70,12 @@ public class Animation implements Serializable, Savable {
         }
     }
 
+    /**
+     * Serialization only. Do not use.
+     */
+    public Animation(){
+    }
+
     void setBoneAnimation(BoneAnimation boneAnim){
         this.boneAnim = boneAnim;
 

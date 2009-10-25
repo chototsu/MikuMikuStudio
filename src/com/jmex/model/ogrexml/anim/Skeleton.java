@@ -41,6 +41,8 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A skeleton is a hierarchy of bones.
@@ -49,7 +51,7 @@ import com.jme.util.export.Savable;
  */
 public final class Skeleton implements Savable {
 
-    private Bone rootBone;
+    private Bone[] rootBones;
     private Bone[] boneList;
 
     /**
@@ -64,22 +66,20 @@ public final class Skeleton implements Savable {
      */
     public Skeleton(Bone[] boneList){
         this.boneList = boneList;
-        for (Bone b : boneList){
-            if (b.parent == null){
-                if (rootBone != null){
-                    System.err.println("CURRENT ROOT "+rootBone.name);
-                    System.err.println("NEW ROOT "+b.name);
-                    throw new IllegalStateException("Cannot have more than one root bone in skeleton");
-                }
 
-                rootBone = b;
-            }
+        List<Bone> rootBoneList = new ArrayList<Bone>();
+        for (Bone b : boneList){
+            if (b.parent == null)
+                rootBoneList.add(b);
         }
+        rootBones = rootBoneList.toArray(new Bone[0]);
 
         createSkinningMatrices();
 
-        rootBone.update();
-        rootBone.setBindingPose();
+        for (Bone rootBone : rootBones){
+            rootBone.update();
+            rootBone.setBindingPose();
+        }
     }
 
     /**
@@ -93,11 +93,14 @@ public final class Skeleton implements Savable {
         for (int i = 0; i < sourceList.length; i++)
             boneList[i] = new Bone(sourceList[i]);
 
-        rootBone = recreateBoneStructure(source.rootBone);
-
+        rootBones = new Bone[source.rootBones.length];
+        for (int i = 0; i < rootBones.length; i++){
+            rootBones[i] = recreateBoneStructure(source.rootBones[i]);
+        }
         createSkinningMatrices();
 
-        rootBone.update();
+        for (Bone rootBone : rootBones)
+            rootBone.update();
     }
 
     /**
@@ -116,7 +119,6 @@ public final class Skeleton implements Savable {
 
     private Bone recreateBoneStructure(Bone sourceRoot){
         Bone targetRoot = getBone(sourceRoot.name);
-
         for (Bone sourceChild : sourceRoot.children){
             // find my version of the child
             Bone targetChild = getBone(sourceChild.name);
@@ -127,8 +129,40 @@ public final class Skeleton implements Savable {
         return targetRoot;
     }
 
-    public Bone getRoot(){
-        return rootBone;
+    /**
+     * Updates world transforms for all bones in this skeleton.
+     * Typically called after setting local animation transforms.
+     */
+    public void updateWorldVectors(){
+        for (Bone rootBone : rootBones)
+            rootBone.update();
+    }
+
+    /**
+     * Saves the current skeleton state as it's binding pose.
+     */
+    public void setBindingPose(){
+        for (Bone rootBone : rootBones)
+            rootBone.setBindingPose();
+    }
+
+    /**
+     * Reset the skeleton to bind pose.
+     */
+    public void reset(){
+        for (Bone rootBone : rootBones)
+            rootBone.reset();
+    }
+
+    public void resetAndUpdate(){
+        for (Bone rootBone : rootBones){
+            rootBone.reset();
+            rootBone.update();
+        }
+    }
+
+    public Bone[] getRoots(){
+        return rootBones;
     }
 
     public Bone getBone(int index){
@@ -173,23 +207,26 @@ public final class Skeleton implements Savable {
 
     public void read(JMEImporter im) throws IOException {
         InputCapsule input = im.getCapsule(this);
-        rootBone = (Bone) input.readSavable("rootBone", null);
-        Savable[] boneListAsSavable = input.readSavableArray("boneList", null);
 
+        Savable[] boneRootsAsSav = input.readSavableArray("rootBones", null);
+        rootBones = new Bone[boneRootsAsSav.length];
+        System.arraycopy(boneRootsAsSav, 0, rootBones, 0, boneRootsAsSav.length);
+        
+        Savable[] boneListAsSavable = input.readSavableArray("boneList", null);
         boneList = new Bone[boneListAsSavable.length];
         System.arraycopy(boneListAsSavable, 0, boneList, 0, boneListAsSavable.length);
         
-//        for (int i = 0; i < boneListAsSavable.length; i++)
-//            boneList[i] = (Bone) boneListAsSavable[i];
-
         createSkinningMatrices();
-        rootBone.update();
-        rootBone.setBindingPose();
+
+        for (Bone rootBone : rootBones){
+            rootBone.update();
+            rootBone.setBindingPose();
+        }
     }
 
     public void write(JMEExporter ex) throws IOException {
         OutputCapsule output = ex.getCapsule(this);
-        output.write(rootBone, "rootBone", null);
+        output.write(rootBones, "rootBones", null);
         output.write(boneList, "boneList", null);
     }
 }

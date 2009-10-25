@@ -304,8 +304,7 @@ public class MeshAnimationController extends Controller implements Savable {
     void reset(){
         resetToBind();
         if (skeleton != null){
-            skeleton.getRoot().reset();
-            skeleton.getRoot().update();
+            skeleton.resetAndUpdate();
         }
         resetToBindEveryFrame = false;
         animation = null;
@@ -382,23 +381,10 @@ public class MeshAnimationController extends Controller implements Savable {
                 resultVert.x += (mat.m00 * vt.x + mat.m01 * vt.y + mat.m02 * vt.z + mat.m03) * weight;
                 resultVert.y += (mat.m10 * vt.x + mat.m11 * vt.y + mat.m12 * vt.z + mat.m13) * weight;
                 resultVert.z += (mat.m20 * vt.x + mat.m21 * vt.y + mat.m22 * vt.z + mat.m23) * weight;
-//                temp.x = vertex.x;
-//                temp.y = vertex.y;
-//                temp.z = vertex.z;
-//                mat.mult(temp, temp);
-//                resultVert.x += temp.x * weight;
-//                resultVert.y += temp.y * weight;
-//                resultVert.z += temp.z * weight;
 
                 resultNorm.x += (nm.x * mat.m00 + nm.y * mat.m01 + nm.z * mat.m02) * weight;
                 resultNorm.y += (nm.x * mat.m10 + nm.y * mat.m11 + nm.z * mat.m12) * weight;
                 resultNorm.z += (nm.x * mat.m20 + nm.y * mat.m21 + nm.z * mat.m22) * weight;
-
-//                temp.set(normal);
-                //mat.rotateVect(temp);
-//                resultNorm.x += temp.x * weight;
-//                resultNorm.y += temp.y * weight;
-//                resultNorm.z += temp.z * weight;
             }
 
             ib.position(ib.position()+fourMinusMaxWeights);
@@ -470,10 +456,10 @@ public class MeshAnimationController extends Controller implements Savable {
         }
 
         if (resetToBindEveryFrame)
-            resetToBind();
+            resetToBind(); // reset morph meshes to bind pose
 
         if (animation.hasBoneAnimation()){
-            skeleton.getRoot().reset();
+            skeleton.reset(); // reset skeleton to bind pose
         }
 
         if (blendFrom == null){
@@ -492,7 +478,7 @@ public class MeshAnimationController extends Controller implements Savable {
         }
         
         if (animation.hasBoneAnimation()){
-            skeleton.getRoot().update();
+            skeleton.updateWorldVectors();
 
             if (!isHardwareSkinning()){
                 // here update the targets verticles if no hardware skinning supported

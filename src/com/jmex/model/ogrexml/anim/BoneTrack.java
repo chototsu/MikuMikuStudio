@@ -82,6 +82,12 @@ public final class BoneTrack implements Serializable, Savable {
     }
 
     /**
+     * Serialization-only. Do not use.
+     */
+    public BoneTrack(){
+    }
+
+    /**
      * Modify the bone which this track modifies in the skeleton to contain
      * the correct animation transforms for a given time.
      * The transforms can be interpolated in some method from the keyframes.

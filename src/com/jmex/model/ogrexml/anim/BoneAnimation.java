@@ -59,6 +59,12 @@ public final class BoneAnimation implements Serializable, Savable {
         this.tracks = tracks;
     }
 
+    /**
+     * Serialization-only. Do not use.
+     */
+    public BoneAnimation(){
+    }
+
     String getName(){
         return name;
     }

@@ -45,7 +45,7 @@ import com.jme.util.export.Savable;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public final class Bone implements Savable{
+public final class Bone implements Savable {
 
     String name;
 
@@ -288,7 +288,7 @@ public final class Bone implements Savable{
     public void read(JMEImporter im) throws IOException {
         InputCapsule input = im.getCapsule(this);
 
-        name = input.readString("name", "Unnamed Bone");
+        name = input.readString("name", null);
         initialPos = (Vector3f) input.readSavable("initialPos", null);
         initialRot = (Quaternion) input.readSavable("initialRot", null);
         worldBindInversePos = (Vector3f) input.readSavable(
@@ -297,11 +297,11 @@ public final class Bone implements Savable{
                                         "worldBindInverseRot", null);
         localPos = (Vector3f) input.readSavable("localPos", null);
         localRot = (Quaternion) input.readSavable("localRot", null);
-        parent = (Bone) input.readSavable("Parent Bone", null);
+        parent = (Bone) input.readSavable("parentBone", null);
 
-        int childCount = input.readInt("Child Bone Count", 0);
+        int childCount = input.readInt("boneCount", 0);
         for (int i = 0; i < childCount; i++) {
-            Bone child = (Bone) input.readSavable("ChildBone" + i, null);
+            Bone child = (Bone) input.readSavable("childBone" + i, null);
             if (child != null)
                 children.add(child);
         }
@@ -312,19 +312,19 @@ public final class Bone implements Savable{
     public void write(JMEExporter ex) throws IOException {
         OutputCapsule output = ex.getCapsule(this);
 
-        output.write(name, "name", "Unnamed Bone");
+        output.write(name, "name", null);
         output.write(initialPos, "initialPos", null);
         output.write(initialRot, "initialRot", null);
         output.write(worldBindInversePos, "worldBindInversePos", null);
         output.write(worldBindInverseRot, "worldBindInverseRot", null);
         output.write(localPos, "localPos", null);
         output.write(localRot, "localRot", null);
-        output.write(parent, "Parent Bone", null);
+        output.write(parent, "parentBone", null);
 
-        output.write(children.size(), "Child Bone Count", 0);
+        output.write(children.size(), "boneCount", 0);
         int i = 0;
         for (Bone childBone : children)
-            output.write(childBone, "ChildBone" + i++, null);
+            output.write(childBone, "childBone" + i++, null);
         output.write(attachNode, "attachNode", null);
 
     }

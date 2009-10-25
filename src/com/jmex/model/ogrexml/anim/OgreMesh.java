@@ -89,7 +89,7 @@ public class OgreMesh extends TriMesh {
 
         if (weightBuf.indexes.limit() / 4 != this.getVertexCount())
             throw new IllegalArgumentException(
-                    "Vertex weight element limit mismatch.  Expected "
+                    "Vertex weight element count mismatch.  Expected "
                     + (getVertexCount() * 4) + ", but got "
                     + weightBuf.indexes.limit());
 
@@ -237,7 +237,6 @@ public class OgreMesh extends TriMesh {
             FloatBuffer weights = in.readFloatBuffer("boneWeights", null);
             weightBuffer = new WeightBuffer(indexes, weights);
             weightBuffer.maxWeightsPerVert = in.readInt("maxWeightsPerVert", 0);
-
         }
     }
 }
