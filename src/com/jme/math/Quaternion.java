@@ -66,8 +66,8 @@ public class Quaternion implements Externalizable, Savable, Cloneable {
 
     /**
      * Constructor instantiates a new <code>Quaternion</code> object
-     * initializing all values to zero, except w which is initialized to 1.
-     *
+     * initializing the value to the Identity Quaternion, {0,0,0,1}.
+     * The class JavaDoc defines the sequence of those elements.
      */
     public Quaternion() {
         x = 0;
@@ -175,15 +175,32 @@ public class Quaternion implements Externalizable, Savable, Cloneable {
     }
 
     /**
-     * Sets this Quaternion to {0, 0, 0, 1}.  Same as calling set(0,0,0,1).
+     * To be deprecated, as this method name is not consistent with the
+     * other jME math method names.
+     * If we want a method name to be explicit that it is changing data
+     * internally, we use the word "local"; but the case here is a very close
+     * parallel to Vector3f.zero(), where everybody understands that the
+     * operation is local.
+     *
+     * @see #identity()
      */
     public void loadIdentity() {
+        identity();
+    }
+
+    /**
+     * Sets the value of this Quaternion to the Identity Quaternion,
+     * {0, 0, 0, 1}.
+     * Same as calling set(0,0,0,1).
+     * The class JavaDoc defines the sequence of those elements.
+     */
+    public void identity() {
         x = y = z = 0;
         w = 1;
     }
     
     /**
-     * @return true if this Quaternion is {0,0,0,1}
+     * @return true if this Quaternion is the Identity Quaternion, {0,0,0,1}
      */
     public boolean isIdentity() {
         if (x == 0 && y == 0 && z == 0 && w == 1) 
