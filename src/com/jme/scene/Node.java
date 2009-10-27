@@ -737,12 +737,12 @@ public class Node extends Spatial implements Serializable, Savable {
      *                        Null causes all Spatials to qualify.
      * @param nameRegex  Regular expression to match Spatial name against.
      *                        Null causes all Names to qualify.
-     * @return Non-null, but possibly 0-element, list of matching Spatials.
+     * @return Non-null, but possibly 0-element, list of matching Spatials (also Instances extending Spatials).
      *
      * @see java.util.regex.Pattern
      * @see Spatial#matches(Class<? extends Spatial>, String)
      */
-    public List<Spatial> descendantMatches(
+    public List<? extends Spatial> descendantMatches(
             Class<? extends Spatial> spatialSubclass, String nameRegex) {
         List<Spatial> newList = new ArrayList<Spatial>();
         if (getQuantity() < 1) return newList;
@@ -760,7 +760,7 @@ public class Node extends Spatial implements Serializable, Savable {
      *
      * @see #descendantMatches(Class<? extends Spatial>, String)
      */
-    public List<Spatial> descendantMatches(
+    public List<? extends Spatial> descendantMatches(
             Class<? extends Spatial> spatialSubclass) {
         return descendantMatches(spatialSubclass, null);
     }
@@ -770,7 +770,7 @@ public class Node extends Spatial implements Serializable, Savable {
      *
      * @see #descendantMatches(Class<? extends Spatial>, String)
      */
-    public List<Spatial> descendantMatches(String nameRegex) {
+    public List<? extends Spatial> descendantMatches(String nameRegex) {
         return descendantMatches(null, nameRegex);
     }
 }
