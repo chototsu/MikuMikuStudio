@@ -742,12 +742,14 @@ public class Node extends Spatial implements Serializable, Savable {
      * @see java.util.regex.Pattern
      * @see Spatial#matches(Class<? extends Spatial>, String)
      */
-    public List<? extends Spatial> descendantMatches(
-            Class<? extends Spatial> spatialSubclass, String nameRegex) {
-        List<Spatial> newList = new ArrayList<Spatial>();
+    @SuppressWarnings("unchecked")
+    public <T extends Spatial>List<T> descendantMatches(
+            Class<T> spatialSubclass, String nameRegex) {
+        List<T> newList = new ArrayList<T>();
         if (getQuantity() < 1) return newList;
         for (Spatial child : getChildren()) {
-            if (child.matches(spatialSubclass, nameRegex)) newList.add(child);
+            if (child.matches(spatialSubclass, nameRegex))
+                newList.add((T)child);
             if (child instanceof Node)
                 newList.addAll(((Node) child).descendantMatches(
                         spatialSubclass, nameRegex));
@@ -760,8 +762,8 @@ public class Node extends Spatial implements Serializable, Savable {
      *
      * @see #descendantMatches(Class<? extends Spatial>, String)
      */
-    public List<? extends Spatial> descendantMatches(
-            Class<? extends Spatial> spatialSubclass) {
+    public <T extends Spatial>List<T> descendantMatches(
+            Class<T> spatialSubclass) {
         return descendantMatches(spatialSubclass, null);
     }
 
@@ -770,7 +772,7 @@ public class Node extends Spatial implements Serializable, Savable {
      *
      * @see #descendantMatches(Class<? extends Spatial>, String)
      */
-    public List<? extends Spatial> descendantMatches(String nameRegex) {
+    public <T extends Spatial>List<T> descendantMatches(String nameRegex) {
         return descendantMatches(null, nameRegex);
     }
 }
