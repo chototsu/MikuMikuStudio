@@ -248,6 +248,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             checkFBOComplete();
         }
 
+        // reactivate the main display buffer after setup of the FBOs
+        EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, 0);
+        
         initCamera();
     }
 
