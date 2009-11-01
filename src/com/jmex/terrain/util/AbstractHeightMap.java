@@ -72,6 +72,13 @@ public abstract class AbstractHeightMap {
     public static float NORMALIZE_RANGE = 255f;
 
     /**
+     * @see #setHeightScale(float)
+     */
+    public float getHeightScale() {
+        return heightScale;
+    }
+
+    /**
      * <code>unloadHeightMap</code> clears the data of the height map. This
      * insures it is ready for reloading.
      */
