@@ -72,7 +72,7 @@ import com.jme.util.export.OutputCapsule;
  * <b>Note:</b> Special thanks to Kevin Glass.
  * 
  * @author Mark Powell
- * @version $id$
+ * @version $Revision$, $Date$
  */
 public class SharedMesh extends TriMesh {
     private static final Logger logger = Logger.getLogger(SharedMesh.class

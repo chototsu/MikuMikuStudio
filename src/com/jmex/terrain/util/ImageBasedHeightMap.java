@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
  * height and width.
  * 
  * @author Mike Kienenberger
- * @version $id$
+ * @version $Revision$, $Date$
  */
 public class ImageBasedHeightMap extends AbstractHeightMap {
 
