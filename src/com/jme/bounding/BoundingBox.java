@@ -523,7 +523,7 @@ public class BoundingBox extends BoundingVolume {
      */
     public String toString() {
         return "center=" + center + ", extents=("
-                + xExtent + " ," + yExtent + ", " + zExtent + ')';
+                + xExtent + ", " + yExtent + ", " + zExtent + ')';
     }
 
     /**
