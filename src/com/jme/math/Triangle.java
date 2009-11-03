@@ -121,7 +121,7 @@ public class Triangle implements Serializable, Savable {
     }
     
     /**
-     * calculateCenter finds the average point of the triangle. 
+     * calculateNormal finds the normal vector of this triangle.    
      *
      */
     public void calculateNormal() {
