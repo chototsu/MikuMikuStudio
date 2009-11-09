@@ -73,7 +73,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * Default constructor.
      */
     public Node() {
-        logger.info("Node created.");
+        logger.fine("Node created.");
     }
 
     /**
@@ -90,7 +90,7 @@ public class Node extends Spatial implements Serializable, Savable {
         // Newly constitued (not reconsituted) Nodes should allow for maximum
         // collision nesting.  If anything other than -1, the node would block
         // collisions for all descendant Spatials.
-        logger.info("Node created.");
+        logger.fine("Node created.");
     }
 
     /**
@@ -165,8 +165,9 @@ public class Node extends Spatial implements Serializable, Savable {
                     children = Collections.synchronizedList(new ArrayList<Spatial>(1));  
                 }
                 children.add(child);
-                logger.log(Level.INFO, "Child \"{0}\" attached to this node \"{1}\"", 
-                            new String[] {child.getName(), getName()});
+                logger.log(Level.FINE,
+                        "Child \"{0}\" attached to this node \"{1}\"", 
+                        new String[] {child.getName(), getName()});
             }
         }
         
@@ -197,7 +198,8 @@ public class Node extends Spatial implements Serializable, Savable {
                     children = Collections.synchronizedList(new ArrayList<Spatial>(1));  
                 }
                 children.add(index, child);
-                logger.log(Level.INFO, "Child \"{0}\" attached to this node \"{1}\"", 
+                logger.log(Level.FINE,
+                        "Child \"{0}\" attached to this node \"{1}\"", 
                         new String[] {child.getName(), getName()});
             }
         }
