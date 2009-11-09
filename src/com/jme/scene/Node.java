@@ -274,7 +274,7 @@ public class Node extends Spatial implements Serializable, Savable {
         Spatial child =  children.remove(index);
         if ( child != null ) {
             child.setParent( null );
-            logger.info("Child removed.");
+            logger.fine("Child removed.");
         }
         return child;
     }
@@ -289,7 +289,7 @@ public class Node extends Spatial implements Serializable, Savable {
             for ( int i = children.size() - 1; i >= 0; i-- ) {
                 detachChildAt( i );
             }
-            logger.info("All children removed.");
+            logger.fine("All children removed.");
         }
     }
 
