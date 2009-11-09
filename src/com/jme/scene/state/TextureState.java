@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URL;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -162,12 +163,22 @@ public abstract class TextureState extends RenderState {
 
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
+     *
+     * If this method fails to set up a default texture, it will not throw but
+     * will just log that fact, creating the TextureState instance without a
+     * default texture set.
      */
     public TextureState() {
         if (defaultTexture == null)
             try {
-                defaultTexture = TextureManager.loadTexture(TextureState.class
-                        .getResource("notloaded.png"), Texture.MinificationFilter.Trilinear,
+                URL dfltUrl = TextureState.class.getResource("notloaded.png");
+                if (dfltUrl == null) {
+                    logger.warning("Setting no default texture, since default "
+                            + "texture image 'notloaded.png' is not available");
+                    return;
+                }
+                defaultTexture = TextureManager.loadTexture(dfltUrl,
+                        Texture.MinificationFilter.Trilinear,
                         Texture.MagnificationFilter.Bilinear, 0.0f, true);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Failed to load default texture: notloaded.png", e);

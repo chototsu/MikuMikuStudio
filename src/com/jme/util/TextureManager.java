@@ -286,8 +286,10 @@ final public class TextureManager {
      *            com.jme.image.Image.Format for possible types.
      * @param flipped
      *            If true, the images Y values are flipped.
-     * @return the loaded texture. If there is a problem loading the texture,
-     *         null is returned.
+     * @return the loaded texture if possible, otherwise a default texture.
+     * @throw IllegalArgumentException for the case where it is impossible for
+     *        us to "recover":  we can not load the specified URL and no
+     *        default texture has been set up.
      * @see Image.Format
      */
     public static com.jme.image.Texture loadTexture(URL file,
@@ -296,14 +298,21 @@ final public class TextureManager {
             float anisoLevel, boolean flipped) {
 
         if (null == file) {
-            logger.warning("Could not load image...  URL was null. defaultTexture used.");
-            return TextureState.getDefaultTexture();
+            Texture defaultTexture = TextureState.getDefaultTexture();
+            logger.warning("Could not load image.  Specified URL is null.");
+            if (defaultTexture != null) return defaultTexture;
+            throw new IllegalArgumentException("Image for 'null' "
+                    + "requested, and no default Texture is set up");
         }
 
         String fileName = file.getFile();
         if (fileName == null) {
-            logger.warning("Could not load image...  fileName was null. defaultTexture used.");
-            return TextureState.getDefaultTexture();
+            Texture defaultTexture = TextureState.getDefaultTexture();
+            logger.warning("Could not load image.  "
+                    + "Specified fileName is null.");
+            if (defaultTexture != null) return defaultTexture;
+            throw new IllegalArgumentException("Image for '" + file
+                    + "' requested, and no default Texture is set up");
         }
 
         TextureKey tkey = new TextureKey(file, flipped, imageType);
