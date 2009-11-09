@@ -96,7 +96,7 @@ public class Point extends Geometry {
 		        BufferUtils.createFloatBuffer(color), 
                 TexCoords.makeNew(texture));
         generateIndices();
-		logger.info("Point created.");
+		logger.fine("Point created.");
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class Point extends Geometry {
 			FloatBuffer color, TexCoords coords) {
 		super(name, vertex, normal, color, coords);
         generateIndices();
-		logger.info("Point created.");
+		logger.fine("Point created.");
 	}
 
     @Override

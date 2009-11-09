@@ -127,7 +127,7 @@ public class Line extends Geometry {
             FloatBuffer color, TexCoords coords) {
         super(name, vertex, normal, color, coords);
         generateIndices();
-        logger.info("Line created.");
+        logger.fine("Line created.");
     }
 
     /**
@@ -153,7 +153,7 @@ public class Line extends Geometry {
                 .createFloatBuffer(normal), BufferUtils
                 .createFloatBuffer(color), TexCoords.makeNew(texture));
         generateIndices();
-        logger.info("Line created.");
+        logger.fine("Line created.");
     }
 
     @Override

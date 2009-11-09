@@ -144,7 +144,7 @@ public class TriMesh extends Geometry implements Serializable {
             throw new JmeException("Indices may not be null.");
         }
         setIndexBuffer(indices);
-        logger.info("TriMesh created.");
+        logger.fine("TriMesh created.");
     }
 
     /**

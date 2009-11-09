@@ -237,13 +237,13 @@ public abstract class TextureState extends RenderState {
      *            the texture unit this texture will fill.
      */
     public void setTexture(Texture texture, int textureUnit) {
-        if (textureUnit >= 0 && textureUnit < numTotalTexUnits) {
-            while (textureUnit >= this.texture.size()) {
-                this.texture.add(null);
-            }
-            this.texture.set(textureUnit, texture);
-            resetFirstLast();
-        }
+        if (textureUnit < 0 || textureUnit >= numTotalTexUnits)
+            throw new IllegalStateException(
+                    "Attempted to setTexture for textureunit "
+                    + textureUnit + " < " + numTotalTexUnits);
+        while (textureUnit >= this.texture.size()) this.texture.add(null);
+        this.texture.set(textureUnit, texture);
+        resetFirstLast();
         setNeedsRefresh(true);
     }
 

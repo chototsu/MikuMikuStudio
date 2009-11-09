@@ -132,7 +132,7 @@ public class QuadMesh extends Geometry implements Serializable {
             throw new JmeException("Indices may not be null.");
         }
         setIndexBuffer(indices);
-        logger.info("QuadMesh created.");
+        logger.fine("QuadMesh created.");
     }
 
     /**
