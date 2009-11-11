@@ -43,7 +43,6 @@ import com.jme.system.DisplaySystem;
 import com.jmex.font2d.Font2D;
 import com.jmex.font2d.Text2D;
 import com.jmex.game.state.GameState;
-import com.jmex.game.state.GameStateManager;
 import com.jmex.scene.TimedLifeController;
 
 /**
@@ -59,14 +58,20 @@ public class LoadingGameState extends GameState implements Loader {
 
 	private int steps;
 	private int current;
+	private boolean removeOnComplete;
 
 	public LoadingGameState() {
-		this(100);
+		this(100, true);
+	}
+	
+	public LoadingGameState(int steps) {
+		this(steps, true);
 	}
 
-	public LoadingGameState(int steps) {
+	public LoadingGameState(int steps, boolean removeOnComplete) {
 		this.steps = steps;
 		current = 0;
+		this.removeOnComplete = removeOnComplete;
 		init();
 	}
 
@@ -145,7 +150,7 @@ public class LoadingGameState extends GameState implements Loader {
 							- (percentageText.getHeight() / 2) - 20.0f, 0.0f));
 		}
 		if (percentage == 100) {
-			LoaderFadeOut fader = new LoaderFadeOut(2.0f, this);
+			LoaderFadeOut fader = new LoaderFadeOut(2.0f, this, removeOnComplete);
 			rootNode.addController(fader);
 			fader.setActive(true);
 		}
@@ -193,9 +198,15 @@ class LoaderFadeOut extends TimedLifeController {
 	private static final long serialVersionUID = 1L;
 
 	private LoadingGameState loading;
-
+	private boolean removeOnComplete;
+	
 	public LoaderFadeOut(float lifeInSeconds, LoadingGameState loading) {
+		this(lifeInSeconds, loading, true);
+	}
+
+	public LoaderFadeOut(float lifeInSeconds, LoadingGameState loading, boolean removeOnComplete) {
 		super(lifeInSeconds);
+		this.removeOnComplete = removeOnComplete;
 		this.loading = loading;
 	}
 
@@ -203,7 +214,9 @@ class LoaderFadeOut extends TimedLifeController {
 		loading.setAlpha(1.0f - percentComplete);
 		if (percentComplete == 1.0f) {
 			loading.setActive(false);
-			GameStateManager.getInstance().detachChild(loading);
+			if(removeOnComplete) {
+				loading.getParent().detachChild(loading);
+			}
 		}
 	}
 }
