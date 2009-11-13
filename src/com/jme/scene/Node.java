@@ -74,6 +74,7 @@ public class Node extends Spatial implements Serializable, Savable {
      */
     public Node() {
         logger.fine("Node created.");
+        setCollisionMask(-1,false);
     }
 
     /**
@@ -86,7 +87,7 @@ public class Node extends Spatial implements Serializable, Savable {
      */
     public Node(String name) {
         super(name);
-        setCollisionMask(-1);
+        setCollisionMask(-1,false);
         // Newly constitued (not reconsituted) Nodes should allow for maximum
         // collision nesting.  If anything other than -1, the node would block
         // collisions for all descendant Spatials.
@@ -777,4 +778,40 @@ public class Node extends Spatial implements Serializable, Savable {
     public <T extends Spatial>List<T> descendantMatches(String nameRegex) {
         return descendantMatches(null, nameRegex);
     }
+    
+    /**
+     *  Sets the collision-bits for this node and all children 
+     *  
+     *  @param collisionBits
+     */
+	public void setCollisionMask(int collisionBits) {
+		this.setCollisionMask(collisionBits,true);
+	}
+
+	/**
+	 * 
+	 * Sets the collision-bits for this node. If excludeChildren is false all the children's collisionbit is also set
+	 * 
+	 * @param collisionBits
+	 * @param includeChildren
+	 */
+	public void setCollisionMask(int collisionBits,boolean includeChildren) {
+		super.setCollisionMask(collisionBits);
+		if (includeChildren==true && getChildren()!=null)
+		{
+	        if (children!=null)
+	        {
+				for (Spatial child : getChildren()) {
+		        	if (child instanceof Node)
+		        	{
+		        		((Node)child).setCollisionMask(collisionBits,false);
+		        	}
+		        	else
+		        	{
+		        		child.setCollisionMask(collisionBits);
+		        	}
+		        }
+	        }
+		}
+	}    
 }
