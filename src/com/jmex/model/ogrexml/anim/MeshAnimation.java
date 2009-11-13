@@ -75,7 +75,7 @@ public class MeshAnimation implements Serializable, Savable {
         }
     }
 
-    @Override
+
     public void write(JMEExporter e) throws IOException {
         OutputCapsule out = e.getCapsule(this);
         out.write(name, "name", "");
@@ -83,7 +83,7 @@ public class MeshAnimation implements Serializable, Savable {
         out.write(tracks, "tracks", null);
     }
 
-    @Override
+
     public void read(JMEImporter i) throws IOException {
         InputCapsule in = i.getCapsule(this);
         name = in.readString("name", "");
@@ -91,7 +91,7 @@ public class MeshAnimation implements Serializable, Savable {
         tracks = (Track[]) in.readSavableArray("tracks", null);
     }
 
-    @Override
+
     public Class getClassTag() {
         return MeshAnimation.class;
     }

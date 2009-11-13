@@ -123,7 +123,7 @@ public class Animation implements Serializable, Savable {
         return boneAnim;
     }
 
-    @Override
+    
     public void write(JMEExporter e) throws IOException {
         OutputCapsule out = e.getCapsule(this);
 
@@ -133,7 +133,7 @@ public class Animation implements Serializable, Savable {
         out.write(meshAnim, "meshAnim", null);
     }
 
-    @Override
+
     public void read(JMEImporter i) throws IOException {
         InputCapsule in = i.getCapsule(this);
 
@@ -143,7 +143,7 @@ public class Animation implements Serializable, Savable {
         meshAnim = (MeshAnimation) in.readSavable("meshAnim", null);
     }
 
-    @Override
+
     public Class getClassTag() {
         return Animation.class;
     }
