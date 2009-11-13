@@ -508,6 +508,10 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
         FloatBuffer verts, norms;
 
+        // Note that it would be simpler to .clear() then .flip() the
+        // Buffers, but since we want to support the potential case of
+        // leaving vertexes at the end of the buffer unmodified, we must
+        // just set the write buffer and leave the limit setting alone.
         for (int index = cache.length - 1; index >= 0; --index) {
             Geometry geom = getSkin(index);
             verts = geom.getVertexBuffer();
@@ -517,30 +521,30 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                         geom.getName());
                 continue;
             }
-            verts.clear();
+            verts.rewind();
             norms = geom.getNormalBuffer();
-            norms.clear();
+            norms.rewind();
             geom.setHasDirtyVertices(true);
-            int overVerts = 0;
-            int overNorms = 0;
             if (cache[index].length * 3 > verts.limit())
-                throw new IllegalStateException(
-                        "Skin has more influences than vertexes.  "
-                        + cache[index].length + " vs. " + verts.limit()
-                        + "/3");
+                throw new IllegalStateException( "Skin " + getName() + ':'
+                        + geom.getName() + " has more influences than "
+                        + " vertexes.  " + cache[index].length + " vs. "
+                        + verts.limit() + "/3");
             if (cache[index].length * 3 > norms.limit())
-                throw new IllegalStateException(
-                        "Skin has more influences than normals.  "
-                        + cache[index].length + " vs. " + norms.limit()
-                        + "/3");
+                throw new IllegalStateException( "Skin " + getName() + ':'
+                        + geom.getName() + " has more influences than "
+                        + " normals.  " + cache[index].length + " vs. "
+                        + norms.limit() + "/3");
             if (cache[index].length * 3 < verts.limit())
-                logger.log(Level.WARNING,
-                        "Skin has fewer influences than vertexes.  {0} vs {1}/3",
-                        new Object[] { cache[index].length, verts.limit() });
+                logger.log(Level.WARNING, "Skin ''{0}:{1}'' has fewer "
+                        + "influences than vertexes.  {2} vs {3}/3",
+                        new Object[] { getName(), geom.getName(),
+                        cache[index].length, verts.limit() });
             if (cache[index].length * 3 < norms.limit())
-                logger.log(Level.WARNING,
-                        "Skin has fewer influences than normals.  {0} vs {1}/3",
-                        new Object[] { cache[index].length, norms.limit() });
+                logger.log(Level.WARNING, "Skin ''{0}:{1}'' has fewer "
+                        + "influences than normals.  {2} vs {3}/3",
+                        new Object[] { getName(), geom.getName(),
+                        cache[index].length, norms.limit() });
 
             for (int vert = 0, max = cache[index].length; vert < max; vert++) {
                 ArrayList<BoneInfluence> infs = cache[index][vert];
@@ -561,8 +565,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 verts.put(vertex.x).put(vertex.y).put(vertex.z);
                 norms.put(normal.x).put(normal.y).put(normal.z);
             }
-            verts.flip();
-            norms.flip();
+            verts.rewind();
+            norms.rewind();
         }
 
         if (skeleton != null && skeleton.getParent() != null) {
