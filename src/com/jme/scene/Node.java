@@ -804,7 +804,7 @@ public class Node extends Spatial implements Serializable, Savable {
 				for (Spatial child : getChildren()) {
 		        	if (child instanceof Node)
 		        	{
-		        		((Node)child).setCollisionMask(collisionBits,false);
+		        		((Node)child).setCollisionMask(collisionBits,includeChildren);
 		        	}
 		        	else
 		        	{
