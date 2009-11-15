@@ -364,11 +364,16 @@ public class ColorRGBA implements Externalizable, Savable, Cloneable {
     /**
      * <code>toString</code> returns the string representation of this color.
      * The format of the string is:<br>
-     * com.jme.ColorRGBA: [R=RR.RRRR, G=GG.GGGG, B=BB.BBBB, A=AA.AAAA]
+     * [R=RR.RRRR, G=GG.GGGG, B=BB.BBBB, A=AA.AAAA]
+     * <p>
+     * If you want to display a class name, then use
+     * Vector3f.class.getName() or getClass().getName().
+     * </p>
+     *
      * @return the string representation of this color.
      */
     public String toString() {
-        return "com.jme.renderer.ColorRGBA: [R="+r+", G="+g+", B="+b+", A="+a+"]";
+        return "[R="+r+", G="+g+", B="+b+", A="+a+"]";
     }
 
     @Override
