@@ -73,6 +73,8 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
     /** OpenGL id for the attached fragment shader. */
     private int fragmentShaderID = -1;
 
+    private boolean alreadyWarned = false;
+
     /** Holds the maximum number of vertex attributes available. */
     private static int maxVertexAttribs;
 
@@ -378,7 +380,8 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
             logger.severe("Too many shader attributes(standard+defined): "
                             + shaderAttributes.size() + " maximum: "
                             + maxVertexAttribs);
-        } else if (shaderAttributes.size() + 16 > maxVertexAttribs) {
+        } else if (!alreadyWarned && shaderAttributes.size() + 16 > maxVertexAttribs) {
+            alreadyWarned = true;
             logger.warning("User defined attributes might overwrite default OpenGL attributes");
         }
     }
