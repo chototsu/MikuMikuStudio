@@ -102,7 +102,7 @@ public class BezierCurve extends Curve {
 			return point;
 		}
 		//last point.
-		if (time > 1) {
+		if (time >= 1) {
 		    BufferUtils.populateFromBuffer(point, getVertexBuffer(), getVertexCount() - 1);
 			return point;
 		}
