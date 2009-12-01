@@ -42,7 +42,7 @@ import com.jme.util.export.ListenableStringFloatMap;
  * to reconstitute or instantiate local and delegated influences properly
  * without invoking expensive but unnecessary forceMorphs.
  *
- * @see #MorphingGeometry
+ * @see MorphingGeometry
  * @author Blaine Simpson (blaine dot simpson at admc dot com)
  */
 public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
@@ -64,14 +64,14 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     protected float morphInfluenceThreshold = .00001f;
 
     /**
-     * @see #MorphingGeometry#getMorphInfluenceThreshold()
+     * @see MorphingGeometry#getMorphInfluenceThreshold()
      */
     public void setMorphInfluenceThreshold(float morphInfluenceThreshold) {
         this.morphInfluenceThreshold = morphInfluenceThreshold;
     }
 
     /**
-     * @see #MorphingGeometry#setMorphInfluenceThreshold(float)
+     * @see MorphingGeometry#setMorphInfluenceThreshold(float)
      */
     public float getMorphInfluenceThreshold() {
         return morphInfluenceThreshold;
@@ -104,14 +104,14 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     protected ListenableStringFloatMap localMorphInfluencesMap;
 
     /**
-     * @see #MorphingGeometry#getMorphInfluencesMap()
+     * @see MorphingGeometry#getMorphInfluencesMap()
      */
     public ListenableStringFloatMap getMorphInfluencesMap() {
         return morphInfluencesMap;
     }
 
     /**
-     * @see #MorphingGeometry#setMorphInfluencesMap(ListenableStringFloatMap)
+     * @see MorphingGeometry#setMorphInfluencesMap(ListenableStringFloatMap)
      */
     public void setMorphInfluencesMap(ListenableStringFloatMap m) {
         if (localMorphInfluencesMap == m) return;
@@ -123,7 +123,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     }
 
     /**
-     * @see #MorphingGeometry#setSingleMorphInfluence(String, float)
+     * @see MorphingGeometry#setSingleMorphInfluence(String, float)
      */
     public void setSingleMorphInfluence(String morphKey, float influence) {
         if (morphInfluencesMap == null)
@@ -132,7 +132,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     }
 
     /**
-     * @see #MorphingGeometry#setMorphInfluences(
+     * @see MorphingGeometry#setMorphInfluences(
      *           Map<? extends String, ? extends Float>)
      */
     public void setMorphInfluences(Map<? extends String, ? extends Float> m) {
@@ -142,7 +142,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     }
 
     /**
-     * @see #MorphingGeometry#delegateInfluences()
+     * @see MorphingGeometry#delegateInfluences()
      */
     public boolean delegateInfluences() {
         ListenableStringFloatMap newInfluencesMap = null;
@@ -220,7 +220,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
 
     /**
      * @param morphGeo  Must be a TriMesh instance.
-     * @see #MorphingGeometry#addMorph(String, Geometry)
+     * @see MorphingGeometry#addMorph(String, Geometry)
      */
     public void addMorph(String morphKey, Geometry morphGeo) {
         if (baseMorph == null)
@@ -369,14 +369,14 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     }
 
     /**
-     * @see #MorphingGeometry#morph()
+     * @see MorphingGeometry#morph()
      */
     public void morph() {
         if (dirty) forceMorph();
     }
 
     /**
-     * @see #MorphingGeometry#forceMorph()
+     * @see MorphingGeometry#forceMorph()
      */
     public void forceMorph() {
         if (needExtrapolation) extrapolateMorphBuffers();
@@ -515,7 +515,7 @@ public class MorphingTriMesh extends TriMesh implements MorphingGeometry {
     }
 
     /**
-     * @see #MorphingGeometry#setAutoMorph(boolean)
+     * @see MorphingGeometry#setAutoMorph(boolean)
      */
     public void setAutoMorph(boolean autoMorph) {
         this.autoMorph = autoMorph;
