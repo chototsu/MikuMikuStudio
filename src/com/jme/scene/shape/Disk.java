@@ -46,14 +46,17 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * A flat discus, defined by it's radius.
+ * A flat sector of a discus, defined by it's radius and central angle.
  * 
  * @author Mark Powell
+ * @author Ahmed Abdelkader (added the central angle parameter)
  * @version $Revision$, $Date$
  */
 public class Disk extends TriMesh {
 
     private static final long serialVersionUID = 1L;
+    
+    private float centralAngle;
 
     private int shellSamples;
 
@@ -64,10 +67,14 @@ public class Disk extends TriMesh {
     public Disk() {
     }
 
+    public Disk(String name, int shellSamples, int radialSamples, float radius) {
+        this(name, FastMath.TWO_PI, shellSamples, radialSamples, radius);
+    }
+
     /**
-     * Creates a flat disk (circle) at the origin flat along the Z. Usually, a
-     * higher sample number creates a better looking cylinder, but at the cost
-     * of more vertex information.
+     * Creates a flat sector of a disk (circle) at the origin flat along the Z.
+     * Usually, a higher sample number creates a better looking cylinder, but
+     * at the cost of more vertex information.
      * 
      * @param name
      *            The name of the disk.
@@ -77,10 +84,16 @@ public class Disk extends TriMesh {
      *            The number of radial samples.
      * @param radius
      *            The radius of the disk.
-     */
-    public Disk(String name, int shellSamples, int radialSamples, float radius) {
+     * @param centralAngle
+     *            The central angle of the sector.
+     */ 
+    public Disk(String name, float centralAngle, int shellSamples, int radialSamples, float radius) {
         super(name);
-        updateGeometry(shellSamples, radialSamples, radius);
+        updateGeometry(centralAngle, shellSamples, radialSamples, radius);
+    }
+    
+    public float getCentralAngle() {
+    	return centralAngle;
     }
 
     public int getRadialSamples() {
@@ -101,6 +114,7 @@ public class Disk extends TriMesh {
         shellSamples = capsule.readInt("shellSamples", 0);
         radialSamples = capsule.readInt("radialSamples", 0);
         radius = capsule.readFloat("raidus", 0);
+        centralAngle = capsule.readFloat("centralAngle", FastMath.TWO_PI);
     }
 
     /**
@@ -110,14 +124,14 @@ public class Disk extends TriMesh {
      * @param radialSamples the number of radial samples.
      * @param radius the radius of the disk.
      */
-    public void updateGeometry(int shellSamples, int radialSamples, float radius) {
+    public void updateGeometry(float centralAngle, int shellSamples, int radialSamples, float radius) {
+        this.centralAngle = centralAngle = FastMath.normalize(centralAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
         this.shellSamples = shellSamples;
         this.radialSamples = radialSamples;
         this.radius = radius;
-        int radialless = radialSamples - 1;
         int shellLess = shellSamples - 1;
         // Allocate vertices
-        setVertexCount(1 + radialSamples * shellLess);
+        setVertexCount(1 + (radialSamples+1) * shellLess);
         setVertexBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
         setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
         getTextureCoords().set(0, new TexCoords(BufferUtils.createVector3Buffer(getVertexCount())));
@@ -137,8 +151,8 @@ public class Disk extends TriMesh {
         float inverseRadial = 1.0f / radialSamples;
         Vector3f radialFraction = new Vector3f();
         Vector2f texCoord = new Vector2f();
-        for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
-            float angle = FastMath.TWO_PI * inverseRadial * radialCount;
+        for (int radialCount = 0; radialCount <= radialSamples; radialCount++) {
+            float angle = centralAngle * inverseRadial * radialCount;
             float cos = FastMath.cos(angle);
             float sin = FastMath.sin(angle);
             Vector3f radial = new Vector3f(cos, sin, 0);
@@ -157,7 +171,7 @@ public class Disk extends TriMesh {
         
         // Generate connectivity
         int index = 0;
-        for (int radialCount0 = radialless, radialCount1 = 0; radialCount1 < radialSamples; radialCount0 = radialCount1++) {
+        for (int radialCount0 = 0, radialCount1 = 1; radialCount1 <= radialSamples; radialCount0 = radialCount1++) {
             getIndexBuffer().put(0);
             getIndexBuffer().put(1 + shellLess * radialCount0);
             getIndexBuffer().put(1 + shellLess * radialCount1);
@@ -183,6 +197,7 @@ public class Disk extends TriMesh {
         capsule.write(shellSamples, "shellSamples", 0);
         capsule.write(radialSamples, "radialSamples", 0);
         capsule.write(radius, "radius", 0);
+        capsule.write(centralAngle, "centralAngle", FastMath.TWO_PI);
     }
 
 }
