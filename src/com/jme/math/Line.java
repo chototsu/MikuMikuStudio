@@ -274,7 +274,6 @@ public class Line implements Serializable, Savable, Cloneable {
      * @param e The JME exporter to write to.
      * @see com.jme.util.export.Savable#write(com.jme.util.export.JMEExporter)
      */
-    @Override
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(origin, "origin", Vector3f.ZERO);
@@ -286,7 +285,6 @@ public class Line implements Serializable, Savable, Cloneable {
      * @param e The JME importer to read from.
      * @see com.jme.util.export.Savable#read(com.jme.util.export.JMEImporter)
      */
-    @Override
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         origin = (Vector3f) capsule.readSavable("origin", Vector3f.ZERO.clone());
@@ -297,7 +295,6 @@ public class Line implements Serializable, Savable, Cloneable {
      * Returns class type (for exporting/importing purposes).
      * @return Class tag.
      */
-    @Override
     public Class<? extends Line> getClassTag() {
         return this.getClass();
     }
