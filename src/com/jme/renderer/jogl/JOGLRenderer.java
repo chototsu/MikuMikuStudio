@@ -668,9 +668,7 @@ public class JOGLRenderer extends Renderer {
                     for (int y = 0; y < h; y++) {
                         
                         int index = 3 * ((h- y - 1) * w + x);
-                        if (index < 0) {
-                            System.out.println();
-                        }
+                        //if (index < 0) { System.out.println(); }
                         int argb = (((int) (buff.get(index+0)) & 0xFF) << 16) //r
                                  | (((int) (buff.get(index+1)) & 0xFF) << 8)  //g
                                  | (((int) (buff.get(index+2)) & 0xFF));      //b
