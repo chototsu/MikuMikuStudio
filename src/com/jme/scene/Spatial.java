@@ -498,9 +498,37 @@ public abstract class Spatial implements Serializable, Savable {
      *            a vector indicating the (local) up direction. (typically {0,
      *            1, 0} in jME.)
      */
-    public void lookAt(Vector3f position, Vector3f upVector) {
+    public void lookAt(Vector3f position, Vector3f upVector)
+    {
+    	lookAt(position,upVector,false);
+    }
+    
+	// with setting the 3rd parameter (takeParentInAccount) to true the localrotation 
+	// is set so that the spatials worldrotation (and not the localroation) is looking to the 
+	// given position
+    /**
+     * <code>lookAt</code> is a convenience method for auto-setting the local
+     * rotation based on a position and an up vector. It computes the rotation
+     * to transform the z-axis to point onto 'position' and the y-axis to 'up'.
+     * Unlike {@link Quaternion#lookAt} this method takes a world position to
+     * look at not a relative direction.
+     * 
+     * @param position
+     *            where to look at in terms of world coordinates
+     * @param upVector
+     *            a vector indicating the (local) up direction. (typically {0,
+     *            1, 0} in jME.)
+     * @param takeParentInAccount
+     * 		      if true : the localrotation is fixed so that this spatial's worldrotation
+     *                      is pointing to the position
+     *            if false: the localrotation is pointing to the position (worldrotation might be
+     *                      not pointing to it
+     */
+    public void lookAt(Vector3f position, Vector3f upVector, boolean takeParentInAccount) {
         compVecA.set(position).subtractLocal(getWorldTranslation());
         getLocalRotation().lookAt(compVecA, upVector);
+		if (takeParentInAccount && parent!=null)
+			getLocalRotation().multLocal(parent.getWorldRotation().inverse());        
     }
 
     /**
