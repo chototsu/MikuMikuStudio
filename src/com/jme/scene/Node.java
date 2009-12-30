@@ -560,7 +560,19 @@ public class Node extends Spatial implements Serializable, Savable {
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
     @Override
-    public void updateWorldBound() {
+    public void updateWorldBound() 
+    {
+    	updateWorldBound(false);
+    }
+
+    /**
+     * <code>updateWorldBound</code> merges the bounds of all the children
+     * maintained by this node. This will allow for faster culling operations.
+     * 
+     * @param recursive - if true the whole subtree and its spatials are updated first 
+     * 
+     */
+    public void updateWorldBound(boolean recursive) {
         if ((lockedMode & Spatial.LOCKED_BOUNDS) != 0) return;
         if (children == null) {
             return;
@@ -569,6 +581,13 @@ public class Node extends Spatial implements Serializable, Savable {
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
             Spatial child =  children.get(i);
             if (child != null) {
+            	// first update the whole subtree
+            	if (recursive)
+            		if (child instanceof Node)
+            			((Node)child).updateWorldBound(true);
+            		else
+            			child.updateWorldBound();
+            	
                 if (worldBound != null) {
                     // merge current world bound with child world bound
                     worldBound.mergeLocal(child.getWorldBound());
