@@ -45,7 +45,7 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
 /**
- * Three coloured arrows, one pointing along each axis.
+ * Three colored arrows, one pointing along each axis.
  * 
  * @author Joshua Slack
  * @version $Revision$, $Date$
@@ -121,6 +121,13 @@ public class AxisRods extends Node {
         this.width = width;
     }
 
+    /**
+     * Allows for a change of this shape's properties.  Individual arrows can be accessed
+     * and modified through {@link #getxAxis()}, {@link #getyAxis()}, and {@link #getzAxis()}
+     * @param length Length of each arrow in the shape.
+     * @param width Width of each arrow in the shape.
+     * @param rightHanded
+     */
     public void updateGeometry(float length, float width, boolean rightHanded) {
         this.length = length;
         this.width = width;
@@ -168,5 +175,17 @@ public class AxisRods extends Node {
         capsule.write(width, "width", 0.125f);
         capsule.write(rightHanded, "rightHanded", true);
     }
+
+	public Arrow getxAxis() {
+		return xAxis;
+	}
+
+	public Arrow getyAxis() {
+		return yAxis;
+	}
+
+	public Arrow getzAxis() {
+		return zAxis;
+	}
 
 }
