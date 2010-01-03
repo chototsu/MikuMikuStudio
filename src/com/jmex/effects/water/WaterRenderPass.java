@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2009 jMonkeyEngine
+ * Copyright (c) 2003-2010 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -170,7 +170,7 @@ public class WaterRenderPass extends Pass {
 	 *
 	 * @param cam				main rendercam to use for reflection settings etc
 	 * @param renderScale		how many times smaller the reflection/refraction textures should be compared to the main display
-	 * @param useProjectedShader true - use the projected setup for variable height water meshes, false - use the flast shader setup
+	 * @param useProjectedShader true - use the projected setup for variable height water meshes, false - use the flat shader setup
 	 * @param useRefraction	  enable/disable rendering of refraction textures
 	 */
 	public WaterRenderPass( Camera cam, int renderScale, boolean useProjectedShader, boolean useRefraction ) {

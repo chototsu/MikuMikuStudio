@@ -215,7 +215,7 @@
   <!-- Generates javadoc unless param is set -->
   <target name="-doc" unless="_docs.uptodate">
     <delete dir="${doc}"/>  <!-- The dependset leaves empty directories -->
-    <javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true" package="yes" windowtitle="jME API" bottom="Copyright 2003-2009 jMonkeyEngine" maxmemory="256m">
+    <javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true" package="yes" windowtitle="jME API" bottom="Copyright 2003-2010 jMonkeyEngine" maxmemory="256m">
       <fileset dir="${src}/com" excludes="**/.*/**" includes="**/*.java" />
     </javadoc>
   </target>
