@@ -35,6 +35,8 @@ package com.jmex.model.ogrexml.anim;
 
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
+
+import java.util.ArrayList;
 import java.util.Map;
 import com.jme.scene.Controller;
 import com.jme.scene.state.GLSLShaderObjectsState;
@@ -67,57 +69,28 @@ public class MeshAnimationController extends Controller implements Savable {
      * Skeleton object must contain corresponding data for the targets' weight buffers.
      */
     private Skeleton skeleton;
-
+    
     /**
      * List of animations, bone or vertex based.
      */
     private Map<String, Animation> animationMap;
+    
+    /**
+     * The currently playing animations.
+     */
+    private ArrayList<AnimationChannel> animations = new ArrayList<AnimationChannel>();
 
     /**
-     * The currently playing animation.
+     * Sets whether the current animations actually have Bone Animation on them.
      */
-    private Animation animation;
-    private float time = 0f;
+    private boolean boneAnimation = false;
+    
 
     /**
      * True if the mesh data should be reset to bind pose every frame.
      * This only refers to mesh data, the skeleton must always be reset to bind pose each frame.
      */
     private boolean resetToBindEveryFrame = false;
-
-    /**
-     * Frameskip LOD option
-     */
-    private int framesToSkip = 0;
-    private int curFrame = 0;
-
-
-    /**
-     * Animation to blend from, e.g the animation
-     * that was set before setAnimation() was called.
-     */
-    private transient Animation blendFrom = null;
-
-    /**
-     * How much to blend the new animation,
-     * a value of 0 indicates apply only the previous animation
-     * while a value of 1 means apply only the current animation.
-     */
-    private transient float blendScale = 0f;
-
-    /**
-     * Multiply this by TPF to get an addition value for blendScale,
-     * makes sure blendScale only becomes 1 when the blend time has been
-     * reached.
-     */
-    private transient float blendMultiply = 0f;
-
-    /**
-     * Same as the <code>time</code> variable but for
-     * the blendFrom animation.
-     */
-    private transient float blendFromTime = 0f;
-
 
     public MeshAnimationController(OgreMesh[] meshes,
                                    Skeleton skeleton,
@@ -208,22 +181,26 @@ public class MeshAnimationController extends Controller implements Savable {
             reset();
             return true;
         }
+        
+        AnimationChannel animationChannel = new AnimationChannel(this);
+        animationChannel.addAllBones();
 
-        if (blendTime > 0f){
-            blendFrom = animation;
-            blendMultiply = 1f / blendTime;
-            blendScale = 0f;
-        }
-
-        animation = animationMap.get(name);
+        Animation animation = animationMap.get(name);
 
         if (animation == null)
             return false;
+        
+        // Sets whether the current running animation has bone animation
+        boneAnimation = animation.hasBoneAnimation();
 
+        animationChannel.setAnimation(animation, blendTime);
+        
         resetToBind();
         resetToBindEveryFrame = animation.hasMeshAnimation() || !isHardwareSkinning();
 
-        time = 0;
+//        time = 0;
+        animations.clear();
+        animations.add(animationChannel);
 
         return true;
     }
@@ -237,7 +214,57 @@ public class MeshAnimationController extends Controller implements Savable {
     public boolean setAnimation(String name){
         return setAnimation(name, 0f);
     }
+    
+    /**
+     * Sets the currently active animation.
+     * Use the animation name "<bind>" to set the model into bind pose.
+     *
+     * @returns true if the animation has been successfuly set. False if no such animation exists.
+     */
+    public boolean setAnimation(AnimationChannel animationChannel, String name, float blendTime){
+        if (name.equals("<bind>")){
+            reset();
+            return true;
+        }
 
+        Animation animation = animationMap.get(name);
+
+        if (animation == null)
+            return false;
+        
+        // Sets whether the current running animation has bone animation
+        boneAnimation |= animation.hasBoneAnimation();
+
+        animationChannel.setAnimation(animation, blendTime);
+        
+        resetToBind();
+        resetToBindEveryFrame = animation.hasMeshAnimation() || !isHardwareSkinning();
+
+//        time = 0;
+        animations.add(animationChannel);
+
+        return true;
+    }
+
+    /**
+     * Sets the currently active animation.
+     * Use the animation name "<bind>" to set the model into bind pose.
+     *
+     * @returns true if the animation has been successfuly set. False if no such animation exists.
+     */
+    public boolean setAnimation(AnimationChannel animationChannel, String name){
+        return setAnimation(animationChannel, name, 0f);
+    }
+    
+    /**
+     * Makes and returns a new animation channel constructed with this controller.
+     *
+     * @returns a new animation channel constructed with this controller.
+     */
+    public AnimationChannel getAnimationChannel(){
+    	return new AnimationChannel(this);
+    }
+    
     /**
      * Returns the length of the animation in seconds. Returns -1 if the animation is not defined.
      */
@@ -251,13 +278,28 @@ public class MeshAnimationController extends Controller implements Savable {
     }
 
     /**
-     * @return The name of the currently active animation
+     * @return The name of the currently active animations
      */
-    public String getActiveAnimation(){
-        if (animation == null)
-            return "<bind>";
+    public String[] getActiveAnimations(){
+    	String[] activeAnimations;
+        if (animations.size() == 0) {
+        	activeAnimations = new String[1];
+        	activeAnimations[0] = "<bind>";
+        } else {        
+        	activeAnimations = new String[animations.size()];
+        	for (int i = 0; i < animations.size(); i++) {
+        		activeAnimations[i] = animations.get(i).getAnimation().getName();
+			}
+        }
 
-        return animation.getName();
+        return activeAnimations;
+    }
+    
+    /**
+     * @return The animation defined with the given String name
+     */
+    public Animation getAnimation(String name){
+        return animationMap.get(name);
     }
 
     /**
@@ -274,14 +316,9 @@ public class MeshAnimationController extends Controller implements Savable {
      * @param framesToSkip One frame will be played out of the framesToSkip number.
      */
     public void setFrameSkip(int framesToSkip){
-        if (this.framesToSkip != framesToSkip)
-            this.curFrame = 0;
-
-        this.framesToSkip = framesToSkip;
-    }
-
-    public float getCurTime() {
-        return time;
+    	for (AnimationChannel animation : animations) {
+			animation.setFrameSkip(framesToSkip);
+		}
     }
 
     /**
@@ -290,8 +327,14 @@ public class MeshAnimationController extends Controller implements Savable {
      * the time will be appropriately clamped/wraped depending on the repeatMode.
      */
     public void setCurTime(float time){
-        this.time = time;
+    	for (AnimationChannel animation : animations) {
+			animation.setCurTime(time);
+		}
     }
+    
+    public OgreMesh[] getTargets() {
+		return targets;
+	}
 
     Skeleton getSkeleton(){
         return skeleton;
@@ -307,8 +350,7 @@ public class MeshAnimationController extends Controller implements Savable {
             skeleton.resetAndUpdate();
         }
         resetToBindEveryFrame = false;
-        animation = null;
-        time = 0;
+        animations.clear();
     }
 
     void resetToBind(){
@@ -405,9 +447,9 @@ public class MeshAnimationController extends Controller implements Savable {
         mesh.updateModelBound();
     }
 
-    public float clampWrapTime(float t, float max, int repeatMode){
+    public float clampWrapTime(float t, float max){
         if (t < 0f){
-            switch (repeatMode){
+            switch (getRepeatType()){
                 case RT_CLAMP:
                     return 0;
                 case RT_CYCLE:
@@ -416,7 +458,7 @@ public class MeshAnimationController extends Controller implements Savable {
                     return max - t;
             }
         }else if (t > max){
-            switch (repeatMode){
+            switch (getRepeatType()){
                 case RT_CLAMP:
                     return max;
                 case RT_CYCLE:
@@ -431,57 +473,26 @@ public class MeshAnimationController extends Controller implements Savable {
 
     @Override
     public void update(float tpf) {
-        if (!isActive() || animation == null)
+    	
+        if (!isActive() || animations.isEmpty())
             return;
 
-        // do clamping/wrapping of time
-        time = clampWrapTime(time, animation.getLength(), getRepeatType());
-        if (blendFrom != null){
-            blendFromTime = clampWrapTime(blendFromTime, blendFrom.getLength(), getRepeatType());
-        }
-        
-        if (framesToSkip > 0){
-            // check frame skipping
-            curFrame++;
-
-            if (curFrame != framesToSkip){
-                time += tpf * getSpeed();
-                if (blendFrom != null)
-                    blendFromTime += tpf * getSpeed();
-
-                return;
-            }else{
-                curFrame = 0;
-            }
-        }
 
         if (resetToBindEveryFrame)
             resetToBind(); // reset morph meshes to bind pose
 
-        if (animation.hasBoneAnimation()){
-            skeleton.reset(); // reset skeleton to bind pose
-        }
-
-        if (blendFrom == null){
-            animation.setTime(time, targets, skeleton, 1f);
-        }else{
-            blendFrom.setTime(blendFromTime, targets, skeleton, 1f - blendScale);
-            animation.setTime(time, targets, skeleton, blendScale);
-
-            // here update the blending scale
-            blendScale += tpf * blendMultiply;
-            if (blendScale > 1f){
-                blendFrom = null;
-                blendScale = 0f;
-                blendMultiply = 0f;
-            }
-        }
+        if (boneAnimation)
+        	skeleton.reset(); // reset skeleton to bind pose
         
-        if (animation.hasBoneAnimation()){
-            skeleton.updateWorldVectors();
+        for (AnimationChannel animation : animations) {
+			animation.update(tpf);
+		}
+     
+          if (boneAnimation) {
+        	skeleton.updateWorldVectors();
 
             if (!isHardwareSkinning()){
-                // here update the targets verticles if no hardware skinning supported
+                // here update the targets vertices if no hardware skinning supported
 
                 Matrix4f[] offsetMatrices = skeleton.computeSkinningMatrices();
 
@@ -493,9 +504,6 @@ public class MeshAnimationController extends Controller implements Savable {
             }
         }
 
-        time += tpf * getSpeed();
-        if (blendFrom != null)
-            blendFromTime += tpf * getSpeed();
     }
 
     @Override

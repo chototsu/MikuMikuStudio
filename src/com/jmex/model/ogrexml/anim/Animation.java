@@ -39,6 +39,7 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Combines mesh and bone animations into one class for easier access
@@ -98,7 +99,7 @@ public class Animation implements Serializable, Savable {
         return boneAnim != null;
     }
 
-    String getName(){
+    public String getName(){
         return name;
     }
 
@@ -106,12 +107,12 @@ public class Animation implements Serializable, Savable {
         return length;
     }
 
-    void setTime(float time, OgreMesh[] targets, Skeleton skeleton, float weight){
+    void setTime(float time, OgreMesh[] targets, Skeleton skeleton, float weight, ArrayList<Integer> affectedBones){
         if (meshAnim != null)
             meshAnim.setTime(time, targets, weight);
 
         if (boneAnim != null){
-            boneAnim.setTime(time, skeleton, weight);
+            boneAnim.setTime(time, skeleton, weight, affectedBones);
         }
     }
 

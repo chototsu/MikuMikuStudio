@@ -39,6 +39,7 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Bone animation updates each of it's tracks with the skeleton and time
@@ -77,9 +78,9 @@ public final class BoneAnimation implements Serializable, Savable {
         return tracks;
     }
 
-    void setTime(float time, Skeleton skeleton, float weight){
+    void setTime(float time, Skeleton skeleton, float weight, ArrayList<Integer> affectedBones){
         for (int i = 0; i < tracks.length; i++){
-            tracks[i].setTime(time, skeleton, weight);
+            tracks[i].setTime(time, skeleton, weight, affectedBones);
         }
     }
 

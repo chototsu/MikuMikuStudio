@@ -36,6 +36,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -92,8 +93,12 @@ public final class BoneTrack implements Serializable, Savable {
      * the correct animation transforms for a given time.
      * The transforms can be interpolated in some method from the keyframes.
      */
-    public void setTime(float time, Skeleton skeleton, float weight) {
-        Bone target = skeleton.getBone(targetBoneIndex);
+    public void setTime(float time, Skeleton skeleton, float weight, ArrayList<Integer> affectedBones) {
+        if (affectedBones != null && !affectedBones.contains(targetBoneIndex)) {
+			return;
+		}
+    	
+    	Bone target = skeleton.getBone(targetBoneIndex);
 
         int lastFrame = times.length - 1;
         if (time < 0 || times.length == 1){
