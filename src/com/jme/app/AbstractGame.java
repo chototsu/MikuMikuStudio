@@ -170,8 +170,7 @@ public abstract class AbstractGame {
      * effect.
      * 
      * @param mode properties dialog behaviour.
-     *            ALWAYS_SHOW_PROPS, NEVER_SHOW_PROPS and
-     *            FIRSTRUN_OR_NOCONFIGFILE are the valid choices.
+     *            {@link ConfigShowMode#NeverShow}, {@link ConfigShowMode#AlwaysShow}, or {@link ConfigShowMode#ShowIfNoConfig}
      * @param imageOverride
      *            URL specifying the filename of an image to be displayed
      *            with the <code>PropertiesDialog</code>. Passing
