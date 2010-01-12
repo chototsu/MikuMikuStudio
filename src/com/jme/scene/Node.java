@@ -642,17 +642,12 @@ public class Node extends Spatial implements Serializable, Savable {
 
     @Override
     public void findPick(Ray toTest, PickResults results, int requiredOnBits) {
-        if(children == null) {
-            return;
-        }
-        if (getWorldBound() != null && isCollidable(requiredOnBits)) {
-            if (getWorldBound().intersects(toTest)) {
-                // further checking needed.
-                for (int i = 0; i < getQuantity(); i++) {
-                    ( children.get(i)).findPick(toTest, results);
-                }
-            }
-        }
+        if (children == null || getWorldBound() == null
+                || !isCollidable(requiredOnBits)
+                || !getWorldBound().intersects(toTest)) return;
+        // further checking needed.
+        for (int i = 0; i < getQuantity(); i++)
+            children.get(i).findPick(toTest, results, requiredOnBits);
     }
 
 	/**
