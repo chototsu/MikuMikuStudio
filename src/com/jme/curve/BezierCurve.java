@@ -97,7 +97,7 @@ public class BezierCurve extends Curve {
 	 */
 	public Vector3f getPoint(float time, Vector3f point) {
 		//first point
-		if (time < 0) {
+		if (time <= 0) {
 		    BufferUtils.populateFromBuffer(point, getVertexBuffer(), 0);
 			return point;
 		}
