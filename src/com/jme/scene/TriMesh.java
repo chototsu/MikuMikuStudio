@@ -411,6 +411,16 @@ public class TriMesh extends Geometry implements Serializable {
         }
     }
 
+    
+    /**
+     * Convenience wrapper for findTrianglePick(Ray, ArrayList<Integer>,int) using default
+     * collision mask (bit 1 set).
+     */
+    public void findTrianglePick(Ray toTest, ArrayList<Integer> results) {
+    	findTrianglePick(toTest, results, 1);
+    }
+
+    
     /**
      * <code>findTrianglePick</code> determines the triangles of this trimesh
      * that are being touched by the ray. The indices of the triangles are
@@ -421,9 +431,11 @@ public class TriMesh extends Geometry implements Serializable {
      *            (length 1).
      * @param results
      *            the indices to the triangles.
+     * @param requiredOnBits Pick will only be considered if 'this'
+     *            has these bits of its collision masks set.
      */
-    public void findTrianglePick(Ray toTest, ArrayList<Integer> results) {
-        if (worldBound == null || !isCollidable()) {
+    public void findTrianglePick(Ray toTest, ArrayList<Integer> results,int requiredOnBits) {
+        if (worldBound == null || !isCollidable(requiredOnBits)) {
             return;
         }
 
