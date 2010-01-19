@@ -118,9 +118,24 @@ public abstract class PickResults {
      * should order the object.
      * @param ray the ray that was cast for the pick calculation.
      * @param g the object to add to the pick data.
+     * @param requiredOnBits Collision will only be considered if 'this'
+     *        has these bits of its collision mask set.
      */
-    public abstract void addPick(Ray ray, Geometry g);
-	
+    public abstract void addPick(Ray ray, Geometry g, int requiredOnBits);
+
+    
+    /**
+     * Convenience wrapper for
+     * addPick(Ray, Geometry, int)
+     * collidability (first bit of the collidable bit mask).
+     *
+     * @see #addPick(Ray, Geometry, int)
+     */
+    public void addPick(Ray ray, Geometry g)
+    {
+    	addPick(ray,g,1);
+    }
+    
     /**
      * Optional method that can be implemented by sub classes to define 
      * methods for handling picked objects. After calculating all pick results
