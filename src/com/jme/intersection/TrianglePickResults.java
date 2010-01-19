@@ -54,6 +54,17 @@ import com.jme.scene.TriMesh;
  */
 public class TrianglePickResults extends PickResults {
 
+    /**
+     * Convenience wrapper for
+     * addPick(Ray, Geometry, int)
+     * collidability (first bit of the collidable bit mask).
+     *
+     * @see #addPick(Ray, Geometry, int)
+     */
+	public void addPick(Ray ray, Geometry g) {
+		addPick(ray,g,1);
+	}
+
 	/**
      * <code>addPick</code> adds a Geometry object to the pick list. If the
      * Geometry object is not a TriMesh, the process stops here. However, if the
@@ -64,9 +75,12 @@ public class TrianglePickResults extends PickResults {
      *            the ray that is doing the picking.
      * @param g
      *            the Geometry to add to the pick list.
+     * @param requiredOnBits TrianglePick will only be considered if 'this'
+     *            has these bits of its collision masks set.
+     *                       
      * @see com.jme.intersection.PickResults#addPick(Ray, Geometry)
-     */
-	public void addPick(Ray ray, Geometry g) {
+     */	
+	public void addPick(Ray ray, Geometry g, int requiredOnBits) {
 		//find the triangle that is being hit.
 		//add this node and the triangle to the CollisionResults
 		// list.
@@ -75,8 +89,9 @@ public class TrianglePickResults extends PickResults {
 			addPickData(data);
 		} else {
             ArrayList<Integer> a = new ArrayList<Integer>();
-            ((TriMesh) g).findTrianglePick(ray, a);
+            ((TriMesh) g).findTrianglePick(ray, a, requiredOnBits);
 			PickData data = new TrianglePickData(ray, ((TriMesh) g), a, willCheckDistance());
+			
 			addPickData(data);
 		}
 	}
