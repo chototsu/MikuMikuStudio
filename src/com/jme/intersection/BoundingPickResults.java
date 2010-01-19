@@ -56,10 +56,16 @@ public class BoundingPickResults extends PickResults{
      * @see com.jme.intersection.PickResults#addPick(Ray, Geometry)
      */
 	public void addPick(Ray ray, Geometry g) {
+		addPick(ray,g,1);
+	}
+	
+	@Override
+	public void addPick(Ray ray, Geometry g, int requiredOnBits) {
 		PickData data = new PickData(ray, g, willCheckDistance());
 		addPickData(data);
 	}
-
+	
+	
 	/**
      * empty implementation, it is highly recommended that you override this
      * method to handle any picks as needed.
@@ -69,5 +75,6 @@ public class BoundingPickResults extends PickResults{
 	public void processPick() {
 		
 	}
+
 
 }
