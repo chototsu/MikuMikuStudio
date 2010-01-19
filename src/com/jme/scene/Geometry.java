@@ -649,7 +649,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
         if (getWorldBound().intersects(ray)) {
             // find the triangle that is being hit.
             // add this node and the triangle to the PickResults list.
-            results.addPick(ray, this);
+            results.addPick(ray, this,requiredOnBits);
         }
     }
 
