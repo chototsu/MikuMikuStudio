@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2009 jMonkeyEngine
+ * Copyright (c) 2003-2010 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
 /**
- * <code>CullState</code> determins which side of a model will be visible when
+ * <code>CullState</code> determines which side of a model will be visible when
  * it is rendered. By default, both sides are visible. Define front as the side
  * that traces its vertexes counter clockwise and back as the side that traces
  * its vertexes clockwise, a side (front or back) can be culled, or not shown
