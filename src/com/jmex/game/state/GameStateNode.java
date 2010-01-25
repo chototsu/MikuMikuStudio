@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2009 jMonkeyEngine
+ * Copyright (c) 2003-2010 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -191,11 +191,26 @@ public class GameStateNode<G extends GameState> extends GameState {
      * Determines if the provided <code>GameState</code> is contained in the 
      * children list of this node.
      * 
-     * @param state the <code>GameState</code> object to check.
+     * @param state The <code>GameState</code> object to check.
      * @return true if the object is contained, false otherwise.
      */
     public boolean hasChild(G state) {
     	return children.contains(state);
+    }
+    
+    /**
+     * Determines if a <code>GameState</code> with the name provided is contained
+     * in the children list of this node.
+     * @param stateName The name of the <code>GameState</code> being searched for.
+     * @return true if a <code>GameState</code> with the name provided is found.
+     */
+    public boolean hasChild(String stateName){
+    	Iterator<G> gsIterator = children.iterator();
+    	while(gsIterator.hasNext()){
+    		if(stateName.equals(gsIterator.next().getName()))
+    			return true;
+    	}
+    	return false;
     }
     
     /**
