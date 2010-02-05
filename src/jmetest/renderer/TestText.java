@@ -55,7 +55,7 @@ public class TestText extends BaseGame {
 
     private Text text;
     private Camera cam;
-    private Node scene;
+    protected Node scene;
 
     public static void main(String[] args) {
         TestText app = new TestText();
