@@ -77,8 +77,19 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
             }
         }
     }
+    
+    /**
+     * 
+     * this method returns the joystick connected to this handler
+     * 
+     * @return
+     *    the connected joystick
+     */
+    public Joystick getJoystick() {
+    	return joystick;
+	}
 
-    protected class JoystickButtonTrigger extends ActionTrigger {
+	protected class JoystickButtonTrigger extends ActionTrigger {
         private int button;
         private Joystick joystick;
         private boolean pressed;
@@ -169,4 +180,5 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
             }
         }
     }
+    
 }
