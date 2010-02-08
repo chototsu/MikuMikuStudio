@@ -1405,16 +1405,15 @@ public abstract class Spatial implements Serializable, Savable {
      */
     public void lock(Renderer r) {
         lockBounds();
-        lockBranch();
         lockTransforms();
         lockMeshes(r);
         lockShadows();
+        lockBranch();
     }
 
     /**
-     * Convenience function for locking all aspects of a Spatial. For lockMeshes
-     * it calls:
-     * <code>lockMeshes(DisplaySystem.getDisplaySystem().getRenderer());</code>
+     * Convenience function for locking all aspects of a Spatial. It calls:
+     * <code>lock(DisplaySystem.getDisplaySystem().getRenderer());</code>
      * 
      * @see #lockBounds()
      * @see #lockTransforms()
@@ -1422,11 +1421,7 @@ public abstract class Spatial implements Serializable, Savable {
      * @see #lockShadows()
      */
     public void lock() {
-        lockBounds();
-        lockBranch();
-        lockTransforms();
-        lockMeshes();
-        lockShadows();
+        lock(DisplaySystem.getDisplaySystem().getRenderer());
     }
 
     /**
