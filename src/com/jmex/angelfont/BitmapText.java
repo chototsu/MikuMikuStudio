@@ -34,12 +34,11 @@ package com.jmex.angelfont;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
+import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.BlendState;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.RenderState.StateType;
 import com.jme.system.DisplaySystem;
@@ -75,6 +74,25 @@ public class BitmapText extends TriMesh {
 
     private boolean rightToLeft = false;
 
+    private static BitmapFont defaultFont=null;
+    
+    
+    
+    /**
+     * 
+     * constructor for a BitmapText using default font and setting text and color 
+     * 
+     * @param text
+     * @param color
+     * 
+     */
+    public BitmapText(String text,ColorRGBA color)
+    {
+    	this(defaultFont==null?defaultFont=BitmapFontLoader.loadDefaultFont():defaultFont,false);
+    	setText(text);
+    	setDefaultColor(color);
+    	update();
+    }
     /**
      * 
      * Constructor sets up and initializes the text with zero length
