@@ -335,12 +335,15 @@ public class InputHandler {
      */
     public void removeAction( InputActionInterface inputAction ) {
         synchronized ( this ) {
-            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger trigger = allTriggers.get( i );
-                if ( trigger.action == inputAction ) {
-                    trigger.remove();
-                    //go on, action could be in more triggers
-                }
+            if (allTriggers!=null)
+            {
+	            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
+	                ActionTrigger trigger = allTriggers.get( i );
+	                if ( trigger.action == inputAction ) {
+	                    trigger.remove();
+	                    //go on, action could be in more triggers
+	                }
+	            }
             }
         }
     }
@@ -370,9 +373,12 @@ public class InputHandler {
      */
     public void removeAllActions() {
         synchronized ( this ) {
-            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger trigger = allTriggers.get( i );
-                trigger.remove();
+            if (allTriggers!=null)
+            {
+	        	for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
+	                ActionTrigger trigger = allTriggers.get( i );
+	                trigger.remove();
+	            }
             }
         }
     }
@@ -382,10 +388,13 @@ public class InputHandler {
      */
     public void clearActions() {
         synchronized ( this ) {
-            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger trigger = allTriggers.get( i );
-                trigger.remove();
-            }
+            if (allTriggers!=null)
+            {
+	            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
+	                ActionTrigger trigger = allTriggers.get( i );
+	                trigger.remove();
+	            }
+	        }
         }
     }
 
