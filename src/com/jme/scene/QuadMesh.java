@@ -381,13 +381,13 @@ public class QuadMesh extends Geometry implements Serializable {
     @Override
     public void findCollisions(
             Spatial scene, CollisionResults results, int requiredOnBits) {
-        ; // unsupported
+        throw new RuntimeException("method findCollision(...) not available for QuadMesh, please use TriMesh for collision-detection! ("+toString()+")");
     }
 
     @Override
     public boolean hasCollision(
             Spatial scene, boolean checkTriangles, int requiredOnBits) {
-        return false;
+        throw new RuntimeException("method hasCollision(...) not available for QuadMesh, please use TriMesh for collision-detection! ("+toString()+")");
     }
 }
 
