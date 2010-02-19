@@ -107,7 +107,7 @@
   <target name="dist-core" depends="compile, -enforce.jar.deps"
          description="generate jme jar file">
     <jar destfile="${jars}/jme.jar" basedir="${class}" update="no"
-         duplicate="fail" compress="true" includes="com/jme/**/*.class, com/jme/**/*.tga, com/jme/**/*.png, com/jme/**/*.glf, com/jme/**/*.vert, com/jme/**/*.frag" />
+         duplicate="fail" compress="true" includes="com/jme/**/*.class, com/jme/**/*.tga, com/jme/**/*.png, com/jme/**/*.gif, com/jme/**/*.vert, com/jme/**/*.frag,com/jmex/pool/**/*.class" />
   </target>
   <target name="dist-audio" depends="compile, -enforce.jar.deps"
           description="generate jme jar file (audio)">
