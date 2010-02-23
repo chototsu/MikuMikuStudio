@@ -158,7 +158,7 @@ public class AudioLoader {
             }
         } while ( bytesRead > 0 );
         int bytes = byteOut.size();
-        ByteBuffer data = BufferUtils.createByteBufferOnHeap(bytes);
+        ByteBuffer data = BufferUtils.createByteBuffer(bytes);
         data.put(byteOut.toByteArray());
         data.flip();
         return data;

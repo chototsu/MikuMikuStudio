@@ -59,7 +59,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
     private static int BUFFER_SIZE = 256 * 1024; // 256 KB
     private int BUFFER_COUNT = 4; // 4 * 256 is ca. 1 MB in total
 
-    private ByteBuffer dataBuffer = BufferUtils.createByteBufferOnHeap(BUFFER_SIZE);
+    private ByteBuffer dataBuffer = BufferUtils.createByteBuffer(BUFFER_SIZE);
 
     private IntBuffer buffers = BufferUtils.createIntBuffer(BUFFER_COUNT);
     private IntBuffer idBuffer = BufferUtils.createIntBuffer(1);
