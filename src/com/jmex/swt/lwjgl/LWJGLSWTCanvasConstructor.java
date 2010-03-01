@@ -80,7 +80,7 @@ public class LWJGLSWTCanvasConstructor implements CanvasConstructor {
 
             Integer stencilBits = (Integer) props
                     .get(LWJGLSWTConstants.STENCIL_BITS);
-            if (alphaBits != null) {
+            if (stencilBits != null) {
                 data.stencilSize = stencilBits;
             } else {
                 data.stencilSize = DisplaySystem.getDisplaySystem()
