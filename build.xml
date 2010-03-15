@@ -23,6 +23,7 @@
   <property name="keyStore" value="jmeKeyStore" />
   <property name="storepass" value="..." />
   <property name="keypass" value="..." />
+  <property name="keystore" value="..." />
   <property name="ftpuser" value="..." />
   <property name="ftppassword" value="..." />
   <property name="ftphost" value="ftp.jmonkeyengine.com" />
@@ -424,32 +425,32 @@
   </target>
 	
 	<target name="sign-jars" depends="dist-all" description="sign JARs for JNLP distribution">
-		<signjar jar="${jars}/jme-audio.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-awt.jar"				alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-collada.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-editors.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-effects.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-font.jar"				alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-gamestates.jar"		alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-ogrexml.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-model.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-scene.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-terrain.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-xml.jar"				alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme-swt.jar"				alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="${jars}/jme.jar"					alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="lib/jogl/gluegen-rt.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="lib/jogl/jogl.jar"				alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="lib/junit/junit-4.1.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="lib/jorbis/jorbis-0.0.17.jar"		alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="lib/lwjgl/jinput.jar"				alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="lib/lwjgl/lwjgl_util_applet.jar"	alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="lib/lwjgl/lwjgl_util.jar"			alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="lib/lwjgl/lwjgl.jar"				alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="swt/linux/swt.jar"				alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="swt/macosx-carbon/swt.jar"		alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="swt/macosx-cocoa/swt_fake.jar"	alias="jmonkeyengine" storepass="${keypass}" />
-		<signjar jar="swt/windows/swt.jar"				alias="jmonkeyengine" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-audio.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-awt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-collada.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-editors.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-effects.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-font.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-gamestates.jar"		alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-ogrexml.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-model.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-scene.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-terrain.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-xml.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme-swt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="${jars}/jme.jar"					alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/jogl/gluegen-rt.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/jogl/jogl.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/junit/junit-4.1.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/jorbis/jorbis-0.0.17.jar"		alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/lwjgl/jinput.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/lwjgl/lwjgl_util_applet.jar"	alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/lwjgl/lwjgl_util.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/lwjgl/lwjgl.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="swt/linux/swt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="swt/macosx-carbon/swt.jar"		alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="swt/macosx-cocoa/swt_fake.jar"	alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="swt/windows/swt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
 	</target>
 
   <target name="-gen-rtlogprops" unless="_rtlogprops.present">
