@@ -190,6 +190,23 @@ public abstract class JoystickInput extends Input {
     }
 
     /**
+     * Check if a listener is already added to this JoystickInput
+     * @param listener listener to check for
+     * @return true if listener is contained in the listenerlist
+     */
+    public boolean containsListener( JoystickInputListener listener ) {
+    	return listeners != null && listeners.contains( listener );
+    }
+
+    /**
+     * Get all added joystick listeners
+     * @return ArrayList of listeners added to this JoystickInput
+     */
+    public ArrayList<JoystickInputListener> getListeners() {
+    	return listeners;
+    }
+
+    /**
      * @return number of attached game controllers
      */
     public abstract int getJoystickCount();
