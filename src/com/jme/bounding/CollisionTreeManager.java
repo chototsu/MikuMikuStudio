@@ -424,7 +424,22 @@ public class CollisionTreeManager {
      *            the maximum number of triangles a leaf will contain.
      */
     public void setMaxTrisPerLeaf(int maxTrisPerLeaf) {
-        this.maxTrisPerLeaf = maxTrisPerLeaf;
+    	this.maxTrisPerLeaf = maxTrisPerLeaf;
+    }
+    
+    /**
+     * Returns the maximum number of trees to maintain.
+     */
+    public int getMaxElements() {
+    	return maxElements;
     }
 
+    /**
+     * Sets the maximum number of trees to maintain.
+     * @param maxElements
+     *            the maximum number of trees to maintain.
+     */
+    public void setMaxElements(int maxElements) {
+    	this.maxElements = maxElements;
+    }
 }
