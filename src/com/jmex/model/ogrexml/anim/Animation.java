@@ -91,11 +91,11 @@ public class Animation implements Serializable, Savable {
                                meshAnim.getLength());
     }
 
-    boolean hasMeshAnimation(){
+    public boolean hasMeshAnimation(){
         return meshAnim != null;
     }
 
-    boolean hasBoneAnimation(){
+    public boolean hasBoneAnimation(){
         return boneAnim != null;
     }
 
@@ -103,7 +103,7 @@ public class Animation implements Serializable, Savable {
         return name;
     }
 
-    float getLength(){
+    public float getLength(){
         return length;
     }
 
@@ -116,11 +116,11 @@ public class Animation implements Serializable, Savable {
         }
     }
 
-    MeshAnimation getMeshAnimation() {
+    public MeshAnimation getMeshAnimation() {
         return meshAnim;
     }
 
-    BoneAnimation getBoneAnimation(){
+    public BoneAnimation getBoneAnimation(){
         return boneAnim;
     }
 

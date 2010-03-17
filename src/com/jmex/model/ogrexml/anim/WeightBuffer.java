@@ -77,6 +77,14 @@ public final class WeightBuffer implements Serializable {
         this.weights = weights;
     }
 
+    public ByteBuffer getIndexes() {
+		return indexes;
+	}
+
+	public FloatBuffer getWeights() {
+		return weights;
+	}
+    
     public void sendToShader(GLSLShaderObjectsState shader){
         indexes.rewind();
         shader.setAttributePointer("indexes", 4, false, true, 0, indexes);

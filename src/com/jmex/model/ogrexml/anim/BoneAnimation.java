@@ -66,15 +66,15 @@ public final class BoneAnimation implements Serializable, Savable {
     public BoneAnimation(){
     }
 
-    String getName(){
+    public String getName(){
         return name;
     }
 
-    float getLength(){
+    public float getLength(){
         return length;
     }
 
-    BoneTrack[] getTracks(){
+    public BoneTrack[] getTracks(){
         return tracks;
     }
 

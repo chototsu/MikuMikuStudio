@@ -33,11 +33,16 @@
 
 package com.jmex.model.ogrexml.anim;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
-
-import java.util.ArrayList;
-import java.util.Map;
 import com.jme.scene.Controller;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.RenderState.StateType;
@@ -46,10 +51,6 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.Collection;
 
 public class MeshAnimationController extends Controller implements Savable {
 
@@ -142,7 +143,7 @@ public class MeshAnimationController extends Controller implements Savable {
      */
     public MeshAnimationController(OgreMesh[] meshes, MeshAnimationController sourceControl){
         this.setRepeatType(RT_WRAP);
-        this.skeleton = new Skeleton(sourceControl.skeleton);
+        this.skeleton = (sourceControl.skeleton == null) ? null : new Skeleton(sourceControl.skeleton);
         this.animationMap = sourceControl.animationMap;
         this.targets = meshes;
 
@@ -336,14 +337,18 @@ public class MeshAnimationController extends Controller implements Savable {
 		return targets;
 	}
 
-    Skeleton getSkeleton(){
+    public Skeleton getSkeleton(){
         return skeleton;
     }
 
-    OgreMesh[] getMeshList(){
+    public OgreMesh[] getMeshList(){
         return targets;
     }
 
+    public Collection<Animation> getAnimations() {
+    	return Collections.unmodifiableCollection(animationMap.values());
+    }
+    
     void reset(){
         resetToBind();
         if (skeleton != null){

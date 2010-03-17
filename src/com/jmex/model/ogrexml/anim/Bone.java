@@ -329,4 +329,19 @@ public final class Bone implements Savable {
 
     }
 
+	public String getName() {
+		return name;
+	}
+
+	public Bone getParent() {
+		return parent;
+	}
+
+	public Vector3f getWorldBindInversePos() {
+		return worldBindInversePos;
+	}
+
+	public Quaternion getWorldBindInverseRot() {
+		return worldBindInverseRot;
+	}
 }

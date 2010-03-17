@@ -116,5 +116,16 @@ public final class Pose implements Serializable, Savable {
         return Pose.class;
     }
 
+    public String getName() {
+    	return name;
+    }
+
+	public Vector3f[] getOffsets() {
+		return offsets;
+	}
+
+	public int[] getIndices() {
+		return indices;
+	}
 
 }

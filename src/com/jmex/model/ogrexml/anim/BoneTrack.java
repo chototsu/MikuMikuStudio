@@ -163,4 +163,19 @@ public final class BoneTrack implements Serializable, Savable {
         return BoneTrack.class;
     }
 
+	public int getTargetBoneIndex() {
+		return targetBoneIndex;
+	}
+
+	public Vector3f[] getTranslations() {
+		return translations;
+	}
+
+	public Quaternion[] getRotations() {
+		return rotations;
+	}
+
+	public float[] getTimes() {
+		return times;
+	}
 }

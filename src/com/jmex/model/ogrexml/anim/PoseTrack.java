@@ -78,6 +78,13 @@ public final class PoseTrack extends Track implements Serializable{
             return PoseFrame.class;
         }
 
+		public Pose[] getPoses() {
+			return poses;
+		}
+		
+		public float[] getWeights() {
+			return weights;
+		}
     }
 
     public PoseTrack(int targetMeshIndex, float[] times, PoseFrame[] frames){
@@ -138,4 +145,11 @@ public final class PoseTrack extends Track implements Serializable{
         return PoseTrack.class;
     }
 
+	public PoseFrame[] getFrames() {
+		return frames;
+	}
+
+	public float[] getTimes() {
+		return times;
+	}
 }
