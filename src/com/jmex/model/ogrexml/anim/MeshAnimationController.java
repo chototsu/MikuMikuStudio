@@ -183,7 +183,12 @@ public class MeshAnimationController extends Controller implements Savable {
             return true;
         }
         
-        AnimationChannel animationChannel = new AnimationChannel(this);
+        AnimationChannel animationChannel;
+        if (animations.size() == 0) {
+        	animationChannel = new AnimationChannel(this);
+        } else {
+        	animationChannel = animations.get(0);
+        }
         animationChannel.addAllBones();
 
         Animation animation = animationMap.get(name);
