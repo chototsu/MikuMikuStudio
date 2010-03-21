@@ -311,7 +311,8 @@ public class DirectionalShadowMapPass extends Pass {
         shadowMapTexture.setApply(Texture.ApplyMode.Modulate);
         shadowMapTexture
                 .setMinificationFilter(Texture.MinificationFilter.NearestNeighborNoMipMaps);
-        shadowMapTexture.setWrap(Texture.WrapMode.Clamp);
+        shadowMapTexture.setWrap(Texture.WrapMode.BorderClamp);
+        shadowMapTexture.setBorderColor(ColorRGBA.white);
         shadowMapTexture
                 .setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
         shadowMapTexture
