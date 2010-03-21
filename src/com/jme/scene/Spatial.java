@@ -354,7 +354,7 @@ public abstract class Spatial implements Serializable, Savable {
             geometricalControllers.clear();
         }
     }
-
+    
     /**
      * Returns the controller in this list of controllers at index i.
      * 
@@ -369,6 +369,29 @@ public abstract class Spatial implements Serializable, Savable {
         }
         return geometricalControllers.get(i);
     }
+    
+    /**
+     * Returns the first controller hopefully the only
+     * 	in this list of controllers with class c.
+     * 
+     * @param c
+     *            The class type to get a controller of.
+     * @return The controller with Class c.
+     * @see com.jme.scene.Controller
+     */
+	@SuppressWarnings("unchecked")
+	public <T extends Controller> T getController(Class<T> c) {
+        if (geometricalControllers == null) {
+            geometricalControllers = new ArrayList<Controller>(1);
+        }
+        for (Controller controller : geometricalControllers) {
+        	if (controller.getClassTag() ==  c) {
+                return (T)controller;       		
+        	}
+		}
+        return null;
+
+    }
 
     /**
      * Returns the ArrayList that contains this spatial's Controllers.
@@ -380,6 +403,29 @@ public abstract class Spatial implements Serializable, Savable {
             geometricalControllers = new ArrayList<Controller>(1);
         }
         return geometricalControllers;
+    }
+    
+    /**
+     * Returns the all controllers
+     * 	in this list of controllers with class c.
+     * 
+     * @param c
+     *            The class type get to controllers of.
+     * @return The controllers with Class c.
+     * @see com.jme.scene.Controller
+     */
+	@SuppressWarnings("unchecked")
+	public <T extends Controller> ArrayList<T> getControllers(Class<T> c) {
+        if (geometricalControllers == null) {
+            geometricalControllers = new ArrayList<Controller>(1);
+        }
+        ArrayList<T> retControllers = new ArrayList<T>();
+        for (Controller controller : geometricalControllers) {
+        	if (controller.getClassTag() ==  c) {
+                retControllers.add((T)controller);     		
+        	}
+		}
+        return retControllers;
     }
 
     /**
