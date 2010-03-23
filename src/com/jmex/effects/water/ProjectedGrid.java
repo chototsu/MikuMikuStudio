@@ -108,8 +108,8 @@ public class ProjectedGrid extends TriMesh {
 	public boolean useReal = false;
 	private Vector3f projectorLoc = new Vector3f();
 	private Timer timer;
-	private Camera cam;
-	private float fovY = 45.0f;
+	protected Camera cam;
+	protected float fovY = 45.0f;
 
 	private HeightGenerator heightGenerator;
 	private float textureScale;
@@ -189,7 +189,7 @@ public class ProjectedGrid extends TriMesh {
 		}
 
 		ProjectedTextureUtil.matrixLookAt( projectorLoc, realPoint, Vector3f.UNIT_Y, modelViewMatrix );
-		ProjectedTextureUtil.matrixProjection( fovY + 10.0f, viewPortWidth / viewPortHeight, cam.getFrustumNear(), cam.getFrustumFar(), projectionMatrix );
+		ProjectedTextureUtil.matrixProjection( fovY + 10.0f, getAspectRatio(), cam.getFrustumNear(), cam.getFrustumFar(), projectionMatrix );
 		modelViewProjectionInverse.set( modelViewMatrix ).multLocal( projectionMatrix );
 		modelViewProjectionInverse.invertLocal();
 
@@ -290,10 +290,14 @@ public class ProjectedGrid extends TriMesh {
 		normBuf.put( normBufArray );
 	}
 
+	protected float getAspectRatio() {
+	  return viewPortWidth / viewPortHeight;
+	}
+	
 	private Matrix4f getMinMax( Vector3f fakeLoc, Vector3f fakePoint, Camera cam ) {
 		Matrix4f rangeMatrix;
 		ProjectedTextureUtil.matrixLookAt( fakeLoc, fakePoint, Vector3f.UNIT_Y, modelViewMatrix1 );
-		ProjectedTextureUtil.matrixProjection( fovY, viewPortWidth / viewPortHeight, cam.getFrustumNear(), cam.getFrustumFar(), projectionMatrix1 );
+		ProjectedTextureUtil.matrixProjection( fovY, getAspectRatio(), cam.getFrustumNear(), cam.getFrustumFar(), projectionMatrix1 );
 		modelViewProjection1.set( modelViewMatrix1 ).multLocal( projectionMatrix1 );
 		modelViewProjectionInverse1.set( modelViewProjection1 ).invertLocal();
 
