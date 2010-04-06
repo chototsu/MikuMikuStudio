@@ -243,6 +243,10 @@ public class BitmapText extends TriMesh {
         block.setAlignment(alignment);
     }
 
+    public float getHeight() {
+        return font.getLineHeight(block) * block.getNumLines();
+    }
+
     public float getLineHeight() {
         return font.getLineHeight(block);
     }

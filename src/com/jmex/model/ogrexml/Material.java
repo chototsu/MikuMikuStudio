@@ -32,13 +32,12 @@
 
 package com.jmex.model.ogrexml;
 
-import com.jme.renderer.Renderer;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
-import com.jme.scene.Geometry;
 import com.jme.scene.Spatial.LightCombineMode;
-import com.jme.scene.state.RenderState;
+import com.jme.scene.state.CullState;
 import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -62,8 +61,8 @@ public final class Material {
      * @see com.jme.scne.state.RenderState.StateType
      */
     @Deprecated
-    public RenderState getState(int stateType){
-        if (states[stateType] == null){
+    public RenderState getState(int stateType) {
+        if (states[stateType] == null) {
             states[stateType] = DisplaySystem.getDisplaySystem().getRenderer().createState(stateType);
         }
         return states[stateType];
@@ -71,20 +70,17 @@ public final class Material {
 
     public RenderState getRenderState(RenderState.StateType stateType) {
         for (RenderState rs : states) {
-            if (rs != null && rs.getStateType() == stateType) return rs;
+            if (rs != null && rs.getStateType() == stateType)
+                return rs;
         }
-        return DisplaySystem.getDisplaySystem().getRenderer()
-            .createState(stateType);
+        return DisplaySystem.getDisplaySystem().getRenderer().createState(stateType);
     }
 
-    public void apply(Spatial obj){
-        boolean objTransp = false;
-        if (obj instanceof Geometry) {
-            ColorRGBA color = ((Geometry) obj).getDefaultColor();
-            objTransp = color != null && color.a != 1f;
-        }
-        obj.setRenderQueueMode((objTransp || transparent)
-                ? Renderer.QUEUE_TRANSPARENT : Renderer.QUEUE_OPAQUE);
+    public void apply(Spatial obj) {
+        CullState cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
+        cs.setEnabled(true);
+        obj.setRenderState(cs);
+        obj.updateRenderState();
 
         if (lightingOff)
             obj.setLightCombineMode(LightCombineMode.Off);
@@ -95,18 +91,18 @@ public final class Material {
     }
 
     /**
-     * Enables or disables depending on whether any is requested.
-     * This method will only enable transparency due to material color
-     * settings.
-     * Texture transparency is taken care of by directly setting the
-     * "transparent" field.
+     * Enables or disables depending on whether any is requested. This method
+     * will only enable transparency due to material color settings. Texture
+     * transparency is taken care of by directly setting the "transparent"
+     * field.
      */
     public void assignTransparency() {
-        if (transparent) return;
+        if (transparent)
+            return;
         ColorRGBA color;
-        MaterialState matState = (MaterialState)
-                getRenderState(RenderState.StateType.Material);
-        if (matState == null) return;
+        MaterialState matState = (MaterialState) getRenderState(RenderState.StateType.Material);
+        if (matState == null)
+            return;
         color = matState.getAmbient();
         if (color != null && color.a != 1f) {
             transparent = true;
@@ -130,7 +126,7 @@ public final class Material {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return name;
     }
 

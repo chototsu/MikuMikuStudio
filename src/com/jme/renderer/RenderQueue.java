@@ -263,9 +263,7 @@ public class RenderQueue {
                 Spatial obj = transparentBucket.list[i]; 
 
                 if (twoPassTransparent
-                    && obj instanceof Geometry
-                    && (((Geometry) obj).states[RenderState.StateType.Cull.ordinal()] != null 
-                    		&& !((Geometry) obj).states[RenderState.StateType.Cull.ordinal()].isEnabled())) {
+                    && obj instanceof Geometry) {
                     Geometry geom = (Geometry)obj;
                     RenderState oldCullState = geom.states[RenderState.StateType.Cull.ordinal()];
                     geom.states[RenderState.StateType.Cull.ordinal()] = tranCull;

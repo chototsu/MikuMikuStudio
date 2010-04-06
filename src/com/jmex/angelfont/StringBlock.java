@@ -48,6 +48,7 @@ public class StringBlock {
     private BitmapFont.Align alignment;
     private float size;
     private boolean kerning;
+    private int numLines;
 
     /**
      * 
@@ -117,5 +118,13 @@ public class StringBlock {
 
     public void setKerning(boolean kerning) {
         this.kerning = kerning;
+    }
+
+    public void setNumLines(int numLines) {
+        this.numLines = numLines;
+    }
+
+    public int getNumLines() {
+        return numLines;
     }
 }

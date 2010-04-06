@@ -113,7 +113,7 @@ public class BitmapFont {
             if (c == null && (text.charAt(i) != '\n' && text.charAt(i) != '\r')) {
                 Logger.getLogger("").log(Level.FINE,
                         "Character '" + text.charAt(i) + "' is not in alphabet, skipping it.");
-            } else if(text.charAt(i) == ' ' && firstCharOfLine) {
+            } else if (text.charAt(i) == ' ' && firstCharOfLine) {
                 Logger.getLogger("").log(Level.FINE,
                         "Character '" + text.charAt(i) + "' is blank, skipping it because first char in line.");
             } else {
@@ -129,12 +129,12 @@ public class BitmapFont {
                     width = c.getWidth() * sizeScale;
                     height = c.getHeight() * sizeScale;
                 }
-                
+
                 if (text.charAt(i) == '\n' || text.charAt(i) == '\r') {
                     x = 0;
                     y -= charSet.getLineHeight() * sizeScale;
                     // float offset = 0f;
-                    
+
                     // Justify the last (now complete) line
                     if (alignment == Align.Center) {
                         for (int k = 0; k < target.getQuantity(); k++) {
@@ -161,7 +161,7 @@ public class BitmapFont {
                             } // if
                         } // for
                     } // if
-                    
+
                     // New line without any "carry-down" word
                     firstCharOfLine = true;
                     lastLineWidth = lineWidth;
@@ -170,7 +170,6 @@ public class BitmapFont {
                     lineNumber++;
                     continue;
                 } // End new line check
-                
 
                 // Adjust for kerning
                 float kernAmount = 0f;
@@ -258,6 +257,7 @@ public class BitmapFont {
             } // for
         } // if
 
+        block.setNumLines(lineNumber);
         target.setNumActive(numActive);
         return lineWidth;
     } // updateText
@@ -299,22 +299,22 @@ public class BitmapFont {
             if (c == null && (text.charAt(i) != '\n' && text.charAt(i) != '\r')) {
                 Logger.getLogger("").log(Level.FINE,
                         "Character '" + text.charAt(i) + "' is not in alphabet, skipping it.");
-            } else if(text.charAt(i) == ' ' && firstCharOfLine) {
+            } else if (text.charAt(i) == ' ' && firstCharOfLine) {
                 Logger.getLogger("").log(Level.FINE,
                         "Character '" + text.charAt(i) + "' is blank, skipping it because first char in line.");
             } else {
-              	float xOffset = 0;
+                float xOffset = 0;
                 float yOffset = 0;
                 float xAdvance = 0;
                 float width = 0;
                 float height = 0;
-            	if (c != null) {
-            		xOffset = c.getXOffset() * sizeScale;
-            		yOffset = (charSet.getyOffset() + c.getYOffset()) * sizeScale;
-            		xAdvance = c.getXAdvance() * sizeScale;
-            		width = c.getWidth() * sizeScale;
-            		height = c.getHeight() * sizeScale;
-            	}
+                if (c != null) {
+                    xOffset = c.getXOffset() * sizeScale;
+                    yOffset = (charSet.getyOffset() + c.getYOffset()) * sizeScale;
+                    xAdvance = c.getXAdvance() * sizeScale;
+                    width = c.getWidth() * sizeScale;
+                    height = c.getHeight() * sizeScale;
+                }
                 if (text.charAt(i) == '\n' || text.charAt(i) == '\r' || (lineWidth + xAdvance >= maxWidth)) {
                     x = block.getTextBox().x;
                     y -= charSet.getLineHeight() * sizeScale;
@@ -364,25 +364,25 @@ public class BitmapFont {
                         lastLineWidth = lineWidth;
                         lineWidth = 0f;
                     } // else
-                    
-                	// Justify the previous (now complete) line
-                	if (alignment == Align.Center) {
-                		for (int k = 0; k < target.getQuantity(); k++) {
-                			FontQuad q = target.getQuad(k);
-                			
-                			if (q.getLineNumber() == lineNumber) {
-                				q.setX(q.getX() + block.getTextBox().width / 2f - lastLineWidth / 2f);
-                			} // if
-                		} // for
-                	} // if
-                	if (alignment == Align.Right) {
-                		for (int k = 0; k < target.getQuantity(); k++) {
-                			FontQuad q = target.getQuad(k);
-                			if (q.getLineNumber() == lineNumber) {
-                				q.setX(q.getX() + block.getTextBox().width - lastLineWidth);
-                			} // if
-                		} // for
-                	} // if
+
+                    // Justify the previous (now complete) line
+                    if (alignment == Align.Center) {
+                        for (int k = 0; k < target.getQuantity(); k++) {
+                            FontQuad q = target.getQuad(k);
+
+                            if (q.getLineNumber() == lineNumber) {
+                                q.setX(q.getX() + block.getTextBox().width / 2f - lastLineWidth / 2f);
+                            } // if
+                        } // for
+                    } // if
+                    if (alignment == Align.Right) {
+                        for (int k = 0; k < target.getQuantity(); k++) {
+                            FontQuad q = target.getQuad(k);
+                            if (q.getLineNumber() == lineNumber) {
+                                q.setX(q.getX() + block.getTextBox().width - lastLineWidth);
+                            } // if
+                        } // for
+                    } // if
 
                     wordNumber = 1;
                     lineNumber++;
@@ -465,6 +465,7 @@ public class BitmapFont {
             } // for
         } // if
 
+        block.setNumLines(lineNumber);
         target.setNumActive(numActive);
     } // updateTextRect
 
