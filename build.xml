@@ -424,6 +424,24 @@
     <!--        </copy>-->
   </target>
 	
+	<!-- puts jme3 jars, libs and javadoc in a dated zip file -->
+	    <target name="deploy-hudson" depends="dist-all, doc">
+	        <!-- create date in the format MM-dd-yyyy -->
+	        <tstamp>
+	          <format property="date" pattern="MM-dd-yyyy" locale="en,US"/>
+	        </tstamp>
+	        <property name="jme2zip" value="jME2_${date}.zip"/>
+
+		   <!-- make zip file -->
+	        <zip destfile="${jme2zip}">
+			<fileset dir=".">
+			   	<include name="target/*.jar"/>
+			   	<include name="lib/**/*.*"/>
+				<include name="data/doc/**/*.*"/>
+			</fileset>
+		   </zip>
+	    </target>
+	
 	<target name="sign-jars" depends="dist-all" description="sign JARs for JNLP distribution">
 		<signjar jar="${jars}/jme-audio.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
 		<signjar jar="${jars}/jme-awt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
@@ -447,10 +465,10 @@
 		<signjar jar="lib/lwjgl/lwjgl_util_applet.jar"	alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
 		<signjar jar="lib/lwjgl/lwjgl_util.jar"			alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
 		<signjar jar="lib/lwjgl/lwjgl.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
-		<signjar jar="swt/linux/swt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
-		<signjar jar="swt/macosx-carbon/swt.jar"		alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
-		<signjar jar="swt/macosx-cocoa/swt_fake.jar"	alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
-		<signjar jar="swt/windows/swt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/swt/linux/swt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/swt/macosx-carbon/swt.jar"		alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/swt/macosx-cocoa/swt_fake.jar"	alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
+		<signjar jar="lib/swt/windows/swt.jar"				alias="jmonkeyengine" keystore="${keystore}" storepass="${keypass}" />
 	</target>
 
   <target name="-gen-rtlogprops" unless="_rtlogprops.present">
