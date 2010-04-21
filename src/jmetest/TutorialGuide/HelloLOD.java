@@ -81,7 +81,7 @@ public class HelloLOD extends SimpleGame {
 
     protected void simpleInitGame() {
         // Point to a URL of my model
-        URL model=HelloModelLoading.class.getClassLoader().getResource("jmetest/data/model/maggie.obj");
+        URL model=HelloLOD.class.getClassLoader().getResource("jmetest/data/model/maggie.obj");
 
         // Create something to convert .obj format to .jme
         FormatConverter converter=new ObjToJme();
