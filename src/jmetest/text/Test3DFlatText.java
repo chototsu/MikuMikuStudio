@@ -49,13 +49,13 @@ import com.jmex.game.state.GameStateManager;
  */
 public class Test3DFlatText {
 	public static void main(String[] args) throws Exception {
-		StandardGame game = new StandardGame("Test 3D Flat Text");
+		final StandardGame game = new StandardGame("Test 3D Flat Text");
 		game.start();
 		
 		GameTaskQueueManager.getManager().update(new Callable<Void>() {
 
 			public Void call() throws Exception {				
-				final DebugGameState debug = new DebugGameState();
+				final DebugGameState debug = new DebugGameState(game);
 				GameStateManager.getInstance().attachChild(debug);
 				debug.setActive(true);
 
@@ -65,6 +65,6 @@ public class Test3DFlatText {
 				debug.getRootNode().attachChild(text);
 				return null;
 			}
-		});
+		}).get();
 	}
 }

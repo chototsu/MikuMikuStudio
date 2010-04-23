@@ -57,7 +57,7 @@ public class TestDnd {
         }
 		game.start();
 
-		TestDnd.MyGameState ingameState = test.new MyGameState();
+		TestDnd.MyGameState ingameState = test.new MyGameState(game);
 		GameStateManager.getInstance().attachChild(ingameState);
 
 		// always updateRenderState or get funky effects
@@ -82,8 +82,8 @@ public class TestDnd {
 		private float angle = 0;
 		private Vector3f axis = new Vector3f(1, 1, 0.5f);
 
-		public MyGameState() {
-			super();
+		public MyGameState(StandardGame game) {
+			super(game);
 			// remove the MouseLookHnadler because the mouse is used for the hud
 			((FirstPersonHandler)input).getMouseLookHandler().setEnabled(false);
 			this.box = new Box("my box", new Vector3f(0, 0, 0), 2, 2, 2);

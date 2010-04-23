@@ -47,13 +47,13 @@ import com.jmex.game.state.GameStateManager;
  */
 public class TestDebugGameState {
     public static void main(String[] args) throws Exception {
-        StandardGame game = new StandardGame("TestGame");	// Create our game
+        final StandardGame game = new StandardGame("TestGame");	// Create our game
         game.start();	// Start the game thread
         
         GameTaskQueueManager.getManager().update(new Callable<Void>(){
 
 			public Void call() throws Exception {
-				DebugGameState gameState = new DebugGameState();	// Create our game state
+				DebugGameState gameState = new DebugGameState(game);	// Create our game state
 				GameStateManager.getInstance().attachChild(gameState);	// Attach it to the GameStateManager
 				gameState.setActive(true);	// Activate it
 

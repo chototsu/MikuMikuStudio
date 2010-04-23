@@ -59,7 +59,7 @@ public class TestControls {
 		game.start();
 		
 		// Create our GameState
-		DebugGameState state = new DebugGameState(false);
+		DebugGameState state = new DebugGameState(game, false);
 		GameStateManager.getInstance().attachChild(state);
 		state.setActive(true);
 		

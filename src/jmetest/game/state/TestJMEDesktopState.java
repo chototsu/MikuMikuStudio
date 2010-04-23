@@ -50,7 +50,7 @@ import com.jmex.game.state.GameStateManager;
  */
 public class TestJMEDesktopState extends JMEDesktopState {
 	public static void main(String[] args) throws Exception {
-		StandardGame game = new StandardGame("Testing JMEDesktopState");
+		final StandardGame game = new StandardGame("Testing JMEDesktopState");
 		game.start();
 		
 		GameTaskQueueManager.getManager().update(new Callable<Void>() {
@@ -59,7 +59,7 @@ public class TestJMEDesktopState extends JMEDesktopState {
 				// Create a DebugGameState - has all the built-in features that SimpleGame provides
 				// NOTE: for a distributable game implementation you'll want to use something like
 				// BasicGameState instead and provide control features yourself.
-				DebugGameState state = new DebugGameState();
+				DebugGameState state = new DebugGameState(game);
 				Box box = new Box("my box", new Vector3f(0, 0, 0), 2, 2, 2);
 				box.setModelBound(new BoundingSphere());
 				box.updateModelBound();

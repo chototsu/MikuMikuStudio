@@ -33,6 +33,7 @@ package com.jmex.game.state;
 
 import java.util.logging.Logger;
 
+import com.jme.app.AbstractGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -72,7 +73,8 @@ public class DebugGameState extends TextGameState {
     protected boolean showDepth = false;
     protected boolean showNormals = false;
     protected boolean statisticsCreated = false;
-
+    protected AbstractGame game = null;
+    
     public DebugGameState() {
     	this(true);
     }
@@ -81,7 +83,19 @@ public class DebugGameState extends TextGameState {
         super("F4 - toggle stats");
         init(handleInput);
     }
+    
+    public DebugGameState(AbstractGame game, boolean handleInput) {
+        super("F4 - toggle stats");
+        init(handleInput);
+        this.game = game;
+    }    
 
+    public DebugGameState(AbstractGame game) {
+    	super("F4 - toggle stats");
+    	init(true);
+        this.game = game;
+    }
+    
     private void init(boolean handleInput) {
         rootNode = new Node("RootNode");
 
@@ -263,7 +277,11 @@ public class DebugGameState extends TextGameState {
 	
 	        if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit",
 	                false)) {
-	            System.exit(0);
+	        	if (game != null) {
+	        		game.finish();
+	        	} else {
+	        		System.exit(0);
+	        	}
 	        }
         }
     }

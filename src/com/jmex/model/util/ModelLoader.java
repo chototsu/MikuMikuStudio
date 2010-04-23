@@ -107,7 +107,7 @@ public class ModelLoader {
                     // Set it in preferences so we remember next time
                     preferences.put("StartDirectory", file.getAbsolutePath());
                     
-                    StandardGame game = new StandardGame("Model Loader");
+                    final StandardGame game = new StandardGame("Model Loader");
                     try {
                         game.getSettings().clear();
                     } catch(Exception exc) {
@@ -123,7 +123,7 @@ public class ModelLoader {
                         }
                     });
                     
-                    DebugGameState debug = new DebugGameState();
+                    DebugGameState debug = new DebugGameState(game);
                     GameStateManager.getInstance().attachChild(debug);
                     debug.setActive(true);
                     

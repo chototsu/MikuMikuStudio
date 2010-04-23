@@ -44,7 +44,7 @@ import com.jmex.game.state.load.LoadingGameState;
  */
 public class TestLoadingGameState {
 	public static void main(String[] args) throws Exception {
-		StandardGame game = new StandardGame("Test LoadingGameState");
+		final StandardGame game = new StandardGame("Test LoadingGameState");
 		game.getSettings().clear();
 		game.start();
 
@@ -57,7 +57,7 @@ public class TestLoadingGameState {
 				loading.setActive(true);
 
 				// Enable DebugGameState
-				DebugGameState debug = new DebugGameState();
+				DebugGameState debug = new DebugGameState(game);
 				GameStateManager.getInstance().attachChild(debug);
 				debug.setActive(true);
 
