@@ -176,6 +176,8 @@
                         <exclude>**/JMEAppletTest.java</exclude>
                         <exclude>**/JMEJOGLAWTTest.java</exclude>
                         <exclude>**/JMEJOGLAWTInputTest.java</exclude>
+                        <exclude>**/DiskAngleTest.java</exclude>
+                        <exclude>**/TubeAngleTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
