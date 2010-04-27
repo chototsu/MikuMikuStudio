@@ -1473,7 +1473,7 @@ public class LWJGLRenderer extends Renderer {
                     && i < TextureState.getNumberOfFragmentTexCoordUnits(); i++) {
                 TexCoords texC = g.getTextureCoords(i + offset);
                 oldLimit = -1;
-                if (texC != null) {
+                if (texC != null && texC.coords != null) {
                     // make sure only the necessary texture coords are sent
                     // through on old cards.
                     oldLimit = texC.coords.limit();
@@ -1489,7 +1489,7 @@ public class LWJGLRenderer extends Renderer {
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                     rendRecord.setBoundVBO(vbo.getVBOTextureID(i));
                     GL11.glTexCoordPointer(texC.perVert, GL11.GL_FLOAT, 0, 0);
-                } else if (texC == null) {
+                } else if (texC == null || texC.coords == null) {
                     GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 } else if (prevTex[i] != texC.coords) {
                     // textures have changed
@@ -1503,7 +1503,7 @@ public class LWJGLRenderer extends Renderer {
                 } else {
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 }
-                prevTex[i] = texC != null ? texC.coords : null;
+                prevTex[i] = (texC != null && texC.coords != null) ? texC.coords : null;
                 if (oldLimit != -1)
                     texC.coords.limit(oldLimit);
             }
