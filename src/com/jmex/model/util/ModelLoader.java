@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,7 +103,7 @@ public class ModelLoader {
             File directory = new File(preferences.get("StartDirectory", "."));
             chooser.setCurrentDirectory(directory);
             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                File file = chooser.getSelectedFile();
+                final File file = chooser.getSelectedFile();
                 if (isValidModelFile(file)) {
                     // Set it in preferences so we remember next time
                     preferences.put("StartDirectory", file.getAbsolutePath());
@@ -116,14 +117,7 @@ public class ModelLoader {
                     }
                     game.start();
                     
-                    GameTaskQueueManager.getManager().update(new Callable<Object>() {
-                        public Object call() throws Exception {
-                            //MouseInput.get().setCursorVisible(true);
-                            return null;
-                        }
-                    });
-                    
-                    DebugGameState debug = new DebugGameState(game);
+                    DebugGameState debug = new DebugGameState();
                     GameStateManager.getInstance().attachChild(debug);
                     debug.setActive(true);
                     
@@ -138,7 +132,22 @@ public class ModelLoader {
                     ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
                     ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_MODEL, locator);
 
-                    final Node modelNode = loadModel(file);
+                    Node modelNode = null;
+                    
+                    try {
+                        Future<Node> future = GameTaskQueueManager.getManager().update(new Callable<Node>() {
+
+                          public Node call() throws Exception {
+                            return loadModel(file);
+                          }
+                        });
+                        modelNode = future.get();
+                      } catch(InterruptedException ex) {
+                        ex.printStackTrace();
+                      } catch(ExecutionException ex) {
+                        ex.printStackTrace();
+                      } // catch
+                    
                     outputElapsed(time);
                     if (modelNode != null) {
                         modelNode.updateRenderState();
@@ -222,8 +231,7 @@ public class ModelLoader {
             throw new UnsupportedOperationException( "Unknown file type: " + file );
         }
         callable.setFile( file );
-        Future<Node> future = GameTaskQueueManager.getManager().update( callable );
-        return future.get();
+        return callable.call();
     }
 
     private static String extensionOf( String file ) {
