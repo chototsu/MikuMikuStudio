@@ -344,4 +344,22 @@ public final class Bone implements Savable {
 	public Quaternion getWorldBindInverseRot() {
 		return worldBindInverseRot;
 	}
+
+	public Vector3f getInitialPos() {
+		return initialPos;
+	}
+
+	public Quaternion getInitialRot() {
+		return initialRot;
+	}
+
+	public Vector3f getLocalPos() {
+		return localPos;
+	}
+
+	public Quaternion getLocalRot() {
+		return localRot;
+	}
+	
+	
 }
