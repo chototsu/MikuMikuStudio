@@ -692,7 +692,7 @@ public class OgreLoader {
         Node animationsNode = getChildNode(meshNode, "animations");
 
         if (posesNode != null){
-            List<Pose> poseList = MeshAnimationLoader.loadPoses(posesNode, sharedgeom, submeshes);
+            List<Pose> poseList = MeshAnimationLoader.loadPoses(rootnode,posesNode, sharedgeom, submeshes);
             if (animationsNode != null){
                 MeshAnimationLoader.loadMeshAnimations(animationsNode, poseList, sharedgeom, submeshes, animations);
             }
