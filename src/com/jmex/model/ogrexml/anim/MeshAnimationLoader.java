@@ -43,6 +43,7 @@ import org.w3c.dom.Node;
 
 import com.jme.math.Vector3f;
 import com.jmex.model.XMLUtil;
+import com.jmex.model.ogrexml.OgreEntityNode;
 import com.jmex.model.ogrexml.anim.PoseTrack.PoseFrame;
 
 /**
@@ -125,7 +126,7 @@ public class MeshAnimationLoader {
         return anim;
     }
 
-    public static List<Pose> loadPoses(Node posesNode, OgreMesh sharedgeom, List<OgreMesh> submeshes){
+    public static List<Pose> loadPoses(OgreEntityNode rootnode, Node posesNode, OgreMesh sharedgeom, List<OgreMesh> submeshes){
         List<Pose> poses = new ArrayList<Pose>();
         Node poseNode = posesNode.getFirstChild();
         while (poseNode != null){
@@ -140,7 +141,7 @@ public class MeshAnimationLoader {
                         targetMeshIndex = getIntAttribute(poseNode, "index");
                 }
 
-                Pose p = MeshAnimationLoader.loadPose(poseNode, targetMeshIndex);
+                Pose p = MeshAnimationLoader.loadPose(rootnode,poseNode, targetMeshIndex);
                 poses.add(p);
             }
 
@@ -150,7 +151,7 @@ public class MeshAnimationLoader {
         return poses;
     }
 
-    public static Pose loadPose(Node poseNode, int targetMeshIndex){
+    public static Pose loadPose(OgreEntityNode rootnode, Node poseNode, int targetMeshIndex){
         String name = XMLUtil.getAttribute(poseNode, "name");
 
         List<Vector3f> offsets = new ArrayList<Vector3f>();
@@ -182,6 +183,9 @@ public class MeshAnimationLoader {
                              offsets.toArray(new Vector3f[0]),
                              indicesArray);
 
+        // cut off submesh-extension from name
+        String cleanName = name.substring(0, name.lastIndexOf('-'));
+        rootnode.addPose(cleanName, pose);
         return pose;
     }
 
