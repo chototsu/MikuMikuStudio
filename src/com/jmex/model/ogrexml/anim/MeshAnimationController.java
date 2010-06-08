@@ -247,7 +247,8 @@ public class MeshAnimationController extends Controller implements Savable {
         resetToBindEveryFrame = animation.hasMeshAnimation() || !isHardwareSkinning();
 
 //        time = 0;
-        animations.add(animationChannel);
+        if (animations.contains(animationChannel)==false)
+        	animations.add(animationChannel);
 
         return true;
     }
@@ -539,5 +540,11 @@ public class MeshAnimationController extends Controller implements Savable {
         out.write(skeleton, "skeleton", null);
         out.writeStringSavableMap(animationMap, "animations", null);
     }
+
+	public Map<String, Animation> getAnimationMap() {
+		return animationMap;
+	}
+    
+    
 
 }
