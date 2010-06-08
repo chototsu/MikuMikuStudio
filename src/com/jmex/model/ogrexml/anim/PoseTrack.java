@@ -120,9 +120,18 @@ public final class PoseTrack extends Track implements Serializable{
             }
 
             int endFrame = startFrame + 1;
-            float blend = (time - times[startFrame]) / (times[endFrame] - times[startFrame]);
-            applyFrame(target, startFrame, (1f-blend) * weight);
-            applyFrame(target, endFrame,   blend  * weight);
+            if (endFrame >= times.length)
+            	endFrame = times.length-1;
+            if (startFrame!=endFrame)
+            {
+                float blend = (time - times[startFrame]) / (times[endFrame] - times[startFrame]);
+                applyFrame(target, startFrame, (1f-blend) * weight);
+                applyFrame(target, endFrame,   blend  * weight);
+            }
+            else
+            {
+                applyFrame(target, endFrame,  weight);
+            }
         }
     }
 
