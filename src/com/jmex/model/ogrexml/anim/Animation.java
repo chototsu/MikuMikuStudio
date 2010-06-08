@@ -54,7 +54,7 @@ public class Animation implements Serializable, Savable {
     private BoneAnimation boneAnim;
     private MeshAnimation meshAnim;
 
-    Animation(BoneAnimation boneAnim, MeshAnimation meshAnim){
+    public Animation(BoneAnimation boneAnim, MeshAnimation meshAnim){
         this.boneAnim = boneAnim;
         this.meshAnim = meshAnim;
 
