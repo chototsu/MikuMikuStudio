@@ -37,8 +37,12 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import com.jmex.model.ogrexml.anim.PoseTrack.PoseFrame;
+
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MeshAnimation implements Serializable, Savable {
 
@@ -95,5 +99,44 @@ public class MeshAnimation implements Serializable, Savable {
     public Class getClassTag() {
         return MeshAnimation.class;
     }
+    
+    /**
+     * 
+     * Returns a List of PoseFrames that let you access
+     * all weights of all submeshes
+     * 
+     * @param time
+     * @return List<PoseFrame>
+     */
+    public List<PoseFrame> getPoseWeightFrame(float time)
+    {
+    	ArrayList<PoseFrame> result = new ArrayList<PoseFrame>();
+    	for (Track track : tracks)
+    	{
+    		for (int i=0;i<((PoseTrack)track).getFrames().length;i++)
+    		{
+    			if (((PoseTrack)track).getTimes()[i]==time)
+    			{
+    				result.add(((PoseTrack)track).getFrames()[i]);
+    				break;
+    			}
+    		}
+    	}
+    	return result;
+    }
+    
+	public void setWeight(String poseName,List<PoseFrame> frameList,float weight)
+	{
+		for (PoseFrame p : frameList)
+		{
+			for (int i=0;i<p.getPoses().length;i++)
+			{
+				if (p.getPoses()[i].getName().startsWith(poseName))
+				{
+					p.getWeights()[i]=weight;
+				}
+			}
+		}
+	}
 
 }
