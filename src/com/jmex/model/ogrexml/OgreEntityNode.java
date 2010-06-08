@@ -33,7 +33,14 @@
 
 package com.jmex.model.ogrexml;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 import com.jme.scene.Node;
+import com.jmex.model.ogrexml.anim.Pose;
+
 
 /**
  * An ogreloader-specific com.jme.scene.Node.
@@ -47,11 +54,76 @@ import com.jme.scene.Node;
  */
 public class OgreEntityNode extends Node {
     static final long serialVersionUID = -7387168389329790518L;
-
+    private static final Logger logger = Logger.getLogger(OgreEntityNode.class
+            .getName());
+    
+    private HashMap<String,List<Pose>> poseMap;
+    
     public OgreEntityNode(String name) {
         super(name);
     }
 
     public OgreEntityNode() {
     }
+
+    /**
+     * 
+     * method to keep track of poses. as you can assign one pose
+     * e.g. in blender to a mesh that will be devided into submeshes
+     * this method collects all that submesh-poses that are part of the
+     * mesh-pose.
+     * 
+     * Usually this is called not manually but automatically in OgreLoader.java
+     * 
+     * @param name
+     * @param pose
+     */
+	public void addPose(String name,Pose pose) {
+		if (poseMap==null)
+			poseMap = new HashMap<String, List<Pose>>();
+		
+		List<Pose> tempPoseList = poseMap.get(name);
+		if (tempPoseList==null)
+		{
+			tempPoseList = new ArrayList<Pose>();
+			poseMap.put(name,tempPoseList);
+		}
+		
+		tempPoseList.add(pose);
+	}
+	
+	/**
+	 * 
+	 * returns all pose-names registered to this OgreMesh
+	 * 
+	 * @return Set<String>
+	 */
+	public Set<String> getPoseNames()
+	{
+		if (poseMap==null)
+		{
+			logger.warning("Tried to get posenames for OgreEntity("+getName()+") but got nothing to return");
+		}
+		return poseMap.keySet();
+	}
+	
+	/**
+	 * 
+	 * returns Poses for all submeshes that are linked to specified poseName
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public List<Pose> getPose(String name)
+	{
+		List<Pose> result = poseMap.get(name);
+		if (poseMap==null || result == null)
+		{
+			logger.warning("Tried to get posenames for OgreEntity("+getName()+") but got nothing to return");
+		}
+		return result;
+	}
+	
+	
+	
 }
