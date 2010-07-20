@@ -1341,10 +1341,12 @@ public class OrientedBoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsWhere(com.jme.math.Ray)
      */
     public IntersectionRecord intersectsWhere(Ray ray) {
-        Vector3f diff = _compVect1.set(ray.origin).subtractLocal(center);
         // convert ray to box coordinates
-        Vector3f direction = _compVect2.set(ray.direction.x, ray.direction.y,
-                ray.direction.z);
+        Vector3f diff = _compVect1.set(ray.origin).subtractLocal(center);
+        diff.set(xAxis.dot(diff), yAxis.dot(diff), zAxis.dot(diff));
+        Vector3f direction = _compVect2.set(xAxis.dot(ray.direction), 
+            yAxis.dot(ray.direction), zAxis.dot(ray.direction));
+
         float[] t = { 0f, Float.POSITIVE_INFINITY };
         
         float saveT0 = t[0], saveT1 = t[1];
