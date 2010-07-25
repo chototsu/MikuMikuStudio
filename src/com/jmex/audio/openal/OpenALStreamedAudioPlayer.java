@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
 
 import com.jme.math.Vector3f;
 import com.jme.util.geom.BufferUtils;
@@ -172,7 +173,15 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
             playInNewThread(200);
         }
     }
-
+    
+    /**
+     * return the position inside the track
+     */
+    public float getPosition()
+    {
+   		return AL10.alGetSourcef(source.getId(), AL11.AL_SEC_OFFSET);
+    }
+    
     @Override
     public void pause() {
         isPaused = true;

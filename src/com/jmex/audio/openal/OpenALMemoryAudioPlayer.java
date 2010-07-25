@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
 
 import com.jme.math.Vector3f;
 import com.jmex.audio.AudioBuffer;
@@ -116,6 +117,8 @@ public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
         }
     }
     
+    
+    
     @Override
     public void applyTrackProperties() {
         OpenALPropertyTool.applyProperties(this, source);
@@ -159,6 +162,14 @@ public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
         AL10.alSource3f(source.getId(), AL10.AL_VELOCITY, vel.x, vel.y, vel.z);
     }
 
+    /**
+     * return the position inside the track
+     */
+    public float getPosition()
+    {
+   		return AL10.alGetSourcef(source.getId(), AL11.AL_SEC_OFFSET);
+    }
+    
     @Override
     public void setVolume(float volume) {
         super.setVolume(volume);

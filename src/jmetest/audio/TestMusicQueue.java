@@ -40,11 +40,14 @@ import com.jmex.audio.AudioSystem;
 import com.jmex.audio.AudioTrack;
 import com.jmex.audio.MusicTrackQueue;
 import com.jmex.audio.MusicTrackQueue.RepeatType;
+import com.jmex.audio.player.AudioPlayer;
 
 public class TestMusicQueue extends SimpleGame {
 	private static final Logger logger = Logger.getLogger(TestMusicQueue.class
 			.getName());
-
+	
+	private MusicTrackQueue queue;
+	
 	/**
 	 * Entry point for the test,
 	 * 
@@ -62,11 +65,12 @@ public class TestMusicQueue extends SimpleGame {
 			AudioTrack track = AudioSystem.getSystem().createAudioTrack(
 					TestMusicQueue.class.getClassLoader().getResource(
 							"jmetest/data/sound/Footsteps.wav"), false);
-			MusicTrackQueue queue = AudioSystem.getSystem().getMusicQueue();
+			queue = AudioSystem.getSystem().getMusicQueue();
 			queue.setCrossfadeinTime(0);
 			queue.setRepeatType(RepeatType.ONE);
 			queue.addTrack(track);
 			queue.play();
+			
 		} catch (Exception e) {
 			logger.logp(Level.SEVERE, this.getClass().toString(),
 					"simpleAppletSetup()", "Exception", e);
@@ -76,5 +80,6 @@ public class TestMusicQueue extends SimpleGame {
 	@Override
 	protected void simpleUpdate() {
 		AudioSystem.getSystem().update();
+		System.out.println("Position in current track: "+queue.getCurrentTrack().getPlayer().getPosition());
 	}
 }

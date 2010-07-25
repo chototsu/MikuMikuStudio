@@ -84,6 +84,9 @@ public abstract class AudioPlayer {
     
     public abstract void applyTrackProperties();
 
+    abstract public float getPosition();
+
+    
     public void loop(boolean shouldLoop) {
         loop = shouldLoop;
     }
