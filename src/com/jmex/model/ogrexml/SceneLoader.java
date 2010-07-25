@@ -65,6 +65,10 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.LightState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.export.StringBoolMap;
+import com.jme.util.export.StringFloatMap;
+import com.jme.util.export.StringIntMap;
+import com.jme.util.export.StringStringMap;
 import com.jme.util.resource.RelativeResourceLocator;
 import com.jme.util.resource.ResourceLocator;
 import com.jme.util.resource.ResourceLocatorTool;
@@ -277,10 +281,70 @@ public class SceneLoader {
                 }
             } else if (tagName.equals("node")) {
                 com.jme.scene.Node newNode = new com.jme.scene.Node();
+                //DotSceneNode newNode = new DotSceneNode();
                 loadNode(newNode, childNode);  // This is the recurse!
                 targetJmeNode.attachChild(newNode);
+            } else if (tagName.equals("userData")) {
+            	Node parentNode = childNode.getParentNode();
+            	NodeList props = childNode.getChildNodes();
+            	
+            	
+            	StringFloatMap floatAttrMap = null;
+            	StringBoolMap boolAttrMap = null;
+            	StringIntMap intAttrMap = null;
+            	StringStringMap strAttrMap = null;
+            	
+            	for (int j=0;j<props.getLength();j++)
+            	{
+            		Node propNode = props.item(j);
+            		tagName = propNode.getNodeName();
+            		if (tagName.equals("property"))
+                    {
+                    	String propType = getAttribute(propNode, "type");
+                    	String propKey = getAttribute(propNode,"name");
+                    	String propValue = getAttribute(propNode,"data");
+                    	
+                    	if (propType.equalsIgnoreCase("FLOAT") || propType.equalsIgnoreCase("TIME"))
+                    	{
+                    		if (floatAttrMap == null)
+                    		{
+                    			floatAttrMap = new StringFloatMap();
+                				targetJmeNode.setUserData("floatSpatialAppAttrs", floatAttrMap);
+                    		}
+            				floatAttrMap.put(getAttribute(propNode,"name"), new Float(getAttribute(propNode,"data")));
+                    	}
+                    	else if (propType.equalsIgnoreCase("BOOL"))
+                    	{
+                    		if (boolAttrMap == null)
+                    		{
+                    			boolAttrMap = new StringBoolMap();
+                				targetJmeNode.setUserData("boolSpatialAppAttrs", boolAttrMap);
+                    		}
+                    		String name = getAttribute(propNode,"name");
+                    		String attr = getAttribute(propNode,"data");
+                    		boolAttrMap.put(name, attr.equals("0")?false:true);
+                    	}
+                    	else if (propType.equalsIgnoreCase("INT"))
+                    	{
+                    		if (intAttrMap == null) {
+                    			intAttrMap = new StringIntMap();
+                    			targetJmeNode.setUserData("intSpatialAppAttrs", intAttrMap);
+                    		}
+                    		intAttrMap.put(getAttribute(propNode,"name"), new Integer(getAttribute(propNode,"data")));            				
+                    	}
+                    	else 
+                    	{
+                    		if (strAttrMap == null) {
+                    			strAttrMap = new StringStringMap();
+                    			targetJmeNode.setUserData("stringSpatialAppAttrs", strAttrMap);
+                    		}
+            				strAttrMap.put(getAttribute(propNode,"name"), getAttribute(propNode,"data"));            				
+                       	}
+
+                   }
+            	}
             } else if (!(childNode instanceof Text)) {
-                logger.warning("Ignoring unexpected element '" + tagName
+        logger.warning("Ignoring unexpected element '" + tagName
                         + "' of type " + childNode.getClass().getName());
             }
         }
