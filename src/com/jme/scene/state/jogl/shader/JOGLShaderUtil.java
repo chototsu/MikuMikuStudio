@@ -38,33 +38,20 @@ import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
 import com.jme.util.shader.ShaderVariable;
-import com.jme.util.shader.uniformtypes.ShaderVariableFloat;
-import com.jme.util.shader.uniformtypes.ShaderVariableFloat2;
-import com.jme.util.shader.uniformtypes.ShaderVariableFloat3;
-import com.jme.util.shader.uniformtypes.ShaderVariableFloat4;
-import com.jme.util.shader.uniformtypes.ShaderVariableInt;
-import com.jme.util.shader.uniformtypes.ShaderVariableInt2;
-import com.jme.util.shader.uniformtypes.ShaderVariableInt3;
-import com.jme.util.shader.uniformtypes.ShaderVariableInt4;
-import com.jme.util.shader.uniformtypes.ShaderVariableMatrix2;
-import com.jme.util.shader.uniformtypes.ShaderVariableMatrix3;
-import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4;
-import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4Array;
-import com.jme.util.shader.uniformtypes.ShaderVariablePointerByte;
-import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
-import com.jme.util.shader.uniformtypes.ShaderVariablePointerInt;
-import com.jme.util.shader.uniformtypes.ShaderVariablePointerShort;
+import com.jme.util.shader.uniformtypes.*;
 
 /** Utility class for updating shadervariables(uniforms and attributes) */
 public class JOGLShaderUtil {
+
     private static final Logger logger = Logger.getLogger(JOGLShaderUtil.class.getName());
 
     /**
      * Updates a uniform shadervariable.
-     *
-     * @param shaderVariable variable to update
+     * 
+     * @param shaderVariable
+     *            variable to update
      */
-    public static void updateShaderUniform(ShaderVariable shaderVariable) {
+    public static void updateShaderUniform(final ShaderVariable shaderVariable) {
         if (shaderVariable instanceof ShaderVariableInt) {
             updateShaderUniform((ShaderVariableInt) shaderVariable);
         } else if (shaderVariable instanceof ShaderVariableInt2) {
@@ -87,7 +74,7 @@ public class JOGLShaderUtil {
             updateShaderUniform((ShaderVariableMatrix3) shaderVariable);
         } else if (shaderVariable instanceof ShaderVariableMatrix4) {
             updateShaderUniform((ShaderVariableMatrix4) shaderVariable);
-        } else if (shaderVariable instanceof ShaderVariableMatrix4Array){
+        } else if (shaderVariable instanceof ShaderVariableMatrix4Array) {
             updateShaderUniform((ShaderVariableMatrix4Array) shaderVariable);
         } else {
             logger.warning("updateShaderUniform: Unknown shaderVariable type!");
@@ -96,151 +83,162 @@ public class JOGLShaderUtil {
 
     /**
      * Update variableID for uniform shadervariable if needed.
-     *
-     * @param variable shadervaribale to update ID on
-     * @param programID shader program context ID
+     * 
+     * @param variable
+     *            shadervaribale to update ID on
+     * @param programID
+     *            shader program context ID
      */
-    public static void updateUniformLocation(ShaderVariable variable,
-            int programID) {
+    public static void updateUniformLocation(final ShaderVariable variable, final int programID) {
         final GL gl = GLU.getCurrentGL();
 
-        if (variable.variableID == -1) {
-            variable.variableID = gl
-                    .glGetUniformLocationARB(programID, variable.name); // TODO Check variable.name
+        if (variable.variableID == ShaderVariable.UNINITIALIZED) {
+            variable.variableID = gl.glGetUniformLocationARB(programID, variable.name); // TODO
+            // Check
+            // variable.name
 
-            if (variable.variableID == -1) {
-                logger.severe("Shader uniform [" + variable.name
-                        + "] could not be located in shader");
+            if (variable.variableID == ShaderVariable.UNINITIALIZED) {
+                logger.severe("Shader uniform [" + variable.name + "] could not be located in shader");
+                variable.variableID = ShaderVariable.UNAVAILABLE;
             }
         }
     }
 
-    private static void updateShaderUniform(ShaderVariableInt shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableInt shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        gl
-                .glUniform1iARB(shaderUniform.variableID, shaderUniform.value1);
+            gl.glUniform1iARB(shaderUniform.variableID, shaderUniform.value1);
+        }
     }
 
-    private static void updateShaderUniform(ShaderVariableInt2 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableInt2 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        gl.glUniform2iARB(shaderUniform.variableID,
-                shaderUniform.value1, shaderUniform.value2);
+            gl.glUniform2iARB(shaderUniform.variableID, shaderUniform.value1, shaderUniform.value2);
+        }
     }
 
-    private static void updateShaderUniform(ShaderVariableInt3 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableInt3 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        gl.glUniform3iARB(shaderUniform.variableID,
-                shaderUniform.value1, shaderUniform.value2,
-                shaderUniform.value3);
+            gl.glUniform3iARB(shaderUniform.variableID, shaderUniform.value1, shaderUniform.value2,
+                    shaderUniform.value3);
+        }
     }
 
-    private static void updateShaderUniform(ShaderVariableInt4 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableInt4 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        gl.glUniform4iARB(shaderUniform.variableID,
-                shaderUniform.value1, shaderUniform.value2,
-                shaderUniform.value3, shaderUniform.value4);
+            gl.glUniform4iARB(shaderUniform.variableID, shaderUniform.value1, shaderUniform.value2,
+                    shaderUniform.value3, shaderUniform.value4);
+        }
     }
 
-    private static void updateShaderUniform(ShaderVariableFloat shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableFloat shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        gl
-                .glUniform1fARB(shaderUniform.variableID, shaderUniform.value1);
+            gl.glUniform1fARB(shaderUniform.variableID, shaderUniform.value1);
+        }
     }
 
-    private static void updateShaderUniform(
-            ShaderVariableFloat2 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableFloat2 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        gl.glUniform2fARB(shaderUniform.variableID,
-                shaderUniform.value1, shaderUniform.value2);
+            gl.glUniform2fARB(shaderUniform.variableID, shaderUniform.value1, shaderUniform.value2);
+        }
     }
 
-    private static void updateShaderUniform(
-            ShaderVariableFloat3 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableFloat3 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        gl.glUniform3fARB(shaderUniform.variableID,
-                shaderUniform.value1, shaderUniform.value2,
-                shaderUniform.value3);
+            gl.glUniform3fARB(shaderUniform.variableID, shaderUniform.value1, shaderUniform.value2,
+                    shaderUniform.value3);
+        }
     }
 
-    private static void updateShaderUniform(
-            ShaderVariableFloat4 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableFloat4 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        gl.glUniform4fARB(shaderUniform.variableID,
-                shaderUniform.value1, shaderUniform.value2,
-                shaderUniform.value3, shaderUniform.value4);
+            gl.glUniform4fARB(shaderUniform.variableID, shaderUniform.value1, shaderUniform.value2,
+                    shaderUniform.value3, shaderUniform.value4);
+        }
     }
 
-    private static void updateShaderUniform(
-            ShaderVariableMatrix2 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableMatrix2 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        shaderUniform.matrixBuffer.rewind();
-        gl.glUniformMatrix2fv(shaderUniform.variableID, 1,
-                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+            shaderUniform.matrixBuffer.rewind();
+            gl.glUniformMatrix2fv(shaderUniform.variableID, 1, shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+        }
     }
 
-    private static void updateShaderUniform(
-            ShaderVariableMatrix3 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableMatrix3 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        shaderUniform.matrixBuffer.rewind();
-        gl.glUniformMatrix3fv(shaderUniform.variableID, 1,
-                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+            shaderUniform.matrixBuffer.rewind();
+            gl.glUniformMatrix3fv(shaderUniform.variableID, 1, shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+        }
     }
 
-    private static void updateShaderUniform(
-            ShaderVariableMatrix4 shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderUniform(final ShaderVariableMatrix4 shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        shaderUniform.matrixBuffer.rewind();
-        gl.glUniformMatrix4fv(shaderUniform.variableID, 1,
-                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+            shaderUniform.matrixBuffer.rewind();
+            gl.glUniformMatrix4fv(shaderUniform.variableID, 1, shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+        }
     }
 
-    private static void updateShaderUniform(
-            ShaderVariableMatrix4Array shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
-        
-        shaderUniform.matrixBuffer.rewind();
-        gl.glUniformMatrix4fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit() >> 4,
-                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+    private static void updateShaderUniform(final ShaderVariableMatrix4Array shaderUniform) {
+        if (shaderUniform.variableID != 0) {
+            final GL gl = GLU.getCurrentGL();
+
+            shaderUniform.matrixBuffer.rewind();
+            gl.glUniformMatrix4fv(shaderUniform.variableID, shaderUniform.matrixBuffer.limit() >> 4,
+                    shaderUniform.rowMajor, shaderUniform.matrixBuffer);
+        }
     }
 
     /**
      * Update variableID for attribute shadervariable if needed.
-     *
-     * @param variable shadervaribale to update ID on
-     * @param programID shader program context ID
+     * 
+     * @param variable
+     *            shadervaribale to update ID on
+     * @param programID
+     *            shader program context ID
      */
-    public static void updateAttributeLocation(ShaderVariable variable,
-            int programID) {
+    public static void updateAttributeLocation(final ShaderVariable variable, final int programID) {
         final GL gl = GLU.getCurrentGL();
 
-        if (variable.variableID == -1) {
-            variable.variableID = gl
-                    .glGetAttribLocationARB(programID, variable.name); // TODO Check variable.name
+        if (variable.variableID == ShaderVariable.UNINITIALIZED) {
+            variable.variableID = gl.glGetAttribLocationARB(programID, variable.name); // TODO
+            // Check
+            // variable.name
 
-            if (variable.variableID == -1) {
-                logger.severe("Shader attribute [" + variable.name
-                        + "] could not be located in shader");
+            if (variable.variableID == ShaderVariable.UNINITIALIZED) {
+                logger.severe("Shader attribute [" + variable.name + "] could not be located in shader");
+                variable.variableID = ShaderVariable.UNAVAILABLE;
             }
         }
     }
 
     /**
      * Updates an attribute shadervariable.
-     *
-     * @param shaderVariable variable to update
+     * 
+     * @param shaderVariable
+     *            variable to update
      */
-    public static void updateShaderAttribute(ShaderVariable shaderVariable) {
+    public static void updateShaderAttribute(final ShaderVariable shaderVariable) {
         if (shaderVariable instanceof ShaderVariablePointerFloat) {
             updateShaderAttribute((ShaderVariablePointerFloat) shaderVariable);
         } else if (shaderVariable instanceof ShaderVariablePointerByte) {
@@ -254,50 +252,47 @@ public class JOGLShaderUtil {
         }
     }
 
-    private static void updateShaderAttribute(
-            ShaderVariablePointerFloat shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderAttribute(final ShaderVariablePointerFloat shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        shaderUniform.data.rewind();
-        gl.glEnableVertexAttribArrayARB(shaderUniform.variableID);
-        gl.glVertexAttribPointerARB(shaderUniform.variableID,
-                shaderUniform.size, GL.GL_FLOAT, shaderUniform.normalized,
-                shaderUniform.stride, shaderUniform.data);
+            shaderUniform.data.rewind();
+            gl.glEnableVertexAttribArrayARB(shaderUniform.variableID);
+            gl.glVertexAttribPointerARB(shaderUniform.variableID, shaderUniform.size, GL.GL_FLOAT,
+                    shaderUniform.normalized, shaderUniform.stride, shaderUniform.data);
+        }
     }
 
-    private static void updateShaderAttribute(
-            ShaderVariablePointerByte shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderAttribute(final ShaderVariablePointerByte shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        shaderUniform.data.rewind();
-        gl.glEnableVertexAttribArrayARB(shaderUniform.variableID);
-        gl.glVertexAttribPointerARB(shaderUniform.variableID,
-                shaderUniform.size, GL.GL_UNSIGNED_BYTE,
-                shaderUniform.normalized, shaderUniform.stride,
-                shaderUniform.data);
+            shaderUniform.data.rewind();
+            gl.glEnableVertexAttribArrayARB(shaderUniform.variableID);
+            gl.glVertexAttribPointerARB(shaderUniform.variableID, shaderUniform.size, GL.GL_UNSIGNED_BYTE,
+                    shaderUniform.normalized, shaderUniform.stride, shaderUniform.data);
+        }
     }
 
-    private static void updateShaderAttribute(
-            ShaderVariablePointerInt shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderAttribute(final ShaderVariablePointerInt shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        shaderUniform.data.rewind();
-        gl.glEnableVertexAttribArrayARB(shaderUniform.variableID);
-        gl.glVertexAttribPointerARB(shaderUniform.variableID,
-                shaderUniform.size, GL.GL_UNSIGNED_INT,
-                shaderUniform.normalized, shaderUniform.stride,
-                shaderUniform.data);
+            shaderUniform.data.rewind();
+            gl.glEnableVertexAttribArrayARB(shaderUniform.variableID);
+            gl.glVertexAttribPointerARB(shaderUniform.variableID, shaderUniform.size, GL.GL_UNSIGNED_INT,
+                    shaderUniform.normalized, shaderUniform.stride, shaderUniform.data);
+        }
     }
 
-    private static void updateShaderAttribute(
-            ShaderVariablePointerShort shaderUniform) {
-        final GL gl = GLU.getCurrentGL();
+    private static void updateShaderAttribute(final ShaderVariablePointerShort shaderUniform) {
+        if (shaderUniform.variableID >= 0) {
+            final GL gl = GLU.getCurrentGL();
 
-        shaderUniform.data.rewind();
-        gl.glEnableVertexAttribArrayARB(shaderUniform.variableID);
-        gl.glVertexAttribPointerARB(shaderUniform.variableID,
-                shaderUniform.size, GL.GL_UNSIGNED_SHORT,
-                shaderUniform.normalized, shaderUniform.stride,
-                shaderUniform.data);
+            shaderUniform.data.rewind();
+            gl.glEnableVertexAttribArrayARB(shaderUniform.variableID);
+            gl.glVertexAttribPointerARB(shaderUniform.variableID, shaderUniform.size, GL.GL_UNSIGNED_SHORT,
+                    shaderUniform.normalized, shaderUniform.stride, shaderUniform.data);
+        }
     }
 }
