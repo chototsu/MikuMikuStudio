@@ -49,6 +49,8 @@ public class LWJGLShaderUtil {
 
     private static final Logger logger = Logger.getLogger(LWJGLShaderUtil.class.getName());
 
+    private static ByteBuffer nameBuf = BufferUtils.createByteBuffer(2048);
+
     /**
      * Updates a uniform shadervariable.
      * 
@@ -95,9 +97,9 @@ public class LWJGLShaderUtil {
      */
     public static void updateUniformLocation(final ShaderVariable variable, final int programID) {
         if (variable.variableID == ShaderVariable.UNINITIALIZED) {
-            final ByteBuffer nameBuf = BufferUtils.createByteBuffer(variable.name.getBytes().length + 1);
             nameBuf.clear();
             nameBuf.put(variable.name.getBytes());
+            nameBuf.put((byte) 0);
             nameBuf.rewind();
 
             variable.variableID = ARBShaderObjects.glGetUniformLocationARB(programID, nameBuf);
@@ -203,9 +205,9 @@ public class LWJGLShaderUtil {
      */
     public static void updateAttributeLocation(final ShaderVariable variable, final int programID) {
         if (variable.variableID == ShaderVariable.UNINITIALIZED) {
-            final ByteBuffer nameBuf = BufferUtils.createByteBuffer(variable.name.getBytes().length + 1);
             nameBuf.clear();
             nameBuf.put(variable.name.getBytes());
+            nameBuf.put((byte) 0);
             nameBuf.rewind();
 
             variable.variableID = ARBVertexShader.glGetAttribLocationARB(programID, nameBuf);
