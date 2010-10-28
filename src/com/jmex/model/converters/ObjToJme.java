@@ -114,7 +114,7 @@ public class ObjToJme extends FormatConverter {
     /** Reference to the renderer for creating RenderState objects **/
     private Renderer renderer;
     private boolean generateMissingNormals = true;
-    
+    private boolean flipFaces = false;
     /**
      * Converts an Obj file to jME format. The syntax is: "ObjToJme file.obj
      * outfile.jme".
@@ -154,6 +154,7 @@ public class ObjToJme extends FormatConverter {
         String in;
         curGroup = defaultMaterialGroup;
         materialSets.put(defaultMaterialGroup, new ArraySet());
+        flipFaces = (Boolean)properties.get("flipFaces");
         while ((in = inFile.readLine()) != null) {
             processLine(in);
         }
@@ -190,6 +191,7 @@ public class ObjToJme extends FormatConverter {
         String in;
         curGroup = defaultMaterialGroup;
         materialSets.put(defaultMaterialGroup, new ArraySet());
+        flipFaces = (Boolean)properties.get("flipFaces");
         while ((in = inFile.readLine()) != null) {
             processLine(in);
         }
@@ -453,9 +455,21 @@ public class ObjToJme extends FormatConverter {
                 thisMat.objName = curGroupName;
             }   
         }
-        IndexSet first = new IndexSet(parts[1]);
+        IndexSet first = null;
+        IndexSet second = null;
+        
+        /**
+         * Using the flipFaces property triangles will be flipped inside out
+         */
+        if(flipFaces) {
+          first = new IndexSet(parts[2]);
+          second = new IndexSet(parts[1]);
+        }
+        else {
+          first = new IndexSet(parts[1]);
+          second = new IndexSet(parts[2]);
+        }
         int firstIndex = thisMat.findSet(first);
-        IndexSet second = new IndexSet(parts[2]);
         int secondIndex = thisMat.findSet(second);
         for (int i = 3; i < parts.length; i++) {
             IndexSet third = new IndexSet();
