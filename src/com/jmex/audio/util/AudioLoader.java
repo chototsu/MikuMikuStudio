@@ -49,7 +49,6 @@ import com.jcraft.jorbis.VorbisFile;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.audio.AudioBuffer;
 import com.jmex.audio.AudioTrack.Format;
-import com.jmex.audio.openal.OpenALStreamedAudioPlayer;
 import com.jmex.audio.stream.AudioInputStream;
 import com.jmex.audio.stream.OggInputStream;
 import com.jmex.audio.stream.WavInputStream;
