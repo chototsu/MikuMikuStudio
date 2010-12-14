@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2009 jMonkeyEngine
+ * Copyright (c) 2003-2010 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,8 +82,6 @@ public class JMEDesktopState extends BasicGameState {
         guiNode.setCullHint(CullHint.Never);
         guiNode.setLightCombineMode(LightCombineMode.Off);
         
-        rootNode = new Node("RootNode");
-        
         guiInput = new InputHandler();
         guiInput.setEnabled(true);
 
@@ -129,6 +127,7 @@ public class JMEDesktopState extends BasicGameState {
     }
     
     public void render(float tpf) {
+    	super.render(tpf);
         DisplaySystem.getDisplaySystem().getRenderer().draw(guiNode);
     }
     
