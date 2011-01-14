@@ -192,7 +192,8 @@ public class ObjToJme extends FormatConverter {
         String in;
         curGroup = defaultMaterialGroup;
         materialSets.put(defaultMaterialGroup, new ArraySet());
-        flipFaces = (Boolean)properties.get("flipFaces");
+        if(properties.containsKey("flipFaces"))
+            flipFaces = (Boolean)properties.get("flipFaces");
         while ((in = inFile.readLine()) != null) {
             processLine(in);
         }
