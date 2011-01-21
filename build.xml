@@ -426,9 +426,9 @@
 	
 	<!-- puts jme3 jars, libs and javadoc in a dated zip file -->
 	    <target name="deploy-hudson" depends="dist-all, doc">
-	        <!-- create date in the format MM-dd-yyyy -->
+	        <!-- create date in the format yyyy-MM-dd -->
 	        <tstamp>
-	          <format property="date" pattern="MM-dd-yyyy" locale="en,US"/>
+	          <format property="date" pattern="yyyy-MM-dd" locale="en,US"/>
 	        </tstamp>
 	        <property name="jme2zip" value="jME2_${date}.zip"/>
 
