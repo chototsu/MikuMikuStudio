@@ -631,6 +631,10 @@ public class OgreLoader {
 
         // ==submeshes==
         Node submeshesNode = getChildNode(meshNode, "submeshes");
+        if (submeshesNode == null) {
+            throw new ModelFormatException(
+                    "Mesh file has no submeshes element, as required by the DTD");
+        }
         Node submesh = submeshesNode.getFirstChild();
         if (submesh == null) {
             throw new ModelFormatException(
