@@ -433,7 +433,7 @@ public class PMDPhysicsWorld {
         }
 
         constraint.setAngularUpperLimit(constRot2);
-        constraint.setEquilibriumPoint();
+//        constraint.setEquilibriumPoint();
 //        constraint.setCollisionBetweenLinkedBodys(false);
         for (int i = 0; i < 6; i++) {
             float f = pmdJoint.getStiffness()[i];
