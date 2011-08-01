@@ -48,16 +48,16 @@ public class PhysicsControl extends AbstractControl {
         world = new PMDPhysicsWorld();
 //        world.init();
         world.addPMDNode(pmdNode);
-        world.stepSimulation(1f);
+//        world.stepSimulation(1f);
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        pmdNode.getSkeleton().updateWorldVectors();
-        world.updateJointPosition(pmdNode);
+//        pmdNode.getSkeleton().updateWorldVectors();
+//        world.updateJointPosition(pmdNode);
         world.stepSimulation(tpf);
 //        world.applyResultToBone();
-        pmdNode.calcOffsetMatrices();
+//        pmdNode.calcOffsetMatrices();
 //        pmdNode.update();
     }
 

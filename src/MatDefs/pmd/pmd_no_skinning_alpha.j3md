@@ -100,8 +100,6 @@ MaterialDef pmd {
 
         VertexShader GLSL100:   MatDefs/pmd/pmd.vert
         FragmentShader GLSL100: MatDefs/pmd/pmd.frag
-        // VertexShader GLSL120:   MatDefs/pmd/pmd_cartoon.vert
-        // FragmentShader GLSL120: MatDefs/pmd/pmd_cartoon.frag
 
         // VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
         // FragmentShader GLSL100: Common/MatDefs/Light/Lighting.frag
@@ -138,71 +136,21 @@ MaterialDef pmd {
             SPHERE_MAP : SphereMap
 
             // NUM_BONES : NumBones
-            USE_HWSKINNING
+            // USE_HWSKINNING
+
             SPHERE_MAP_A : SphereMap_A
             SPHERE_MAP_H : SphereMap_H
         }
         RenderState {
-            FaceCull Back
+            FaceCull Off
         }
     }
 
-    Technique CartoonEdge {
-
-        LightMode MultiPass
-
-        VertexShader GLSL120:   MatDefs/pmd/pmd_cartoon.vert
-        FragmentShader GLSL120: MatDefs/pmd/pmd_cartoon.frag
-
-        // VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
-        // FragmentShader GLSL100: Common/MatDefs/Light/Lighting.frag
-
-        WorldParameters {
-            WorldViewProjectionMatrix
-            NormalMatrix
-            WorldViewMatrix
-            ViewMatrix
-            CameraPosition
-            WorldMatrix
-        }
-
-        Defines {
-            LATC : LATC
-            VERTEX_COLOR : UseVertexColor
-            VERTEX_LIGHTING : VertexLighting
-            ATTENUATION : Attenuation
-            MATERIAL_COLORS : UseMaterialColors
-            V_TANGENT : VTangent
-            MINNAERT  : Minnaert
-            WARDISO   : WardIso
-            LOW_QUALITY : LowQuality
-            HQ_ATTENUATION : HighQuality
-
-            DIFFUSEMAP : DiffuseMap
-            NORMALMAP : NormalMap
-            SPECULARMAP : SpecularMap
-            PARALLAXMAP : ParallaxMap
-            ALPHAMAP : AlphaMap
-            COLORRAMP : ColorRamp
-
-            USE_REFLECTION : EnvMap
-            SPHERE_MAP : SphereMap
-
-            // NUM_BONES : NumBones
-            USE_HWSKINNING
-        }
-        RenderState {
-            FaceCull Front
-            DepthTest On
-            DepthWrite On
-        }
-    }
 
     Technique PreShadow {
 
-        // VertexShader GLSL100 :   Common/MatDefs/Shadow/PreShadow.vert
+        VertexShader GLSL100 :   Common/MatDefs/Shadow/PreShadow.vert
         FragmentShader GLSL100 : Common/MatDefs/Shadow/PreShadow.frag
-        VertexShader GLSL100:   MatDefs/pmd/pmd.vert
 
         WorldParameters {
             WorldViewProjectionMatrix
@@ -211,7 +159,6 @@ MaterialDef pmd {
 
         Defines {
             DIFFUSEMAP_ALPHA : DiffuseMap
-            USE_HWSKINNING
         }
 
         RenderState {

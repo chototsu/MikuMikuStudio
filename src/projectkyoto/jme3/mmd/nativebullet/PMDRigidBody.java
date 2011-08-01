@@ -52,6 +52,8 @@ public class PMDRigidBody extends PhysicsRigidBody {
     final Quaternion invRot = new Quaternion();
     final Vector3f tmpV = new Vector3f();
     final Quaternion tmpQ = new Quaternion();
+    final Bone centerBone;
+    final boolean centerFlag;
     Matrix4f m = new Matrix4f();
     Matrix4f invM = new Matrix4f();
 
@@ -71,6 +73,12 @@ public class PMDRigidBody extends PhysicsRigidBody {
         m.set(invM);
         invM.invertLocal();
         m2.loadIdentity();
+        centerBone = pmdNode.getSkeleton().getBone("センター");
+        if (bone == centerBone) {
+            centerFlag = true;
+        } else {
+            centerFlag = false;
+        }
     }
 
     public void update() {
@@ -93,7 +101,6 @@ public class PMDRigidBody extends PhysicsRigidBody {
             super.setPhysicsLocation(m2.toTranslationVector());
             super.setPhysicsRotation(m2.toRotationQuat());
         } else {
-            Bone centerBone = pmdNode.getSkeleton().getBone("センター");
             tmpV.set(centerBone.getModelSpacePosition());
             tmpV.addLocal(pos);
             tmpQ.set(centerBone.getModelSpaceRotation());
@@ -107,6 +114,12 @@ public class PMDRigidBody extends PhysicsRigidBody {
         }
 //        System.out.println("objectId = "+objectId+(bone != null ? " name = "+bone.getName() : "")+" pos = "+getPhysicsLocation());
     }
+    public void reset() {
+        updateFromBoneMatrix();
+        setLinearVelocity(Vector3f.ZERO);
+        setAngularVelocity(Vector3f.ZERO);
+        clearForces();
+    }
     Matrix4f m2 = new Matrix4f();
     Matrix4f m3 = new Matrix4f();
 
@@ -114,7 +127,7 @@ public class PMDRigidBody extends PhysicsRigidBody {
 //        System.out.println("objectId = "+objectId+" name = "+bone.getName()+" pos = "+getPhysicsLocation());
         if (bone != null) {
             if (rigidBodyType == 2) {
-                if (!bone.getName().contains("センター")) {
+                if (true/*!bone.getName().contains("センター")*/) {
                     tmpV.set(super.getPhysicsLocation());
                     tmpQ.set(super.getPhysicsRotation());
                     m2.setRotationQuaternion(tmpQ);
@@ -130,7 +143,7 @@ public class PMDRigidBody extends PhysicsRigidBody {
 //                super.getPhysicsRotation();
                 }
             } else {
-                if (!bone.getName().contains("センター")) {
+                if (rigidBodyType == 1 && !centerFlag) {
                     tmpV.set(super.getPhysicsLocation());
                     tmpQ.set(super.getPhysicsRotation());
                     m2.setRotationQuaternion(tmpQ);

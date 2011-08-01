@@ -59,7 +59,7 @@ public class PMDMaterial {
 //        if (textureFileName.length() != 0) {
 //            texture = TextureIO.newTexture(new URL(is.url ,textureFileName), true,"bmp");
 //        }
-        if (!textureFileName.isEmpty()) {
+        if ( false && !textureFileName.isEmpty()) {
             InputStream textureIs = null;
             try {
                 textureIs = new URL(is.url ,textureFileName).openStream();

@@ -34,10 +34,15 @@ package projectkyoto.mmd.file.util2;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import projectkyoto.mmd.file.PMDMaterial;
 import projectkyoto.mmd.file.PMDModel;
 import projectkyoto.mmd.file.PMDSkinData;
+import projectkyoto.mmd.file.PMDVertex;
 
 /**
  *
@@ -49,10 +54,24 @@ public class MeshConverter {
     int maxBoneSize = 20;
     List<MeshData> meshDataList = new ArrayList<MeshData>();
     SkinMeshData skinMeshData;
+    HashMap<PMDVertex, Integer> meshTmpVertMap = new HashMap<PMDVertex, Integer>();
+    HashMap<PMDVertex, Integer> skinTmpVertMap = new HashMap<PMDVertex, Integer>();
 
     public MeshConverter(PMDModel model) {
         this.model = model;
-        skinMeshData = new SkinMeshData(model);
+        skinMeshData = new SkinMeshData(this, model);
+        initSkinVertSet();
+    }
+    private final void initSkinVertSet() {
+        for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {
+            PMDSkinData skinData = model.getSkinData()[skinCount];
+            if (skinData.getSkinType() == 0) {
+                for(int skinVertCount = 0;skinVertCount<skinData.getSkinVertCount();skinVertCount++) {
+                    VertIndex vi = new VertIndex(skinData.getSkinVertData()[skinVertCount].getSkinVertIndex());
+                    skinVertSet.add(vi);
+                }
+            }
+        }
     }
 
     public void checkDupMaterial() {
@@ -83,10 +102,11 @@ public class MeshConverter {
                 if (containsSkin(i1, i2, i3)) {
                     addSkinTriangle(material, i1, i2, i3);
                 } else {
-                    if (!meshData.addTriangle(i1, i2, i3)) {
+                    if (!meshData.addTriangle(this, i1, i2, i3)) {
                         meshData = new MeshData(model, maxBoneSize, material);
+                        meshTmpVertMap.clear();
                         meshDataList.add(meshData);
-                        meshData.addTriangle(i1, i2, i3);
+                        meshData.addTriangle(this, i1, i2, i3);
                     }
                 }
             }
@@ -105,6 +125,7 @@ public class MeshConverter {
 //        System.out.println("index " + model.getFaceVertCount() + " " + indexSizeSum
 //                + " vertSizeSum = " + model.getVertCount() + " " + vertSizeSum
 //                + " boneSizeSum = " + model.getBoneList().getBoneCount() + " " + boneSizeSum);
+//        printFaceVertSize();
         for(MeshData meshData : meshDataList) {
 //            meshData.printTrinangles();
         }
@@ -122,8 +143,12 @@ public class MeshConverter {
         }
         return false;
     }
-
+    VertIndex tmpvi = new VertIndex(0);
     boolean containsSkin(int i) {
+        tmpvi.index = i;
+        return skinVertSet.contains(tmpvi);
+    }
+    boolean _containsSkin(int i) {
         for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {
             PMDSkinData skinData = model.getSkinData()[skinCount];
             if (skinData.getSkinType() == 0) {
@@ -136,8 +161,10 @@ public class MeshConverter {
         }
         return false;
     }
+    Set<VertIndex> skinVertSet = new java.util.HashSet<VertIndex> ();
+    
     void addSkinTriangle(PMDMaterial material, int i1,int i2,int i3) {
-        skinMeshData.addTriangle(material, i1, i2, i3);
+        skinMeshData.addTriangle(this, material, i1, i2, i3);
     }
 
     public int getMaxBoneSize() {
@@ -172,4 +199,33 @@ public class MeshConverter {
         this.skinMeshData = skinMeshData;
     }
     
+}
+class VertIndex {
+    int index;
+
+    public VertIndex(int index) {
+        this.index = index;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+//        if (obj == null) {
+//            return false;
+//        }
+//        if (getClass() != obj.getClass()) {
+//            return false;
+//        }
+        final VertIndex other = (VertIndex) obj;
+        if (this.index != other.index) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + this.index;
+        return hash;
+    }
 }

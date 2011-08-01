@@ -136,35 +136,36 @@ public class PMDVertex {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final PMDVertex other = (PMDVertex) obj;
-        if (this.pos != other.pos && (this.pos == null || !this.pos.equals(other.pos))) {
-            return false;
-        }
-        if (this.normal != other.normal && (this.normal == null || !this.normal.equals(other.normal))) {
-            return false;
-        }
-        if (this.uv != other.uv && (this.uv == null || !this.uv.equals(other.uv))) {
-            return false;
-        }
-        if (this.boneNum1 != other.boneNum1) {
-            return false;
-        }
-        if (this.boneNum2 != other.boneNum2) {
-            return false;
-        }
-        if (this.boneWeight != other.boneWeight) {
-            return false;
-        }
-        if (this.edgeFlag != other.edgeFlag) {
-            return false;
-        }
-        return true;
+        return false;
+//        if (obj == null) {
+//            return false;
+//        }
+//        if (getClass() != obj.getClass()) {
+//            return false;
+//        }
+//        final PMDVertex other = (PMDVertex) obj;
+//        if (this.pos != other.pos && (this.pos == null || !this.pos.equals(other.pos))) {
+//            return false;
+//        }
+//        if (this.normal != other.normal && (this.normal == null || !this.normal.equals(other.normal))) {
+//            return false;
+//        }
+//        if (this.uv != other.uv && (this.uv == null || !this.uv.equals(other.uv))) {
+//            return false;
+//        }
+//        if (this.boneNum1 != other.boneNum1) {
+//            return false;
+//        }
+//        if (this.boneNum2 != other.boneNum2) {
+//            return false;
+//        }
+//        if (this.boneWeight != other.boneWeight) {
+//            return false;
+//        }
+//        if (this.edgeFlag != other.edgeFlag) {
+//            return false;
+//        }
+//        return true;
     }
 
     @Override

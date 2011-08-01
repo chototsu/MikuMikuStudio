@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
@@ -46,16 +45,17 @@ public class PMDBone {
     private int tailPosBoneIndex;
     private int boneType;   // 0:回転のみ 1:回転と移動 2:IK 3:不明 4:IK影響下 5:回転影響下
     //6:IK接続先 7:非表示 8:捻り 9:回転運動
-    private int dummy;
+    private int targetBone;
     private Vector3f boneHeadPos;
     private boolean hiza;
+
     @Override
     public String toString() {
         return "{boneName = " + boneName
                 + " parentBoneIndex = " + parentBoneIndex
                 + " tailPosBoneIndex = " + tailPosBoneIndex
                 + " boneType = " + boneType
-                + " dummy = " + dummy
+                + " targetBone = " + targetBone
                 + " boneHeadPos = {" + (boneHeadPos == null ? "null" : "{"
                 + boneHeadPos.x + " " + boneHeadPos.y + " " + boneHeadPos.z)
                 + "}"
@@ -67,10 +67,10 @@ public class PMDBone {
         parentBoneIndex = is.readUnsignedShort();
         tailPosBoneIndex = is.readUnsignedShort();
         boneType = is.readByte();
-        dummy = is.readShort();
+        targetBone = is.readShort();
         boneHeadPos = new Vector3f(is.readFloat(), is.readFloat(),
                 -is.readFloat());
-        if (boneName.indexOf("ひざ") >=0) {
+        if (boneName.indexOf("ひざ") >= 0) {
             hiza = true;
         } else {
             hiza = false;
@@ -101,12 +101,12 @@ public class PMDBone {
         this.boneType = boneType;
     }
 
-    public int getDummy() {
-        return dummy;
+    public int getTargetBone() {
+        return targetBone;
     }
 
-    public void setDummy(int dummy) {
-        this.dummy = dummy;
+    public void setTargetBone(int targetBone) {
+        this.targetBone = targetBone;
     }
 
     public int getParentBoneIndex() {
@@ -132,5 +132,4 @@ public class PMDBone {
     public void setHiza(boolean hiza) {
         this.hiza = hiza;
     }
-    
 }

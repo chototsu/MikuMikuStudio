@@ -1,31 +1,39 @@
 /*
- * Copyright (c) 2011 Kazuhiko Kobayashi All rights reserved. <p/>
+ * Copyright (c) 2011 Kazuhiko Kobayashi All rights reserved.
+ * <p/>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ * <p/>
  * * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer. <p/> *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution. <p/> * Neither the
- * name of 'MMDLoaderJME' nor the names of its contributors may be used to
- * endorse or promote products derived from this software without specific
- * prior written permission. <p/> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
- * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * this list of conditions and the following disclaimer.
+ * <p/>
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * <p/>
+ * * Neither the name of 'MMDLoaderJME' nor the names of its contributors
+ * may be used to endorse or promote products derived from this software
+ * without specific prior written permission.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package projectkyoto.jme3.mmd.vmd;
 
 import com.jme3.animation.Bone;
 import com.jme3.animation.Skeleton;
+import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.PhysicsTickListener;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -66,12 +74,14 @@ public class VMDControl extends AbstractControl {
     static final VMDSkinComparator vmsc = new VMDSkinComparator();
     final PhysicsControl physicsControl;
     final IKControl ikControl;
+    TickListener tl = new TickListener();
 
     public VMDControl(PMDNode pmdNode, VMDFile vmdFile) {
         this.pmdNode = pmdNode;
         this.vmdFile = vmdFile;
         initMotionMap();
         physicsControl = new PhysicsControl(pmdNode);
+        physicsControl.getWorld().getPhysicsSpace().addTickListener(tl);
         ikControl = new IKControl(pmdNode);
     }
 
@@ -135,8 +145,10 @@ public class VMDControl extends AbstractControl {
 //        for(;time > 0; time -= physicsControl.getWorld().accuracy) {
 //            controlUpdate2(physicsControl.getWorld().accuracy);
 //        }
-        if (time != 0) {
-            controlUpdate2(time);
+        if (time != 0 && !pause) {
+//            controlUpdate2(time);
+            physicsControl.update(tpf);
+//            physicsControl.getWorld().applyResultToBone();
         }
     }
 
@@ -151,7 +163,9 @@ public class VMDControl extends AbstractControl {
                 }
             }
             calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
-            physicsControl.update(tpf);
+            physicsControl.getWorld().updateKinematicPos();
+//            pmdNode.getSkeleton().updateWorldVectors();
+            // physicsControl.update(tpf);
 
 //            timeFromCurrentFrameNo = 0;
 //            i++;
@@ -169,14 +183,15 @@ public class VMDControl extends AbstractControl {
     }
 
     void calcBonePosition(int frameNo, Skeleton skeleton) {
+        for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {
+            Bone bone = pmdNode.getSkeleton().getBone(i);
+            bone.getLocalRotation().loadIdentity();
+        }
         boneLoop:
         for (BoneMotionList bml : motionMap.values()) {
             Bone bone = pmdNode.getSkeleton().getBone(bml.boneName);
             if (bone != null) {
                 bone.setUserControl(true);
-//                if (bone.getName().equals("左足") || bone.getName().contains("ひざ")) {
-//                    continue;
-//                } else
                 if (bml.size() - 1 < bml.currentCount) {
                     VMDMotion m1 = bml.get(bml.size() - 1);
                     Quat4f q = m1.getRotation();
@@ -224,13 +239,7 @@ public class VMDControl extends AbstractControl {
                         float fy = IPUtil.calcIp(bml, f3, 1); //calcIp(m2.getInterpolation(), f3, 1);
                         float fz = IPUtil.calcIp(bml, f3, 2); //calcIp(m2.getInterpolation(), f3, 2);
                         float fr = IPUtil.calcIp(bml, f3, 3); //calcIp(m2.getInterpolation(), f3, 3);
-//                        float fx = f3;
-//                        float fy = f3;
-//                        float fz = f3;
-//                        float fr = f3;
                         tmpq1.interpolate(m1.getRotation(), m2.getRotation(), fr);
-//                        Quat4f q = m1.getRotation();
-//                        tmpp1.interpolate(m1.getLocation(), m2.getLocation(), f3);
                         tmpp1.x = m1.getLocation().x + (m2.getLocation().x - m1.getLocation().x) * fx;
                         tmpp1.y = m1.getLocation().y + (m2.getLocation().y - m1.getLocation().y) * fy;
                         tmpp1.z = m1.getLocation().z + (m2.getLocation().z - m1.getLocation().z) * fz;
@@ -246,7 +255,21 @@ public class VMDControl extends AbstractControl {
                 }
             }
         }
+        pmdNode.getSkeleton().updateWorldVectors();
         ikControl.updateIKBoneRotation();
+        for(int i=0;i<pmdNode.getPmdModel().getBoneList().getBoneCount();i++) {
+            PMDBone pmdBone = pmdNode.getPmdModel().getBoneList().getBones()[i];
+            if (pmdBone.getBoneType() == 5) {
+                // under-rotation
+                Bone bone = pmdNode.getSkeleton().getBone(i);
+//                if (motionMap.get(pmdBone.getBoneName()) == null) {
+//                    bone.getLocalRotation().loadIdentity();
+//                }
+                Bone targetBone = pmdNode.getSkeleton().getBone(pmdBone.getTargetBone());
+                bone.getLocalRotation().multLocal(targetBone.getLocalRotation());
+                bone.updateWorldVectors();
+            }
+        }
         for (SkinList skinList : skinMap.values()) {
             float w1 = 0f, w2 = 0f;
             int c1 = 0, c2 = 0;
@@ -311,7 +334,7 @@ public class VMDControl extends AbstractControl {
             }
         }
         resetSkins();
-        calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
+//        calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
         physicsControl.getWorld().resetRigidBodyPos();
 //        pmdNode.update();
     }
@@ -345,15 +368,28 @@ public class VMDControl extends AbstractControl {
     public PhysicsControl getPhysicsControl() {
         return physicsControl;
     }
+    class TickListener implements PhysicsTickListener {
+
+        @Override
+        public void prePhysicsTick(PhysicsSpace ps, float f) {
+            controlUpdate2(f);
+        }
+
+        @Override
+        public void physicsTick(PhysicsSpace ps, float f) {
+            physicsControl.getWorld().applyResultToBone();
+        }
+        
+    }
 }
 
 class BoneMotionList extends ArrayList<VMDMotion> {
 
-    static final int IPTABLESIZE = 16;
+    static final int IPTABLESIZE = 64;
     String boneName;
     int currentCount;
     int boneType;
-    final float ipTable[][] = new float[4][IPTABLESIZE];
+    final float ipTable[][][] = new float[4][IPTABLESIZE][2];
     int frame1, frame2;
     final float val1[] = new float[4];
     final float val2[] = new float[4];
@@ -362,7 +398,7 @@ class BoneMotionList extends ArrayList<VMDMotion> {
         if (currentCount != newCount) {
             currentCount = newCount;
             if (newCount >= 0 && newCount < size()) {
-                IPUtil.createInterpolationTable(get(currentCount).getInterpolation(), IPTABLESIZE, ipTable);
+                IPUtil.createInterpolationTable(get(currentCount).getInterpolation(), ipTable);
             }
         }
     }

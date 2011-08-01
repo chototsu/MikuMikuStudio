@@ -52,19 +52,20 @@ public class SkinMeshData {
     List<PMDVertex> vertexList = new ArrayList<PMDVertex>();
     Map<PMDMaterial, List<Integer>> indexMap = new HashMap<PMDMaterial, List<Integer>>();
 
-    public SkinMeshData(PMDModel model) {
+    public SkinMeshData(MeshConverter mc, PMDModel model) {
         this.model = model;
         for(PMDSkinData sd : model.getSkinData()) {
             if (sd.getSkinType() == 0) {
                 for(int i=0;i<sd.getSkinVertCount();i++) {
                     PMDVertex v = model.getVertexList()[sd.getSkinVertData()[i].getSkinVertIndex()];
                     vertexList.add(v);
+                    mc.skinTmpVertMap.put(v, i);
                 }
             }
         }
     }
 
-    public void addTriangle(PMDMaterial material, int i1, int i2, int i3) {
+    public void addTriangle(MeshConverter mc, PMDMaterial material, int i1, int i2, int i3) {
         addBoneList(i1);
         addBoneList(i2);
         addBoneList(i3);
@@ -73,9 +74,9 @@ public class SkinMeshData {
             indexList = new ArrayList<Integer>();
             indexMap.put(material, indexList);
         }
-        addVertex(indexList,i1);
-        addVertex(indexList,i2);
-        addVertex(indexList,i3);
+        addVertex(mc, indexList,i1);
+        addVertex(mc, indexList,i2);
+        addVertex(mc, indexList,i3);
     }
 
     private void addBoneList(int vertIndex) {
@@ -88,16 +89,19 @@ public class SkinMeshData {
         }
     }
 
-    private void addVertex(List<Integer>indexList, int vertIndex) {
+    private void addVertex(MeshConverter mc, List<Integer>indexList, int vertIndex) {
         PMDVertex v = model.getVertexList()[vertIndex];
+        Integer index = mc.skinTmpVertMap.get(v);
         int newVertIndex;
-        if (vertexList.contains(v)) {
-            newVertIndex = vertexList.indexOf(v);
+        if (index != null /*vertexList.contains(v)*/) {
+            newVertIndex = index.intValue(); //vertexList.indexOf(v);
         } else {
             newVertIndex = vertexList.size();
             vertexList.add(v);
+            mc.skinTmpVertMap.put(v, newVertIndex);
+            index = newVertIndex;
         }
-        indexList.add(newVertIndex);
+        indexList.add(index/*newVertIndex*/);
     }
 
     public List<Integer> getBoneList() {

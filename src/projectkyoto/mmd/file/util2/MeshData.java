@@ -57,15 +57,15 @@ public class MeshData {
         this.maxBoneSize = maxBoneSize;
         this.material = material;
     }
-    public boolean addTriangle(int i1,int i2,int i3) {
+    public boolean addTriangle(MeshConverter mc, int i1,int i2,int i3) {
         int boneListSizeBefore = boneList.size();
         addBoneList(i1);
         addBoneList(i2);
         addBoneList(i3);
         if (boneList.size() <= maxBoneSize) {
-            addVertex(i1);
-            addVertex(i2);
-            addVertex(i3);
+            addVertex(mc, i1);
+            addVertex(mc, i2);
+            addVertex(mc, i3);
             return true;
         }
         for(int i=boneList.size();i>boneListSizeBefore;i--) {
@@ -81,14 +81,16 @@ public class MeshData {
         if (!boneList.contains(v.getBoneNum2()))
             boneList.add(v.getBoneNum2());
     }
-    private void addVertex(int vertIndex) {
+    private void addVertex(MeshConverter mc, int vertIndex) {
         PMDVertex v = model.getVertexList()[vertIndex];
         int newVertIndex;
-        if (vertexList.contains(v)) {
-            newVertIndex = vertexList.indexOf(v);
+        Integer index = mc.meshTmpVertMap.get(v);
+        if (index != null /*vertexList.contains(v)*/) {
+            newVertIndex = index.intValue();//vertexList.indexOf(v);
         } else {
             newVertIndex = vertexList.size();
             vertexList.add(v);
+            mc.meshTmpVertMap.put(v, index);
         }
         indexList.add(newVertIndex);
     }

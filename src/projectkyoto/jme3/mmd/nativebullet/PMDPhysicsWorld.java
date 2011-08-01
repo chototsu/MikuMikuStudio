@@ -38,6 +38,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.joints.SixDofJoint;
 import com.jme3.bullet.joints.SixDofSpringJoint;
+import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Quaternion;
@@ -64,7 +65,7 @@ public class PMDPhysicsWorld {
     PhysicsSpace physicsSpace;
     Map<PMDNode, PMDRigidBody[]> rigidBodyMap = new HashMap<PMDNode, PMDRigidBody[]>();
     Map<PMDNode, SixDofJoint[]> constraintMap = new HashMap<PMDNode, SixDofJoint[]>();
-    float accuracy = 1f / 180f;
+    float accuracy = 1f / 240;
 
     public PMDPhysicsWorld() {
         float dist = 400f;
@@ -73,9 +74,10 @@ public class PMDPhysicsWorld {
                 new Vector3f(dist, dist, dist),
                 PhysicsSpace.BroadphaseType.AXIS_SWEEP_3);
 //        physicsSpace.setGravity(new Vector3f(0f, -9.8f * 2*2*2, 20f));
-        physicsSpace.setGravity(new Vector3f(0f, -9.8f * 4, 0f));
+//        physicsSpace.setGravity(new Vector3f(0f, -9.8f * 2, 0f));
+        physicsSpace.setGravity(new Vector3f(0f, -9.8f * 1f, 0f));
 //        physicsSpace.create();
-        physicsSpace.update(dist, 1);
+//        physicsSpace.update(dist, 1);
         physicsSpace.setAccuracy(accuracy);
     }
 
@@ -113,7 +115,6 @@ public class PMDPhysicsWorld {
 //            btWorld.addRigidBody(rb, (short) (1 << fileRigidBody.getRigidBodyGroupIndex()),
 //                    (short) fileRigidBody.getRigidBodyGroupTarget());
             rb.setCollisionGroup(1 << (fileRigidBody.getRigidBodyGroupIndex()));
-//            rb.removeCollideWithGroup(0);
             rb.setCollideWithGroups(fileRigidBody.getRigidBodyGroupTarget());
 //                  rb.setCollideWithGroups(0 );
             physicsSpace.addCollisionObject(rb);
@@ -126,7 +127,7 @@ public class PMDPhysicsWorld {
             constArray[i] = constraint;
             physicsSpace.add(constraint);
         }
-        physicsSpace.update(1 / 60f, 1);
+//        physicsSpace.update(1 / 60f, 1);
     }
 
     public void removePMDNode(PMDNode pmdNode) {
@@ -198,22 +199,24 @@ public class PMDPhysicsWorld {
         trans.setRotationQuaternion(q);
         trans.setTranslation(v);
         CollisionShape cs;
+        float margin = 0.00f;
         switch (fileRigidBody.getShapeType()) {
             case 0:
-                cs = new SphereCollisionShape(fileRigidBody.getShapeW());
+                cs = new SphereCollisionShape(fileRigidBody.getShapeW() - margin);
                 break;
             case 1:
-                cs = new BoxCollisionShape(new Vector3f(fileRigidBody.getShapeW(),
-                        fileRigidBody.getShapeH(),
-                        fileRigidBody.getShapeD()));
+                cs = new BoxCollisionShape(new Vector3f(fileRigidBody.getShapeW() - margin,
+                        fileRigidBody.getShapeH() - margin,
+                        fileRigidBody.getShapeD() - margin));
                 break;
             case 2:
-                cs = new CapsuleCollisionShape(fileRigidBody.getShapeW(), fileRigidBody.getShapeH());
+                cs = new CapsuleCollisionShape(fileRigidBody.getShapeW() - margin, fileRigidBody.getShapeH() - margin);
                 break;
             default:
                 throw new PMDException("Invalid getShapeType:" + fileRigidBody.getRigidBodyName() + " "
                         + fileRigidBody.getShapeType());
         }
+        cs.setMargin(0.1f);
         if (fileRigidBody.getRigidBodyType() != 0) {
             mass = fileRigidBody.getWeight();
             kinematic = false;
@@ -243,14 +246,13 @@ public class PMDPhysicsWorld {
 //        worldTrans.origin.add(localInertia)
 //        PMDRigidBody rb = new PMDRigidBody(pmdNode, bone, trans2, trans, kinematic, ci);
         PMDRigidBody rb = new PMDRigidBody(pmdNode, bone, fileRigidBody.getRigidBodyType(), trans2.toTranslationVector(), trans2.toRotationQuat(), cs, mass);
-        rb.setPhysicsRotation(Quaternion.ZERO);
-        rb.setPhysicsLocation(Vector3f.ZERO);
+//        rb.setPhysicsRotation(Quaternion.ZERO);
+//        rb.setPhysicsLocation(Vector3f.ZERO);
         rb.updateFromBoneMatrix();
-        rb.updateFromBoneMatrix(); // because native bullet has a bug.
-        rb.setMass(mass);
+//        rb.setMass(mass * 1000f);
         rb.setDamping(fileRigidBody.getPosDim(), fileRigidBody.getRotDim());
         rb.setRestitution(fileRigidBody.getRecoil());
-        rb.setFriction(fileRigidBody.getFriction());
+//        rb.setFriction(fileRigidBody.getFriction());
 
 //        rb.setWorldTransform(worldTrans);
         if (kinematic) {
@@ -268,6 +270,11 @@ public class PMDPhysicsWorld {
         return rb;
     }
 
+    void _convPMDEuler(Matrix3f out, float x, float y, float z) {
+        Quaternion q = new Quaternion();
+        q.fromAngles(x, y, z);
+        q.toRotationMatrix(out);
+    }
     void convPMDEuler(Matrix3f out, float x, float y, float z) {
 //        Matrix3f m = new Matrix3f();
 //        m.loadIdentity();
@@ -292,7 +299,6 @@ public class PMDPhysicsWorld {
 
         qy.toRotationMatrix(out);
     }
-
     Vector3f convVec(javax.vecmath.Vector3f v) {
         return new Vector3f(v.x, v.y, v.z);
     }
@@ -349,28 +355,85 @@ public class PMDPhysicsWorld {
         transA.setTranslation(rba.getPhysicsLocation());
 //        transA.inverse();
         transA.invertLocal();
-//        transA.multLocal(trans);
-        transA = transA.mult(trans);
+        transA.multLocal(trans);
+//        transA = transA.mult(trans);
         Matrix4f transB = new Matrix4f();
         transB.loadIdentity();
 //        rbb.getWorldTransform(transB);
         transB.setTranslation(rbb.getPhysicsLocation());
         transB.setRotationQuaternion(rbb.getPhysicsRotation());
         transB.invertLocal();
-//        transB.multLocal(trans);
-        transB = transB.mult(trans);
+        transB.multLocal(trans);
+//        transB = transB.mult(trans);
 //        Generic6DofSpringConstraint constraint = new Generic6DofSpringConstraint(rba, rbb, transA, transB, true);
+//        SixDofSpringJoint constraint = new SixDofSpringJoint(rba, rbb,
+//                transA.toTranslationVector(),
+//                transB.toTranslationVector(),
+//                transA.toRotationMatrix(),
+//                transB.toRotationMatrix(),
+//                true);
+
+        Matrix4f transJ = new Matrix4f();
+        transJ.loadIdentity();
+        transJ.setTranslation(pmdJoint.getJointPos().x, pmdJoint.getJointPos().y, pmdJoint.getJointPos().z);
+        convPMDEuler(m2, pmdJoint.getJointRot().x, pmdJoint.getJointRot().y, pmdJoint.getJointRot().z);
+        q.fromRotationMatrix(m2);
+//        q.fromAngles(pmdJoint.getJointRot().x, pmdJoint.getJointRot().y, pmdJoint.getJointRot().z);
+        transJ.setRotationQuaternion(q);
+
+        Matrix4f centerA = new Matrix4f();
+        centerA.setRotationQuaternion(rba.getPhysicsRotation());
+        centerA.setTranslation(rba.getPhysicsLocation());
+        Matrix4f invCenterA = centerA.invert();
+        
+        Matrix4f centerB = new Matrix4f();
+        centerB.setRotationQuaternion(rbb.getPhysicsRotation());
+        centerB.setTranslation(rbb.getPhysicsLocation());
+        Matrix4f invCenterB = centerB.invert();
+        
+        Matrix4f frameInA = invCenterA.mult(transJ);
+        Matrix4f frameInB = invCenterB.mult(transJ);
+        
         SixDofSpringJoint constraint = new SixDofSpringJoint(rba, rbb,
-                transA.toTranslationVector(),
-                transB.toTranslationVector(),
-                transA.toRotationMatrix(),
-                transB.toRotationMatrix(),
+                frameInA.toTranslationVector(),
+                frameInB.toTranslationVector(),
+                frameInA.toRotationMatrix(),
+                frameInB.toRotationMatrix(),
                 true);
 //        Generic6DofConstraint constraint = new Generic6DofConstraint(rba, rbb, transA, transB, true);
         constraint.setLinearLowerLimit(convVec(pmdJoint.getConstPos1()));
         constraint.setLinearUpperLimit(convVec(pmdJoint.getConstPos2()));
-        constraint.setAngularLowerLimit(convVec(pmdJoint.getConstRot1()));
-        constraint.setAngularUpperLimit(convVec(pmdJoint.getConstRot2()));
+        Vector3f constRot1 = convVec(pmdJoint.getConstRot1());
+        if (constRot1.getX() <= -FastMath.PI / 1.0f) {
+            constRot1.setX(-FastMath.PI * 1f);
+            System.out.println("constRot1 x must > -90");
+        }
+        if (constRot1.getY() <= -FastMath.PI / 0.5f) {
+            constRot1.setY(-FastMath.PI * 0.5f);
+            System.out.println("constRot1 y must > -90");
+        }
+        if (constRot1.getZ() <= -FastMath.PI / 1.0f) {
+            constRot1.setZ(-FastMath.PI * 1f);
+            System.out.println("constRot1 z must > -90");
+        }
+        constraint.setAngularLowerLimit(constRot1);
+
+        Vector3f constRot2 = convVec(pmdJoint.getConstRot2());
+        if (constRot2.getX() >= FastMath.PI / 1.0f) {
+            constRot2.setX(FastMath.PI * 1f);
+            System.out.println("constRot2 x must < 90");
+        }
+        if (constRot2.getY() >= FastMath.PI / 0.5f) {
+            constRot2.setY(FastMath.PI * 0.5f);
+            System.out.println("constRot2 y must < 90");
+        }
+        if (constRot2.getZ() >= FastMath.PI / 1.0f) {
+            constRot2.setZ(FastMath.PI * 1f);
+            System.out.println("constRot2 z must < 90");
+        }
+
+        constraint.setAngularUpperLimit(constRot2);
+        constraint.setEquilibriumPoint();
 //        constraint.setCollisionBetweenLinkedBodys(false);
         for (int i = 0; i < 6; i++) {
             float f = pmdJoint.getStiffness()[i];
@@ -382,7 +445,7 @@ public class PMDPhysicsWorld {
         return constraint;
     }
 
-    void setKinematicPos() {
+    public void updateKinematicPos() {
         for (PMDRigidBody rbarray[] : rigidBodyMap.values()) {
             for (int i = 0; i < rbarray.length; i++) {
                 PMDRigidBody rb = rbarray[i];
@@ -413,7 +476,7 @@ public class PMDPhysicsWorld {
     }
 
     void stepSimulation(float timeStep) {
-        setKinematicPos();
+//        setKinematicPos();
 //        float time = timeStep;
 //        for(;time>0;time-=accuracy) {
 //            physicsSpace.update(accuracy, 2);
@@ -424,13 +487,13 @@ public class PMDPhysicsWorld {
 //            applyResultToBone();
 //        }
         physicsSpace.update(timeStep, 10);
-        applyResultToBone();
+//        applyResultToBone();
     }
     Transform t = new Transform();
     Quaternion rot2 = new Quaternion();
     Quat4f rot = new Quat4f();
 
-    void applyResultToBone() {
+    public void applyResultToBone() {
 //        for(int i=0;i<btWorld.getNumCollisionObjects();i++) {
 //            CollisionObject obj = btWorld.getCollisionObjectArray().getQuick(i);
 //            if (obj instanceof PMDRigidBody) {
@@ -473,6 +536,7 @@ public class PMDPhysicsWorld {
                     PMDNode pmdNode = rb.getPmdNode();
                     Node rigidBodyNode = pmdNode.getRigidBodyNode();
                     rb.updateFromBoneMatrix();
+                    rb.setLinearVelocity(Vector3f.ZERO);
                     if (rigidBodyNode != null) {
                         Spatial spaital = rigidBodyNode.getChild(i);
                         spaital.setLocalRotation(rb.getPhysicsRotation());

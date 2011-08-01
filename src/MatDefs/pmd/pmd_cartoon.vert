@@ -44,6 +44,7 @@ void Skinning_Compute(inout vec4 position, inout vec4 normal){
 #endif
 
 void main(){
+    if (m_EdgeSize != 0.0) {
    vec4 pos = vec4(inPosition, 1.0);
    vec4 normal = vec4(inNormal,0.0);
 #ifdef USE_HWSKINNING
@@ -52,4 +53,7 @@ void main(){
    normal = normalize(normal);
    pos = pos + normal * m_EdgeSize;
    gl_Position = g_WorldViewProjectionMatrix * pos;
+   } else {
+     gl_Position = vec4(1000.0,1000.0,1000.0,1000.0);
+   }
 }

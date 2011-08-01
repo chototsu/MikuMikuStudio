@@ -1,10 +1,10 @@
 #import "Common/ShaderLib/Optics.glsllib"
 
 #ifdef SPHERE_MAP_A
-  uniform sampler2D m_SphereMap_a;
+  uniform sampler2D m_SphereMap_A;
 #endif
 #ifdef SPHERE_MAP_H
-  uniform sampler2D m_SphereMap_h;
+  uniform sampler2D m_SphereMap_H;
 #endif
 
 
@@ -61,10 +61,11 @@ varying vec3 lightVec;
 #ifdef USE_REFLECTION 
     uniform float m_ReflectionPower;
     uniform float m_ReflectionIntensity;
-    varying vec4 refVec;
+//    varying vec4 refVec;
 
     uniform ENVMAP m_EnvMap;
 #endif
+    varying vec4 refVec;
 
 float tangDot(in vec3 v1, in vec3 v2){
     float d = dot(v1,v2);
@@ -148,6 +149,7 @@ void main(){
       vec4 diffuseColor = vec4(1.0);
     #endif
     float alpha = DiffuseSum.a * diffuseColor.a;
+    //float alpha = (DiffuseSum.a + diffuseColor.a)/2;
     #ifdef ALPHAMAP
        alpha = alpha * texture2D(m_AlphaMap, newTexCoord).r;
     #endif
@@ -219,19 +221,29 @@ void main(){
             SpecularSum2 = vec4(1.0);
             light.y = 1.0;
        #endif
-
+       if (isnan(light.y)) {
+            light.y = 0;
+       }
 //       gl_FragColor =  (AmbientSum * diffuseColor +
 //                       DiffuseSum * diffuseColor + //* light.x +
 //                       SpecularSum2 * specularColor * light.y ) * 0.8;
-       gl_FragColor =  (((AmbientSum + DiffuseSum) * diffuseColor)  +
-                       SpecularSum2 * specularColor * light.y * 0.8)  ;
+       vec4 output_color = (((AmbientSum + DiffuseSum) * diffuseColor)  +
+                       SpecularSum2 * specularColor * light.y );
 #ifdef SPHERE_MAP_A
-        gl_FragColor += texture2D(m_SphereMap_a, Optics_SphereCoord(reflect(normView, normal));
+        vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
+        v2.y = 1 - v2.y;
+        output_color.xyz +=  (texture2D(m_SphereMap_A, v2).xyz);
 #endif
 #ifdef SPHERE_MAP_H
-        gl_FragColor *= texture2D(m_SphereMap_h, Optics_SphereCoord(reflect(normView, normal));
+        vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
+        v2.y = 1 - v2.y;
+        output_color.xyz *= texture2D(m_SphereMap_H, v2).xyz;
 #endif
 
     #endif
-    gl_FragColor.a = alpha;
+    output_color.a = alpha;
+    // output_color.a = diffuseColor.a;
+
+    // gl_FragColor = 0.5 + 0.5 * light.x;//output_color;
+    gl_FragColor = output_color;
 }

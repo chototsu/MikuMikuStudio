@@ -90,13 +90,15 @@ MaterialDef pmd {
         Texture2D BoneParameter
 
         Float EdgeSize
+        Texture2D SphereMap_A
+        Texture2D SphereMap_H
     }
 
     Technique {
 
         LightMode MultiPass
 
-        VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
+        VertexShader GLSL100:   MatDefs/pmd/pmd.vert
         FragmentShader GLSL100: MatDefs/pmd/pmd.frag
 
         // VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
@@ -134,7 +136,13 @@ MaterialDef pmd {
             SPHERE_MAP : SphereMap
 
             // NUM_BONES : NumBones
-            USE_HWSKINNING
+            // USE_HWSKINNING
+
+            SPHERE_MAP_A : SphereMap_A
+            SPHERE_MAP_H : SphereMap_H
+        }
+        RenderState {
+            FaceCull Back
         }
     }
 

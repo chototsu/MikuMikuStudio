@@ -31,6 +31,7 @@ package projectkyoto.jme3.mmd;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -68,7 +69,8 @@ public class RigidBodyConverter {
 
     public void createRigidBodyGeom(PMDRigidBody rigidBody) {
         Geometry geom = new Geometry(rigidBody.getRigidBodyName());
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        mat.setBoolean("UseMaterialColors", true);
         Mesh mesh;
         switch (rigidBody.getShapeType()) {
             case 0:
@@ -91,19 +93,19 @@ public class RigidBodyConverter {
         }
         switch (rigidBody.getRigidBodyType()) {
             case 0:
-                mat.setColor("Color", ColorRGBA.Blue);
+                mat.setColor("Diffuse", ColorRGBA.Blue);
                 break;
             case 1:
-                mat.setColor("Color", ColorRGBA.Red);
+                mat.setColor("Diffuse", ColorRGBA.Red);
                 break;
             case 2:
-                mat.setColor("Color", ColorRGBA.Green);
+                mat.setColor("Diffuse", ColorRGBA.Green);
                 break;
         }
         geom.setMesh(mesh);
         geom.setMaterial(mat);
-        mat.getAdditionalRenderState().setWireframe(true);
-        mat.getAdditionalRenderState().setDepthTest(false);
+//        mat.getAdditionalRenderState().setWireframe(true);
+//        mat.getAdditionalRenderState().setDepthTest(false);
 
 //        geom.rotate(rigidBody.getRot().x, rigidBody.getRot().y, rigidBody.getRot().z);
         Vector3f v = new Vector3f(rigidBody.getPos().x, rigidBody.getPos().y, rigidBody.getPos().z);
@@ -120,5 +122,16 @@ public class RigidBodyConverter {
 //            System.out.println(rigidBody.getRigidBodyName()+" "+rigidBody.getRigidBodyGroupIndex()+ " "+ rigidBody.getRigidBodyGroupTarget());
         }
         node.attachChild(geom);
+        System.out.println("rigidBody.getRigidBodyName() = "+rigidBody.getRigidBodyName());
+        if(!rigidBody.getRigidBodyName().contains("スカート")) {
+            ColorRGBA color = new ColorRGBA();
+            color.set(0,0,0,0f);
+            mat.setColor("Diffuse", color);
+            mat.setColor("Ambient", color);
+            mat.setColor("Specular", color);
+            mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+            mat.getAdditionalRenderState().setAlphaTest(true);
+        }
+
     }
 }

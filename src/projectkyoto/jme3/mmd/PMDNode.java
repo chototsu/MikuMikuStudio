@@ -303,11 +303,13 @@ public class PMDNode extends Node {
 
         for (Skin skin : skinMap.values()) {
             if (skin.isUpdateNeeded()) {
-                for (PMDSkinVertData svd : skin.getSkinData().getSkinVertData()) {
-                    javax.vecmath.Vector3f dist = skinPosArray[svd.getSkinVertIndex()];
-                    dist.set(svd.getSkinVertPos());
-                    dist.scale(skin.getWeight());
-                    dist.add(skinPosArrayOrig[svd.getSkinVertIndex()]);
+                if (skin.getWeight() != 1f) {
+                    for (PMDSkinVertData svd : skin.getSkinData().getSkinVertData()) {
+                        javax.vecmath.Vector3f dist = skinPosArray[svd.getSkinVertIndex()];
+                        dist.set(svd.getSkinVertPos());
+                        dist.scale(skin.getWeight());
+                        dist.add(skinPosArrayOrig[svd.getSkinVertIndex()]);
+                    }
                 }
                 skin.setUpdateNeeded(false);
             }
@@ -315,10 +317,10 @@ public class PMDNode extends Node {
 
         fvb.position(0);
         fnb.position(0);
+        TempVars vars = TempVars.get();
         for (int i = 0; i < skinPosArray.length; i++) {
             int idxWeights = 0;
 
-            TempVars vars = TempVars.get();
             float[] posBuf = vars.skinPositions;
             float[] normBuf = vars.skinNormals;
 
@@ -355,8 +357,8 @@ public class PMDNode extends Node {
 
             fnb.put(rnx).put(rny).put(rnz);
             fvb.put(rx).put(ry).put(rz);
-            vars.release();
         }
+        vars.release();
         vb.setUpdateNeeded();
         nb.setUpdateNeeded();
     }
@@ -582,7 +584,6 @@ public class PMDNode extends Node {
     // bullet physics
 //    PMDRigidBody rigidBodyArray[];
 
-
     void initMaterials() {
         for (Spatial sp : getChildren()) {
             if (sp instanceof PMDGeometry) {
@@ -610,7 +611,6 @@ public class PMDNode extends Node {
 //    PMDRigidBody createRigidBody(projectkyoto.mmd.file.PMDRigidBody fileRigidBody, Bone bone) {
 //        return null;
 //    }
-
     public boolean isGlslSkinning() {
         return glslSkinning;
     }

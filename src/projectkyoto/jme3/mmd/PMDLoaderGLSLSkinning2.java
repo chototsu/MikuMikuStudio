@@ -32,11 +32,15 @@ package projectkyoto.jme3.mmd;
 import com.jme3.animation.Bone;
 import com.jme3.animation.Skeleton;
 import com.jme3.asset.AssetManager;
+import com.jme3.asset.AssetNotFoundException;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
+import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -44,6 +48,7 @@ import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.debug.SkeletonPoints;
 import com.jme3.scene.debug.SkeletonWire;
 import com.jme3.scene.shape.Box;
+import com.jme3.shader.VarType;
 import com.jme3.texture.Texture;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.TempVars;
@@ -51,6 +56,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import projectkyoto.mmd.file.*;
 import projectkyoto.mmd.file.util2.MeshConverter;
 import projectkyoto.mmd.file.util2.MeshData;
@@ -80,6 +86,7 @@ public class PMDLoaderGLSLSkinning2 {
 //        System.out.println("vertexCount = " + model.getVertCount());
 //        System.out.println("faceVertCount = " + model.getFaceVertCount());
         meshConverter = new MeshConverter(model);
+        assetManager.registerLoader(com.jme3.texture.plugins.AWTLoader.class, "sph","spa");
     }
 
     public PMDNode createNode(String name) {
@@ -209,9 +216,7 @@ public class PMDLoaderGLSLSkinning2 {
         mesh.setBuffer(wb);
         mesh.setBuffer(ib);
         mesh.setBuffer(bib);
-        short[] indexArray = new short[20/*
-                 * md.getBoneList().size()
-                 */];
+        short[] indexArray = new short[meshConverter.getMaxBoneSize()];
         for (int i = 0; i < indexArray.length; i++) {
             if (i < md.getBoneList().size()) {
                 indexArray[i] = md.getBoneList().get(i).shortValue();
@@ -244,83 +249,116 @@ public class PMDLoaderGLSLSkinning2 {
             geom.setNoSkinningMaterial(mat);
         }
         geom.setPmdMaterial(m);
+        if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
+            geom.setQueueBucket(Bucket.Transparent);
+        } else {
+            geom.setQueueBucket(Bucket.Inherit);
+        }
     }
 
     Material createMaterial(PMDMaterial m, boolean skinning) {
         Material mat;
-        if (!skinning) {
-            mat = new Material(assetManager, "MatDefs/pmd/pmd_no_skinning.j3md");
+        if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
+            if (!skinning) {
+                mat = new Material(assetManager, "MatDefs/pmd/pmd_no_skinning_alpha.j3md");
+            } else {
+                mat = new Material(assetManager, "MatDefs/pmd/pmd_alpha.j3md");
+            }
         } else {
-            mat = new Material(assetManager, "MatDefs/pmd/pmd.j3md");
+            if (!skinning) {
+                mat = new Material(assetManager, "MatDefs/pmd/pmd_no_skinning.j3md");
+            } else {
+                mat = new Material(assetManager, "MatDefs/pmd/pmd.j3md");
+            }
+        }
+        float alpha = m.getMaterial().getFaceColor().getAlpha();
+        if (alpha > 0.99f) {
+            alpha = 1f;
         }
         ColorRGBA ambientColor = new ColorRGBA(m.getMaterial().getAmbientColor().getRed(),
-                m.getMaterial().getAmbientColor().getGreen(), m.getMaterial().getAmbientColor().getBlue(), 1f);
+                m.getMaterial().getAmbientColor().getGreen(), m.getMaterial().getAmbientColor().getBlue(), alpha);
         ColorRGBA diffuseColor = new ColorRGBA(m.getMaterial().getFaceColor().getRed(),
-                m.getMaterial().getFaceColor().getGreen(), m.getMaterial().getFaceColor().getBlue(), m.getMaterial().getFaceColor().getAlpha());
+                m.getMaterial().getFaceColor().getGreen(), m.getMaterial().getFaceColor().getBlue(), alpha);
         ColorRGBA ambientAndDiffuseColor = ambientColor.add(diffuseColor);
         ambientAndDiffuseColor.multLocal(0.5f);
+        ambientAndDiffuseColor.a = alpha;
         mat.setBoolean("UseMaterialColors", true);
         mat.setColor("Ambient", ambientAndDiffuseColor);
         mat.setColor("Specular", new ColorRGBA(m.getMaterial().getSpecularColor().getRed(),
-                m.getMaterial().getSpecularColor().getGreen(), m.getMaterial().getSpecularColor().getBlue(), 1f));
+                m.getMaterial().getSpecularColor().getGreen(), m.getMaterial().getSpecularColor().getBlue(), alpha));
         mat.setColor("Diffuse", ambientAndDiffuseColor);
         mat.setFloat("Shininess", m.getMaterial().getPower());
-        if (m.getTextureFileName().length() > 0 /*
-                 * && m.getTextureData() != null
-                 */) {
-            String fileName = m.getTextureFileName();
-            int i = fileName.indexOf("*");
-            if (i >= 0) {
-                fileName = fileName.substring(0, i);
+        if (m.getTextureFileName().length() > 0) {
+            StringTokenizer st = new StringTokenizer(m.getTextureFileName(), "*");
+            System.out.println("m.getTextureFileName() = "+m.getTextureFileName());
+            while(st.hasMoreElements()) {
+                String fileName = st.nextToken();
+                System.out.println("fileName = "+fileName);
+                String s = fileName.substring(fileName.indexOf('.')+1);
+                Texture texture = assetManager.loadTexture("Model/" + fileName /*
+                         * m.getTextureFileName()
+                         */);
+                s = s.toLowerCase();
+                if (s.equals("spa")) {
+                     mat.setTexture("SphereMap_A", texture);
+                } else if (s.equals("sph")) {
+                     mat.setTexture("SphereMap_H", texture);
+                } else {
+//                    texture.setWrap(Texture.WrapMode.Repeat);
+                     mat.setTexture("DiffuseMap", texture);
+                }
             }
-//                mat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
-
-            Texture texture = assetManager.loadTexture("Model/" + fileName /*
-                     * m.getTextureFileName()
-                     */);
-            texture.setWrap(Texture.WrapMode.Repeat);
-            mat.setTexture("DiffuseMap", texture);
-//                mat.setTexture("ColorMap", texture);
         }
         int toonIndex = m.getToonIndex();
-        //toonIndex +=1;
-        String toonname = "toon0.bmp";
-        switch (toonIndex) {
-            case 0:
-                toonname = "toon01.bmp";
-                break;
-            case 1:
-                toonname = "toon02.bmp";
-                break;
-            case 2:
-                toonname = "toon03.bmp";
-                break;
-            case 3:
-                toonname = "toon04.bmp";
-                break;
-            case 4:
-                toonname = "toon05.bmp";
-                break;
-            case 5:
-                toonname = "toon06.bmp";
-                break;
-            case 6:
-                toonname = "toon07.bmp";
-                break;
-            case 7:
-                toonname = "toon08.bmp";
-                break;
-            case 8:
-                toonname = "toon09.bmp";
-                break;
-            case 9:
-                toonname = "toon10.bmp";
-                break;
+        Texture toonTexture = null;
+        if (toonIndex >= 0) {
+            String extToonName = model.getToonTextureList().getToonFileName()[toonIndex];
+            try {
+                toonTexture = assetManager.loadTexture("/Model/"+extToonName);
+            } catch(AssetNotFoundException ex) {
+                String toonname = null;
+                switch (toonIndex) {
+                    case 0:
+                        toonname = "toon01.bmp";
+                        break;
+                    case 1:
+                        toonname = "toon02.bmp";
+                        break;
+                    case 2:
+                        toonname = "toon03.bmp";
+                        break;
+                    case 3:
+                        toonname = "toon04.bmp";
+                        break;
+                    case 4:
+                        toonname = "toon05.bmp";
+                        break;
+                    case 5:
+                        toonname = "toon06.bmp";
+                        break;
+                    case 6:
+                        toonname = "toon07.bmp";
+                        break;
+                    case 7:
+                        toonname = "toon08.bmp";
+                        break;
+                    case 8:
+                        toonname = "toon09.bmp";
+                        break;
+                    case 9:
+                        toonname = "toon10.bmp";
+                        break;
+                }
+                if (toonname != null) {
+                    toonTexture = assetManager.loadTexture("toon/" + toonname);
+                }
+            }
         }
-        Texture texture = assetManager.loadTexture("toon/" + toonname);
-        texture.setWrap(Texture.WrapAxis.S, Texture.WrapMode.EdgeClamp);
-        texture.setWrap(Texture.WrapAxis.T, Texture.WrapMode.EdgeClamp);
-        mat.setTexture("ColorRamp", texture);
+        if (toonTexture != null) {
+            toonTexture.setWrap(Texture.WrapAxis.S, Texture.WrapMode.EdgeClamp);
+            toonTexture.setWrap(Texture.WrapAxis.T, Texture.WrapMode.EdgeClamp);
+            mat.setTexture("ColorRamp", toonTexture);
+        }
         if (m.getEdgeFlag() != 0 /*
                  * && !(geom.getMesh() instanceof PMDSkinMesh)
                  */) {
@@ -332,8 +370,19 @@ public class PMDLoaderGLSLSkinning2 {
 //        mat.setParam("VertexLighting", VarType.Int, new Integer(1));
 //        geom.setMaterial(mat);
 //        geom.setPmdMaterial(m);
-//        mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+//        mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
+//        mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
 //        mat.getAdditionalRenderState().setWireframe(true);
+                if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
+                    mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+                    mat.getAdditionalRenderState().setAlphaTest(true);
+//                    mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
+                } else {
+                    mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+//                    mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
+//                    mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+                    mat.getAdditionalRenderState().setAlphaTest(true);
+                }
         return mat;
     }
 
@@ -346,9 +395,6 @@ public class PMDLoaderGLSLSkinning2 {
             bone.setUserControl(true);
             Vector3f translation = new Vector3f(pmdBone.getBoneHeadPos().x, pmdBone.getBoneHeadPos().y, pmdBone.getBoneHeadPos().z);
             Quaternion rotation = new Quaternion();
-//            rotation.loadIdentity();
-//            translation.zero();
-//            bone.setBindTransforms(translation, rotation,new Vector3f(1,1,1));
             boneArray[boneIndex++] = bone;
         }
         boneIndex = 0;
@@ -365,64 +411,20 @@ public class PMDLoaderGLSLSkinning2 {
                 v1.subtractLocal(v2);
 
                 bone.setBindTransforms(v1, Quaternion.IDENTITY, new Vector3f(1, 1, 1));
-//                bone.setBindTransforms(v1, Quaternion.IDENTITY);
             } else {
                 Vector3f v1 = temp.vect1; //new Vector3f();
                 v1.set(pmdBone.getBoneHeadPos().x, pmdBone.getBoneHeadPos().y, pmdBone.getBoneHeadPos().z);
                 bone.setBindTransforms(v1, Quaternion.IDENTITY, new Vector3f(1, 1, 1));
             }
 
-//            boneArray[boneIndex] = bone;
             boneIndex++;
         }
 
         Skeleton skeleton = new Skeleton(boneArray);
         PMDMesh meshes[] = meshList.toArray(new PMDMesh[meshList.size()]);
-//        skeletonControl = new PMDControl2(node, meshes,
-//                skinMeshList.toArray(new PMDSkinMesh[skinMeshList.size()]),
-//                meshConverter.getSkinMeshData().getVertexList(),
-//                skinArray,
-//                skeleton,
-//                assetManager);
-//        node.addControl(skeletonControl);
-//        skeletonControl.resetToBind();
-//        skeleton.updateWorldVectors();
 
         Quaternion q = new Quaternion();
         q = q.fromAngleNormalAxis((float) Math.PI / 8, new Vector3f(0, 0, 1));
-        for (int i = 0; i < skeleton.getBoneCount(); i++) {
-            Bone bone = skeleton.getBone(i);
-//            if (bone.getName().equals("左髪1")) {
-//                bone.setUserControl(true);
-////                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, new Vector3f(0, 0, 0));
-//                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, Vector3f.ZERO);
-//            }
-//            if (bone.getName().equals("首")) {
-//                bone.setUserControl(true);
-////                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, new Vector3f(0, 0, 0));
-////                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, Vector3f.ZERO);
-//            }
-//            if (bone.getName().equals("上半身")) {
-//                bone.setUserControl(true);
-//                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, new Vector3f(0, 0, 0));
-//                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, Vector3f.ZERO);
-//            }
-//            if (bone.getName().equals("右ひじ")) {
-//                bone.setUserControl(true);
-//                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, new Vector3f(0, 0, 0));
-//                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, Vector3f.ZERO);
-//            }
-//            if (bone.getName().equals("右ひじ")) {
-//                bone.setUserControl(true);
-//                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, new Vector3f(0, 0, 0));
-//                bone.setUserTransforms(new Vector3f(0f, 0f, 0f), q, Vector3f.ZERO);
-//            }
-        }
-//        skeletonControl.setSkinWeight("笑い", 1f);
-//        skeletonControl.setSkinWeight("あ", 1f);
-//        skeletonControl.setSkinWeight("困る", 1f);
-
-//        skeleton.setBindingPose();
         node.skeleton = skeleton;
     }
 

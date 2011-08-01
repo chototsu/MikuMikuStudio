@@ -96,7 +96,7 @@ public class IKControl extends AbstractControl{
     public void updateIKBoneRotation() {
         PMDModel pmdModel = pmdNode.getPmdModel();
         Skeleton skeleton = pmdNode.getSkeleton();
-        skeleton.updateWorldVectors();
+//        skeleton.updateWorldVectors();
         l1:
         for (PMDIKData ikData : pmdModel.getIkList().getPmdIKData()) {
             Bone ikBone = skeleton.getBone(ikData.getIkBoneIndex());
