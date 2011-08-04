@@ -49,6 +49,8 @@ public class UpdateControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
+        pmdNode.calcOffsetMatrices();
+        pmdNode.updateSkinBackData();
         pmdNode.update();
     }
 

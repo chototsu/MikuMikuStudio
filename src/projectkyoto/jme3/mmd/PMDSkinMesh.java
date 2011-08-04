@@ -34,6 +34,7 @@ import com.jme3.bounding.BoundingVolume;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer;
 
 /**
  *
@@ -43,6 +44,8 @@ public class PMDSkinMesh extends Mesh {
 
     short boneIndexArray[];
     Matrix4f boneMatrixArray[];
+    VertexBuffer skinvb2;
+    VertexBuffer skinnb2;
 
     public PMDSkinMesh() {
         super();
@@ -63,6 +66,23 @@ public class PMDSkinMesh extends Mesh {
     public void setBoneMatrixArray(Matrix4f[] boneMatrixArray) {
         this.boneMatrixArray = boneMatrixArray;
     }
+
+    public VertexBuffer getSkinnb2() {
+        return skinnb2;
+    }
+
+    public void setSkinnb2(VertexBuffer skinnb2) {
+        this.skinnb2 = skinnb2;
+    }
+
+    public VertexBuffer getSkinvb2() {
+        return skinvb2;
+    }
+
+    public void setSkinvb2(VertexBuffer skinvb2) {
+        this.skinvb2 = skinvb2;
+    }
+    
     BoundingVolume bound = new BoundingBox(Vector3f.ZERO, 20, 20, 20);
 
     @Override

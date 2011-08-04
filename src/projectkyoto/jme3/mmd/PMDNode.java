@@ -81,6 +81,7 @@ public class PMDNode extends Node {
     AssetManager assetManager;
     Matrix4f[] offsetMatrices;
     boolean updateNeeded = true;
+    boolean skinUpdateNeeded = true;
     boolean wireFrame = false;
     float edgeSize = 1.0f;
     boolean skeletonWireVisible = false;
@@ -177,7 +178,11 @@ public class PMDNode extends Node {
                     softwareSkinUpdate(mesh);
                 }
             }
-            updateSkinMesh(skinTargets[0]);
+//            updateSkinMesh(skinTargets[0]);
+//            if (skinUpdateNeeded) {
+//                updateSkinBackData();
+//            }
+            swapSkinMesh();
             if (skeletonWireGeom != null) {
                 ((SkeletonWire) skeletonWireGeom.getMesh()).updateGeometry();
             }
@@ -205,7 +210,28 @@ public class PMDNode extends Node {
             }
         }
     }
-
+    private void swapSkinMesh() {
+        VertexBuffer vb = skinTargets[0].getBuffer(VertexBuffer.Type.Position);
+        vb.setUsage(Usage.CpuOnly);
+        VertexBuffer nb = skinTargets[0].getBuffer(VertexBuffer.Type.Normal);
+        nb.setUsage(Usage.CpuOnly);
+        skinTargets[0].skinvb2.setUpdateNeeded();
+        skinTargets[0].skinvb2.setUsage(Usage.Static);
+        skinTargets[0].skinnb2.setUpdateNeeded();
+        skinTargets[0].skinnb2.setUsage(Usage.Static);
+        for(PMDSkinMesh skinMesh : skinTargets) {
+            skinMesh.clearBuffer(Type.Position);
+            skinMesh.clearBuffer(Type.Normal);
+            skinMesh.setBuffer(skinTargets[0].getSkinvb2());
+            skinMesh.setBuffer(skinTargets[0].getSkinnb2());
+        }
+        skinTargets[0].skinvb2 = vb;
+        skinTargets[0].skinnb2 = nb;
+        vb = skinTargets[0].getBuffer(VertexBuffer.Type.Position);
+        nb = skinTargets[0].getBuffer(VertexBuffer.Type.Normal);
+        vb.setUpdateNeeded();
+        nb.setUpdateNeeded();
+    }
     private void softwareSkinUpdate(PMDMesh mesh) {
         int maxWeightsPerVert = 2;//mesh.getMaxNumWeights();
         int fourMinusMaxWeights = 4 - maxWeightsPerVert;
@@ -293,6 +319,75 @@ public class PMDNode extends Node {
         nb.updateData(fnb);
         vars.release();
 //        mesh.updateBound();
+    }
+    public void updateSkinBackData() {
+        PMDSkinMesh skinMesh = skinTargets[0];
+        VertexBuffer vb = skinMesh.getSkinvb2(); //.getBuffer(Type.Position);
+        FloatBuffer fvb = (FloatBuffer) vb.getData();
+        VertexBuffer nb = skinMesh.getSkinnb2(); //skinMesh.getBuffer(Type.Normal);
+        FloatBuffer fnb = (FloatBuffer) nb.getData();
+
+        for (Skin skin : skinMap.values()) {
+            if (true || skin.isUpdateNeeded()) {
+                if (skin.getWeight() != 0f) {
+                    for (PMDSkinVertData svd : skin.getSkinData().getSkinVertData()) {
+                        javax.vecmath.Vector3f dist = skinPosArray[svd.getSkinVertIndex()];
+                        dist.set(svd.getSkinVertPos());
+                        dist.scale(skin.getWeight());
+                        dist.add(skinPosArrayOrig[svd.getSkinVertIndex()]);
+                    }
+                }
+                skin.setUpdateNeeded(false);
+            }
+        }
+
+        fvb.position(0);
+        fnb.position(0);
+        TempVars vars = TempVars.get();
+        for (int i = 0; i < skinPosArray.length; i++) {
+            int idxWeights = 0;
+
+            float[] posBuf = vars.skinPositions;
+            float[] normBuf = vars.skinNormals;
+
+            // read next set of positions and normals from native buffer
+            int idxPositions = 0;
+
+            // iterate vertices and apply skinning transform for each effecting bone
+            float nmx = skinNormalArray[i].x;//normBuf[idxPositions];
+            float vtx = skinPosArray[i].x;//posBuf[idxPositions++];
+            float nmy = skinNormalArray[i].y;//normBuf[idxPositions];
+            float vty = skinPosArray[i].y;//posBuf[idxPositions++];
+            float nmz = skinNormalArray[i].z;//normBuf[idxPositions];
+            float vtz = skinPosArray[i].z;//posBuf[idxPositions++];
+
+            float rx = 0, ry = 0, rz = 0, rnx = 0, rny = 0, rnz = 0;
+
+            for (int w = 2 - 1; w >= 0; w--) {
+                float weight = skinBoneWeightArray[i];//(float) v.getBoneWeight();//weights[idxWeights];
+                if (w == 1) {
+                    weight = 1f - weight;
+                }
+                //weight = weight / 100f;
+
+                Matrix4f mat = offsetMatrices[skinBoneArray[i * 2 + w]];
+
+                rx += (mat.m00 * vtx + mat.m01 * vty + mat.m02 * vtz + mat.m03) * weight;
+                ry += (mat.m10 * vtx + mat.m11 * vty + mat.m12 * vtz + mat.m13) * weight;
+                rz += (mat.m20 * vtx + mat.m21 * vty + mat.m22 * vtz + mat.m23) * weight;
+
+                rnx += (nmx * mat.m00 + nmy * mat.m01 + nmz * mat.m02) * weight;
+                rny += (nmx * mat.m10 + nmy * mat.m11 + nmz * mat.m12) * weight;
+                rnz += (nmx * mat.m20 + nmy * mat.m21 + nmz * mat.m22) * weight;
+            }
+
+            fnb.put(rnx).put(rny).put(rnz);
+            fvb.put(rx).put(ry).put(rz);
+        }
+        vars.release();
+        vb.setUpdateNeeded();
+        nb.setUpdateNeeded();
+        skinUpdateNeeded = false;
     }
 
     void updateSkinMesh(PMDSkinMesh skinMesh) {
@@ -413,7 +508,26 @@ public class PMDNode extends Node {
         vb.setUpdateNeeded();
         nb.setUpdateNeeded();
     }
+    void resetToBindSkinBackData(PMDSkinMesh mesh) {
+        VertexBuffer vb = mesh.getSkinvb2(); // mesh.getBuffer(VertexBuffer.Type.Position);
+        FloatBuffer vfb = (FloatBuffer) vb.getData();
+        VertexBuffer nb = mesh.getSkinnb2(); //mesh.getBuffer(VertexBuffer.Type.Normal);
+        FloatBuffer nfb = (FloatBuffer) nb.getData();
 
+        VertexBuffer bvb = mesh.getBuffer(VertexBuffer.Type.BindPosePosition);
+        FloatBuffer bvfb = (FloatBuffer) bvb.getData();
+        VertexBuffer bnb = mesh.getBuffer(VertexBuffer.Type.BindPoseNormal);
+        FloatBuffer bnfb = (FloatBuffer) bnb.getData();
+
+        for (int i = 0; i < vfb.capacity(); i++) {
+            vfb.put(i, bvfb.get(i));
+        }
+        for (int i = 0; i < nfb.capacity(); i++) {
+            nfb.put(i, bnfb.get(i));
+        }
+        vb.setUpdateNeeded();
+        nb.setUpdateNeeded();
+    }
     public Set<String> getSkinSet() {
         return skinMap.keySet();
     }
@@ -426,6 +540,7 @@ public class PMDNode extends Node {
         Skin skin = skinMap.get(skinName);
         if (skin != null) {
             skin.setWeight(weight);
+            skinUpdateNeeded = true;
 //            for (PMDSkinVertData svd : skin.getSkinData().getSkinVertData()) {
 //                javax.vecmath.Vector3f dist = skinPosArray[svd.getSkinVertIndex()];
 //                dist.set(svd.getSkinVertPos());

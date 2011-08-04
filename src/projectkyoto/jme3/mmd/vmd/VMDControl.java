@@ -52,6 +52,7 @@ import projectkyoto.jme3.mmd.PMDNode;
 import projectkyoto.jme3.mmd.ik.IKControl;
 import projectkyoto.jme3.mmd.nativebullet.PhysicsControl;
 import projectkyoto.mmd.file.PMDBone;
+import projectkyoto.mmd.file.PMDIKData;
 import projectkyoto.mmd.file.VMDFile;
 import projectkyoto.mmd.file.VMDMotion;
 import projectkyoto.mmd.file.VMDSkin;
@@ -73,6 +74,7 @@ public class VMDControl extends AbstractControl {
     static final VMDMotionComparator vmc = new VMDMotionComparator();
     static final VMDSkinComparator vmsc = new VMDSkinComparator();
     final PhysicsControl physicsControl;
+    int boneEnabled[];
     final IKControl ikControl;
     TickListener tl = new TickListener();
 
@@ -83,6 +85,20 @@ public class VMDControl extends AbstractControl {
         physicsControl = new PhysicsControl(pmdNode);
         physicsControl.getWorld().getPhysicsSpace().addTickListener(tl);
         ikControl = new IKControl(pmdNode);
+        boneEnabled = new int[pmdNode.getSkeleton().getBoneCount()];
+        for(int i=0;i<boneEnabled.length;i++) {
+            boneEnabled[i] = 1;
+        }
+        for (PMDIKData ikData : pmdNode.getPmdModel().getIkList().getPmdIKData()) {
+            int targetBoneIndex = ikData.getIkTargetBoneIndex();
+            for(projectkyoto.mmd.file.PMDRigidBody rb : pmdNode.getPmdModel().getRigidBodyList().getRigidBodyArray()) {
+                if (rb.getRelBoneIndex() == targetBoneIndex && rb.getRigidBodyType() != 0) {
+                    boneEnabled[targetBoneIndex] = 0;
+                    break;
+                }
+            }
+        }
+        ikControl.setBoneEnabled(boneEnabled);
     }
 
     private void initMotionMap() {
@@ -91,6 +107,12 @@ public class VMDControl extends AbstractControl {
             if (motionList == null) {
                 motionList = new BoneMotionList();
                 motionList.boneName = m.getBoneName();
+                for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {
+                    if (pmdNode.getSkeleton().getBone(i).getName().equals(m.getBoneName())) {
+                        motionList.boneIndex = i;
+                        break;
+                    }
+                }
                 motionMap.put(m.getBoneName(), motionList);
             }
             motionList.add(m);
@@ -184,13 +206,15 @@ public class VMDControl extends AbstractControl {
 
     void calcBonePosition(int frameNo, Skeleton skeleton) {
         for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {
-            Bone bone = pmdNode.getSkeleton().getBone(i);
-            bone.getLocalRotation().loadIdentity();
+            if (boneEnabled[i] == 1) {
+                Bone bone = pmdNode.getSkeleton().getBone(i);
+                bone.getLocalRotation().loadIdentity();
+            }
         }
         boneLoop:
         for (BoneMotionList bml : motionMap.values()) {
             Bone bone = pmdNode.getSkeleton().getBone(bml.boneName);
-            if (bone != null) {
+            if (bone != null && boneEnabled[bml.boneIndex] == 1) {
                 bone.setUserControl(true);
                 if (bml.size() - 1 < bml.currentCount) {
                     VMDMotion m1 = bml.get(bml.size() - 1);
@@ -259,7 +283,7 @@ public class VMDControl extends AbstractControl {
         ikControl.updateIKBoneRotation();
         for(int i=0;i<pmdNode.getPmdModel().getBoneList().getBoneCount();i++) {
             PMDBone pmdBone = pmdNode.getPmdModel().getBoneList().getBones()[i];
-            if (pmdBone.getBoneType() == 5) {
+            if (pmdBone.getBoneType() == 5 && boneEnabled[i] == 1) {
                 // under-rotation
                 Bone bone = pmdNode.getSkeleton().getBone(i);
 //                if (motionMap.get(pmdBone.getBoneName()) == null) {
@@ -387,6 +411,7 @@ class BoneMotionList extends ArrayList<VMDMotion> {
 
     static final int IPTABLESIZE = 64;
     String boneName;
+    int boneIndex;
     int currentCount;
     int boneType;
     final float ipTable[][][] = new float[4][IPTABLESIZE][2];

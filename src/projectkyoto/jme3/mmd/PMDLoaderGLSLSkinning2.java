@@ -75,7 +75,9 @@ public class PMDLoaderGLSLSkinning2 {
     List<PMDMesh> meshList = new ArrayList<PMDMesh>();
     List<PMDSkinMesh> skinMeshList = new ArrayList<PMDSkinMesh>();
     VertexBuffer skinvb;
+    VertexBuffer skinvb2;
     VertexBuffer skinnb;
+    VertexBuffer skinnb2;
     VertexBuffer skintb;
     Skin skinArray[];
     SkeletonControl skeletonControl;
@@ -86,7 +88,7 @@ public class PMDLoaderGLSLSkinning2 {
 //        System.out.println("vertexCount = " + model.getVertCount());
 //        System.out.println("faceVertCount = " + model.getFaceVertCount());
         meshConverter = new MeshConverter(model);
-        assetManager.registerLoader(com.jme3.texture.plugins.AWTLoader.class, "sph","spa");
+        assetManager.registerLoader(com.jme3.texture.plugins.AWTLoader.class, "sph", "spa");
     }
 
     public PMDNode createNode(String name) {
@@ -124,10 +126,18 @@ public class PMDLoaderGLSLSkinning2 {
         FloatBuffer skinvfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
         skinvb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinvfb);
 
+        skinvb2 = new VertexBuffer(VertexBuffer.Type.Position);
+        FloatBuffer skinvfb2 = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
+        skinvb2.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinvfb2);
+        
         skinnb = new VertexBuffer(VertexBuffer.Type.Normal);
         FloatBuffer skinnfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
         skinnb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb);
 
+        skinnb2 = new VertexBuffer(VertexBuffer.Type.Normal);
+        FloatBuffer skinnfb2 = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
+        skinnb2.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb2);
+        
         skintb = new VertexBuffer(VertexBuffer.Type.TexCoord);
         FloatBuffer skintfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 2);
         skintb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, skintfb);
@@ -144,7 +154,9 @@ public class PMDLoaderGLSLSkinning2 {
         List<Integer> indexList = meshConverter.getSkinMeshData().getIndexMap().get(pmdMaterial);
         mesh.setMode(Mesh.Mode.Triangles);
         mesh.setBuffer(skinvb);
+        mesh.setSkinvb2(skinvb2);
         mesh.setBuffer(skinnb);
+        mesh.setSkinnb2(skinnb2);
         mesh.setBuffer(skintb);
         VertexBuffer ib = new VertexBuffer(VertexBuffer.Type.Index);
         ShortBuffer isb = BufferUtils.createShortBuffer(indexList.size());
@@ -290,22 +302,24 @@ public class PMDLoaderGLSLSkinning2 {
         mat.setFloat("Shininess", m.getMaterial().getPower());
         if (m.getTextureFileName().length() > 0) {
             StringTokenizer st = new StringTokenizer(m.getTextureFileName(), "*");
-            System.out.println("m.getTextureFileName() = "+m.getTextureFileName());
-            while(st.hasMoreElements()) {
+            System.out.println("m.getTextureFileName() = " + m.getTextureFileName());
+            while (st.hasMoreElements()) {
                 String fileName = st.nextToken();
-                System.out.println("fileName = "+fileName);
-                String s = fileName.substring(fileName.indexOf('.')+1);
+                System.out.println("fileName = " + fileName);
+                String s = fileName.substring(fileName.indexOf('.') + 1);
                 Texture texture = assetManager.loadTexture("Model/" + fileName /*
                          * m.getTextureFileName()
                          */);
                 s = s.toLowerCase();
                 if (s.equals("spa")) {
-                     mat.setTexture("SphereMap_A", texture);
+                    texture.setMinFilter(Texture.MinFilter.BilinearNoMipMaps);
+                    mat.setTexture("SphereMap_A", texture);
                 } else if (s.equals("sph")) {
-                     mat.setTexture("SphereMap_H", texture);
+                    texture.setMinFilter(Texture.MinFilter.BilinearNoMipMaps);
+                    mat.setTexture("SphereMap_H", texture);
                 } else {
 //                    texture.setWrap(Texture.WrapMode.Repeat);
-                     mat.setTexture("DiffuseMap", texture);
+                    mat.setTexture("DiffuseMap", texture);
                 }
             }
         }
@@ -314,8 +328,8 @@ public class PMDLoaderGLSLSkinning2 {
         if (toonIndex >= 0) {
             String extToonName = model.getToonTextureList().getToonFileName()[toonIndex];
             try {
-                toonTexture = assetManager.loadTexture("/Model/"+extToonName);
-            } catch(AssetNotFoundException ex) {
+                toonTexture = assetManager.loadTexture("/Model/" + extToonName);
+            } catch (AssetNotFoundException ex) {
                 String toonname = null;
                 switch (toonIndex) {
                     case 0:
@@ -373,16 +387,16 @@ public class PMDLoaderGLSLSkinning2 {
 //        mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
 //        mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
 //        mat.getAdditionalRenderState().setWireframe(true);
-                if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
-                    mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-                    mat.getAdditionalRenderState().setAlphaTest(true);
+        if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
+            mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+            mat.getAdditionalRenderState().setAlphaTest(true);
 //                    mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
-                } else {
-                    mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        } else {
+            mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 //                    mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
 //                    mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-                    mat.getAdditionalRenderState().setAlphaTest(true);
-                }
+            mat.getAdditionalRenderState().setAlphaTest(true);
+        }
         return mat;
     }
 

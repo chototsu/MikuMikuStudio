@@ -60,6 +60,7 @@ import projectkyoto.mmd.file.PMDModel;
  */
 public class IKControl extends AbstractControl{
     PMDNode pmdNode;
+    int boneEnabled[];
 
     public IKControl(PMDNode pmdNode) {
         this.pmdNode = pmdNode;
@@ -99,6 +100,9 @@ public class IKControl extends AbstractControl{
 //        skeleton.updateWorldVectors();
         l1:
         for (PMDIKData ikData : pmdModel.getIkList().getPmdIKData()) {
+            if (boneEnabled != null && boneEnabled[ikData.getIkBoneIndex()] != 1) {
+                continue l1;
+            }
             Bone ikBone = skeleton.getBone(ikData.getIkBoneIndex());
             Bone targetBone = skeleton.getBone(ikData.getIkTargetBoneIndex());
             l2:
@@ -353,6 +357,14 @@ public class IKControl extends AbstractControl{
         for (Bone childBone : bone.getChildren()) {
             updateWorldVectors(childBone);
         }
+    }
+
+    public int[] getBoneEnabled() {
+        return boneEnabled;
+    }
+
+    public void setBoneEnabled(int[] boneEnabled) {
+        this.boneEnabled = boneEnabled;
     }
     
 }

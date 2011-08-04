@@ -65,7 +65,7 @@ public class PMDPhysicsWorld {
     PhysicsSpace physicsSpace;
     Map<PMDNode, PMDRigidBody[]> rigidBodyMap = new HashMap<PMDNode, PMDRigidBody[]>();
     Map<PMDNode, SixDofJoint[]> constraintMap = new HashMap<PMDNode, SixDofJoint[]>();
-    float accuracy = 1f / 240;
+    float accuracy = 1f / 180;
 
     public PMDPhysicsWorld() {
         float dist = 400f;
@@ -216,7 +216,7 @@ public class PMDPhysicsWorld {
                 throw new PMDException("Invalid getShapeType:" + fileRigidBody.getRigidBodyName() + " "
                         + fileRigidBody.getShapeType());
         }
-        cs.setMargin(0.1f);
+        cs.setMargin(0.08f);
         if (fileRigidBody.getRigidBodyType() != 0) {
             mass = fileRigidBody.getWeight();
             kinematic = false;
@@ -249,10 +249,10 @@ public class PMDPhysicsWorld {
 //        rb.setPhysicsRotation(Quaternion.ZERO);
 //        rb.setPhysicsLocation(Vector3f.ZERO);
         rb.updateFromBoneMatrix();
-//        rb.setMass(mass * 1000f);
+        rb.setMass(mass);
         rb.setDamping(fileRigidBody.getPosDim(), fileRigidBody.getRotDim());
         rb.setRestitution(fileRigidBody.getRecoil());
-//        rb.setFriction(fileRigidBody.getFriction());
+        rb.setFriction(fileRigidBody.getFriction());
 
 //        rb.setWorldTransform(worldTrans);
         if (kinematic) {
@@ -270,12 +270,21 @@ public class PMDPhysicsWorld {
         return rb;
     }
 
-    void _convPMDEuler(Matrix3f out, float x, float y, float z) {
-        Quaternion q = new Quaternion();
-        q.fromAngles(x, y, z);
-        q.toRotationMatrix(out);
-    }
     void convPMDEuler(Matrix3f out, float x, float y, float z) {
+        Quaternion qx = new Quaternion();
+        Quaternion qy = new Quaternion();
+        Quaternion qz = new Quaternion();
+
+        qx.fromAngles(x, 0, 0);
+        qy.fromAngles(0, y, 0);
+        qz.fromAngles(0, 0, z);
+
+        qz.multLocal(qy);
+        qz.multLocal(qx);
+
+        qz.toRotationMatrix(out);
+    }
+    void _convPMDEuler(Matrix3f out, float x, float y, float z) {
 //        Matrix3f m = new Matrix3f();
 //        m.loadIdentity();
 //
@@ -404,36 +413,36 @@ public class PMDPhysicsWorld {
         constraint.setLinearLowerLimit(convVec(pmdJoint.getConstPos1()));
         constraint.setLinearUpperLimit(convVec(pmdJoint.getConstPos2()));
         Vector3f constRot1 = convVec(pmdJoint.getConstRot1());
-        if (constRot1.getX() <= -FastMath.PI / 1.0f) {
-            constRot1.setX(-FastMath.PI * 1f);
-            System.out.println("constRot1 x must > -90");
-        }
+//        if (constRot1.getX() <= -FastMath.PI / 1.0f) {
+//            constRot1.setX(-FastMath.PI * 1f);
+//            System.out.println("constRot1 x must > -90");
+//        }
         if (constRot1.getY() <= -FastMath.PI / 0.5f) {
             constRot1.setY(-FastMath.PI * 0.5f);
             System.out.println("constRot1 y must > -90");
         }
-        if (constRot1.getZ() <= -FastMath.PI / 1.0f) {
-            constRot1.setZ(-FastMath.PI * 1f);
-            System.out.println("constRot1 z must > -90");
-        }
+//        if (constRot1.getZ() <= -FastMath.PI / 1.0f) {
+//            constRot1.setZ(-FastMath.PI * 1f);
+//            System.out.println("constRot1 z must > -90");
+//        }
         constraint.setAngularLowerLimit(constRot1);
 
         Vector3f constRot2 = convVec(pmdJoint.getConstRot2());
-        if (constRot2.getX() >= FastMath.PI / 1.0f) {
-            constRot2.setX(FastMath.PI * 1f);
-            System.out.println("constRot2 x must < 90");
-        }
+//        if (constRot2.getX() >= FastMath.PI / 1.0f) {
+//            constRot2.setX(FastMath.PI * 1f);
+//            System.out.println("constRot2 x must < 90");
+//        }
         if (constRot2.getY() >= FastMath.PI / 0.5f) {
             constRot2.setY(FastMath.PI * 0.5f);
             System.out.println("constRot2 y must < 90");
         }
-        if (constRot2.getZ() >= FastMath.PI / 1.0f) {
-            constRot2.setZ(FastMath.PI * 1f);
-            System.out.println("constRot2 z must < 90");
-        }
+//        if (constRot2.getZ() >= FastMath.PI / 1.0f) {
+//            constRot2.setZ(FastMath.PI * 1f);
+//            System.out.println("constRot2 z must < 90");
+//        }
 
         constraint.setAngularUpperLimit(constRot2);
-//        constraint.setEquilibriumPoint();
+        constraint.setEquilibriumPoint();
 //        constraint.setCollisionBetweenLinkedBodys(false);
         for (int i = 0; i < 6; i++) {
             float f = pmdJoint.getStiffness()[i];
@@ -462,15 +471,15 @@ public class PMDPhysicsWorld {
 //                        t.mul(rb.getTrans());
 //                        rb.setCenterOfMassTransform(t);
                 }
-                Node rigidBodyNode = pmdNode.getRigidBodyNode();
-                if (rigidBodyNode != null) {
-//                        rb.getCenterOfMassTransform(t);
-//                        t.getRotation(rot);
-//                        rot2.set(rot.x, rot.y, rot.z, rot.w);
-                    Spatial spaital = rigidBodyNode.getChild(i);
-                    spaital.setLocalRotation(rb.getPhysicsRotation());
-                    spaital.setLocalTranslation(rb.getPhysicsLocation());
-                }
+//                Node rigidBodyNode = pmdNode.getRigidBodyNode();
+//                if (rigidBodyNode != null) {
+////                        rb.getCenterOfMassTransform(t);
+////                        t.getRotation(rot);
+////                        rot2.set(rot.x, rot.y, rot.z, rot.w);
+//                    Spatial spaital = rigidBodyNode.getChild(i);
+//                    spaital.setLocalRotation(rb.getPhysicsRotation());
+//                    spaital.setLocalTranslation(rb.getPhysicsLocation());
+//                }
             }
         }
     }
@@ -512,22 +521,21 @@ public class PMDPhysicsWorld {
 //                    bone.getModelSpacePosition().set(t.origin.x, t.origin.y, t.origin.z);
 ////                    bone.getModelSpacePosition().set(0f,0f,0f);
                     PMDNode pmdNode = rb.getPmdNode();
-                    Node rigidBodyNode = pmdNode.getRigidBodyNode();
+//                    Node rigidBodyNode = pmdNode.getRigidBodyNode();
                     rb.updateToBoneMatrix();
-                    if (rigidBodyNode != null) {
-//                        rb.getCenterOfMassTransform(t);
-//                        t.getRotation(rot);
-//                        rot2.set(rot.x, rot.y, rot.z, rot.w);
-                        Spatial spaital = rigidBodyNode.getChild(i);
-                        spaital.setLocalRotation(rb.getPhysicsRotation());
-                        spaital.setLocalTranslation(rb.getPhysicsLocation());
-                    }
+//                    if (rigidBodyNode != null) {
+////                        rb.getCenterOfMassTransform(t);
+////                        t.getRotation(rot);
+////                        rot2.set(rot.x, rot.y, rot.z, rot.w);
+//                        Spatial spaital = rigidBodyNode.getChild(i);
+//                        spaital.setLocalRotation(rb.getPhysicsRotation());
+//                        spaital.setLocalTranslation(rb.getPhysicsLocation());
+//                    }
                 } else {
                 }
             }
         }
     }
-
     public void resetRigidBodyPos() {
         for (PMDRigidBody rbarray[] : rigidBodyMap.values()) {
             for (int i = 0; i < rbarray.length; i++) {
@@ -537,6 +545,18 @@ public class PMDPhysicsWorld {
                     Node rigidBodyNode = pmdNode.getRigidBodyNode();
                     rb.updateFromBoneMatrix();
                     rb.setLinearVelocity(Vector3f.ZERO);
+                    rb.setAngularVelocity(Vector3f.ZERO);
+                }
+            }
+        }
+    }
+    public void updateRigidBodyPos() {
+        for (PMDRigidBody rbarray[] : rigidBodyMap.values()) {
+            for (int i = 0; i < rbarray.length; i++) {
+                PMDRigidBody rb = rbarray[i];
+                if (true) {
+                    PMDNode pmdNode = rb.getPmdNode();
+                    Node rigidBodyNode = pmdNode.getRigidBodyNode();
                     if (rigidBodyNode != null) {
                         Spatial spaital = rigidBodyNode.getChild(i);
                         spaital.setLocalRotation(rb.getPhysicsRotation());
