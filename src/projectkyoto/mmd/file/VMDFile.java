@@ -32,7 +32,9 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -46,13 +48,23 @@ public class VMDFile {
     private VMDMotion motionArray[];
     private int skinCount;
     private VMDSkin skinArray[];
+
+    public VMDFile() {
+    }
+    
     public VMDFile(URL url) throws IOException {
+        read(url.openStream());
+    }
+    public VMDFile(InputStream is2) throws IOException {
+        read(is2);
+    }
+    public void read(InputStream is2) throws IOException{
         DataInputStreamLittleEndian is = null;
         try {
-            is = new DataInputStreamLittleEndian(url);
+            is = new DataInputStreamLittleEndian(new BufferedInputStream(is2));
             vmdHeader = is.readString(30);
             if (!"Vocaloid Motion Data 0002".equals(vmdHeader)) {
-                throw new InvalidVMDFileException(url.toString());
+                throw new InvalidVMDFileException();
             }
             vmdModelName = is.readString(20);
             motionCount = is.readInt();

@@ -46,7 +46,7 @@ import java.net.URL;
  * @author Kazuhiko Kobayashi
  */
 public class DataInputStreamLittleEndian extends FilterInputStream {
-    public URL url;
+//    public URL url;
     private DataInputStream dis;
     byte[] buf;
 
@@ -56,7 +56,7 @@ public class DataInputStreamLittleEndian extends FilterInputStream {
     }
     public DataInputStreamLittleEndian(URL url) throws IOException {
         super(new BufferedInputStream(url.openStream()));
-        this.url = url;
+//        this.url = url;
         dis = new DataInputStream(this);
     }
     final byte[] getBuf(int size) {

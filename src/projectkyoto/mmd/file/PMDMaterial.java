@@ -46,7 +46,7 @@ public class PMDMaterial {
     private byte edgeFlag;
     private int faceVertCount;
     private String textureFileName; // 20文字
-    private byte[] textureData;
+//    private byte[] textureData;
 
     public PMDMaterial() {
     }
@@ -59,30 +59,30 @@ public class PMDMaterial {
 //        if (textureFileName.length() != 0) {
 //            texture = TextureIO.newTexture(new URL(is.url ,textureFileName), true,"bmp");
 //        }
-        if ( false && !textureFileName.isEmpty()) {
-            InputStream textureIs = null;
-            try {
-                textureIs = new URL(is.url ,textureFileName).openStream();
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                byte[] buf = new byte[4096];
-                for(;;) {
-                    int size = textureIs.read(buf);
-                    if (size <= 0) {
-                        break;
-                    }
-                    os.write(buf,0,size);
-                }
-                os.close();
-                textureData = os.toByteArray();
-            } catch(IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                if (textureIs != null) {
-                    textureIs.close();
-                    textureIs = null;
-                }
-            }
-        }
+//        if ( false && !textureFileName.isEmpty()) {
+//            InputStream textureIs = null;
+//            try {
+//                textureIs = new URL(is.url ,textureFileName).openStream();
+//                ByteArrayOutputStream os = new ByteArrayOutputStream();
+//                byte[] buf = new byte[4096];
+//                for(;;) {
+//                    int size = textureIs.read(buf);
+//                    if (size <= 0) {
+//                        break;
+//                    }
+//                    os.write(buf,0,size);
+//                }
+//                os.close();
+//                textureData = os.toByteArray();
+//            } catch(IOException ex) {
+//                ex.printStackTrace();
+//            } finally {
+//                if (textureIs != null) {
+//                    textureIs.close();
+//                    textureIs = null;
+//                }
+//            }
+//        }
     }
 
     public byte getEdgeFlag() {
@@ -125,13 +125,13 @@ public class PMDMaterial {
         this.toonIndex = toonIndex;
     }
 
-    public byte[] getTextureData() {
-        return textureData;
-    }
-
-    public void setTextureData(byte[] textureData) {
-        this.textureData = textureData;
-    }
+//    public byte[] getTextureData() {
+//        return textureData;
+//    }
+//
+//    public void setTextureData(byte[] textureData) {
+//        this.textureData = textureData;
+//    }
 
     @Override
     public String toString() {

@@ -212,13 +212,9 @@ public class PMDNode extends Node {
     }
     private void swapSkinMesh() {
         VertexBuffer vb = skinTargets[0].getBuffer(VertexBuffer.Type.Position);
-        vb.setUsage(Usage.CpuOnly);
         VertexBuffer nb = skinTargets[0].getBuffer(VertexBuffer.Type.Normal);
-        nb.setUsage(Usage.CpuOnly);
         skinTargets[0].skinvb2.setUpdateNeeded();
-        skinTargets[0].skinvb2.setUsage(Usage.Static);
         skinTargets[0].skinnb2.setUpdateNeeded();
-        skinTargets[0].skinnb2.setUsage(Usage.Static);
         for(PMDSkinMesh skinMesh : skinTargets) {
             skinMesh.clearBuffer(Type.Position);
             skinMesh.clearBuffer(Type.Normal);
@@ -232,7 +228,7 @@ public class PMDNode extends Node {
         vb.setUpdateNeeded();
         nb.setUpdateNeeded();
     }
-    private void softwareSkinUpdate(PMDMesh mesh) {
+    private void softwareSkinUpdate(PMDMesh mesh){
         int maxWeightsPerVert = 2;//mesh.getMaxNumWeights();
         int fourMinusMaxWeights = 4 - maxWeightsPerVert;
 //        Matrix4f[] offsetMatrices = mesh.getBoneMatrixArray();
@@ -263,9 +259,9 @@ public class PMDNode extends Node {
         float[] posBuf = vars.skinPositions;
         float[] normBuf = vars.skinNormals;
 
-        int iterations = (int) FastMath.ceil(fvb.capacity() / ((float) posBuf.length));
+        int iterations = (int) FastMath.ceil(fvb.capacity() / ((float)posBuf.length));
         int bufLength = posBuf.length * 3;
-        for (int i = iterations - 1; i >= 0; i--) {
+        for (int i = iterations-1; i >= 0; i--){
             // read next set of positions and normals from native buffer
             bufLength = Math.min(posBuf.length, fvb.remaining());
             fvb.get(posBuf, 0, bufLength);
@@ -274,7 +270,7 @@ public class PMDNode extends Node {
             int idxPositions = 0;
 
             // iterate vertices and apply skinning transform for each effecting bone
-            for (int vert = verts - 1; vert >= 0; vert--) {
+            for (int vert = verts - 1; vert >= 0; vert--){
                 float nmx = normBuf[idxPositions];
                 float vtx = posBuf[idxPositions++];
                 float nmy = normBuf[idxPositions];
@@ -282,9 +278,9 @@ public class PMDNode extends Node {
                 float nmz = normBuf[idxPositions];
                 float vtz = posBuf[idxPositions++];
 
-                float rx = 0, ry = 0, rz = 0, rnx = 0, rny = 0, rnz = 0;
+                float rx=0, ry=0, rz=0, rnx=0, rny=0, rnz=0;
 
-                for (int w = maxWeightsPerVert - 1; w >= 0; w--) {
+                for (int w = maxWeightsPerVert - 1; w >= 0; w--){
                     float weight = wb.get(idxWeights); //weights[idxWeights];
                     Matrix4f mat = mesh.getBoneMatrixArray()[ib.get(idxWeights++)];//offsetMatrices[indices[idxWeights++]];
 
@@ -309,15 +305,15 @@ public class PMDNode extends Node {
             }
 
 
-            fvb.position(fvb.position() - bufLength);
+            fvb.position(fvb.position()-bufLength);
             fvb.put(posBuf, 0, bufLength);
-            fnb.position(fnb.position() - bufLength);
+            fnb.position(fnb.position()-bufLength);
             fnb.put(normBuf, 0, bufLength);
         }
-
-        vb.updateData(fvb);
-        nb.updateData(fnb);
+        vb.setUpdateNeeded();
+        nb.setUpdateNeeded();
         vars.release();
+        
 //        mesh.updateBound();
     }
     public void updateSkinBackData() {
@@ -740,6 +736,13 @@ public class PMDNode extends Node {
                 Mesh mesh = ((PMDGeometry) sp).getMesh();
                 if (mesh instanceof PMDMesh) {
                     resetToBind((PMDMesh) mesh);
+                    if (glslSkinning) {
+                        mesh.getBuffer(Type.Position).setUsage(Usage.Static);
+                        mesh.getBuffer(Type.Normal).setUsage(Usage.Static);
+                    } else {
+                        mesh.getBuffer(Type.Position).setUsage(Usage.Dynamic);
+                        mesh.getBuffer(Type.Normal).setUsage(Usage.Dynamic);
+                    }
                 }
             }
         }
@@ -758,4 +761,10 @@ public class PMDNode extends Node {
     public int hashCode() {
         return pmdModel.getModelName().hashCode();
     }
+
+    @Override
+    public Spatial clone() {
+        return super.clone();
+    }
+    
 }

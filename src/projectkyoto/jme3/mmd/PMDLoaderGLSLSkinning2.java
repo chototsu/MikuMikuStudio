@@ -31,6 +31,8 @@ package projectkyoto.jme3.mmd;
 
 import com.jme3.animation.Bone;
 import com.jme3.animation.Skeleton;
+import com.jme3.asset.AssetInfo;
+import com.jme3.asset.AssetLoader;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.AssetNotFoundException;
 import com.jme3.material.Material;
@@ -52,6 +54,7 @@ import com.jme3.shader.VarType;
 import com.jme3.texture.Texture;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.TempVars;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
@@ -65,13 +68,14 @@ import projectkyoto.mmd.file.util2.MeshData;
  *
  * @author kobayasi
  */
-public class PMDLoaderGLSLSkinning2 {
+public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
     PMDModel model;
     PMDNode node;
     MeshConverter meshConverter;
     int meshCount = 1;
     AssetManager assetManager;
+    String folderName;
     List<PMDMesh> meshList = new ArrayList<PMDMesh>();
     List<PMDSkinMesh> skinMeshList = new ArrayList<PMDSkinMesh>();
     VertexBuffer skinvb;
@@ -82,9 +86,13 @@ public class PMDLoaderGLSLSkinning2 {
     Skin skinArray[];
     SkeletonControl skeletonControl;
 
+    public PMDLoaderGLSLSkinning2() {
+    }
+
     public PMDLoaderGLSLSkinning2(AssetManager assetManager, PMDModel model) {
         this.assetManager = assetManager;
         this.model = model;
+        folderName = "/Model/";
 //        System.out.println("vertexCount = " + model.getVertCount());
 //        System.out.println("faceVertCount = " + model.getFaceVertCount());
         meshConverter = new MeshConverter(model);
@@ -208,8 +216,8 @@ public class PMDLoaderGLSLSkinning2 {
         }
 //        System.out.println("isb.capacity() = " + isb.capacity());
 //        System.out.println("isb.capacity() = " + md.getIndexList().size());
-        vb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, vfb);
-        nb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, nfb);
+        vb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, vfb);
+        nb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, nfb);
 
         bvb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bvfb);
         bnb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bnfb);
@@ -307,7 +315,7 @@ public class PMDLoaderGLSLSkinning2 {
                 String fileName = st.nextToken();
                 System.out.println("fileName = " + fileName);
                 String s = fileName.substring(fileName.indexOf('.') + 1);
-                Texture texture = assetManager.loadTexture("Model/" + fileName /*
+                Texture texture = assetManager.loadTexture(folderName + fileName /*
                          * m.getTextureFileName()
                          */);
                 s = s.toLowerCase();
@@ -328,7 +336,7 @@ public class PMDLoaderGLSLSkinning2 {
         if (toonIndex >= 0) {
             String extToonName = model.getToonTextureList().getToonFileName()[toonIndex];
             try {
-                toonTexture = assetManager.loadTexture("/Model/" + extToonName);
+                toonTexture = assetManager.loadTexture(folderName + extToonName);
             } catch (AssetNotFoundException ex) {
                 String toonname = null;
                 switch (toonIndex) {
@@ -497,5 +505,14 @@ public class PMDLoaderGLSLSkinning2 {
 
 
         return boneNode;
+    }
+
+    @Override
+    public Object load(AssetInfo ai) throws IOException {
+        this.assetManager = ai.getManager();
+        model = new PMDModel(ai.openStream());
+        folderName = ai.getKey().getFolder();
+        meshConverter = new MeshConverter(model);
+        return createNode(ai.getKey().getName());
     }
 }

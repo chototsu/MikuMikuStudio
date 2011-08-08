@@ -93,6 +93,9 @@ public class MeshConverter {
         int faceVertNo = 0;
         for (int materialNo = 0; materialNo < model.getMaterialCount(); materialNo++) {
             PMDMaterial material = model.getMaterial()[materialNo];
+            if (material.getFaceVertCount() == 0) {
+                continue;
+            }
             MeshData meshData = new MeshData(model, maxBoneSize, material);
             meshDataList.add(meshData);
             for (int materialFaceVertNo = 0; materialFaceVertNo < material.getFaceVertCount(); materialFaceVertNo += 3) {
@@ -110,6 +113,9 @@ public class MeshConverter {
                     }
                 }
             }
+            if (meshData.getVertexList().size() == 0) {
+                meshDataList.remove(meshDataList.size()-1);
+            }
         }
         int vertSizeSum = 0;
         int boneSizeSum = 0;
@@ -120,6 +126,7 @@ public class MeshConverter {
             boneSizeSum += meshData.getBoneList().size();
             indexSizeSum += meshData.getIndexList().size();
 //            printMeshData(meshData);
+//            System.out.println("mesh size = "+meshData.vertexList.size());
         }
 //        System.out.println("-----------------------skin");
 //        System.out.println("index " + model.getFaceVertCount() + " " + indexSizeSum

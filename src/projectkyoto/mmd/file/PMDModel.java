@@ -29,7 +29,9 @@
  */
 package projectkyoto.mmd.file;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -61,29 +63,30 @@ public class PMDModel {
     private PMDToonTextureList toonTextureList;
     private PMDRigidBodyList rigidBodyList;
     private PMDJointList jointList;
-    private URL url;
 
     public PMDModel() {
     }
 
     public PMDModel(URL url) throws IOException {
-        readFromFile(url);
+        readFromFile(url.openStream());
     }
-
-    public void readFromFile(URL url) throws IOException {
-        DataInputStreamLittleEndian is = null;
+    public PMDModel(InputStream is) throws IOException {
+        readFromFile(is);
+    }
+    public void readFromFile(InputStream is) throws IOException {
+        DataInputStreamLittleEndian dis = null;
         try {
 //            is = new DataInputStreamLittleEndian(new BufferedInputStream(
 //                    new FileInputStream(
 //                    file)));
-            is = new DataInputStreamLittleEndian(url);
-            readFromStream(is);
-            is.close();
-            this.url = url;
+            dis = new DataInputStreamLittleEndian(new BufferedInputStream(is));
+            readFromStream(dis);
+            dis.close();
+//            this.url = url;
         } finally {
-            if (is != null) {
-                is.close();
-                is = null;
+            if (dis != null) {
+                dis.close();
+                dis = null;
             }
         }
 //        System.out.println(toString());
