@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import projectkyoto.mmd.file.PMDBone;
+import projectkyoto.mmd.file.PMDException;
 import projectkyoto.mmd.file.PMDSkinVertData;
 import projectkyoto.mmd.file.PMDVertex;
 
@@ -91,7 +92,7 @@ public class PMDNode extends Node {
     Geometry bonePositionGeomArray[];
     Node rigidBodyNode;
     Node jointNode;
-    boolean glslSkinning = false;
+    boolean glslSkinning = true;
 
     public PMDNode(String name, PMDModel pmdModel, AssetManager assetManager) {
         super(name);
@@ -485,6 +486,9 @@ public class PMDNode extends Node {
     }
 
     void resetToBind(PMDMesh mesh) {
+        
+    }
+    void _resetToBind(PMDMesh mesh) {
         VertexBuffer vb = mesh.getBuffer(VertexBuffer.Type.Position);
         FloatBuffer vfb = (FloatBuffer) vb.getData();
         VertexBuffer nb = mesh.getBuffer(VertexBuffer.Type.Normal);
@@ -727,6 +731,7 @@ public class PMDNode extends Node {
     }
 
     public void setGlslSkinning(boolean glslSkinning) {
+        glslSkinning = true;
         this.glslSkinning = glslSkinning;
         for (PMDMesh mesh : targets) {
 //            resetToBind(mesh);
@@ -763,8 +768,67 @@ public class PMDNode extends Node {
     }
 
     @Override
-    public Spatial clone() {
-        return super.clone();
+    public PMDNode clone() {
+        try {
+            PMDNode newPMDNode = (PMDNode)super.clone();
+//            newPMDNode.pmdModel = pmdModel;
+            System.out.println("model name = "+pmdModel.getModelName());
+                System.out.println("child size = "+getChildren().size());
+                System.out.println("source targets size = "+targets.length+" "+skinTargets.length);
+            if (newPMDNode.getChildren().size() != getChildren().size()){
+                System.out.println("child size error "+newPMDNode.getChildren().size());
+            }
+            newPMDNode.skeleton = new Skeleton(skeleton);
+            for(int i=0;i<skeleton.getBoneCount();i++) {
+                Bone newBone = newPMDNode.skeleton.getBone(i);
+                Bone bone = skeleton.getBone(i);
+                newBone.getLocalPosition().set(bone.getLocalPosition());
+                newBone.getLocalRotation().set(bone.getLocalRotation());
+                newBone.getLocalScale().set(bone.getLocalScale());
+            }
+            newPMDNode.targets = new PMDMesh[targets.length];
+            newPMDNode.skinTargets = new PMDSkinMesh[skinTargets.length];
+            int meshCount=0;
+            int skinMeshCount = 0;
+            for(Spatial sp : newPMDNode.getChildren()) {
+                Spatial newSp = sp;//.clone();
+//                newPMDNode.attachChild(newSp);
+                if (sp instanceof PMDGeometry) {
+                    Mesh mesh = ((Geometry)newSp).getMesh();
+                    if (mesh instanceof PMDMesh) {
+                       newPMDNode.targets[meshCount++] = (PMDMesh)mesh;
+                    } else if (mesh instanceof PMDSkinMesh) {
+                        newPMDNode.skinTargets[skinMeshCount++] = (PMDSkinMesh)mesh;
+                    }
+                }
+            }
+            newPMDNode.skinMap = new HashMap<String, Skin>();
+            for(String skinName : skinMap.keySet()) {
+                Skin skin = skinMap.get(skinName);
+                skin = skin.clone();
+                newPMDNode.skinMap.put(skinName, skin);
+            }
+            newPMDNode.skinPosArray = new javax.vecmath.Vector3f[skinPosArray.length];
+            for(int i=0;i<skinPosArray.length;i++) {
+                newPMDNode.skinPosArray[i] = new javax.vecmath.Vector3f(skinPosArray[i]);
+            }
+            newPMDNode.skinNormalArray = new javax.vecmath.Vector3f[skinNormalArray.length];
+            for(int i=0;i<skinNormalArray.length;i++) {
+                newPMDNode.skinNormalArray[i] = new javax.vecmath.Vector3f(skinNormalArray[i]);
+            }
+//            newPMDNode.offsetMatrices = new Matrix4f[offsetMatrices.length];
+            System.out.println("skinTargets size = "+skinTargets.length+" "+skinMeshCount);
+            newPMDNode.setGlslSkinning(newPMDNode.glslSkinning);
+            newPMDNode.skeleton.updateWorldVectors();
+            newPMDNode.calcOffsetMatrices();
+            newPMDNode.updateSkinBackData();
+            newPMDNode.update();
+            newPMDNode.updateSkinBackData();
+            newPMDNode.update();
+            return newPMDNode;
+        } catch(CloneNotSupportedException ex) {
+            throw new PMDException(ex);
+        }
     }
     
 }

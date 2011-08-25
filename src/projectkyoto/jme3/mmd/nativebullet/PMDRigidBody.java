@@ -138,7 +138,7 @@ public class PMDRigidBody extends PhysicsRigidBody {
 //                tmpQ.multLocal(invRot);
                     bone.getModelSpaceRotation().set(m2.toRotationQuat());
 //                bone.getModelSpacePosition().set(m2.toTranslationVector());
-                    updateFromBoneMatrix();
+//                    updateFromBoneMatrix();
 //                super.getPhysicsLocation();
 //                super.getPhysicsRotation();
                 }

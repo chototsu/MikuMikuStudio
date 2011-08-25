@@ -35,7 +35,7 @@ import projectkyoto.mmd.file.PMDSkinData;
  *
  * @author kobayasi
  */
-public class Skin {
+public class Skin implements Cloneable{
 
     String skinName;
     float weight = 0f;
@@ -86,4 +86,10 @@ public class Skin {
     public void setUpdateNeeded(boolean updateNeeded) {
         this.updateNeeded = updateNeeded;
     }
+
+    @Override
+    protected Skin clone() throws CloneNotSupportedException {
+        return (Skin)super.clone();
+    }
+    
 }

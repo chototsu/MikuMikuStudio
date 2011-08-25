@@ -61,11 +61,11 @@ import projectkyoto.mmd.file.PMDModel;
  */
 public class PMDPhysicsWorld {
     // bullet physics
-
+    static final Object lockObject = new Object();
     PhysicsSpace physicsSpace;
     Map<PMDNode, PMDRigidBody[]> rigidBodyMap = new HashMap<PMDNode, PMDRigidBody[]>();
     Map<PMDNode, SixDofJoint[]> constraintMap = new HashMap<PMDNode, SixDofJoint[]>();
-    float accuracy = 1f / 180;
+    float accuracy = 1f / 120;
 
     public PMDPhysicsWorld() {
         float dist = 400f;
@@ -115,7 +115,11 @@ public class PMDPhysicsWorld {
 //            btWorld.addRigidBody(rb, (short) (1 << fileRigidBody.getRigidBodyGroupIndex()),
 //                    (short) fileRigidBody.getRigidBodyGroupTarget());
             rb.setCollisionGroup(1 << (fileRigidBody.getRigidBodyGroupIndex()));
-            rb.setCollideWithGroups(fileRigidBody.getRigidBodyGroupTarget());
+//            if (fileRigidBody.getRigidBodyName().contains("スカート")) {
+//                rb.setCollideWithGroups(1 << 7);
+//            } else {
+                rb.setCollideWithGroups(fileRigidBody.getRigidBodyGroupTarget());
+//            }
 //                  rb.setCollideWithGroups(0 );
             physicsSpace.addCollisionObject(rb);
         }
@@ -216,7 +220,7 @@ public class PMDPhysicsWorld {
                 throw new PMDException("Invalid getShapeType:" + fileRigidBody.getRigidBodyName() + " "
                         + fileRigidBody.getShapeType());
         }
-        cs.setMargin(0.08f);
+//        cs.setMargin(0.01f);
         if (fileRigidBody.getRigidBodyType() != 0) {
             mass = fileRigidBody.getWeight();
             kinematic = false;
@@ -270,7 +274,7 @@ public class PMDPhysicsWorld {
         return rb;
     }
 
-    void convPMDEuler(Matrix3f out, float x, float y, float z) {
+    void _convPMDEuler(Matrix3f out, float x, float y, float z) {
         Quaternion qx = new Quaternion();
         Quaternion qy = new Quaternion();
         Quaternion qz = new Quaternion();
@@ -284,7 +288,7 @@ public class PMDPhysicsWorld {
 
         qz.toRotationMatrix(out);
     }
-    void _convPMDEuler(Matrix3f out, float x, float y, float z) {
+    void convPMDEuler(Matrix3f out, float x, float y, float z) {
 //        Matrix3f m = new Matrix3f();
 //        m.loadIdentity();
 //
@@ -418,7 +422,7 @@ public class PMDPhysicsWorld {
 //            System.out.println("constRot1 x must > -90");
 //        }
         if (constRot1.getY() <= -FastMath.PI / 0.5f) {
-            constRot1.setY(-FastMath.PI * 0.5f);
+            constRot1.setY(-FastMath.PI * 0.49f);
             System.out.println("constRot1 y must > -90");
         }
 //        if (constRot1.getZ() <= -FastMath.PI / 1.0f) {
@@ -433,7 +437,7 @@ public class PMDPhysicsWorld {
 //            System.out.println("constRot2 x must < 90");
 //        }
         if (constRot2.getY() >= FastMath.PI / 0.5f) {
-            constRot2.setY(FastMath.PI * 0.5f);
+            constRot2.setY(FastMath.PI * 0.49f);
             System.out.println("constRot2 y must < 90");
         }
 //        if (constRot2.getZ() >= FastMath.PI / 1.0f) {
@@ -495,7 +499,9 @@ public class PMDPhysicsWorld {
 //            physicsSpace.update(time + accuracy, 2);
 //            applyResultToBone();
 //        }
-        physicsSpace.update(timeStep, 10);
+//        synchronized(lockObject) {
+            physicsSpace.update(timeStep, 10);
+//        }
 //        applyResultToBone();
     }
     Transform t = new Transform();

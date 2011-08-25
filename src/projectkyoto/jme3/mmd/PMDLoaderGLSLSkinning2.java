@@ -88,28 +88,45 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
     public PMDLoaderGLSLSkinning2() {
     }
-
     public PMDLoaderGLSLSkinning2(AssetManager assetManager, PMDModel model) {
         this.assetManager = assetManager;
         this.model = model;
         folderName = "/Model/";
 //        System.out.println("vertexCount = " + model.getVertCount());
 //        System.out.println("faceVertCount = " + model.getFaceVertCount());
+//        assetManager.registerLoader(com.jme3.texture.plugins.AWTLoader.class, "sph", "spa");
+    }
+    public void init() {
+//        model = null;
+        node = null;
         meshConverter = new MeshConverter(model);
-        assetManager.registerLoader(com.jme3.texture.plugins.AWTLoader.class, "sph", "spa");
+        meshCount = 1;
+//        assetManager = null;
+//        folderName = null;
+        meshList.clear();
+        skinMeshList.clear();
+        skinvb = null;
+        skinvb2 = null;
+        skinnb = null;
+        skinnb2 = null;
+        skintb = null;
+        skeletonControl = null;
+        skinArray = null;
     }
 
     public PMDNode createNode(String name) {
+        init();
         node = new PMDNode(name, model, assetManager);
         meshCount = 1;
         meshConverter.convertMesh();
+        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
         for (MeshData md : meshConverter.getMeshDataList()) {
             PMDMesh mesh = createMesh(md);
             PMDGeometry geom = new PMDGeometry("geom" + meshCount++);
             geom.setMesh(mesh);
             PMDMaterial pmdMaterial = md.getMaterial();
             setupMaterial(pmdMaterial, geom);
-            node.attachChild(geom);
+            System.out.println(node.attachChild(geom));
             meshList.add(mesh);
         }
         createSkinCommonVertData();
@@ -118,33 +135,35 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             PMDGeometry geom = new PMDGeometry("geom" + meshCount++);
             geom.setMesh(mesh);
             setupMaterial(pmdMaterial, geom);
-            node.attachChild(geom);
+            System.out.println(node.attachChild(geom));
             skinMeshList.add(mesh);
         }
+        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
         createSkinArray();
         createSkeleton();
         node.setSkinData(skinMeshList.toArray(new PMDSkinMesh[skinMeshList.size()]), meshConverter.getSkinMeshData().getVertexList(), skinArray);
         node.targets = meshList.toArray(new PMDMesh[meshList.size()]);
         node.init();
+        node.update();
         return node;
     }
 
     void createSkinCommonVertData() {
         skinvb = new VertexBuffer(VertexBuffer.Type.Position);
         FloatBuffer skinvfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
-        skinvb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinvfb);
+        skinvb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinvfb);
 
         skinvb2 = new VertexBuffer(VertexBuffer.Type.Position);
         FloatBuffer skinvfb2 = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
-        skinvb2.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinvfb2);
+        skinvb2.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinvfb2);
         
         skinnb = new VertexBuffer(VertexBuffer.Type.Normal);
         FloatBuffer skinnfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
-        skinnb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb);
+        skinnb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb);
 
         skinnb2 = new VertexBuffer(VertexBuffer.Type.Normal);
         FloatBuffer skinnfb2 = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
-        skinnb2.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb2);
+        skinnb2.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb2);
         
         skintb = new VertexBuffer(VertexBuffer.Type.TexCoord);
         FloatBuffer skintfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 2);
@@ -184,10 +203,10 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         VertexBuffer nb = new VertexBuffer(VertexBuffer.Type.Normal);
         FloatBuffer nfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 3);
 
-        VertexBuffer bvb = new VertexBuffer(VertexBuffer.Type.BindPosePosition);
-        FloatBuffer bvfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 3);
-        VertexBuffer bnb = new VertexBuffer(VertexBuffer.Type.BindPoseNormal);
-        FloatBuffer bnfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 3);
+//        VertexBuffer bvb = new VertexBuffer(VertexBuffer.Type.BindPosePosition);
+//        FloatBuffer bvfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 3);
+//        VertexBuffer bnb = new VertexBuffer(VertexBuffer.Type.BindPoseNormal);
+//        FloatBuffer bnfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 3);
 
         VertexBuffer tb = new VertexBuffer(VertexBuffer.Type.TexCoord);
 
@@ -202,8 +221,8 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             vfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
             nfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
 
-            bvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
-            bnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
+//            bvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
+//            bnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
 
             tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
             float weight = (float) v.getBoneWeight() / 100.0f;
@@ -219,8 +238,8 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         vb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, vfb);
         nb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, nfb);
 
-        bvb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bvfb);
-        bnb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bnfb);
+//        bvb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bvfb);
+//        bnb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bnfb);
 
         tb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, tfb);
         wb.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Float, wfb);
@@ -229,8 +248,8 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mesh.setBuffer(vb);
         mesh.setBuffer(nb);
 
-        mesh.setBuffer(bvb);
-        mesh.setBuffer(bnb);
+//        mesh.setBuffer(bvb);
+//        mesh.setBuffer(bnb);
 
         mesh.setBuffer(tb);
         mesh.setBuffer(wb);
@@ -448,6 +467,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         Quaternion q = new Quaternion();
         q = q.fromAngleNormalAxis((float) Math.PI / 8, new Vector3f(0, 0, 1));
         node.skeleton = skeleton;
+        temp.release();
     }
 
     void createSkinArray() {
@@ -509,10 +529,21 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
     @Override
     public Object load(AssetInfo ai) throws IOException {
-        this.assetManager = ai.getManager();
-        model = new PMDModel(ai.openStream());
-        folderName = ai.getKey().getFolder();
-        meshConverter = new MeshConverter(model);
-        return createNode(ai.getKey().getName());
+        boolean errFlag = false;
+        for(;;) {
+            try {
+                this.assetManager = ai.getManager();
+                model = new PMDModel(ai.openStream());
+                folderName = ai.getKey().getFolder();
+                meshConverter = new MeshConverter(model);
+                return createNode(ai.getKey().getName());
+            }catch(OutOfMemoryError ex) {
+                if (errFlag) {
+                    throw new RuntimeException(ex);
+                }
+                errFlag = true;
+                System.gc();
+            }
+        }
     }
 }

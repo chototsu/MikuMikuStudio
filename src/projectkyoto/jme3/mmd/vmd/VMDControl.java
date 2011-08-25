@@ -169,7 +169,7 @@ public class VMDControl extends AbstractControl {
 //        }
         if (time != 0 && !pause) {
 //            controlUpdate2(time);
-            physicsControl.update(tpf);
+        physicsControl.update(tpf);
 //            physicsControl.getWorld().applyResultToBone();
         }
     }

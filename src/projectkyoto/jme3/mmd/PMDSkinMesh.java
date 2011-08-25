@@ -35,6 +35,8 @@ import com.jme3.math.Matrix4f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
+import com.jme3.util.BufferUtils;
+import java.nio.FloatBuffer;
 
 /**
  *
@@ -88,5 +90,32 @@ public class PMDSkinMesh extends Mesh {
     @Override
     public BoundingVolume getBound() {
         return bound;
+    }
+    @Override
+    public PMDSkinMesh clone() {
+        System.out.println("PMDSkinMesh::clone()");
+        PMDSkinMesh newMesh = (PMDSkinMesh)super.clone();
+//        newMesh.boneMatrixArray = new Matrix4f[boneMatrixArray.length];
+        newMesh.skinvb2 = new VertexBuffer(VertexBuffer.Type.Position);
+        FloatBuffer skinvfb2 = BufferUtils.clone((FloatBuffer)this.skinvb2.getData());
+        newMesh.skinvb2.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinvfb2);
+        
+        newMesh.skinnb2 = new VertexBuffer(VertexBuffer.Type.Normal);
+        FloatBuffer skinnfb2 = BufferUtils.clone((FloatBuffer)this.skinnb2.getData());
+        newMesh.skinnb2.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb2);
+        
+        VertexBuffer skinvb1 = new VertexBuffer(VertexBuffer.Type.Position);
+        FloatBuffer skinvfb1 = BufferUtils.clone((FloatBuffer)this.skinvb2.getData());
+        skinvb1.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinvfb1);
+        newMesh.clearBuffer(VertexBuffer.Type.Position);
+        newMesh.setBuffer(skinvb1);
+        
+        VertexBuffer skinnb1 = new VertexBuffer(VertexBuffer.Type.Normal);
+        FloatBuffer skinnfb1 = BufferUtils.clone((FloatBuffer)this.skinnb2.getData());
+        skinnb1.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb1);
+        newMesh.clearBuffer(VertexBuffer.Type.Normal);
+        newMesh.setBuffer(skinnb1);
+
+        return newMesh;
     }
 }

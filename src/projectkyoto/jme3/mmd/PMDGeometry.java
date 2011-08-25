@@ -78,4 +78,20 @@ public class PMDGeometry extends Geometry {
     public void setNoSkinningMaterial(Material noSkinningMaterial) {
         this.noSkinningMaterial = noSkinningMaterial;
     }
+
+    @Override
+    public PMDGeometry clone() {
+        PMDGeometry newPMDGeometry = (PMDGeometry)super.clone(false);
+        newPMDGeometry.setMesh(getMesh().clone());
+        newPMDGeometry.glslSkinningMaterial = glslSkinningMaterial.clone();
+        newPMDGeometry.noSkinningMaterial = noSkinningMaterial.clone();
+        System.out.println("PMDGeometry::clone() "+getName());
+        return newPMDGeometry;
+    }
+
+    @Override
+    public PMDGeometry clone(boolean cloneMaterial) {
+        return clone();
+    }
+    
 }

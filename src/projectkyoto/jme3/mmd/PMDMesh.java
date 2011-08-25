@@ -69,4 +69,16 @@ public class PMDMesh extends Mesh {
     public BoundingVolume getBound() {
         return bound;
     }
+
+    @Override
+    public PMDMesh clone() {
+        PMDMesh newMesh = (PMDMesh)super.clone();
+        newMesh.boneMatrixArray = new Matrix4f[boneMatrixArray.length];
+        for(int i=0;i<newMesh.boneMatrixArray.length;i++) {
+            newMesh.boneMatrixArray[i] = new Matrix4f();
+        }
+        System.out.println("PMDMesh::clone()");
+        return newMesh;
+    }
+    
 }

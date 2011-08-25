@@ -45,5 +45,10 @@ public class PMDModelKey extends ModelKey{
     public PMDModelKey(String name) {
         super(name);
     }
+
+    @Override
+    public boolean shouldCache() {
+        return false;
+    }
     
 }
