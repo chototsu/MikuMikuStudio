@@ -125,7 +125,7 @@ vec2 computeLighting(in vec3 wvPos, in vec3 wvNorm, in vec3 wvViewDir, in vec3 w
 #endif
 vec2 Optics_SphereCoord2(in vec3 dir){
     float dzplus1 = dir.z + 1.0;
-    float m = 2 * sqrt(dir.x * dir.x + dir.y * dir.y + dzplus1 * dzplus1);
+    float m = 2.0 * sqrt(dir.x * dir.x + dir.y * dir.y + dzplus1 * dzplus1);
     return vec2(dir.x / m + 0.5, dir.y / m + 0.5);
 }
 
@@ -226,8 +226,9 @@ void main(){
             SpecularSum2 = vec4(1.0);
             light.y = 1.0;
        #endif
-       if (isnan(light.y)) {
-            light.y = 0;
+//       if (isnan(light.y)) {
+       if (light.y != light.y) {
+            light.y = 0.0;
        }
 //       gl_FragColor =  (AmbientSum * diffuseColor +
 //                       DiffuseSum * diffuseColor + //* light.x +

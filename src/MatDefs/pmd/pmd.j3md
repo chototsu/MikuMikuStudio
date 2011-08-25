@@ -151,8 +151,8 @@ MaterialDef pmd {
 
         LightMode MultiPass
 
-        VertexShader GLSL120:   MatDefs/pmd/pmd_cartoon.vert
-        FragmentShader GLSL120: MatDefs/pmd/pmd_cartoon.frag
+        VertexShader GLSL100:   MatDefs/pmd/pmd_cartoon.vert
+        FragmentShader GLSL100: MatDefs/pmd/pmd_cartoon.frag
 
         // VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
         // FragmentShader GLSL100: Common/MatDefs/Light/Lighting.frag

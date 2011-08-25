@@ -76,7 +76,7 @@ attribute vec3 inNormal;
         vec3 N = normalize( (g_WorldMatrix * vec4(normalize(normal.xyz), 0.0)).xyz );
 
         refVec.xyz = reflect(I, N);
-        refVec.w   = 1;//m_FresnelParams.x + m_FresnelParams.y * pow(1.0 + dot(I, N), m_FresnelParams.z);
+        refVec.w   = 1.0;//m_FresnelParams.x + m_FresnelParams.y * pow(1.0 + dot(I, N), m_FresnelParams.z);
     }
 // #endif
 
