@@ -71,4 +71,10 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <target name="src-jar" depends="init">
+        <jar basedir="src" jarfile="${dist.dir}/MMDLoaderJME3-source.jar"/>
+    </target>
+    <target name="javadoc-jar" depends="javadoc">
+        <jar basedir="${dist.dir}/javadoc" jarfile="${dist.dir}/MMDLoaderJME3-javadoc.jar"/>
+    </target>
 </project>

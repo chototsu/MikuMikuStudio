@@ -105,13 +105,15 @@ public class PMDSkinMesh extends Mesh {
         newMesh.skinnb2.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb2);
         
         VertexBuffer skinvb1 = new VertexBuffer(VertexBuffer.Type.Position);
-        FloatBuffer skinvfb1 = BufferUtils.clone((FloatBuffer)this.skinvb2.getData());
+//        FloatBuffer skinvfb1 = BufferUtils.clone((FloatBuffer)this.skinvb2.getData());
+        FloatBuffer skinvfb1 = BufferUtils.clone((FloatBuffer)this.getBuffer(VertexBuffer.Type.Position).getData());
         skinvb1.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinvfb1);
         newMesh.clearBuffer(VertexBuffer.Type.Position);
         newMesh.setBuffer(skinvb1);
         
         VertexBuffer skinnb1 = new VertexBuffer(VertexBuffer.Type.Normal);
-        FloatBuffer skinnfb1 = BufferUtils.clone((FloatBuffer)this.skinnb2.getData());
+//        FloatBuffer skinnfb1 = BufferUtils.clone((FloatBuffer)this.skinnb2.getData());
+        FloatBuffer skinnfb1 = BufferUtils.clone((FloatBuffer)this.getBuffer(VertexBuffer.Type.Normal).getData());
         skinnb1.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb1);
         newMesh.clearBuffer(VertexBuffer.Type.Normal);
         newMesh.setBuffer(skinnb1);
