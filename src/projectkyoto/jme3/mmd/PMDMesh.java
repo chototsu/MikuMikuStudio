@@ -34,6 +34,9 @@ import com.jme3.bounding.BoundingVolume;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer;
+import com.jme3.util.BufferUtils;
+import java.nio.FloatBuffer;
 
 /**
  *
@@ -43,6 +46,8 @@ public class PMDMesh extends Mesh {
 
     short boneIndexArray[];
     Matrix4f boneMatrixArray[];
+    VertexBuffer vbBackup;
+    VertexBuffer nbBackup;
 
     public PMDMesh() {
         super();
@@ -72,13 +77,75 @@ public class PMDMesh extends Mesh {
 
     @Override
     public PMDMesh clone() {
-        PMDMesh newMesh = (PMDMesh)super.clone();
+        PMDMesh newMesh = (PMDMesh) super.clone();
         newMesh.boneMatrixArray = new Matrix4f[boneMatrixArray.length];
-        for(int i=0;i<newMesh.boneMatrixArray.length;i++) {
+        for (int i = 0; i < newMesh.boneMatrixArray.length; i++) {
             newMesh.boneMatrixArray[i] = new Matrix4f();
         }
-        System.out.println("PMDMesh::clone()");
         return newMesh;
     }
-    
+
+    public VertexBuffer getNbBackup() {
+        return nbBackup;
+    }
+
+    public void setNbBackup(VertexBuffer nbBackup) {
+        this.nbBackup = nbBackup;
+    }
+
+    public VertexBuffer getVbBackup() {
+        return vbBackup;
+    }
+
+    public void setVbBackup(VertexBuffer vbBackup) {
+        this.vbBackup = vbBackup;
+    }
+
+    public void createSoftwareSkinningBuffers() {
+        boolean retryFlag = false;
+        for (;;) {
+            try {
+                VertexBuffer vb;
+                vb = new VertexBuffer(VertexBuffer.Type.Position);
+                FloatBuffer vfb = BufferUtils.clone((FloatBuffer) vbBackup.getData());
+                vb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, vfb);
+                clearBuffer(VertexBuffer.Type.Position);
+                setBuffer(vb);
+                break;
+            } catch (OutOfMemoryError ex) {
+                if (!retryFlag) {
+                    System.gc();
+                    retryFlag = true;
+                } else {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        retryFlag = false;
+        for (;;) {
+            try {
+                VertexBuffer nb;
+                nb = new VertexBuffer(VertexBuffer.Type.Normal);
+                FloatBuffer nfb = BufferUtils.clone((FloatBuffer) nbBackup.getData());
+                nb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, nfb);
+                clearBuffer(VertexBuffer.Type.Normal);
+                setBuffer(nb);
+                break;
+            } catch (OutOfMemoryError ex) {
+                if (!retryFlag) {
+                    System.gc();
+                    retryFlag = true;
+                } else {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+    }
+
+    public void releaseSoftwareSkinningBufferes() {
+        clearBuffer(VertexBuffer.Type.Position);
+        setBuffer(vbBackup);
+        clearBuffer(VertexBuffer.Type.Normal);
+        setBuffer(nbBackup);
+    }
 }

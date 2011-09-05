@@ -85,7 +85,6 @@ public class PMDGeometry extends Geometry {
         newPMDGeometry.setMesh(getMesh().clone());
         newPMDGeometry.glslSkinningMaterial = glslSkinningMaterial.clone();
         newPMDGeometry.noSkinningMaterial = noSkinningMaterial.clone();
-        System.out.println("PMDGeometry::clone() "+getName());
         return newPMDGeometry;
     }
 

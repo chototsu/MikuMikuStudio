@@ -93,7 +93,6 @@ public class PMDSkinMesh extends Mesh {
     }
     @Override
     public PMDSkinMesh clone() {
-        System.out.println("PMDSkinMesh::clone()");
         PMDSkinMesh newMesh = (PMDSkinMesh)super.clone();
 //        newMesh.boneMatrixArray = new Matrix4f[boneMatrixArray.length];
         newMesh.skinvb2 = new VertexBuffer(VertexBuffer.Type.Position);

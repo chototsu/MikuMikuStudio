@@ -244,7 +244,12 @@ public class PMDNode extends Node {
         VertexBuffer nb = mesh.getBuffer(VertexBuffer.Type.Normal);
         FloatBuffer fnb = (FloatBuffer) nb.getData();
         fnb.rewind();
-
+        
+        FloatBuffer fvb2 = (FloatBuffer)mesh.getVbBackup().getData();
+        fvb2.rewind();
+        FloatBuffer fnb2 = (FloatBuffer)mesh.getNbBackup().getData();
+        fnb2.rewind();
+        
         // get boneIndexes and weights for mesh
         ShortBuffer ib = (ShortBuffer) mesh.getBuffer(VertexBuffer.Type.BoneIndex).getData();
         FloatBuffer wb = (FloatBuffer) mesh.getBuffer(VertexBuffer.Type.BoneWeight).getData();
@@ -265,8 +270,8 @@ public class PMDNode extends Node {
         for (int i = iterations-1; i >= 0; i--){
             // read next set of positions and normals from native buffer
             bufLength = Math.min(posBuf.length, fvb.remaining());
-            fvb.get(posBuf, 0, bufLength);
-            fnb.get(normBuf, 0, bufLength);
+            fvb2.get(posBuf, 0, bufLength);
+            fnb2.get(normBuf, 0, bufLength);
             int verts = bufLength / 3;
             int idxPositions = 0;
 
@@ -306,9 +311,9 @@ public class PMDNode extends Node {
             }
 
 
-            fvb.position(fvb.position()-bufLength);
+//            fvb.position(fvb2.position()-bufLength);
             fvb.put(posBuf, 0, bufLength);
-            fnb.position(fnb.position()-bufLength);
+//            fnb.position(fnb2.position()-bufLength);
             fnb.put(normBuf, 0, bufLength);
         }
         vb.setUpdateNeeded();
@@ -486,7 +491,6 @@ public class PMDNode extends Node {
     }
 
     void resetToBind(PMDMesh mesh) {
-        
     }
     void _resetToBind(PMDMesh mesh) {
         VertexBuffer vb = mesh.getBuffer(VertexBuffer.Type.Position);
@@ -731,7 +735,6 @@ public class PMDNode extends Node {
     }
 
     public void setGlslSkinning(boolean glslSkinning) {
-        glslSkinning = true;
         this.glslSkinning = glslSkinning;
         for (PMDMesh mesh : targets) {
 //            resetToBind(mesh);
@@ -740,11 +743,14 @@ public class PMDNode extends Node {
             if (sp instanceof PMDGeometry) {
                 Mesh mesh = ((PMDGeometry) sp).getMesh();
                 if (mesh instanceof PMDMesh) {
-                    resetToBind((PMDMesh) mesh);
+                    PMDMesh pmdMesh = (PMDMesh)mesh;
+                    resetToBind(pmdMesh);
                     if (glslSkinning) {
+                        pmdMesh.releaseSoftwareSkinningBufferes();
                         mesh.getBuffer(Type.Position).setUsage(Usage.Static);
                         mesh.getBuffer(Type.Normal).setUsage(Usage.Static);
                     } else {
+                        pmdMesh.createSoftwareSkinningBuffers();
                         mesh.getBuffer(Type.Position).setUsage(Usage.Dynamic);
                         mesh.getBuffer(Type.Normal).setUsage(Usage.Dynamic);
                     }
@@ -772,12 +778,6 @@ public class PMDNode extends Node {
         try {
             PMDNode newPMDNode = (PMDNode)super.clone();
 //            newPMDNode.pmdModel = pmdModel;
-            System.out.println("model name = "+pmdModel.getModelName());
-                System.out.println("child size = "+getChildren().size());
-                System.out.println("source targets size = "+targets.length+" "+skinTargets.length);
-            if (newPMDNode.getChildren().size() != getChildren().size()){
-                System.out.println("child size error "+newPMDNode.getChildren().size());
-            }
             newPMDNode.skeleton = new Skeleton(skeleton);
             for(int i=0;i<skeleton.getBoneCount();i++) {
                 Bone newBone = newPMDNode.skeleton.getBone(i);
@@ -817,7 +817,6 @@ public class PMDNode extends Node {
                 newPMDNode.skinNormalArray[i] = new javax.vecmath.Vector3f(skinNormalArray[i]);
             }
 //            newPMDNode.offsetMatrices = new Matrix4f[offsetMatrices.length];
-            System.out.println("skinTargets size = "+skinTargets.length+" "+skinMeshCount);
             newPMDNode.setGlslSkinning(newPMDNode.glslSkinning);
             newPMDNode.skeleton.updateWorldVectors();
             newPMDNode.calcOffsetMatrices();

@@ -60,6 +60,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import org.lwjgl.opengl.GL11;
 import projectkyoto.mmd.file.*;
 import projectkyoto.mmd.file.util2.MeshConverter;
 import projectkyoto.mmd.file.util2.MeshData;
@@ -247,6 +248,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         bib.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Short, bisb);
         mesh.setBuffer(vb);
         mesh.setBuffer(nb);
+        
+        mesh.setVbBackup(vb);
+        mesh.setNbBackup(nb);
 
 //        mesh.setBuffer(bvb);
 //        mesh.setBuffer(bnb);
@@ -536,7 +540,14 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 model = new PMDModel(ai.openStream());
                 folderName = ai.getKey().getFolder();
                 meshConverter = new MeshConverter(model);
-                return createNode(ai.getKey().getName());
+                PMDNode pmdNode = createNode(ai.getKey().getName());
+                String vendor = GL11.glGetString(GL11.GL_VENDOR);
+                if (vendor != null && vendor.toLowerCase().contains("intel")) {
+                    pmdNode.setGlslSkinning(false);
+                } else {
+                    pmdNode.setGlslSkinning(true);
+                }
+                return pmdNode;
             }catch(OutOfMemoryError ex) {
                 if (errFlag) {
                     throw new RuntimeException(ex);
