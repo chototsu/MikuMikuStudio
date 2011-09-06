@@ -541,11 +541,15 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 folderName = ai.getKey().getFolder();
                 meshConverter = new MeshConverter(model);
                 PMDNode pmdNode = createNode(ai.getKey().getName());
-                String vendor = GL11.glGetString(GL11.GL_VENDOR);
-                if (vendor != null && vendor.toLowerCase().contains("intel")) {
+                try {
+                    String vendor = GL11.glGetString(GL11.GL_VENDOR);
+                    if (vendor != null && vendor.toLowerCase().contains("intel")) {
+                        pmdNode.setGlslSkinning(false);
+                    } else {
+                        pmdNode.setGlslSkinning(true);
+                    }
+                } catch(Exception ex) {
                     pmdNode.setGlslSkinning(false);
-                } else {
-                    pmdNode.setGlslSkinning(true);
                 }
                 return pmdNode;
             }catch(OutOfMemoryError ex) {
