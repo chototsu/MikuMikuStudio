@@ -238,13 +238,13 @@ void main(){
 // output_color=vec4(0);
 #ifdef SPHERE_MAP_A
         vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
-        v2.y = 1 - v2.y;
+        v2.y = 1.0 - v2.y;
         output_color.xyz +=  (texture2D(m_SphereMap_A, v2).xyz);
         // output_color.xyz = vec3(normalize(refVec.xyz).x);
 #endif
 #ifdef SPHERE_MAP_H
         vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
-        v2.y = 1 - v2.y;
+        v2.y = 1.0 - v2.y;
         output_color.xyz *= (texture2D(m_SphereMap_H, v2).xyz);
 #endif
 

@@ -50,35 +50,39 @@ public class IPUtil {
         return ((3 + 9 * p1 - 9 * p2) * t * t + (6 * p2 - 12 * p1) * t + 3 * p1);
     }
 
-    static float calcIp(BoneMotionList bml, float x, int offset) {
+    static float calcIp(final BoneMotionList bml, float x, int offset) {
         if (x <= 0) {
             return 0f;
         }
         if (x >=1) {
             return 1f;
         }
-        int ipTableSize = bml.ipTable[offset].length;
-        for(int i=0;i<ipTableSize;i++) {
+        final float ipTable[][][] = bml.ipTable;
+        int ipTableSize = ipTable[offset].length;
+        for(int i=bml.ipTableIndex;i<ipTableSize;i++) {
             if (bml.ipTable[offset][i][0] == x) {
+                bml.ipTableIndex = i;
                 return bml.ipTable[offset][i][1];
             }
-            if (bml.ipTable[offset][i][0] > x) {
+            if (ipTable[offset][i][0] > x) {
                 float x1,x2,y1,y2;
                 if (i == 0) {
                     x1 = 0;
                     y1 = 0;
                 } else {
-                    x1 = bml.ipTable[offset][i-1][0];
-                    y1 = bml.ipTable[offset][i-1][1];
+                    x1 = ipTable[offset][i-1][0];
+                    y1 = ipTable[offset][i-1][1];
                 }
-                x2 = bml.ipTable[offset][i][0];
-                y2 = bml.ipTable[offset][i][1];
+                x2 = ipTable[offset][i][0];
+                y2 = ipTable[offset][i][1];
+                bml.ipTableIndex = i;
                 return y1 + (y2 - y1) * (x - x1) / (x2 - x1);
             }
         }
+        bml.ipTableIndex = ipTableSize;
         return 1f;
     }
-    static void createInterpolationTable(byte ip[], float ipTable[][][]) {
+    static void createInterpolationTable(final byte ip[], final float ipTable[][][]) {
         int i, d;
         float x1, x2, y1, y2;
         float inval, t, v, tt;

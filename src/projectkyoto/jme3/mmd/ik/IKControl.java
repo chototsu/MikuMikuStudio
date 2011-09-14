@@ -49,6 +49,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
+import java.util.ArrayList;
 import projectkyoto.jme3.mmd.BoneUtil;
 import projectkyoto.jme3.mmd.PMDNode;
 import projectkyoto.mmd.file.PMDIKData;
@@ -95,21 +96,24 @@ public class IKControl extends AbstractControl{
     Quaternion tmpQ1 = new Quaternion();
 
     public void updateIKBoneRotation() {
-        PMDModel pmdModel = pmdNode.getPmdModel();
-        Skeleton skeleton = pmdNode.getSkeleton();
+        final PMDModel pmdModel = pmdNode.getPmdModel();
+        final Skeleton skeleton = pmdNode.getSkeleton();
 //        skeleton.updateWorldVectors();
         l1:
         for (PMDIKData ikData : pmdModel.getIkList().getPmdIKData()) {
             if (boneEnabled != null && boneEnabled[ikData.getIkBoneIndex()] != 1) {
                 continue l1;
             }
-            Bone ikBone = skeleton.getBone(ikData.getIkBoneIndex());
-            Bone targetBone = skeleton.getBone(ikData.getIkTargetBoneIndex());
+            final Bone ikBone = skeleton.getBone(ikData.getIkBoneIndex());
+            final Bone targetBone = skeleton.getBone(ikData.getIkTargetBoneIndex());
+            final int iterations = ikData.getIterations();
             l2:
-            for (int iterationCount = 0; iterationCount < ikData.getIterations(); iterationCount++) {
+            for (int iterationCount = 0; iterationCount < iterations; iterationCount++) {
+                final int ikChainLength = ikData.getIkChainLength();
+                final int[] ikChildBoneIndex = ikData.getIkChildBoneIndex();
                 l3:
-                for (int boneCount = 0; boneCount < ikData.getIkChainLength(); boneCount++) {
-                    Bone currentBone = skeleton.getBone(ikData.getIkChildBoneIndex()[boneCount]);
+                for (int boneCount = 0; boneCount < ikChainLength; boneCount++) {
+                    Bone currentBone = skeleton.getBone(ikChildBoneIndex[boneCount]);
                     Vector3f effectorModelPos = tmpV1.set(targetBone.getModelSpacePosition());
                     Vector3f targetModelPos = tmpV2.set(ikBone.getModelSpacePosition());
                     boolean hizaFlag = pmdModel.getBoneList().getBones()[ikData.getIkChildBoneIndex()[boneCount]].isHiza();
@@ -354,7 +358,10 @@ public class IKControl extends AbstractControl{
     void updateWorldVectors(Bone bone) {
 //        pmdNode.getSkeleton().updateWorldVectors();
         bone.updateWorldVectors();
-        for (Bone childBone : bone.getChildren()) {
+        final ArrayList<Bone> children = bone.getChildren();
+        final int size = children.size();
+        for(int i=0;i<size;i++) {
+            Bone childBone = children.get(i);
             updateWorldVectors(childBone);
         }
     }

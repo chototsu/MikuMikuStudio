@@ -104,7 +104,7 @@ public class DataInputStreamLittleEndian extends FilterInputStream {
                 return new String(buf,0,i,"Shift_JIS").intern();
             }
         }
-        return new String(buf,"Shift_JIS");
+        return new String(buf,"Shift_JIS").intern();
     }
     public final byte readByte() throws IOException{
         byte[] buf = getBuf(1);
