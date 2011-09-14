@@ -53,6 +53,7 @@ import com.jme3.scene.debug.SkeletonWire;
 import com.jme3.scene.shape.Box;
 import com.jme3.shader.VarType;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -329,6 +330,9 @@ public class PMDNode extends Node {
         VertexBuffer nb = skinMesh.getSkinnb2(); //skinMesh.getBuffer(Type.Normal);
         FloatBuffer fnb = (FloatBuffer) nb.getData();
 
+        for(int i=skinPosArray.length-1;i>=0;i--) {
+            skinPosArray[i].set(skinPosArrayOrig[i]);
+        }
         for (Skin skin : skinMap.values()) {
             if (true || skin.isUpdateNeeded()) {
                 if (skin.getWeight() != 0f) {
@@ -534,6 +538,9 @@ public class PMDNode extends Node {
     }
     public Set<String> getSkinSet() {
         return skinMap.keySet();
+    }
+    public Map<String, Skin> getSkinMap() {
+        return skinMap;
     }
 
     public float getSkinWeight(String skinName) {

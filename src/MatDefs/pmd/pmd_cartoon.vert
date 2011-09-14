@@ -29,13 +29,16 @@ void Skinning_Compute(inout vec4 position, inout vec4 normal){
     vec4 newPos    = vec4(0.0);
     vec4 newNormal = vec4(0.0);
 
-    for (float i = 0.0; i < 2.0; i += 1.0){
+    //for (float i = 1.0; i < 2.0; i += 1.0){
         mat4 skinMat = m_BoneMatrices[int(index.x)];
-        newPos    += weight.x * (skinMat * position);
-        newNormal += weight.x * (skinMat * normal);
-        index = index.yzwx;
-        weight = weight.yzwx;
-    }
+        newPos    = weight.x * (skinMat * position);
+        newNormal = weight.x * (skinMat * normal);
+        //index = index.yzwx;
+        //weight = weight.yzwx;
+        skinMat = m_BoneMatrices[int(index.y)];
+        newPos    = newPos + weight.y * (skinMat * position);
+        newNormal = newNormal + weight.y * (skinMat * normal);
+    //}
 
     position = newPos;
     normal = newNormal;

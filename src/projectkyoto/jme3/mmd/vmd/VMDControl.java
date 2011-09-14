@@ -49,6 +49,7 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Quat4f;
 import projectkyoto.jme3.mmd.PMDNode;
+import projectkyoto.jme3.mmd.Skin;
 import projectkyoto.jme3.mmd.ik.IKControl;
 import projectkyoto.jme3.mmd.nativebullet.PhysicsControl;
 import projectkyoto.mmd.file.PMDBone;
@@ -56,6 +57,7 @@ import projectkyoto.mmd.file.PMDIKData;
 import projectkyoto.mmd.file.VMDFile;
 import projectkyoto.mmd.file.VMDMotion;
 import projectkyoto.mmd.file.VMDSkin;
+
 
 /**
  *
@@ -66,9 +68,10 @@ public class VMDControl extends AbstractControl {
     final PMDNode pmdNode;
     final VMDFile vmdFile;
     int currentFrameNo = 0;
-    float timeFromCurrentFrameNo = 0f;
     final Map<String, BoneMotionList> motionMap = new HashMap<String, BoneMotionList>();
+    BoneMotionList[] boneMotionListArray;
     final Map<String, SkinList> skinMap = new HashMap<String, SkinList>();
+    SkinList[] skinListArray;
     int lastFrameNo = 0;
     boolean pause = false;
     static final VMDMotionComparator vmc = new VMDMotionComparator();
@@ -77,13 +80,14 @@ public class VMDControl extends AbstractControl {
     int boneEnabled[];
     final IKControl ikControl;
     TickListener tl = new TickListener();
+    float currentTime = 0f;
 
     public VMDControl(PMDNode pmdNode, VMDFile vmdFile) {
         this.pmdNode = pmdNode;
         this.vmdFile = vmdFile;
         initMotionMap();
         physicsControl = new PhysicsControl(pmdNode);
-        physicsControl.getWorld().getPhysicsSpace().addTickListener(tl);
+//         physicsControl.getWorld().getPhysicsSpace().addTickListener(tl);
         ikControl = new IKControl(pmdNode);
         boneEnabled = new int[pmdNode.getSkeleton().getBoneCount()];
         for(int i=0;i<boneEnabled.length;i++) {
@@ -99,6 +103,12 @@ public class VMDControl extends AbstractControl {
             }
         }
         ikControl.setBoneEnabled(boneEnabled);
+        for(int i=pmdNode.getSkeleton().getBoneCount()-1;i>=0;i--) {
+            if (boneEnabled[i] == 1) {
+                Bone bone = pmdNode.getSkeleton().getBone(i);
+                bone.setUserControl(true);
+            }
+        }
     }
 
     private void initMotionMap() {
@@ -138,12 +148,14 @@ public class VMDControl extends AbstractControl {
         }
         for (BoneMotionList ml : motionMap.values()) {
             Collections.sort(ml, vmc);
+            ml.setCurrentCount(0);
         }
         for (VMDSkin skin : vmdFile.getSkinArray()) {
             SkinList skinList = skinMap.get(skin.getSkinName());
             if (skinList == null) {
                 skinList = new SkinList();
                 skinList.skinName = skin.getSkinName();
+                skinList.skin = pmdNode.getSkinMap().get(skin.getSkinName());
                 skinMap.put(skinList.skinName, skinList);
             }
             skinList.add(skin);
@@ -154,37 +166,87 @@ public class VMDControl extends AbstractControl {
         for (SkinList skinList : skinMap.values()) {
             Collections.sort(skinList, vmsc);
         }
+        boneMotionListArray = motionMap.values().toArray(new BoneMotionList[motionMap.size()]);
+        skinListArray = skinMap.values().toArray(new SkinList[skinMap.size()]);
     }
     Quat4f tmpq1 = new Quat4f();
     Quat4f tmpq2 = new Quat4f();
     Point3f tmpp1 = new Point3f();
     Point3f tmpp2 = new Point3f();
-    int i = 0;
-
+    float prevTpf = 0;
+//    float stepTime = 1f/30f;
+//    @Override
+//    protected void controlUpdate(float tpf) {
+//        float time = tpf;
+////        for(;time > 0; time -= physicsControl.getWorld().accuracy) {
+////            controlUpdate2(physicsControl.getWorld().accuracy);
+////        }
+//        if (time != 0 && !pause) {
+////            controlUpdate2(time);
+//        physicsControl.update(tpf);
+////            physicsControl.getWorld().applyResultToBone();
+//        }
+//    }
+//
+//    protected void controlUpdate2(float tpf) {
+//        if (!pause) {
+//            if (currentFrameNo < lastFrameNo) {
+//                timeFromCurrentFrameNo += tpf;
+//                if (timeFromCurrentFrameNo >= 1f / 30) {
+//                    int i = (int) (timeFromCurrentFrameNo * 30f);
+//                    currentFrameNo += i;
+//                    timeFromCurrentFrameNo -= (float) i / 30f;
+//                }
+//            }
+//            calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
+//            physicsControl.getWorld().updateKinematicPos();
+////            pmdNode.getSkeleton().updateWorldVectors();
+//            // physicsControl.update(tpf);
+//
+////            timeFromCurrentFrameNo = 0;
+////            i++;
+////            if (i > 30) {
+////            currentFrameNo++;
+////            i=0;
+////            }
+////            System.out.println("currentFrameNo = "+currentFrameNo);
+////            calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
+////            if (i == 0)
+////            physicsControl.update(1f/30);
+//        } else {
+////            pmdNode.update();
+//        }
+//    }
+    float accuracy = 1f/120f;
     @Override
     protected void controlUpdate(float tpf) {
-        float time = tpf;
 //        for(;time > 0; time -= physicsControl.getWorld().accuracy) {
 //            controlUpdate2(physicsControl.getWorld().accuracy);
 //        }
-        if (time != 0 && !pause) {
-//            controlUpdate2(time);
-        physicsControl.update(tpf);
-//            physicsControl.getWorld().applyResultToBone();
+//        tpf = stepTime;
+//        tpf = 1f/15f;
+        boolean needUpdateSkin = true;
+        if (tpf != 0 && !pause) {
+            tpf += prevTpf;
+            for(;tpf > accuracy ; tpf -= accuracy ) {
+                controlUpdate2(accuracy);
+                physicsControl.update(accuracy);
+                needUpdateSkin = true;
+            }
+            physicsControl.getWorld().applyResultToBone();
+            prevTpf = tpf;
+            if (needUpdateSkin) {
+//                resetSkins();
+                calcSkins();
+            }
         }
     }
 
     protected void controlUpdate2(float tpf) {
         if (!pause) {
-            if (currentFrameNo < lastFrameNo) {
-                timeFromCurrentFrameNo += tpf;
-                if (timeFromCurrentFrameNo >= 1f / 30) {
-                    int i = (int) (timeFromCurrentFrameNo * 30f);
-                    currentFrameNo += i;
-                    timeFromCurrentFrameNo -= (float) i / 30f;
-                }
-            }
-            calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
+            currentTime += tpf;
+            currentFrameNo = (int)(currentTime * 30f);
+            calcBonePosition();
             physicsControl.getWorld().updateKinematicPos();
 //            pmdNode.getSkeleton().updateWorldVectors();
             // physicsControl.update(tpf);
@@ -204,18 +266,20 @@ public class VMDControl extends AbstractControl {
         }
     }
 
-    void calcBonePosition(int frameNo, Skeleton skeleton) {
-        for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {
+    void calcBonePosition() {
+        for(int i=pmdNode.getSkeleton().getBoneCount()-1;i>=0;i--) {
             if (boneEnabled[i] == 1) {
                 Bone bone = pmdNode.getSkeleton().getBone(i);
                 bone.getLocalRotation().loadIdentity();
             }
         }
         boneLoop:
-        for (BoneMotionList bml : motionMap.values()) {
-            Bone bone = pmdNode.getSkeleton().getBone(bml.boneName);
+        for (BoneMotionList bml : boneMotionListArray) {
+            if (bml.size() == 0) {
+                continue;
+            }
+            Bone bone = pmdNode.getSkeleton().getBone(bml.boneIndex);
             if (bone != null && boneEnabled[bml.boneIndex] == 1) {
-                bone.setUserControl(true);
                 if (bml.size() - 1 < bml.currentCount) {
                     VMDMotion m1 = bml.get(bml.size() - 1);
                     Quat4f q = m1.getRotation();
@@ -231,32 +295,33 @@ public class VMDControl extends AbstractControl {
                     VMDMotion m1, m2;
                     int count = bml.currentCount;
                     for (;;) {
-                        VMDMotion m = bml.get(count);
+                        VMDMotion m = bml.m2;
                         if (m.getFrameNo() > currentFrameNo) {
-                            if (bml.currentCount == 0) {
-                                m1 = m;
-                            } else {
-                                m1 = bml.get(count - 1);
-                            }
-                            m2 = m;
-                            bml.setCurrentCount(count);
+                            m1 = bml.m1;
+                            m2 = bml.m2;
+                            break;
+                        }
+                        if (count >= bml.size()) {
+                            m1 = bml.m1;
+                            m2 = bml.m2;
                             break;
                         }
                         count++;
-                        if (count >= bml.size()) {
-                            m1 = m;
-                            m2 = m;
-                            bml.setCurrentCount(bml.size() - 1);
-                            break;
-                        }
+                        bml.setCurrentCount(count);
                     }
-                    float f = (float) (m2.getFrameNo() - m1.getFrameNo()) * 1f / 30;
-                    assert f >= 0;
-                    if (f == 0f) {
+                    if (m1.getFrameNo() > currentFrameNo) {
+                        tmpq1.set(m1.getRotation());
+                        tmpp1.set(m1.getLocation());
+                        continue;
+                    }
+                    if (m2.getFrameNo() == m1.getFrameNo()) {
                         tmpq1.set(m1.getRotation());
                         tmpp1.set(m1.getLocation());
                     } else {
-                        float f2 = (float) (currentFrameNo - m1.getFrameNo()) * 1f / 30 + timeFromCurrentFrameNo;
+                        float f = (float) (m2.getFrameNo() - m1.getFrameNo()) * 1f / 30f;
+                        assert f >= 0;
+//                        float f2 = (float) (currentFrameNo - m1.getFrameNo()) * 1f / 30 + timeFromCurrentFrameNo;
+                        float f2 = currentTime - m1.getFrameNo() / 30f;
                         assert (f2 >= 0);
                         float f3 = f2 / f;
                         float fx = IPUtil.calcIp(bml, f3, 0);//calcIp(m2.getInterpolation(), f3, 0);
@@ -294,17 +359,20 @@ public class VMDControl extends AbstractControl {
                 bone.updateWorldVectors();
             }
         }
-        for (SkinList skinList : skinMap.values()) {
+//        calcSkins(currentFrameNo);
+    }
+    public void calcSkins() {
+        for (SkinList skinList : skinListArray) {
             float w1 = 0f, w2 = 0f;
             int c1 = 0, c2 = 0;
-            for (int i = skinList.currentCount; i < skinList.size(); i++) {
-                skinList.currentCount = i;
-                VMDSkin skin = skinList.get(i);
-                if (skin.getFlameNo() > frameNo) {
+            int skinListSize = skinList.size();
+            for (; skinList.currentCount < skinListSize; skinList.currentCount++) {
+                VMDSkin skin = skinList.get(skinList.currentCount);
+                if (skin.getFlameNo() > currentFrameNo) {
                     w2 = skin.getWeight();
                     c2 = skin.getFlameNo();
-                    if (i > 0) {
-                        skin = skinList.get(i - 1);
+                    if (skinList.currentCount > 0) {
+                        skin = skinList.get(skinList.currentCount - 1);
                         w1 = skin.getWeight();
                         c1 = skin.getFlameNo();
                     } else {
@@ -314,18 +382,25 @@ public class VMDControl extends AbstractControl {
                     break;
                 }
             }
-            float f1 = (float) (c2 - c1) * 1f / 30;
-            float f2 = (float) (frameNo - c1) * 1f / 30 + timeFromCurrentFrameNo;
             float weight;
-            if (f1 > 0) {
-                weight = w1 + (w2 - w1) * f2 / f1;
+            if (skinList.currentCount == skinListSize) {
+                weight = skinList.get(skinList.currentCount-1).getWeight();
             } else {
-                weight = w2;
+                float f1 = ((float) (c2 - c1)) * 1f / 30f;
+//                float f2 = ((float) (currentFrameNo - c1)) * 1f / 30f;
+                float f2 = currentTime - (float)c1 / 30f;
+                if (f1 > 0) {
+                    weight = w1 + (w2 - w1) * f2 / f1;
+                } else {
+                    weight = w2;
+                }
             }
-            pmdNode.setSkinWeight(skinList.skinName, weight);
+//            pmdNode.setSkinWeight(skinList.skinName, weight);
+            if (skinList.skin != null) {
+                skinList.skin.setWeight(weight);
+            }
         }
-    }
-
+    }        
     public void resetSkins() {
         for (String skinName : pmdNode.getSkinSet()) {
             pmdNode.setSkinWeight(skinName, 0f);
@@ -333,7 +408,7 @@ public class VMDControl extends AbstractControl {
     }
 
     public void setFrameNo(int frameNo) {
-        for (BoneMotionList bml : motionMap.values()) {
+        for (BoneMotionList bml : boneMotionListArray) {
             int count = bml.size() - 1;
             for (int i = 0; i < bml.size(); i++) {
                 VMDMotion m = bml.get(i);
@@ -345,11 +420,11 @@ public class VMDControl extends AbstractControl {
             bml.setCurrentCount(count);
         }
         currentFrameNo = frameNo;
-        timeFromCurrentFrameNo = 0f;
-        calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
-        for (SkinList skinList : skinMap.values()) {
+        currentTime = frameNo / 30f;
+        calcBonePosition();
+        for (SkinList skinList : skinListArray) {
             skinList.currentCount = skinList.size() - 1;
-            for (int i = 0; i < skinList.size(); i++) {
+            for (int i = 0; i <skinList.size(); i++) {
                 VMDSkin skin = skinList.get(i);
                 if (skin.getFlameNo() > frameNo) {
                     skinList.currentCount = i;
@@ -357,7 +432,8 @@ public class VMDControl extends AbstractControl {
                 }
             }
         }
-        resetSkins();
+        calcSkins();
+//        resetSkins();
 //        calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
         physicsControl.getWorld().resetRigidBodyPos();
 //        pmdNode.update();
@@ -405,16 +481,27 @@ public class VMDControl extends AbstractControl {
         }
         
     }
-}
 
+    public float getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(float accuracy) {
+        this.accuracy = accuracy;
+        physicsControl.getWorld().setAccuracy(accuracy);
+    }
+    
+}
 class BoneMotionList extends ArrayList<VMDMotion> {
 
     static final int IPTABLESIZE = 64;
     String boneName;
     int boneIndex;
     int currentCount;
+    VMDMotion m1,m2;
     int boneType;
     final float ipTable[][][] = new float[4][IPTABLESIZE][2];
+    int ipTableIndex = 0;
     int frame1, frame2;
     final float val1[] = new float[4];
     final float val2[] = new float[4];
@@ -425,6 +512,20 @@ class BoneMotionList extends ArrayList<VMDMotion> {
             if (newCount >= 0 && newCount < size()) {
                 IPUtil.createInterpolationTable(get(currentCount).getInterpolation(), ipTable);
             }
+        }
+        ipTableIndex = 0;
+        if (newCount == 0) {
+            m1 = get(0);
+            m2 = m1;
+        } else if (newCount < size()) {
+            m1 = get(newCount-1);
+            m2 = get(newCount);
+        } else if (size() > 0) {
+            m1 = get(size()-1);
+            m2 = m1;
+        } else {
+            m1 = null;
+            m2 = null;
         }
     }
 }
@@ -446,6 +547,7 @@ class VMDMotionComparator implements Comparator<VMDMotion> {
 class SkinList extends ArrayList<VMDSkin> {
 
     String skinName;
+    Skin skin; 
     int currentCount;
 }
 

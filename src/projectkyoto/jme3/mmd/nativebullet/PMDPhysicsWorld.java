@@ -220,7 +220,7 @@ public class PMDPhysicsWorld {
                 throw new PMDException("Invalid getShapeType:" + fileRigidBody.getRigidBodyName() + " "
                         + fileRigidBody.getShapeType());
         }
-//        cs.setMargin(0.01f);
+//z        cs.setMargin(0.01f);
         if (fileRigidBody.getRigidBodyType() != 0) {
             mass = fileRigidBody.getWeight();
             kinematic = false;
@@ -500,7 +500,7 @@ public class PMDPhysicsWorld {
 //            applyResultToBone();
 //        }
 //        synchronized(lockObject) {
-            physicsSpace.update(timeStep, 10);
+            physicsSpace.update(timeStep, 100);
 //        }
 //        applyResultToBone();
     }

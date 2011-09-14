@@ -51,6 +51,7 @@ import com.jme3.scene.debug.SkeletonPoints;
 import com.jme3.scene.debug.SkeletonWire;
 import com.jme3.scene.shape.Box;
 import com.jme3.shader.VarType;
+import com.jme3.system.JmeSystem;
 import com.jme3.texture.Texture;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.TempVars;
@@ -402,6 +403,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         if (toonTexture != null) {
             toonTexture.setWrap(Texture.WrapAxis.S, Texture.WrapMode.EdgeClamp);
             toonTexture.setWrap(Texture.WrapAxis.T, Texture.WrapMode.EdgeClamp);
+            toonTexture.setMinFilter(Texture.MinFilter.BilinearNoMipMaps);
             mat.setTexture("ColorRamp", toonTexture);
         }
         if (m.getEdgeFlag() != 0 /*
@@ -541,15 +543,17 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 folderName = ai.getKey().getFolder();
                 meshConverter = new MeshConverter(model);
                 PMDNode pmdNode = createNode(ai.getKey().getName());
-                try {
-                    String vendor = GL11.glGetString(GL11.GL_VENDOR);
-                    if (vendor != null && vendor.toLowerCase().contains("intel")) {
+                if (JmeSystem.getFullName().indexOf("Android") == -1) {
+                    try {
+                        String vendor = GL11.glGetString(GL11.GL_VENDOR);
+                        if (vendor != null && vendor.toLowerCase().contains("intel")) {
+                            pmdNode.setGlslSkinning(false);
+                        } else {
+                            pmdNode.setGlslSkinning(true);
+                        }
+                    } catch(Exception ex) {
                         pmdNode.setGlslSkinning(false);
-                    } else {
-                        pmdNode.setGlslSkinning(true);
                     }
-                } catch(Exception ex) {
-                    pmdNode.setGlslSkinning(false);
                 }
                 return pmdNode;
             }catch(OutOfMemoryError ex) {
