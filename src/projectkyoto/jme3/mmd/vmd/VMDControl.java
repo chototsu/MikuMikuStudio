@@ -117,12 +117,14 @@ public class VMDControl extends AbstractControl {
             if (motionList == null) {
                 motionList = new BoneMotionList();
                 motionList.boneName = m.getBoneName();
-                for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {
-                    if (pmdNode.getSkeleton().getBone(i).getName().equals(m.getBoneName())) {
-                        motionList.boneIndex = i;
-                        break;
-                    }
-                }
+//                for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {
+//                    if (pmdNode.getSkeleton().getBone(i).getName().equals(m.getBoneName())) {
+//                        motionList.boneIndex = i;
+//                        break;
+//                    }
+//                }
+                motionList.bone = pmdNode.getSkeleton().getBone(m.getBoneName());
+                motionList.boneIndex = pmdNode.getSkeleton().getBoneIndex(motionList.bone);
                 motionMap.put(m.getBoneName(), motionList);
             }
             motionList.add(m);
@@ -278,7 +280,7 @@ public class VMDControl extends AbstractControl {
             if (bml.size() == 0) {
                 continue;
             }
-            Bone bone = pmdNode.getSkeleton().getBone(bml.boneIndex);
+            Bone bone = bml.bone;
             if (bone != null && boneEnabled[bml.boneIndex] == 1) {
                 if (bml.size() - 1 < bml.currentCount) {
                     VMDMotion m1 = bml.get(bml.size() - 1);
@@ -496,6 +498,7 @@ class BoneMotionList extends ArrayList<VMDMotion> {
 
     static final int IPTABLESIZE = 64;
     String boneName;
+    Bone bone;
     int boneIndex;
     int currentCount;
     VMDMotion m1,m2;
