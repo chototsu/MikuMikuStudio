@@ -26,7 +26,6 @@ public class VMDCallable implements Callable<Void> {
         vmdControl.update(tpf);
 //        pmdNode.getSkeleton().updateWorldVectors();
         pmdNode.calcOffsetMatrices();
-//        pmdNode.setSkinWeight("笑い", 1f);
         pmdNode.updateSkinBackData();
         return null;
     }

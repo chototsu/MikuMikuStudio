@@ -43,6 +43,7 @@ public class PMDGeometry extends Geometry {
     PMDMaterial pmdMaterial;
     Material glslSkinningMaterial;
     Material noSkinningMaterial;
+    PMDMesh pmdMesh;
 
     public PMDGeometry(String name, Mesh mesh) {
         super(name, mesh);
@@ -91,6 +92,14 @@ public class PMDGeometry extends Geometry {
     @Override
     public PMDGeometry clone(boolean cloneMaterial) {
         return clone();
+    }
+
+    @Override
+    public void setMesh(Mesh mesh) {
+        super.setMesh(mesh);
+        if (mesh instanceof PMDMesh) {
+            pmdMesh = (PMDMesh)mesh;
+        }
     }
     
 }

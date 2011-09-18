@@ -73,6 +73,7 @@ public class PMDNode extends Node {
     Skeleton skeleton;
     PMDMesh[] targets;
     PMDSkinMesh[] skinTargets;
+    PMDGeometry[] pmdGeometryArray;
     Map<String, Skin> skinMap = new HashMap<String, Skin>();
     javax.vecmath.Vector3f skinPosArray[];
     javax.vecmath.Vector3f skinNormalArray[];
@@ -158,23 +159,21 @@ public class PMDNode extends Node {
 //            updateIKBoneRotation();
             // here update the targets verticles if no hardware skinning supported
 
-            offsetMatrices = skeleton.computeSkinningMatrices();
-            for (Spatial s : getChildren()) {
-                if (s instanceof Geometry) {
-                    Geometry g = (Geometry) s;
-                    Material m = g.getMaterial();
-                    if (g.getMesh() instanceof PMDMesh) {
-                        PMDMesh pmdMesh = (PMDMesh) g.getMesh();
-                        for (int i = 0; i < pmdMesh.getBoneIndexArray().length; i++) {
-                            pmdMesh.getBoneMatrixArray()[i].set(offsetMatrices[pmdMesh.getBoneIndexArray()[i]]);
-                        }
-                        if (glslSkinning) {
-                            m.setParam("BoneMatrices", VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
+//            offsetMatrices = skeleton.computeSkinningMatrices();
+            for(PMDGeometry g : pmdGeometryArray) {
+                Material m = g.getMaterial();
+                PMDMesh pmdMesh = g.pmdMesh;
+                int boneIndexArray[] = pmdMesh.getBoneIndexArray();
+                Matrix4f[] boneMatrixArray = pmdMesh.getBoneMatrixArray();
+                for (int i = pmdMesh.getBoneIndexArray().length-1; i >=0; i--) {
+                    boneMatrixArray[i].set(offsetMatrices[boneIndexArray[i]]);
+                }
+                if (glslSkinning) {
+                    m.setParam("BoneMatrices", VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
 //                            m.setParam("BoneMatrices", VarType.Matrix4, pmdMesh.getBoneMatrixArray()[0]);
-                        }
-                    }
                 }
             }
+            
             if (!glslSkinning) {
                 for (PMDMesh mesh : targets) {
                     softwareSkinUpdate(mesh);
@@ -803,6 +802,7 @@ public class PMDNode extends Node {
                 if (sp instanceof PMDGeometry) {
                     Mesh mesh = ((Geometry)newSp).getMesh();
                     if (mesh instanceof PMDMesh) {
+                        pmdGeometryArray[meshCount] = (PMDGeometry)sp;
                        newPMDNode.targets[meshCount++] = (PMDMesh)mesh;
                     } else if (mesh instanceof PMDSkinMesh) {
                         newPMDNode.skinTargets[skinMeshCount++] = (PMDSkinMesh)mesh;

@@ -121,7 +121,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         node = new PMDNode(name, model, assetManager);
         meshCount = 1;
         meshConverter.convertMesh();
-        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
+//        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
+        node.pmdGeometryArray = new PMDGeometry[meshConverter.getMeshDataList().size()];
+        int pmdGeometryIndex = 0;
         for (MeshData md : meshConverter.getMeshDataList()) {
             PMDMesh mesh = createMesh(md);
             PMDGeometry geom = new PMDGeometry("geom" + meshCount++);
@@ -130,6 +132,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             setupMaterial(pmdMaterial, geom);
             System.out.println(node.attachChild(geom));
             meshList.add(mesh);
+            node.pmdGeometryArray[pmdGeometryIndex++] = geom;
         }
         createSkinCommonVertData();
         for (PMDMaterial pmdMaterial : meshConverter.getSkinMeshData().getIndexMap().keySet()) {
@@ -146,6 +149,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         node.setSkinData(skinMeshList.toArray(new PMDSkinMesh[skinMeshList.size()]), meshConverter.getSkinMeshData().getVertexList(), skinArray);
         node.targets = meshList.toArray(new PMDMesh[meshList.size()]);
         node.init();
+        node.calcOffsetMatrices();
         node.update();
         return node;
     }
@@ -260,7 +264,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mesh.setBuffer(wb);
         mesh.setBuffer(ib);
         mesh.setBuffer(bib);
-        short[] indexArray = new short[meshConverter.getMaxBoneSize()];
+        int[] indexArray = new int[meshConverter.getMaxBoneSize()];
         for (int i = 0; i < indexArray.length; i++) {
             if (i < md.getBoneList().size()) {
                 indexArray[i] = md.getBoneList().get(i).shortValue();

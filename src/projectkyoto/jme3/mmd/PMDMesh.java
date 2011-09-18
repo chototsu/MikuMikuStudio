@@ -44,7 +44,7 @@ import java.nio.FloatBuffer;
  */
 public class PMDMesh extends Mesh {
 
-    short boneIndexArray[];
+    int boneIndexArray[];
     Matrix4f boneMatrixArray[];
     VertexBuffer vbBackup;
     VertexBuffer nbBackup;
@@ -53,11 +53,11 @@ public class PMDMesh extends Mesh {
         super();
     }
 
-    public short[] getBoneIndexArray() {
+    public int[] getBoneIndexArray() {
         return boneIndexArray;
     }
 
-    public void setBoneIndexArray(short[] boneIndexArray) {
+    public void setBoneIndexArray(int[] boneIndexArray) {
         this.boneIndexArray = boneIndexArray;
     }
 
