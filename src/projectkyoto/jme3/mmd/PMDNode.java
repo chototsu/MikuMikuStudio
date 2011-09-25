@@ -75,6 +75,7 @@ public class PMDNode extends Node {
     PMDSkinMesh[] skinTargets;
     PMDGeometry[] pmdGeometryArray;
     Map<String, Skin> skinMap = new HashMap<String, Skin>();
+    Skin[] skinArray = new Skin[0];
     javax.vecmath.Vector3f skinPosArray[];
     javax.vecmath.Vector3f skinNormalArray[];
     javax.vecmath.Vector3f skinPosArrayOrig[];
@@ -148,7 +149,7 @@ public class PMDNode extends Node {
         offsetMatrices = skeleton.computeSkinningMatrices();
         return offsetMatrices;
     }
-
+boolean setBoneMatricesFlag = true;
     public void update() {
 //        skeleton.reset(); // reset skeleton to bind pose
         if (true /*
@@ -217,8 +218,8 @@ public class PMDNode extends Node {
         skinTargets[0].skinvb2.setUpdateNeeded();
         skinTargets[0].skinnb2.setUpdateNeeded();
         for(PMDSkinMesh skinMesh : skinTargets) {
-            skinMesh.clearBuffer(Type.Position);
-            skinMesh.clearBuffer(Type.Normal);
+//            skinMesh.clearBuffer(Type.Position);
+//            skinMesh.clearBuffer(Type.Normal);
             skinMesh.setBuffer(skinTargets[0].getSkinvb2());
             skinMesh.setBuffer(skinTargets[0].getSkinnb2());
         }
@@ -332,7 +333,7 @@ public class PMDNode extends Node {
         for(int i=skinPosArray.length-1;i>=0;i--) {
             skinPosArray[i].set(skinPosArrayOrig[i]);
         }
-        for (Skin skin : skinMap.values()) {
+        for (Skin skin : skinArray) {
             if (true || skin.isUpdateNeeded()) {
                 if (skin.getWeight() != 0f) {
                     for (PMDSkinVertData svd : skin.getSkinData().getSkinVertData()) {
@@ -401,7 +402,7 @@ public class PMDNode extends Node {
         VertexBuffer nb = skinMesh.getBuffer(Type.Normal);
         FloatBuffer fnb = (FloatBuffer) nb.getData();
 
-        for (Skin skin : skinMap.values()) {
+        for (Skin skin : skinArray) {
             if (skin.isUpdateNeeded()) {
                 if (skin.getWeight() != 1f) {
                     for (PMDSkinVertData svd : skin.getSkinData().getSkinVertData()) {
@@ -487,7 +488,7 @@ public class PMDNode extends Node {
         for (PMDMesh mesh : targets) {
             resetToBind(mesh);
         }
-        for (Skin skin : skinMap.values()) {
+        for (Skin skin : skinArray) {
             skin.setWeight(0f);
         }
         setUpdateNeeded(true);
@@ -815,6 +816,7 @@ public class PMDNode extends Node {
                 skin = skin.clone();
                 newPMDNode.skinMap.put(skinName, skin);
             }
+            newPMDNode.skinArray = newPMDNode.skinMap.values().toArray(new Skin[newPMDNode.skinMap.size()]);
             newPMDNode.skinPosArray = new javax.vecmath.Vector3f[skinPosArray.length];
             for(int i=0;i<skinPosArray.length;i++) {
                 newPMDNode.skinPosArray[i] = new javax.vecmath.Vector3f(skinPosArray[i]);

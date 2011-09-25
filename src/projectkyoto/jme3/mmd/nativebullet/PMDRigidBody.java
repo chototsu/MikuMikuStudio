@@ -32,6 +32,7 @@ package projectkyoto.jme3.mmd.nativebullet;
 import com.jme3.animation.Bone;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Matrix3f;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -91,26 +92,31 @@ public class PMDRigidBody extends PhysicsRigidBody {
 
     public void updateFromBoneMatrix() {
         if (bone != null) {
-            tmpV.set(bone.getModelSpacePosition());
-            tmpV.addLocal(pos);
-            tmpQ.set(bone.getModelSpaceRotation());
-            tmpQ.multLocal(rot);
+//            tmpV.set(bone.getModelSpacePosition());
+//            tmpV.addLocal(pos);
+//            tmpQ.set(bone.getModelSpaceRotation());
+//            tmpQ.multLocal(rot);
             m2.setTranslation(bone.getModelSpacePosition());
             m2.setRotationQuaternion(bone.getModelSpaceRotation());
             m2.multLocal(m);
-            super.setPhysicsLocation(m2.toTranslationVector());
-            super.setPhysicsRotation(m2.toRotationQuat());
+            m2.toRotationMatrix(tmpMatrix3f);
+            tmpQ.fromRotationMatrix(tmpMatrix3f);
+            super.setPhysicsRotation(tmpQ);
+            m2.toTranslationVector(tmpV);
+            super.setPhysicsLocation(tmpV);
         } else {
-            tmpV.set(centerBone.getModelSpacePosition());
-            tmpV.addLocal(pos);
-            tmpQ.set(centerBone.getModelSpaceRotation());
-            tmpQ.multLocal(rot);
+//            tmpV.set(centerBone.getModelSpacePosition());
+//            tmpV.addLocal(pos);
+//            tmpQ.set(centerBone.getModelSpaceRotation());
+//            tmpQ.multLocal(rot);
             m2.setTranslation(centerBone.getModelSpacePosition());
             m2.setRotationQuaternion(centerBone.getModelSpaceRotation());
             m2.multLocal(m);
-            super.setPhysicsRotation(m2.toRotationQuat());
-            super.setPhysicsLocation(m2.toTranslationVector());
-
+            m2.toRotationMatrix(tmpMatrix3f);
+            tmpQ.fromRotationMatrix(tmpMatrix3f);
+            super.setPhysicsRotation(tmpQ);
+            m2.toTranslationVector(tmpV);
+            super.setPhysicsLocation(tmpV);
         }
 //        System.out.println("objectId = "+objectId+(bone != null ? " name = "+bone.getName() : "")+" pos = "+getPhysicsLocation());
     }
@@ -122,21 +128,24 @@ public class PMDRigidBody extends PhysicsRigidBody {
     }
     Matrix4f m2 = new Matrix4f();
     Matrix4f m3 = new Matrix4f();
+    Matrix3f tmpMatrix3f = new Matrix3f();
 
     public void updateToBoneMatrix() {
 //        System.out.println("objectId = "+objectId+" name = "+bone.getName()+" pos = "+getPhysicsLocation());
         if (bone != null) {
             if (rigidBodyType == 2) {
                 if (true/*!bone.getName().contains("センター")*/) {
-                    tmpV.set(super.getPhysicsLocation());
-                    tmpQ.set(super.getPhysicsRotation());
+                    super.getPhysicsLocation(tmpV);
+                    super.getPhysicsRotation(tmpQ);
                     m2.setRotationQuaternion(tmpQ);
                     m2.setTranslation(tmpV);
                     m2.multLocal(invM);
 //                System.out.println("updateToBoneMatrix:tmpV = "+tmpV);
 //                tmpV.addLocal(invPos);
 //                tmpQ.multLocal(invRot);
-                    bone.getModelSpaceRotation().set(m2.toRotationQuat());
+                    m2.toRotationMatrix(tmpMatrix3f);
+                    bone.getModelSpaceRotation().fromRotationMatrix(tmpMatrix3f);
+//                    m2.toRotationQuat(bone.getModelSpaceRotation());
 //                bone.getModelSpacePosition().set(m2.toTranslationVector());
 //                    updateFromBoneMatrix();
 //                super.getPhysicsLocation();
@@ -144,15 +153,17 @@ public class PMDRigidBody extends PhysicsRigidBody {
                 }
             } else {
                 if (rigidBodyType == 1 && !centerFlag) {
-                    tmpV.set(super.getPhysicsLocation());
-                    tmpQ.set(super.getPhysicsRotation());
+                    super.getPhysicsLocation(tmpV);
+                    super.getPhysicsRotation(tmpQ);
                     m2.setRotationQuaternion(tmpQ);
                     m2.setTranslation(tmpV);
                     m2.multLocal(invM);
 //                tmpV.addLocal(invPos);
 //                tmpQ.multLocal(invRot);
-                    bone.getModelSpaceRotation().set(m2.toRotationQuat());
-                    bone.getModelSpacePosition().set(m2.toTranslationVector());
+                    m2.toRotationMatrix(tmpMatrix3f);
+                    bone.getModelSpaceRotation().fromRotationMatrix(tmpMatrix3f);
+//                    m2.toRotationQuat(bone.getModelSpaceRotation());
+                    m2.toTranslationVector(bone.getModelSpacePosition());
                 }
             }
         }

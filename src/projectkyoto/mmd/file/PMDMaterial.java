@@ -145,9 +145,6 @@ public class PMDMaterial {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if (obj == null) {
             return false;
         }
@@ -169,6 +166,8 @@ public class PMDMaterial {
         }
         return true;
     }
+
+
 
     @Override
     public int hashCode() {

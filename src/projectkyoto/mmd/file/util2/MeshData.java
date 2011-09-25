@@ -90,7 +90,7 @@ public class MeshData {
         } else {
             newVertIndex = vertexList.size();
             vertexList.add(v);
-            mc.meshTmpVertMap.put(v, index);
+            mc.meshTmpVertMap.put(v, newVertIndex);
         }
         indexList.add(newVertIndex);
     }
@@ -146,5 +146,20 @@ public class MeshData {
             PMDVertex v = vertexList.get(indexList.get(i));
             System.out.println(v);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MeshData other = (MeshData) obj;
+        if (this != obj) {
+            return false;
+        }
+        return true;
     }
 }

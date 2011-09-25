@@ -227,7 +227,7 @@ public class VMDControl extends AbstractControl {
 //        }
 //        tpf = stepTime;
 //        tpf = 1f/15f;
-        boolean needUpdateSkin = true;
+        boolean needUpdateSkin = false;
         if (tpf != 0 && !pause) {
             tpf += prevTpf;
             for(;tpf > accuracy ; tpf -= accuracy ) {
@@ -238,7 +238,7 @@ public class VMDControl extends AbstractControl {
             physicsControl.getWorld().applyResultToBone();
             prevTpf = tpf;
             if (needUpdateSkin) {
-//                resetSkins();
+                resetSkins();
                 calcSkins();
             }
         }

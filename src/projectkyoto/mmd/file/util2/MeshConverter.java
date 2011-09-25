@@ -55,7 +55,7 @@ public class MeshConverter {
     List<MeshData> meshDataList = new ArrayList<MeshData>();
     SkinMeshData skinMeshData;
     HashMap<PMDVertex, Integer> meshTmpVertMap = new HashMap<PMDVertex, Integer>();
-    HashMap<PMDVertex, Integer> skinTmpVertMap = new HashMap<PMDVertex, Integer>();
+    HashMap<Integer, Integer> skinTmpVertMap = new HashMap<Integer, Integer>();
 
     public MeshConverter(PMDModel model) {
         this.model = model;
@@ -93,11 +93,25 @@ public class MeshConverter {
         int faceVertNo = 0;
         for (int materialNo = 0; materialNo < model.getMaterialCount(); materialNo++) {
             PMDMaterial material = model.getMaterial()[materialNo];
+            // find same material
+            MeshData meshData = new MeshData(model, maxBoneSize, material);
+            for(int meshIndex = meshDataList.size()-1;meshIndex >=0;meshIndex--) {
+                PMDMaterial material2 = meshDataList.get(meshIndex).getMaterial();
+                if (material.equals(material2)) {
+                    meshData = meshDataList.get(meshIndex);
+                    for(int i=meshData.getVertexList().size()-1;i>=0;i--) {
+                        PMDVertex v = meshData.getVertexList().get(i);
+                        meshTmpVertMap.put(v, i);
+                    }
+                    break;
+                }
+            }
             if (material.getFaceVertCount() == 0) {
                 continue;
             }
-            MeshData meshData = new MeshData(model, maxBoneSize, material);
-            meshDataList.add(meshData);
+            if (!meshDataList.contains(meshData)) {
+                meshDataList.add(meshData);
+            }
             for (int materialFaceVertNo = 0; materialFaceVertNo < material.getFaceVertCount(); materialFaceVertNo += 3) {
                 int i1 = model.getFaceVertIndex()[faceVertNo++];
                 int i2 = model.getFaceVertIndex()[faceVertNo++];
@@ -136,6 +150,7 @@ public class MeshConverter {
         for(MeshData meshData : meshDataList) {
 //            meshData.printTrinangles();
         }
+        System.out.println("meshDataCount = "+meshDataList.size());
     }
     void printMeshData(MeshData meshData) {
             System.out.println("vertSize = " + meshData.getVertexList().size()

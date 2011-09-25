@@ -165,7 +165,7 @@ public class IKControl extends AbstractControl{
                                 }
                                 axis.normalizeLocal();
 //            System.out.println("axis = " + axis);
-                                rot.fromAngleAxis(angle, axis);
+                                rot.fromAngleNormalAxis(angle, axis);
 //            rot.normalize();
                                 if (hizaFlag) {
                                     if (iterationCount == -1) {
@@ -314,7 +314,7 @@ public class IKControl extends AbstractControl{
                 Vector3f axis = effectorBonePos.cross(targetBonePos, tmpV5);
                 axis.normalizeLocal();
                 Quaternion rot = tmpQ1;
-                rot.fromAngleAxis(angle, axis);
+                rot.fromAngleNormalAxis(angle, axis);
 //                rot.multLocal(ashiBone.getLocalRotation());
 //                ashiBone.getLocalRotation().set(rot);
                 ashiBone.getLocalRotation().multLocal(rot);

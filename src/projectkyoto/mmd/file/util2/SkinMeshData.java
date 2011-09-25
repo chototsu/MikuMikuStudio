@@ -59,7 +59,7 @@ public class SkinMeshData {
                 for(int i=0;i<sd.getSkinVertCount();i++) {
                     PMDVertex v = model.getVertexList()[sd.getSkinVertData()[i].getSkinVertIndex()];
                     vertexList.add(v);
-                    mc.skinTmpVertMap.put(v, i);
+                    mc.skinTmpVertMap.put(sd.getSkinVertData()[i].getSkinVertIndex(), i);
                 }
             }
         }
@@ -91,14 +91,14 @@ public class SkinMeshData {
 
     private void addVertex(MeshConverter mc, List<Integer>indexList, int vertIndex) {
         PMDVertex v = model.getVertexList()[vertIndex];
-        Integer index = mc.skinTmpVertMap.get(v);
+        Integer index = mc.skinTmpVertMap.get(vertIndex);
         int newVertIndex;
         if (index != null /*vertexList.contains(v)*/) {
             newVertIndex = index.intValue(); //vertexList.indexOf(v);
         } else {
             newVertIndex = vertexList.size();
             vertexList.add(v);
-            mc.skinTmpVertMap.put(v, newVertIndex);
+            mc.skinTmpVertMap.put(vertIndex, newVertIndex);
             index = newVertIndex;
         }
         indexList.add(index/*newVertIndex*/);

@@ -64,6 +64,7 @@ public class PMDPhysicsWorld {
     static final Object lockObject = new Object();
     PhysicsSpace physicsSpace;
     Map<PMDNode, PMDRigidBody[]> rigidBodyMap = new HashMap<PMDNode, PMDRigidBody[]>();
+    PMDRigidBody[][] nodeRigidBodyArray = new PMDRigidBody[0][];
     Map<PMDNode, SixDofJoint[]> constraintMap = new HashMap<PMDNode, SixDofJoint[]>();
     float accuracy = 1f / 120;
 
@@ -131,6 +132,7 @@ public class PMDPhysicsWorld {
             constArray[i] = constraint;
             physicsSpace.add(constraint);
         }
+        nodeRigidBodyArray = rigidBodyMap.values().toArray(new PMDRigidBody[rigidBodyMap.size()][]);
 //        physicsSpace.update(1 / 60f, 1);
     }
 
@@ -459,7 +461,7 @@ public class PMDPhysicsWorld {
     }
 
     public void updateKinematicPos() {
-        for (PMDRigidBody rbarray[] : rigidBodyMap.values()) {
+        for (PMDRigidBody rbarray[] : nodeRigidBodyArray) {
             for (int i = 0; i < rbarray.length; i++) {
                 PMDRigidBody rb = rbarray[i];
                 PMDNode pmdNode = rb.getPmdNode();
@@ -513,7 +515,7 @@ public class PMDPhysicsWorld {
 //            CollisionObject obj = btWorld.getCollisionObjectArray().getQuick(i);
 //            if (obj instanceof PMDRigidBody) {
 //                PMDRigidBody rb = (PMDRigidBody)obj;
-        for (PMDRigidBody rbarray[] : rigidBodyMap.values()) {
+        for (PMDRigidBody rbarray[] : nodeRigidBodyArray) {
             for (int i = 0; i < rbarray.length; i++) {
                 PMDRigidBody rb = rbarray[i];
                 if (/*
@@ -543,7 +545,7 @@ public class PMDPhysicsWorld {
         }
     }
     public void resetRigidBodyPos() {
-        for (PMDRigidBody rbarray[] : rigidBodyMap.values()) {
+        for (PMDRigidBody rbarray[] : nodeRigidBodyArray) {
             for (int i = 0; i < rbarray.length; i++) {
                 PMDRigidBody rb = rbarray[i];
                 if (true) {
@@ -557,7 +559,7 @@ public class PMDPhysicsWorld {
         }
     }
     public void updateRigidBodyPos() {
-        for (PMDRigidBody rbarray[] : rigidBodyMap.values()) {
+        for (PMDRigidBody rbarray[] : nodeRigidBodyArray) {
             for (int i = 0; i < rbarray.length; i++) {
                 PMDRigidBody rb = rbarray[i];
                 if (true) {

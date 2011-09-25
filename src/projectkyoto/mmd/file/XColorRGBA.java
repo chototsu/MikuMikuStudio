@@ -71,4 +71,21 @@ public class XColorRGBA extends XColorRGB {
                 + " alpha = " + alpha
                 + "}";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        final XColorRGBA other = (XColorRGBA) obj;
+        if (Float.floatToIntBits(this.alpha) != Float.floatToIntBits(other.alpha)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
