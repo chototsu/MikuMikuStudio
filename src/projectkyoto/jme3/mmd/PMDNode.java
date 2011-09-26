@@ -167,11 +167,15 @@ boolean setBoneMatricesFlag = true;
                 int boneIndexArray[] = pmdMesh.getBoneIndexArray();
                 Matrix4f[] boneMatrixArray = pmdMesh.getBoneMatrixArray();
                 for (int i = pmdMesh.getBoneIndexArray().length-1; i >=0; i--) {
-                    boneMatrixArray[i].set(offsetMatrices[boneIndexArray[i]]);
+                    boneMatrixArray[i] = (offsetMatrices[boneIndexArray[i]]);
                 }
                 if (glslSkinning) {
-                    m.setParam("BoneMatrices", VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
-//                            m.setParam("BoneMatrices", VarType.Matrix4, pmdMesh.getBoneMatrixArray()[0]);
+                    if (pmdMesh.boneMatricesParamIndex < 0) {
+                        m.setParam("BoneMatrices", VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
+                        pmdMesh.boneMatricesParamIndex = g.getMaterial().getParamIndex("BoneMatrices");
+                    } else {
+                        m.setParam(pmdMesh.boneMatricesParamIndex, VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
+                    }
                 }
             }
             
@@ -743,9 +747,6 @@ boolean setBoneMatricesFlag = true;
 
     public void setGlslSkinning(boolean glslSkinning) {
         this.glslSkinning = glslSkinning;
-        for (PMDMesh mesh : targets) {
-//            resetToBind(mesh);
-        }
         for (Spatial sp : getChildren()) {
             if (sp instanceof PMDGeometry) {
                 Mesh mesh = ((PMDGeometry) sp).getMesh();

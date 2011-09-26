@@ -48,6 +48,8 @@ public class PMDMesh extends Mesh {
     Matrix4f boneMatrixArray[];
     VertexBuffer vbBackup;
     VertexBuffer nbBackup;
+    
+    int boneMatricesParamIndex = -1;
 
     public PMDMesh() {
         super();
