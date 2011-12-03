@@ -233,6 +233,7 @@ public class VMDControl extends AbstractControl {
             for(;tpf > accuracy ; tpf -= accuracy ) {
                 controlUpdate2(accuracy);
                 physicsControl.update(accuracy);
+                physicsControl.getWorld().getPhysicsSpace().distributeEvents();
                 needUpdateSkin = true;
             }
             physicsControl.getWorld().applyResultToBone();
@@ -337,6 +338,7 @@ public class VMDControl extends AbstractControl {
                     }
                     if (true || bml.boneType == 0 || bml.boneType == 2 || bml.boneType == 1 || bml.boneType == 4) {
                         bone.getLocalRotation().set(tmpq1.x, tmpq1.y, tmpq1.z, tmpq1.w);
+                        bone.getLocalRotation().normalizeLocal();
                     }
                     Point3f p = tmpp1;
                     Vector3f v = bone.getWorldBindPosition();
