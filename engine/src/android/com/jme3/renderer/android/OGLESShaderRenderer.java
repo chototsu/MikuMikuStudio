@@ -31,31 +31,28 @@
  */
 package com.jme3.renderer.android;
 
+import android.graphics.Bitmap;
+import android.opengl.GLES10;
+import android.opengl.GLES11;
+import android.opengl.GLES20;
+import android.os.Build;
+import com.jme3.asset.TextureKey;
 import com.jme3.light.LightList;
 import com.jme3.material.RenderState;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Matrix4f;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
-import com.jme3.renderer.Caps;
-import com.jme3.util.NativeObjectManager;
-import com.jme3.renderer.IDList;
-import com.jme3.renderer.Renderer;
+import com.jme3.math.*;
+import com.jme3.renderer.*;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.Mesh.Mode;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.VertexBuffer.Format;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.VertexBuffer.Usage;
-import com.jme3.renderer.RenderContext;
-import com.jme3.renderer.RendererException;
-import com.jme3.renderer.Statistics;
-import com.jme3.scene.Mesh.Mode;
 import com.jme3.shader.Attribute;
 import com.jme3.shader.Shader;
 import com.jme3.shader.Shader.ShaderSource;
 import com.jme3.shader.Shader.ShaderType;
 import com.jme3.shader.Uniform;
+import com.jme3.system.JmeSystem;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.FrameBuffer.RenderBuffer;
 import com.jme3.texture.Image;
@@ -63,26 +60,16 @@ import com.jme3.texture.Texture;
 import com.jme3.texture.Texture.WrapAxis;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.IntMap;
-import com.jme3.util.IntMap.Entry;
 import com.jme3.util.ListMap;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
+import com.jme3.util.NativeObjectManager;
+import com.jme3.util.SafeArrayList;
+import java.nio.*;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
-
-import android.graphics.Bitmap;
-import android.opengl.GLES10;
-import android.opengl.GLES11;
-import android.opengl.GLES20;
-import android.os.Build;
-import java.util.ArrayList;
 
 public class OGLESShaderRenderer implements Renderer {
 
@@ -183,6 +170,7 @@ public class OGLESShaderRenderer implements Renderer {
                     + "required for the OpenGL ES "
                     + "renderer!");
         }
+        logger.info("GLES20.GL_SHADING_LANGUAGE_VERSION = "+versionStr);
 
         // Fix issue in TestRenderToMemory when GL_FRONT is the main
         // buffer being used.
@@ -195,7 +183,11 @@ public class OGLESShaderRenderer implements Renderer {
             versionStr = versionStr.substring(spaceIdx, versionStr.length());
         }
 
-        float version = Float.parseFloat(versionStr);
+        float version = 1;
+        try {
+            version = Float.parseFloat(versionStr);
+        } catch(Exception ex) {
+        }
         glslVer = (int) (version * 100);
 
         switch (glslVer) {
@@ -407,9 +399,12 @@ public class OGLESShaderRenderer implements Renderer {
 
 //	checkGLError();
 
-        if ("2.2".equals(Build.VERSION.RELEASE)) {
-            useVBO = false;
-        } else {
+        useVBO = false;
+        
+        // NOTE: SDK_INT is only available since 1.6, 
+        // but for jME3 it doesn't matter since android versions 1.5 and below
+        // are not supported.
+        if (Build.VERSION.SDK_INT >= 9){
             useVBO = true;
         }
         
@@ -851,7 +846,6 @@ public class OGLESShaderRenderer implements Renderer {
 
         uniform.clearUpdateNeeded();
         FloatBuffer fb;
-        int size;
         switch (uniform.getVarType()) {
             case Float:
                 if (verboseLogging) {
@@ -1907,7 +1901,6 @@ public class OGLESShaderRenderer implements Renderer {
 
         // bind texture
         int target = convertTextureType(type);
-        if (context.boundTextures[0] != img) {
             if (context.boundTextureUnit != 0) {
                 if (verboseLogging) {
                     logger.info("GLES20.glActiveTexture(GLES20.GL_TEXTURE0)");
@@ -1916,6 +1909,7 @@ public class OGLESShaderRenderer implements Renderer {
                 GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
                 context.boundTextureUnit = 0;
             }
+        if (context.boundTextures[0] != img) {
 
             if (verboseLogging) {
                 logger.info("GLES20.glBindTexture(" + target + ", " + texId + ")");
@@ -1974,7 +1968,6 @@ public class OGLESShaderRenderer implements Renderer {
     public void setTexture(int unit, Texture tex) {
         Image image = tex.getImage();
         if (image.isUpdateNeeded()) {
-            /*
             Bitmap bmp = (Bitmap)image.getEfficentData();
             if (bmp != null)
             {
@@ -1986,7 +1979,6 @@ public class OGLESShaderRenderer implements Renderer {
             image.setEfficentData( textureReloaded.getImage().getEfficentData());
             }
             }
-             */
             updateTexImageData(image, tex.getType(), tex.getMinFilter().usesMipMapLevels());
         }
 
@@ -2008,7 +2000,6 @@ public class OGLESShaderRenderer implements Renderer {
 //             glEnable(type);
         }
 
-        if (textures[unit] != image) {
             if (context.boundTextureUnit != unit) {
                 if (verboseLogging) {
                     logger.info("GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + " + unit + ")");
@@ -2016,6 +2007,7 @@ public class OGLESShaderRenderer implements Renderer {
                 GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + unit);
                 context.boundTextureUnit = unit;
             }
+        if (textures[unit] != image) {
 
             if (verboseLogging) {
                 logger.info("GLES20.glBindTexture(" + type + ", " + texId + ")");
@@ -2433,12 +2425,12 @@ public class OGLESShaderRenderer implements Renderer {
                             + "data.capacity=" + vb.getData().capacity() + ")");
                 }
 
-                GLES20.glVertexAttribPointer(loc,
-                        vb.getNumComponents(),
-                        convertFormat(vb.getFormat()),
-                        vb.isNormalized(),
-                        vb.getStride(),
-                        0);
+                Android22Workaround.glVertexAttribPointer(loc,
+                                    vb.getNumComponents(),
+                                    convertFormat(vb.getFormat()),
+                                    vb.isNormalized(),
+                                    vb.getStride(),
+                                    0);
 
                 attribs[loc] = vb;
             }
@@ -2628,7 +2620,7 @@ public class OGLESShaderRenderer implements Renderer {
         ArrayList<VertexBuffer> buffersList = mesh.getBufferList();
         for (int i = 0; i < buffersList.size(); i++){
             VertexBuffer vb = buffersList.get(i);
-
+      
             if (vb.getBufferType() == Type.InterleavedData
                     || vb.getUsage() == Usage.CpuOnly // ignore cpu-only buffers
                     || vb.getBufferType() == Type.Index) {
@@ -2656,8 +2648,13 @@ public class OGLESShaderRenderer implements Renderer {
             logger.info("renderMeshVertexArray");
         }
 
+      //  IntMap<VertexBuffer> buffers = mesh.getBuffers();
         IntMap<VertexBuffer> buffers = mesh.getBuffers();
-        for (Entry<VertexBuffer> entry : buffers) {
+        IntMap.Entry<VertexBuffer> table[] = buffers.getTable();
+        for (IntMap.Entry<VertexBuffer> entry : table) {
+            if (entry == null) {
+                continue;
+            }
             VertexBuffer vb = entry.getValue();
 
             if (vb.getBufferType() == Type.InterleavedData
@@ -2680,7 +2677,7 @@ public class OGLESShaderRenderer implements Renderer {
         if (mesh.getNumLodLevels() > 0) {
             indices = mesh.getLodLevel(lod);
         } else {
-            indices = buffers.get(Type.Index.ordinal());
+            indices = mesh.getBuffer(Type.Index);//buffers.get(Type.Index.ordinal());
         }
         if (indices != null) {
             drawTriangleList_Array(indices, mesh, count);
@@ -2708,19 +2705,16 @@ public class OGLESShaderRenderer implements Renderer {
             updateBufferData(interleavedData);
         }
 
-        IntMap<VertexBuffer> buffers = mesh.getBuffers();
+        //IntMap<VertexBuffer> buffers = mesh.getBuffers();     ;
         if (mesh.getNumLodLevels() > 0) {
             indices = mesh.getLodLevel(lod);
         } else {
-            indices = buffers.get(Type.Index.ordinal());
+            indices = mesh.getBuffer(Type.Index);// buffers.get(Type.Index.ordinal());
         }
-        Entry<VertexBuffer> table[] = buffers.getTable();
-        for (Entry<VertexBuffer> entry : table) {
-            if (entry == null) {
-                continue;
-            }
-            VertexBuffer vb = entry.getValue();
-
+        ArrayList<VertexBuffer> buffersList = mesh.getBufferList();
+        for (int i = 0; i < buffersList.size(); i++){
+            VertexBuffer vb = buffersList.get(i);
+         
             if (vb.getBufferType() == Type.InterleavedData
                     || vb.getUsage() == Usage.CpuOnly // ignore cpu-only buffers
                     || vb.getBufferType() == Type.Index) {

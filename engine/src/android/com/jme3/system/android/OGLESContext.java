@@ -151,8 +151,11 @@ public class OGLESContext implements JmeContext, GLSurfaceView.Renderer
             clientOpenGLESVersion = 2;            
             view.setEGLContextClientVersion(2);
             //RGB565, Depth16
-            view.setEGLConfigChooser(5, 6, 5, 0, 16, 0);
+//            view.setEGLConfigChooser(5, 6, 5, 0, 16, 0);
             logger.info("ConfigType.LEGACY using RGB565");
+        view.setEGLConfigChooser(8, 8, 8, 8, 16, 0);    
+        view.getHolder().setFormat(PixelFormat.TRANSLUCENT);            
+        view.setZOrderOnTop(true);
         }
         else
         {
@@ -188,8 +191,11 @@ public class OGLESContext implements JmeContext, GLSurfaceView.Renderer
              * AndroidInput.        
              */     
             view.setEGLContextClientVersion(clientOpenGLESVersion);
-            view.setEGLConfigChooser(configChooser);
-            view.getHolder().setFormat(configChooser.getPixelFormat());            
+//            view.setEGLConfigChooser(configChooser);
+//            view.getHolder().setFormat(configChooser.getPixelFormat());            
+        view.setEGLConfigChooser(8, 8, 8, 8, 16, 0);    
+        view.getHolder().setFormat(PixelFormat.TRANSLUCENT);           
+        view.setZOrderOnTop(true);
         }
         
         view.setFocusableInTouchMode(true);
@@ -259,7 +265,7 @@ public class OGLESContext implements JmeContext, GLSurfaceView.Renderer
 
         renderer = new OGLESShaderRenderer();
     
-        renderer.setUseVA(true);
+//        renderer.setUseVA(true);
         renderer.setVerboseLogging(verboseLogging);
         
         renderer.initialize();

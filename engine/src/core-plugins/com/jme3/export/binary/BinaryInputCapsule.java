@@ -1067,7 +1067,7 @@ final class BinaryInputCapsule implements InputCapsule {
 
         try {
             // even though so far the parsing might have been a legal UTF-8 sequence, only if a codepoint is fully given is it correct UTF-8
-            if (utf8State == UTF8_START) {
+            if (true /*utf8State == UTF8_START*/) {
                 // Java misspells UTF-8 as UTF8 for official use in java.lang
                 return new String(bytes, "UTF8");
             }

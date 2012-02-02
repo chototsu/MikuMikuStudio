@@ -27,8 +27,10 @@ public class AndroidImageLoader implements AssetLoader {
         InputStream in = null;
         Bitmap bitmap = null;
         try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPurgeable = true;
             in = info.openStream();
-            bitmap = BitmapFactory.decodeStream(in);
+            bitmap = BitmapFactory.decodeStream(in, null, options);
             if (bitmap == null) {
                 throw new IOException("Failed to load image: " + info.getKey().getName());
             }

@@ -245,7 +245,7 @@ public abstract class SimpleApplication extends Application {
             frameCounter ++;
             if (secondCounter >= 1.0f) {
                 int fps = (int) (frameCounter / secondCounter);
-                fpsText.setText("Frames per second: " + fps);
+                fpsText.setText("Frames per second: " + fps+"  ");
                 secondCounter = 0.0f;
                 frameCounter = 0;
             }          

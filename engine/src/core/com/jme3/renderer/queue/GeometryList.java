@@ -119,6 +119,7 @@ public class GeometryList {
     public void clear() {
         for (int i = 0; i < size; i++){
             geometries[i] = null;
+            geometries2[i] = null;
         }
 
         size = 0;

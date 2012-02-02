@@ -409,7 +409,7 @@ public class AndroidInput extends GLSurfaceView implements TouchInput,
         processEvent(evt);
         
         // Handle all keys ourself except Volume Up/Down
-        if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN))
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) || (keyCode == KeyEvent.KEYCODE_MENU))
             return false;
         else
             return true;
@@ -430,7 +430,7 @@ public class AndroidInput extends GLSurfaceView implements TouchInput,
         processEvent(evt);
         
         // Handle all keys ourself except Volume Up/Down
-        if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN))
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) || (keyCode == KeyEvent.KEYCODE_MENU))
             return false;
         else
             return true;

@@ -63,6 +63,7 @@ public final class Bone implements Savable {
      * Animation transforms are not applied to this bone when enabled.
      */
     private boolean userControl = false;
+    private boolean useModelSpaceVectors = false;
     /**
      * The attachment node.
      */
@@ -331,26 +332,27 @@ public final class Bone implements Savable {
      * world transform with this bones' local transform.
      */
     public final void updateWorldVectors() {
-        if (parent != null) {
-            //rotation
-            parent.worldRot.mult(localRot, worldRot);
+        if (!useModelSpaceVectors) {
+            if (parent != null) {
+                //rotation
+                parent.worldRot.mult(localRot, worldRot);
 
-            //scale
-            //For scale parent scale is not taken into account!
-            // worldScale.set(localScale);
-            parent.worldScale.mult(localScale, worldScale);
+                //scale
+                //For scale parent scale is not taken into account!
+                // worldScale.set(localScale);
+                parent.worldScale.mult(localScale, worldScale);
 
-            //translation
-            //scale and rotation of parent affect bone position            
-            parent.worldRot.mult(localPos, worldPos);
-            worldPos.multLocal(parent.worldScale);
-            worldPos.addLocal(parent.worldPos);
-        } else {
-            worldRot.set(localRot);
-            worldPos.set(localPos);
-            worldScale.set(localScale);
+                //translation
+                //scale and rotation of parent affect bone position            
+                parent.worldRot.mult(localPos, worldPos);
+                worldPos.multLocal(parent.worldScale);
+                worldPos.addLocal(parent.worldPos);
+            } else {
+                worldRot.set(localRot);
+                worldPos.set(localPos);
+                worldScale.set(localScale);
+            }
         }
-
         if (attachNode != null) {
             attachNode.setLocalTranslation(worldPos);
             attachNode.setLocalRotation(worldRot);
@@ -589,6 +591,14 @@ public final class Bone implements Savable {
     @Override
     public String toString() {
         return this.toString(0);
+    }
+
+    public boolean isUseModelSpaceVectors() {
+        return useModelSpaceVectors;
+    }
+
+    public void setUseModelSpaceVectors(boolean useModelSpaceVectors) {
+        this.useModelSpaceVectors = useModelSpaceVectors;
     }
 
     @Override

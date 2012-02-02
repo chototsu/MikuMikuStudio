@@ -268,4 +268,5 @@ jobject jmePhysicsSpace::getJavaPhysicsSpace() {
 
 jmePhysicsSpace::~jmePhysicsSpace() {
     delete(dynamicsWorld);
+    getEnv()->DeleteWeakGlobalRef(this->javaPhysicsSpace);
 }

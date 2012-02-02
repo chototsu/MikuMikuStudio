@@ -57,7 +57,7 @@ public class TextureUtil {
         while (height >= 1 || width >= 1) {
             //First of all, generate the texture from our bitmap and set it to the according level
             GLUtils.texImage2D(GL10.GL_TEXTURE_2D, level, bitmap, 0);
-
+checkGLError();
             if (height == 1 || width == 1) {
                 break;
             }
@@ -83,6 +83,9 @@ public class TextureUtil {
      */
     public static void uploadTextureBitmap(final int target, Bitmap bitmap, boolean generateMips, boolean powerOf2)
     {
+        if (bitmap.isRecycled()) {
+            throw new RuntimeException("bitmap is recycled.");
+        }
         if (!powerOf2)
         {
             int width = bitmap.getWidth();
@@ -105,7 +108,8 @@ public class TextureUtil {
         else
         {
             GLUtils.texImage2D(target, 0, bitmap, 0);
-            //bitmap.recycle();
+checkGLError();
+//bitmap.recycle();
         }
     }
 
@@ -251,7 +255,8 @@ public class TextureUtil {
                                       0,
                                       data.capacity(),
                                       data);
-            return;
+checkGLError();
+return;
         }
 
         for (int i = 0; i < mipSizes.length; i++){
@@ -273,6 +278,7 @@ public class TextureUtil {
                                           0,
                                           data.remaining(),
                                           data);
+checkGLError();
             }else{
                 GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D,
                                 i,
@@ -284,9 +290,14 @@ public class TextureUtil {
                                 dataType,
                                 data);
             }
-
+checkGLError();
             pos += mipSizes[i];
         }
     }
-
+    private static void checkGLError() {
+        int error;
+        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+            	throw new RuntimeException("glError " + error);
+        }
+    }
 }
