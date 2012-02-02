@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file.util2;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ import projectkyoto.mmd.file.PMDVertex;
  *
  * @author kobayasi
  */
-public class SkinMeshData {
+public class SkinMeshData implements Serializable{
 
     PMDModel model;
     List<Integer> boneList = new ArrayList<Integer>();

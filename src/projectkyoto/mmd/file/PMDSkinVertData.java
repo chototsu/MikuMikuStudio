@@ -33,13 +33,14 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 import javax.vecmath.Vector3f;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDSkinVertData {
+public class PMDSkinVertData implements Serializable{
     private int skinVertIndex;
     private Vector3f skinVertPos;
 

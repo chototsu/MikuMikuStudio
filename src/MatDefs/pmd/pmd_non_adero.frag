@@ -65,6 +65,7 @@ varying vec3 lightVec;
 
     uniform ENVMAP m_EnvMap;
 #endif
+    varying vec4 refVec;
 
 float tangDot(in vec3 v1, in vec3 v2){
     float d = dot(v1,v2);
@@ -122,7 +123,6 @@ vec2 computeLighting(in vec3 wvPos, in vec3 wvNorm, in vec3 wvViewDir, in vec3 w
    return vec2(diffuseFactor, specularFactor) * vec2(att);
 }
 #endif
-    varying vec4 refVec;
 vec2 Optics_SphereCoord2(in vec3 dir){
     float dzplus1 = dir.z + 1.0;
     float m = 2.0 * sqrt(dir.x * dir.x + dir.y * dir.y + dzplus1 * dzplus1);
@@ -158,7 +158,7 @@ void main(){
     #ifdef ALPHAMAP
        alpha = alpha * texture2D(m_AlphaMap, newTexCoord).r;
     #endif
-    if(alpha < 0.1 /*m_AlphaDiscardThreshold*/){
+    if(alpha < m_AlphaDiscardThreshold){
         discard;
     }
 
@@ -197,7 +197,7 @@ void main(){
        //if (light.y != light.y) {
        //     light.y = 0.0;
        //}
-       vec4 output_color = (((AmbientSum + DiffuseSum) * diffuseColor)
+       gl_FragColor = (((AmbientSum + DiffuseSum) * diffuseColor)
                       + SpecularSum * specularColor * light.y );
 
     #else
@@ -247,17 +247,9 @@ void main(){
 #endif
 
     #endif
-#ifdef SPHERE_MAP_A
-        vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
-        v2.y = 1.0 - v2.y;
-        output_color.xyz +=  (texture2D(m_SphereMap_A, v2).xyz);
-        // output_color.xyz = vec3(normalize(refVec.xyz).x);
-#endif
-#ifdef SPHERE_MAP_H
-        vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
-        v2.y = 1.0 - v2.y;
-        output_color.xyz *= (texture2D(m_SphereMap_H, v2).xyz);
-#endif
-    output_color.a = alpha;
-    gl_FragColor = output_color;
+    //output_color.a = alpha;
+    // output_color.a = diffuseColor.a;
+
+    // gl_FragColor = 0.5 + 0.5 * light.x;//output_color;
+    //gl_FragColor = output_color;
 }

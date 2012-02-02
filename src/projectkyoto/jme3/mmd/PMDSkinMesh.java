@@ -31,11 +31,15 @@ package projectkyoto.jme3.mmd;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bounding.BoundingVolume;
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.util.BufferUtils;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 /**
@@ -44,7 +48,7 @@ import java.nio.FloatBuffer;
  */
 public class PMDSkinMesh extends Mesh {
 
-    short boneIndexArray[];
+    int boneIndexArray[];
     Matrix4f boneMatrixArray[];
     VertexBuffer skinvb2;
     VertexBuffer skinnb2;
@@ -53,11 +57,11 @@ public class PMDSkinMesh extends Mesh {
         super();
     }
 
-    public short[] getBoneIndexArray() {
+    public int[] getBoneIndexArray() {
         return boneIndexArray;
     }
 
-    public void setBoneIndexArray(short[] boneIndexArray) {
+    public void setBoneIndexArray(int[] boneIndexArray) {
         this.boneIndexArray = boneIndexArray;
     }
 
@@ -118,5 +122,23 @@ public class PMDSkinMesh extends Mesh {
         newMesh.setBuffer(skinnb1);
 
         return newMesh;
+    }
+
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        super.read(im);
+//        InputCapsule c = im.getCapsule(this);
+//        boneIndexArray = c.readIntArray("boneIndexArray", null);
+//        boneMatrixArray = new Matrix4f[boneIndexArray.length];
+//        for(int i=0;i<boneMatrixArray.length;i++) {
+//            boneMatrixArray[i] = new Matrix4f();
+//            boneMatrixArray[i].loadIdentity();
+//        }
+    }
+
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        
+        super.write(ex);
     }
 }

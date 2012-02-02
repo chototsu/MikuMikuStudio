@@ -83,24 +83,62 @@ public class VMDControl extends AbstractControl {
     float currentTime = 0f;
 
     public VMDControl(PMDNode pmdNode, VMDFile vmdFile) {
+        this(pmdNode, vmdFile, new PhysicsControl());
+    }
+    public VMDControl(PMDNode pmdNode, VMDFile vmdFile, PhysicsControl physicsControl) {
+        this(pmdNode, vmdFile, physicsControl,true);
+    }
+    public VMDControl(PMDNode pmdNode, VMDFile vmdFile, PhysicsControl physicsControl, boolean addPmdNodeFlag) {
         this.pmdNode = pmdNode;
         this.vmdFile = vmdFile;
-        initMotionMap();
-        physicsControl = new PhysicsControl(pmdNode);
+        this.physicsControl = physicsControl;
+        if (addPmdNodeFlag) {
+            physicsControl.getWorld().addPMDNode(pmdNode);
+        }
 //         physicsControl.getWorld().getPhysicsSpace().addTickListener(tl);
         ikControl = new IKControl(pmdNode);
         boneEnabled = new int[pmdNode.getSkeleton().getBoneCount()];
         for(int i=0;i<boneEnabled.length;i++) {
             boneEnabled[i] = 1;
         }
+        for(projectkyoto.mmd.file.PMDRigidBody rb : pmdNode.getPmdModel().getRigidBodyList().getRigidBodyArray()) {
+            if (rb.getRigidBodyType() != 0 && rb.getRelBoneIndex() != 0xffff) {
+                boneEnabled[rb.getRelBoneIndex()] = 0;
+            }
+        }
+        for(int i=0;i<pmdNode.getPmdModel().getBoneList().getBones().length;i++) {
+            int i2 = i;
+            for(;;) {
+                PMDBone bone = pmdNode.getPmdModel().getBoneList().getBones()[i2];
+                if (bone.getParentBoneIndex() == 0xffff) {
+                    break;
+                }
+                if (boneEnabled[i2] == 0) {
+//                    boneEnabled[i] = 0;
+                    break;
+                }
+                i2 = bone.getParentBoneIndex();
+            }
+        }
         for (PMDIKData ikData : pmdNode.getPmdModel().getIkList().getPmdIKData()) {
             int targetBoneIndex = ikData.getIkTargetBoneIndex();
             for(projectkyoto.mmd.file.PMDRigidBody rb : pmdNode.getPmdModel().getRigidBodyList().getRigidBodyArray()) {
-                if (rb.getRelBoneIndex() == targetBoneIndex && rb.getRigidBodyType() != 0) {
+                if ((rb.getRelBoneIndex() == targetBoneIndex && rb.getRigidBodyType() != 0)
+                        || boneEnabled[targetBoneIndex] == 0) {
                     boneEnabled[targetBoneIndex] = 0;
+                    boneEnabled[ikData.getIkBoneIndex()] = 0;
+                    for(int i:ikData.getIkChildBoneIndex()) {
+//                        boneEnabled[i] = 0;
+                    }
                     break;
                 }
             }
+        }
+        for(int i=0;i<pmdNode.getPmdModel().getBoneList().getBones().length;i++) {
+            PMDBone bone = pmdNode.getPmdModel().getBoneList().getBones()[i];
+//            if (bone.getBoneName().indexOf("胸") >=0) {
+//                System.out.println(bone.getBoneName()+" "+boneEnabled[i]);
+//            }
         }
         ikControl.setBoneEnabled(boneEnabled);
         for(int i=pmdNode.getSkeleton().getBoneCount()-1;i>=0;i--) {
@@ -109,6 +147,7 @@ public class VMDControl extends AbstractControl {
                 bone.setUserControl(true);
             }
         }
+        initMotionMap();
     }
 
     private void initMotionMap() {
@@ -148,6 +187,11 @@ public class VMDControl extends AbstractControl {
                 }
             }
         }
+        for(int i=0;i<boneEnabled.length;i++) {
+            if (boneEnabled[i] == 0) {
+                motionMap.remove(pmdNode.getPmdModel().getBoneList().getBones()[i].getBoneName());
+            }
+        }
         for (BoneMotionList ml : motionMap.values()) {
             Collections.sort(ml, vmc);
             ml.setCurrentCount(0);
@@ -173,6 +217,9 @@ public class VMDControl extends AbstractControl {
     }
     Quat4f tmpq1 = new Quat4f();
     Quat4f tmpq2 = new Quat4f();
+    Quat4f tmpq3 = new Quat4f();
+    Quaternion tmpq4 = new Quaternion();
+    Quaternion tmpq5 = new Quaternion();
     Point3f tmpp1 = new Point3f();
     Point3f tmpp2 = new Point3f();
     float prevTpf = 0;
@@ -236,7 +283,9 @@ public class VMDControl extends AbstractControl {
                 physicsControl.getWorld().getPhysicsSpace().distributeEvents();
                 needUpdateSkin = true;
             }
+//            System.out.println("X = "+pmdNode.getSkeleton().getBone("前髪").getModelSpacePosition().getX());
             physicsControl.getWorld().applyResultToBone();
+//            pmdNode.getSkeleton().updateWorldVectors();
             prevTpf = tpf;
             if (needUpdateSkin) {
                 resetSkins();
@@ -271,7 +320,11 @@ public class VMDControl extends AbstractControl {
 
     void calcBonePosition() {
         for(int i=pmdNode.getSkeleton().getBoneCount()-1;i>=0;i--) {
-            if (boneEnabled[i] == 1) {
+            int i2 = i; //boneEnabled.length -1 - i;
+            if (boneEnabled[i2] == 1) {
+                if (!pmdNode.getSkeleton().getBone(i).getName().equals(pmdNode.getPmdModel().getBoneList().getBones()[i2].getBoneName())) {
+                    System.out.println("ERROR "+pmdNode.getSkeleton().getBone(i).getName()+" "+pmdNode.getPmdModel().getBoneList().getBones()[i2].getBoneName());
+                }
                 Bone bone = pmdNode.getSkeleton().getBone(i);
                 bone.getLocalRotation().loadIdentity();
             }
@@ -327,11 +380,17 @@ public class VMDControl extends AbstractControl {
                         float f2 = currentTime - m1.getFrameNo() / 30f;
                         assert (f2 >= 0);
                         float f3 = f2 / f;
+                        assert (f3 >= 0 && f3 <= 1);
                         float fx = IPUtil.calcIp(bml, f3, 0);//calcIp(m2.getInterpolation(), f3, 0);
                         float fy = IPUtil.calcIp(bml, f3, 1); //calcIp(m2.getInterpolation(), f3, 1);
                         float fz = IPUtil.calcIp(bml, f3, 2); //calcIp(m2.getInterpolation(), f3, 2);
                         float fr = IPUtil.calcIp(bml, f3, 3); //calcIp(m2.getInterpolation(), f3, 3);
-                        tmpq1.interpolate(m1.getRotation(), m2.getRotation(), fr);
+                        tmpq4.set(m1.getRotation().x,m1.getRotation().y,m1.getRotation().z,m1.getRotation().w);
+                        tmpq4.normalizeLocal();
+                        tmpq5.set(m2.getRotation().x,m2.getRotation().y,m2.getRotation().z,m2.getRotation().w);
+                        tmpq5.normalizeLocal();
+                        tmpq4.slerp(tmpq5, fr);
+                        tmpq1.set(tmpq4.getX(),tmpq4.getY(),tmpq4.getZ(),tmpq4.getW());
                         tmpp1.x = m1.getLocation().x + (m2.getLocation().x - m1.getLocation().x) * fx;
                         tmpp1.y = m1.getLocation().y + (m2.getLocation().y - m1.getLocation().y) * fy;
                         tmpp1.z = m1.getLocation().z + (m2.getLocation().z - m1.getLocation().z) * fz;

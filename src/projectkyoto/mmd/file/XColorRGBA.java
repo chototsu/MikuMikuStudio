@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class XColorRGBA extends XColorRGB {
+public class XColorRGBA extends XColorRGB implements Serializable{
 
     private float alpha;
 

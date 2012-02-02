@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class VMDSkin {
+public class VMDSkin implements Serializable{
 
     private String skinName; // char[15]
     private int flameNo;

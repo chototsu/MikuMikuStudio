@@ -32,13 +32,14 @@ package projectkyoto.mmd.file;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class PMDModel {
+public class PMDModel implements Serializable{
     // PMD Header
 
     private String id; // char[3] "Pmd"
@@ -136,7 +137,9 @@ public class PMDModel {
         toonTextureList = new PMDToonTextureList(is);
         rigidBodyList = new PMDRigidBodyList(is);
         jointList = new PMDJointList(is);
-
+//        toonTextureList = new PMDToonTextureList();
+//        rigidBodyList = new PMDRigidBodyList();
+//        jointList = new PMDJointList();
     }
 
     @Override

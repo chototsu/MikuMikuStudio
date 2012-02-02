@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDHeaderEnglish {
+public class PMDHeaderEnglish implements Serializable{
 
     private int englishNameCompatibility;
     private String modelName;

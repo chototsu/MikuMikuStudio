@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDBoneDispList {
+public class PMDBoneDispList implements Serializable{
     private int boneDispCount;
     private PMDBoneDisp boneDispArray[];
     public PMDBoneDispList(DataInputStreamLittleEndian is) throws IOException {

@@ -1,6 +1,6 @@
 // #import "MatDefs/pmd/Skinning.glsllib"
 #ifdef USE_HWSKINNING
-uniform mat4 m_BoneMatrices[20];
+uniform mat4 m_BoneMatrices[NUM_BONES];
 #endif
 #define ATTENUATION
 // #define HQ_ATTENUATION
@@ -129,8 +129,8 @@ void Skinning_Compute(inout vec4 position, inout vec4 normal){
     vec4 index  = inBoneIndex;
     vec4 weight = inBoneWeight;
 
-    vec4 newPos    = vec4(0.0);
-    vec4 newNormal = vec4(0.0);
+    vec4 newPos    = vec4(0.0,0.0,0.0,0.0);
+    vec4 newNormal = vec4(0.0,0.0,0.0,0.0);
 
     //for (float i = 1.0; i < 2.0; i += 1.0){
         mat4 skinMat = m_BoneMatrices[int(index.x)];
@@ -218,7 +218,7 @@ void main(){
        vec2 light = computeLighting(wvPosition, wvNormal, viewDir, wvLightPos);
 
        AmbientSum.a  = light.x;
-       SpecularSum.a = light.y;
+       SpecularSum.a = light.y * 0.3;
     #endif
 
     #if defined(USE_REFLECTION) || defined(SPHERE_MAP_A) || defined(SPHERE_MAP_H)

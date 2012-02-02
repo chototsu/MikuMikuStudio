@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDSkinData {
+public class PMDSkinData implements Serializable{
     private String skinName; //20文字
     private int skinVertCount;
     private int skinType; // byte

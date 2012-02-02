@@ -6,6 +6,7 @@ package projectkyoto.jme3.mmd.vmd;
 
 import java.util.concurrent.Callable;
 import projectkyoto.jme3.mmd.PMDNode;
+import projectkyoto.jme3.mmd.nativebullet.PhysicsControl;
 import projectkyoto.jme3.mmd.vmd.VMDControl;
 import projectkyoto.mmd.file.VMDFile;
 
@@ -20,6 +21,10 @@ public class VMDCallable implements Callable<Void> {
     public VMDCallable(PMDNode pmdNode, VMDFile vmdFile) {
         this.pmdNode = pmdNode;
         vmdControl = new VMDControl(pmdNode, vmdFile);
+    }
+    public VMDCallable(PMDNode pmdNode, VMDFile vmdFile, PhysicsControl physicsControl, boolean addPmdNodeFlag) {
+        this.pmdNode = pmdNode;
+        vmdControl = new VMDControl(pmdNode, vmdFile, physicsControl, addPmdNodeFlag);
     }
     
     public Void call() throws Exception {

@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file.util2;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,10 +49,11 @@ import projectkyoto.mmd.file.PMDVertex;
  *
  * @author kobayasi
  */
-public class MeshConverter {
+public class MeshConverter implements Serializable{
 
     PMDModel model;
-    int maxBoneSize = 20;
+    public static int DEFAULT_MAX_BONE_SIZE = 20;
+    int maxBoneSize = DEFAULT_MAX_BONE_SIZE;
     List<MeshData> meshDataList = new ArrayList<MeshData>();
     SkinMeshData skinMeshData;
     HashMap<PMDVertex, Integer> meshTmpVertMap = new HashMap<PMDVertex, Integer>();
@@ -92,6 +94,7 @@ public class MeshConverter {
     public void convertMesh() {
         int faceVertNo = 0;
         for (int materialNo = 0; materialNo < model.getMaterialCount(); materialNo++) {
+            meshTmpVertMap.clear();
             PMDMaterial material = model.getMaterial()[materialNo];
             // find same material
             MeshData meshData = new MeshData(model, maxBoneSize, material);
@@ -131,26 +134,8 @@ public class MeshConverter {
                 meshDataList.remove(meshDataList.size()-1);
             }
         }
-        int vertSizeSum = 0;
-        int boneSizeSum = 0;
-        int indexSizeSum = 0;
-//        System.out.println("material size " + model.getMaterialCount() + " " + meshDataList.size());
-        for (MeshData meshData : meshDataList) {
-            vertSizeSum += meshData.getVertexList().size();
-            boneSizeSum += meshData.getBoneList().size();
-            indexSizeSum += meshData.getIndexList().size();
-//            printMeshData(meshData);
-//            System.out.println("mesh size = "+meshData.vertexList.size());
-        }
-//        System.out.println("-----------------------skin");
-//        System.out.println("index " + model.getFaceVertCount() + " " + indexSizeSum
-//                + " vertSizeSum = " + model.getVertCount() + " " + vertSizeSum
-//                + " boneSizeSum = " + model.getBoneList().getBoneCount() + " " + boneSizeSum);
-//        printFaceVertSize();
-        for(MeshData meshData : meshDataList) {
-//            meshData.printTrinangles();
-        }
-        System.out.println("meshDataCount = "+meshDataList.size());
+        meshTmpVertMap = null;
+        skinTmpVertMap = null;
     }
     void printMeshData(MeshData meshData) {
             System.out.println("vertSize = " + meshData.getVertexList().size()
@@ -222,7 +207,7 @@ public class MeshConverter {
     }
     
 }
-class VertIndex {
+class VertIndex implements Serializable{
     int index;
 
     public VertIndex(int index) {

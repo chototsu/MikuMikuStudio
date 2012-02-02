@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDIKList {
+public class PMDIKList implements Serializable{
     private int ikDataCount;
     private PMDIKData pmdIKData[];
     public PMDIKList(DataInputStreamLittleEndian is) throws IOException {

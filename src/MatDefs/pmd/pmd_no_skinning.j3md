@@ -35,7 +35,7 @@ MaterialDef pmd {
         Boolean WardIso
 
         // Use vertex color as an additional diffuse color.
-        Boolean UseVertexColor
+        Boolean UseVertexColor : false
 
         // Ambient color
         Color Ambient (MaterialAmbient)

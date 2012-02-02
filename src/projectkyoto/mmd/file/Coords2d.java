@@ -32,12 +32,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class Coords2d {
+public class Coords2d implements Serializable{
     private float u;
     private float v;
 

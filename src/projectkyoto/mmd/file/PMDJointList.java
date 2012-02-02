@@ -33,14 +33,20 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDJointList {
+public class PMDJointList implements Serializable{
     private int jointCount;
     private PMDJoint jointArray[];
+
+    public PMDJointList() {
+        jointCount = 0;
+        jointArray = new PMDJoint[0];
+    }
 
     public PMDJointList(DataInputStreamLittleEndian is) throws IOException {
         jointCount = is.readInt();

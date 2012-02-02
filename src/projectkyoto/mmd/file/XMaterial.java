@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class XMaterial {
+public class XMaterial implements Serializable{
     private XColorRGBA faceColor;
     private float power;
     private XColorRGB specularColor;

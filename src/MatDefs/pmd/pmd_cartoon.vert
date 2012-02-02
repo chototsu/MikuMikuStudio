@@ -1,5 +1,5 @@
 #ifdef USE_HWSKINNING
-uniform mat4 m_BoneMatrices[20];
+uniform mat4 m_BoneMatrices[NUM_BONES];
 #endif
 uniform float m_EdgeSize; 
 // #import "MatDefs/pmd/Skinning.glsllib"
@@ -26,8 +26,8 @@ void Skinning_Compute(inout vec4 position, inout vec4 normal){
     vec4 index  = inBoneIndex;
     vec4 weight = inBoneWeight;
 
-    vec4 newPos    = vec4(0.0);
-    vec4 newNormal = vec4(0.0);
+    vec4 newPos    = vec4(0.0,0.0,0.0,0.0);
+    vec4 newNormal = vec4(0.0,0.0,0.0,0.0);
 
     //for (float i = 1.0; i < 2.0; i += 1.0){
         mat4 skinMat = m_BoneMatrices[int(index.x)];

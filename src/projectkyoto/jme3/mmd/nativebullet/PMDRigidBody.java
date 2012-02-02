@@ -80,8 +80,27 @@ public class PMDRigidBody extends PhysicsRigidBody {
         } else {
             centerFlag = false;
         }
+        if (bone != null) {
+            if (!isKinematic()) {
+                bone.setUseModelSpaceVectors(true);
+            }else {
+                bone.setUseModelSpaceVectors(false);
+            }
+        }
     }
 
+    @Override
+    public void setKinematic(boolean kinematic) {
+        super.setKinematic(kinematic);
+        if (bone != null) {
+            if (!isKinematic()) {
+                bone.setUseModelSpaceVectors(true);
+            }else {
+                bone.setUseModelSpaceVectors(false);
+            }
+        }
+    }
+    
     public void update() {
         if (isKinematic()) {
             updateFromBoneMatrix();
@@ -143,6 +162,9 @@ public class PMDRigidBody extends PhysicsRigidBody {
 //                System.out.println("updateToBoneMatrix:tmpV = "+tmpV);
 //                tmpV.addLocal(invPos);
 //                tmpQ.multLocal(invRot);
+                    bone.setUseModelSpaceVectors(false);
+                    bone.updateWorldVectors();
+                    bone.setUseModelSpaceVectors(true);
                     m2.toRotationMatrix(tmpMatrix3f);
                     bone.getModelSpaceRotation().fromRotationMatrix(tmpMatrix3f);
 //                    m2.toRotationQuat(bone.getModelSpaceRotation());

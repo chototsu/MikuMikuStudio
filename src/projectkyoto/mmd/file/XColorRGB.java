@@ -33,6 +33,7 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /*
  * To change this template, choose Tools | Templates
@@ -43,7 +44,7 @@ import java.io.IOException;
  *
  * @author Kazuhiko Kobayashi
  */
-public class XColorRGB {
+public class XColorRGB implements Serializable{
     private float red;
     private float green;
     private float blue;

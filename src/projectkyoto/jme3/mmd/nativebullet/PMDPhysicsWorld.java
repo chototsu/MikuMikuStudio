@@ -137,18 +137,19 @@ public class PMDPhysicsWorld {
     }
 
     public void removePMDNode(PMDNode pmdNode) {
-        PMDRigidBody[] rigidBodyArray = rigidBodyMap.remove(pmdNode);
-        if (rigidBodyArray != null) {
-            for (PMDRigidBody rb : rigidBodyArray) {
-                physicsSpace.remove(rb);
-            }
-        }
         SixDofJoint[] constArray = constraintMap.remove(pmdNode);
         if (constArray != null) {
             for (SixDofJoint joint : constArray) {
                 physicsSpace.remove(joint);
             }
         }
+        PMDRigidBody[] rigidBodyArray = rigidBodyMap.remove(pmdNode);
+        if (rigidBodyArray != null) {
+            for (PMDRigidBody rb : rigidBodyArray) {
+                physicsSpace.remove(rb);
+            }
+        }
+        nodeRigidBodyArray = rigidBodyMap.values().toArray(new PMDRigidBody[rigidBodyMap.size()][]);
     }
     float[] buf = new float[3];
 

@@ -29,9 +29,16 @@
  */
 package projectkyoto.jme3.mmd;
 
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
 import com.jme3.material.Material;
+import com.jme3.math.Matrix4f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer.Type;
+import java.io.IOException;
 import projectkyoto.mmd.file.PMDMaterial;
 
 /**
@@ -43,7 +50,6 @@ public class PMDGeometry extends Geometry {
     PMDMaterial pmdMaterial;
     Material glslSkinningMaterial;
     Material noSkinningMaterial;
-    PMDMesh pmdMesh;
 
     public PMDGeometry(String name, Mesh mesh) {
         super(name, mesh);
@@ -82,8 +88,43 @@ public class PMDGeometry extends Geometry {
 
     @Override
     public PMDGeometry clone() {
+        Mesh meshBackup = mesh;
+        mesh = new Mesh();
         PMDGeometry newPMDGeometry = (PMDGeometry)super.clone(false);
-        newPMDGeometry.setMesh(getMesh().clone());
+        mesh = meshBackup;
+//        newPMDGeometry.setMesh(getMesh().clone());
+        if (mesh instanceof PMDSkinMesh) {
+            PMDSkinMesh oldMesh = (PMDSkinMesh)mesh;
+            PMDSkinMesh newMesh = new PMDSkinMesh();
+            newMesh.boneIndexArray = oldMesh.boneIndexArray;
+//            newMesh.boneMatrixArray = new Matrix4f[mesh.boneMatrixArray.length];
+//            for(int i=0;i<mesh.boneMatrixArray.length;i++) {
+//                newMesh.boneMatrixArray[i] = new Matrix4f();
+//                newMesh.boneMatrixArray[i].loadIdentity();
+//            }
+            newMesh.bound = oldMesh.bound.clone();
+            newMesh.setBuffer(oldMesh.getBuffer(Type.Index));
+            newPMDGeometry.setMesh(newMesh);
+        } else {
+            PMDMesh oldMesh = (PMDMesh)mesh;
+            PMDMesh newMesh = new PMDMesh();
+            newMesh.boneIndexArray = oldMesh.boneIndexArray;
+            newMesh.boneMatrixArray = new Matrix4f[oldMesh.boneMatrixArray.length];
+            for (int i = 0; i < newMesh.boneMatrixArray.length; i++) {
+                newMesh.boneMatrixArray[i] = new Matrix4f();
+                newMesh.boneMatrixArray[i].set(oldMesh.boneMatrixArray[i]);
+            }
+            newMesh.setMode(Mesh.Mode.Triangles);
+            newMesh.setVbBackup(oldMesh.getVbBackup());
+            newMesh.setNbBackup(oldMesh.getNbBackup());
+            newMesh.setBuffer(oldMesh.getVbBackup());
+            newMesh.setBuffer(oldMesh.getNbBackup());
+            newMesh.setBuffer(oldMesh.getBuffer(Type.Index));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.TexCoord));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.BoneIndex));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.BoneWeight));
+            newPMDGeometry.setMesh(newMesh);
+        }
         newPMDGeometry.glslSkinningMaterial = glslSkinningMaterial.clone();
         newPMDGeometry.noSkinningMaterial = noSkinningMaterial.clone();
         return newPMDGeometry;
@@ -94,12 +135,37 @@ public class PMDGeometry extends Geometry {
         return clone();
     }
 
+//    @Override
+//    public void setMesh(Mesh mesh) {
+//        super.setMesh(mesh);
+//        if (mesh instanceof PMDMesh) {
+//            pmdMesh = (PMDMesh)mesh;
+//        }
+//    }
+
     @Override
-    public void setMesh(Mesh mesh) {
-        super.setMesh(mesh);
+    public void setMaterial(Material material) {
+        super.setMaterial(material);
         if (mesh instanceof PMDMesh) {
-            pmdMesh = (PMDMesh)mesh;
+            PMDMesh pmdMesh = (PMDMesh)mesh;
+            pmdMesh.boneMatricesParamIndex = -1;
         }
+    }
+
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        super.read(im);
+        InputCapsule c = im.getCapsule(this);
+        glslSkinningMaterial = (Material)c.readSavable("glslSkinningMaterial", null);
+        noSkinningMaterial = (Material)c.readSavable("noSkinningMaterial", null);
+    }
+
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        super.write(ex);
+        OutputCapsule c = ex.getCapsule(this);
+        c.write(glslSkinningMaterial, "glslSkinningMaterial", null);
+        c.write(noSkinningMaterial, "noSkinningMaterial", null);
     }
     
 }

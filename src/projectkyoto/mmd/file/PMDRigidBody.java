@@ -33,13 +33,14 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 import javax.vecmath.Vector3f;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDRigidBody {
+public class PMDRigidBody implements Serializable{
     private String rigidBodyName;
     private int relBoneIndex;
     private int rigidBodyGroupIndex;

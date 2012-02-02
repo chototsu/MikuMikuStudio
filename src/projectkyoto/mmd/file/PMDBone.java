@@ -32,13 +32,14 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 import javax.vecmath.Vector3f;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class PMDBone {
+public class PMDBone implements Serializable{
 
     private String boneName;
     private int parentBoneIndex;

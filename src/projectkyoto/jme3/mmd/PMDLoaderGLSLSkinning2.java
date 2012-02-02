@@ -35,6 +35,7 @@ import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetLoader;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.AssetNotFoundException;
+import com.jme3.asset.DesktopAssetManager;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.material.RenderState.FaceCullMode;
@@ -98,10 +99,22 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 //        System.out.println("faceVertCount = " + model.getFaceVertCount());
 //        assetManager.registerLoader(com.jme3.texture.plugins.AWTLoader.class, "sph", "spa");
     }
+    public PMDLoaderGLSLSkinning2(AssetManager assetManager, MeshConverter mc) {
+        this.assetManager = assetManager;
+        this.model = mc.getModel();
+        this.meshConverter = mc;
+        folderName = "/Model/";
+//        System.out.println("vertexCount = " + model.getVertCount());
+//        System.out.println("faceVertCount = " + model.getFaceVertCount());
+//        assetManager.registerLoader(com.jme3.texture.plugins.AWTLoader.class, "sph", "spa");
+    }
     public void init() {
 //        model = null;
         node = null;
-        meshConverter = new MeshConverter(model);
+        if (meshConverter == null) {
+            meshConverter = new MeshConverter(model);
+            meshConverter.convertMesh();
+        }
         meshCount = 1;
 //        assetManager = null;
 //        folderName = null;
@@ -120,11 +133,11 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         init();
         node = new PMDNode(name, model, assetManager);
         meshCount = 1;
-        meshConverter.convertMesh();
 //        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
         node.pmdGeometryArray = new PMDGeometry[meshConverter.getMeshDataList().size()];
         int pmdGeometryIndex = 0;
-        for (MeshData md : meshConverter.getMeshDataList()) {
+        for(int i=0;i<meshConverter.getMeshDataList().size();i++) {
+            MeshData md = meshConverter.getMeshDataList().get(i);
             PMDMesh mesh = createMesh(md);
             PMDGeometry geom = new PMDGeometry("geom" + meshCount++);
             geom.setMesh(mesh);
@@ -133,6 +146,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             System.out.println(node.attachChild(geom));
             meshList.add(mesh);
             node.pmdGeometryArray[pmdGeometryIndex++] = geom;
+            meshConverter.getMeshDataList().set(i, null);
         }
         createSkinCommonVertData();
         for (PMDMaterial pmdMaterial : meshConverter.getSkinMeshData().getIndexMap().keySet()) {
@@ -319,6 +333,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 mat = new Material(assetManager, "MatDefs/pmd/pmd.j3md");
             }
         }
+        if (skinning) {
+            mat.setInt("NumBones", meshConverter.getMaxBoneSize());
+        }
         float alpha = m.getMaterial().getFaceColor().getAlpha();
         if (alpha > 0.99f) {
             alpha = 1f;
@@ -365,7 +382,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             String extToonName = model.getToonTextureList().getToonFileName()[toonIndex];
             try {
                 toonTexture = assetManager.loadTexture(folderName + extToonName);
-            } catch (AssetNotFoundException ex) {
+            } catch (Exception ex) {
                 String toonname = null;
                 switch (toonIndex) {
                     case 0:
@@ -418,7 +435,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         } else {
             mat.setFloat("EdgeSize", 0f);
         }
-//        mat.setParam("VertexLighting", VarType.Int, new Integer(1));
+        mat.setParam("VertexLighting", VarType.Boolean, true);
 //        geom.setMaterial(mat);
 //        geom.setPmdMaterial(m);
 //        mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
@@ -542,31 +559,51 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         boolean errFlag = false;
         for(;;) {
             try {
-                this.assetManager = ai.getManager();
-                model = new PMDModel(ai.openStream());
-                folderName = ai.getKey().getFolder();
-                meshConverter = new MeshConverter(model);
-                PMDNode pmdNode = createNode(ai.getKey().getName());
-                if (JmeSystem.getFullName().indexOf("Android") == -1) {
-                    try {
-                        String vendor = GL11.glGetString(GL11.GL_VENDOR);
-                        if (vendor != null && vendor.toLowerCase().contains("intel")) {
-                            pmdNode.setGlslSkinning(false);
-                        } else {
-                            pmdNode.setGlslSkinning(true);
-                        }
-                    } catch(Exception ex) {
-                        pmdNode.setGlslSkinning(false);
-                    }
-                }
-                return pmdNode;
+                PMDLoaderGLSLSkinning2 loader = new PMDLoaderGLSLSkinning2();
+                return loader.load2(ai);
             }catch(OutOfMemoryError ex) {
                 if (errFlag) {
                     throw new RuntimeException(ex);
                 }
                 errFlag = true;
+                if (ai.getManager() instanceof DesktopAssetManager) {
+                    ((DesktopAssetManager)ai.getManager()).clearCache();
+                }
                 System.gc();
+                System.runFinalization();
             }
         }
     }
+    private Object load2(AssetInfo ai) throws IOException {
+        this.assetManager = ai.getManager();
+        model = new PMDModel(ai.openStream());
+        folderName = ai.getKey().getFolder();
+        meshConverter = new MeshConverter(model);
+        meshConverter.convertMesh();
+        model.setVertexList(null);
+        model.setFaceVertIndex(null);
+        PMDNode pmdNode = createNode(ai.getKey().getName());
+        if (JmeSystem.getFullName().indexOf("Android") == -1) {
+            try {
+                String vendor = GL11.glGetString(GL11.GL_VENDOR);
+                if (vendor != null && vendor.toLowerCase().contains("intel")) {
+                    pmdNode.setGlslSkinning(false);
+                } else {
+                    pmdNode.setGlslSkinning(true);
+                }
+            } catch(Exception ex) {
+                pmdNode.setGlslSkinning(false);
+            }
+        }
+        return pmdNode;
+    }
+
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
+    }
+
+    public String getFolderName() {
+        return folderName;
+    }
+   
 }

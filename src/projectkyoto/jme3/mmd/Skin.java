@@ -29,13 +29,19 @@
  */
 package projectkyoto.jme3.mmd;
 
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
+import com.jme3.export.Savable;
+import java.io.IOException;
 import projectkyoto.mmd.file.PMDSkinData;
 
 /**
  *
  * @author kobayasi
  */
-public class Skin implements Cloneable{
+public class Skin implements Cloneable, Savable{
 
     String skinName;
     float weight = 0f;
@@ -91,5 +97,19 @@ public class Skin implements Cloneable{
     protected Skin clone() throws CloneNotSupportedException {
         return (Skin)super.clone();
     }
-    
+
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        OutputCapsule c = ex.getCapsule(this);
+        c.write(skinName, "skinName", "");
+        c.write(weight, "weight", 0f);
+        
+    }
+
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        InputCapsule c = im.getCapsule(this);
+        skinName = c.readString("skinName", "");
+        weight = c.readFloat("weight", 0f);
+    }
 }

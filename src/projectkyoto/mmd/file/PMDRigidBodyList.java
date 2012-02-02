@@ -25,15 +25,21 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDRigidBodyList {
+public class PMDRigidBodyList implements Serializable{
 
     private int rigidBodyCount;
     private PMDRigidBody[] rigidBodyArray;
+
+    public PMDRigidBodyList() {
+        rigidBodyCount = 0;
+        rigidBodyArray = new PMDRigidBody[0];
+    }
 
     public PMDRigidBodyList(DataInputStreamLittleEndian is) throws IOException {
         rigidBodyCount = is.readInt();

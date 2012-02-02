@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDIKData {
+public class PMDIKData implements Serializable{
     private int ikBoneIndex;
     private int ikTargetBoneIndex;
     private int ikChainLength;

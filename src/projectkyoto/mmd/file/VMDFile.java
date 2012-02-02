@@ -35,13 +35,14 @@ package projectkyoto.mmd.file;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 
 /**
  *
  * @author kobayasi
  */
-public class VMDFile {
+public class VMDFile implements Serializable{
     private String vmdHeader; // char[30] Vocaloid Motion Data 0002
     private String vmdModelName; // char[20]
     private int motionCount;

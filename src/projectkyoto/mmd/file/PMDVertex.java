@@ -33,13 +33,14 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 import javax.vecmath.Vector3f;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class PMDVertex {
+public class PMDVertex implements Serializable{
 
     private Vector3f pos; // 位置
     private Vector3f normal; // 法線

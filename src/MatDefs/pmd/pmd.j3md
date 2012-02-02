@@ -137,7 +137,7 @@ MaterialDef pmd {
             USE_REFLECTION : EnvMap
             SPHERE_MAP : SphereMap
 
-            // NUM_BONES : NumBones
+            NUM_BONES : NumBones
             USE_HWSKINNING
             SPHERE_MAP_A : SphereMap_A
             SPHERE_MAP_H : SphereMap_H
@@ -188,7 +188,7 @@ MaterialDef pmd {
             USE_REFLECTION : EnvMap
             SPHERE_MAP : SphereMap
 
-            // NUM_BONES : NumBones
+            NUM_BONES : NumBones
             USE_HWSKINNING
         }
         RenderState {

@@ -33,12 +33,13 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDSkinDispList {
+public class PMDSkinDispList implements Serializable{
     private int skinDispCount;
     private short skinIndexArray[];
     public PMDSkinDispList(DataInputStreamLittleEndian is) throws IOException {

@@ -34,13 +34,14 @@ package projectkyoto.mmd.file;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class PMDMaterial {
+public class PMDMaterial implements Serializable{
     private XMaterial material;
     private byte toonIndex;
     private byte edgeFlag;

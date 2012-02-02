@@ -33,6 +33,7 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Quat4f;
 
@@ -40,7 +41,7 @@ import javax.vecmath.Quat4f;
  *
  * @author kobayasi
  */
-public class VMDMotion {
+public class VMDMotion implements Serializable{
 
     private String boneName; // char[15]
     private int frameNo;

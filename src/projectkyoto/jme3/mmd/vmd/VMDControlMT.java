@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import projectkyoto.jme3.mmd.PMDNode;
+import projectkyoto.jme3.mmd.nativebullet.PhysicsControl;
 import projectkyoto.jme3.mmd.vmd.VMDControl;
 import projectkyoto.mmd.file.PMDModel;
 import projectkyoto.mmd.file.VMDFile;
@@ -35,9 +36,22 @@ public class VMDControlMT extends AbstractControl {
         callable = new VMDCallable(pmdNode, vmdFile);
         this.pmdNode = pmdNode;
     }
+    public VMDControlMT(ScheduledThreadPoolExecutor executor, PMDNode pmdNode, VMDFile vmdFile, PhysicsControl physicsControl) {
+        this(executor, pmdNode, vmdFile, physicsControl, true);
+    }
+    public VMDControlMT(ScheduledThreadPoolExecutor executor, PMDNode pmdNode, VMDFile vmdFile, PhysicsControl physicsControl, boolean addPmdNodeFlag) {
+        this.executor = executor;
+        callable = new VMDCallable(pmdNode, vmdFile, physicsControl, addPmdNodeFlag);
+        this.pmdNode = pmdNode;
+    }
 
     @Override
     protected void controlUpdate(float f) {
+        sync();
+        callable.setTpf(f);
+        future = executor.submit(callable);
+    }
+    public synchronized void sync() {
         if (future != null) {
             try {
                 future.get();
@@ -51,10 +65,7 @@ public class VMDControlMT extends AbstractControl {
                 future = null;
             }
         }
-        callable.setTpf(f);
-        future = executor.submit(callable);
     }
-
     public VMDCallable getCallable() {
         return callable;
     }
@@ -65,5 +76,23 @@ public class VMDControlMT extends AbstractControl {
 
     public Control cloneForSpatial(Spatial sptl) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setSpatial(Spatial spatial) {
+        super.setSpatial(spatial);
+        if (spatial == null) {
+            Logger.getLogger(VMDControlMT.class.getName()).log(Level.INFO,"remove");
+            if (future != null) {
+                try {
+                    future.get();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(VMDControlMT.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(VMDControlMT.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+//            callable.vmdControl.getPhysicsControl().getWorld().removePMDNode(pmdNode);
+        }
     }
 }

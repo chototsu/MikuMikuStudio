@@ -32,6 +32,11 @@ package projectkyoto.jme3.mmd;
 import com.jme3.animation.Bone;
 import com.jme3.animation.Skeleton;
 import com.jme3.asset.AssetManager;
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
+import com.jme3.export.Savable;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -45,6 +50,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.util.TempVars;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import projectkyoto.mmd.file.PMDModel;
 import com.jme3.scene.VertexBuffer.*;
@@ -58,10 +64,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import projectkyoto.mmd.file.PMDBone;
 import projectkyoto.mmd.file.PMDException;
+import projectkyoto.mmd.file.PMDSkinData;
 import projectkyoto.mmd.file.PMDSkinVertData;
 import projectkyoto.mmd.file.PMDVertex;
+import projectkyoto.mmd.file.util2.SavableUtil;
 
 /**
  *
@@ -96,6 +106,118 @@ public class PMDNode extends Node {
     Node rigidBodyNode;
     Node jointNode;
     boolean glslSkinning = true;
+
+    @Override
+    public void read(JmeImporter e) throws IOException {
+        super.read(e);
+        InputCapsule c = e.getCapsule(this);
+        pmdModel = (PMDModel)SavableUtil.read(c, "pmdModel", null);
+        skeleton = (Skeleton)c.readSavable("skeleton", null);
+        skinMap = (Map<String, Skin>)c.readStringSavableMap("skinMap", new HashMap<String, Savable>());
+        skinBoneWeightArray = c.readFloatArray("skinBoneWeightArray", new float[0]);
+        skinBoneArray = c.readIntArray("skinBoneArray", new int[0]);
+        edgeSize = c.readFloat("edgeSize", 1.0f);
+        int pmdGeometryArrayLength = c.readInt("pmdGeometryArrayLength", 0);
+        pmdGeometryArray = new PMDGeometry[pmdGeometryArrayLength];
+        targets = new PMDMesh[pmdGeometryArrayLength];
+        int skinTargetsLength = c.readInt("skinTargetsLength", 0);
+        skinTargets = new PMDSkinMesh[skinTargetsLength];
+        VertexBuffer skinvb = (VertexBuffer)c.readSavable("skinvb", null);
+        VertexBuffer skinnb = (VertexBuffer)c.readSavable("skinnb", null);
+        VertexBuffer skintb = (VertexBuffer)c.readSavable("skintb", null);
+        VertexBuffer skinvb2 = skinvb.clone();
+        VertexBuffer skinnb2 = skinnb.clone();
+        int meshCount = 0;
+        int skinMeshCount = 0;
+            for(Spatial sp : getChildren()) {
+                Spatial newSp = sp;//.clone();
+//                newPMDNode.attachChild(newSp);
+                if (sp instanceof PMDGeometry) {
+                    Mesh mesh = ((Geometry)newSp).getMesh();
+                    if (mesh instanceof PMDMesh) {
+                        PMDMesh pmdMesh = (PMDMesh)mesh;
+                        pmdMesh.setVbBackup(pmdMesh.getBuffer(Type.Position));
+                        pmdMesh.setNbBackup(pmdMesh.getBuffer(Type.Normal));
+                        pmdGeometryArray[meshCount] = (PMDGeometry)sp;
+                        targets[meshCount++] = (PMDMesh)mesh;
+                    } else if (mesh instanceof PMDSkinMesh) {
+//                        mesh.setMode(Mesh.Mode.Triangles);
+                        PMDSkinMesh skinMesh = (PMDSkinMesh)mesh;
+                        if (skinMeshCount != 0) {
+                            skinMesh.setBuffer(skinvb);
+                            skinMesh.setSkinvb2(skinvb2);
+                            skinMesh.setBuffer(skinnb);
+                            skinMesh.setSkinnb2(skinnb2);
+                            skinMesh.setBuffer(skintb);
+                        } else {
+                            skinMesh.setBuffer(skinvb);
+                            skinMesh.setSkinvb2(skinvb2);
+                            skinMesh.setBuffer(skinnb);
+                            skinMesh.setSkinnb2(skinnb2);
+                            skinMesh.setBuffer(skintb);
+                        }
+                        skinTargets[skinMeshCount++] = (PMDSkinMesh)mesh;
+                    }
+                }
+            }
+            calcOffsetMatrices();
+            Savable[] sa = c.readSavableArray("skinArray", new Skin[0]);
+            skinArray = new Skin[sa.length];
+            for(int i=0;i<sa.length;i++) {
+                Skin skin = (Skin)sa[i];
+                skinArray[i] = skin;
+                skin.pmdNode = this;
+                l2:
+                for(int i2=0;i2<pmdModel.getSkinCount();i2++){
+                    if (pmdModel.getSkinData()[i2].getSkinName().equals(skin.getSkinName())) {
+                        skin.skinData = pmdModel.getSkinData()[i2];
+                        break l2;
+                    }
+                }
+                skin.setWeight(0f);
+                skin.setUpdateNeeded(true);
+                skinMap.put(skin.skinName, skin);
+            }
+            skinPosArray = (javax.vecmath.Vector3f[])SavableUtil.read(c, "skinPosArray", null);
+            skinPosArrayOrig = new javax.vecmath.Vector3f[skinPosArray.length];
+            for(int i=0;i<skinPosArray.length;i++) {
+                skinPosArrayOrig[i] = new javax.vecmath.Vector3f(skinPosArray[i]);
+            }
+            skinNormalArray = (javax.vecmath.Vector3f[])SavableUtil.read(c, "skinNormalArray", null);
+            skinNormalArrayOrig = new javax.vecmath.Vector3f[skinNormalArray.length];
+            for(int i=0;i<skinNormalArray.length;i++) {
+                skinNormalArrayOrig[i] = new javax.vecmath.Vector3f(skinNormalArray[i]);
+            }
+            skinBoneArray = c.readIntArray("skinBoneArray", skinBoneArray);
+            skinBoneWeightArray = c.readFloatArray("skinBoneWeightArray", skinBoneWeightArray);
+    }
+
+    @Override
+    public void write(JmeExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule c = e.getCapsule(this);
+        c.write(1, "version", 1);
+        SavableUtil.write(c, pmdModel, "pmdModel");
+        c.write(skeleton, "skeleton", new Skeleton());
+        c.writeStringSavableMap(skinMap, "skinMap", new HashMap<String, Skin>());
+        c.write(skinBoneWeightArray, "skinBoneWeightArray", null);
+        c.write(skinBoneArray, "skinBoneArray", null);
+        c.write(edgeSize, "edgeSize", 1.0f);
+        c.write(pmdGeometryArray.length, "pmdGeometryArrayLength",0);
+        c.write(skinTargets.length, "skinTargetsLength",0);
+        if (skinTargets != null && skinTargets.length > 0) {
+            PMDSkinMesh mesh = skinTargets[0];
+            c.write(mesh.getSkinvb2(),"skinvb",null);
+            c.write(mesh.getSkinnb2(),"skinnb",null);
+            c.write(mesh.getBuffer(Type.TexCoord),"skintb",null);
+        }
+        c.write(skinArray, "skinArray", null);
+        SavableUtil.write(c, skinPosArrayOrig,"skinPosArray");
+        SavableUtil.write(c, skinNormalArrayOrig, "skinNormalArray");
+        c.write(skinBoneArray, "skinBoneArray", null);
+        c.write(skinBoneWeightArray, "skinBoneWeightArray", null);
+        
+    }
 
     public PMDNode(String name, PMDModel pmdModel, AssetManager assetManager) {
         super(name);
@@ -163,7 +285,7 @@ boolean setBoneMatricesFlag = true;
 //            offsetMatrices = skeleton.computeSkinningMatrices();
             for(PMDGeometry g : pmdGeometryArray) {
                 Material m = g.getMaterial();
-                PMDMesh pmdMesh = g.pmdMesh;
+                PMDMesh pmdMesh = (PMDMesh)g.getMesh();
                 int boneIndexArray[] = pmdMesh.getBoneIndexArray();
                 Matrix4f[] boneMatrixArray = pmdMesh.getBoneMatrixArray();
                 for (int i = pmdMesh.getBoneIndexArray().length-1; i >=0; i--) {
@@ -217,6 +339,9 @@ boolean setBoneMatricesFlag = true;
         }
     }
     private void swapSkinMesh() {
+        if (skinTargets.length == 0) {
+            return;
+        }
         VertexBuffer vb = skinTargets[0].getBuffer(VertexBuffer.Type.Position);
         VertexBuffer nb = skinTargets[0].getBuffer(VertexBuffer.Type.Normal);
         skinTargets[0].skinvb2.setUpdateNeeded();
@@ -328,6 +453,9 @@ boolean setBoneMatricesFlag = true;
 //        mesh.updateBound();
     }
     public void updateSkinBackData() {
+        if (skinTargets.length == 0) {
+            return;
+        }
         PMDSkinMesh skinMesh = skinTargets[0];
         VertexBuffer vb = skinMesh.getSkinvb2(); //.getBuffer(Type.Position);
         FloatBuffer fvb = (FloatBuffer) vb.getData();
@@ -783,6 +911,11 @@ boolean setBoneMatricesFlag = true;
 
     @Override
     public PMDNode clone() {
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO,"clone PMDNode "+pmdModel.getModelName());
+//        if (true) {
+//            PMDNode newPMDNode = (PMDNode)super.clone();
+//            return newPMDNode;
+//        }
         try {
             PMDNode newPMDNode = (PMDNode)super.clone();
 //            newPMDNode.pmdModel = pmdModel;
@@ -794,6 +927,7 @@ boolean setBoneMatricesFlag = true;
                 newBone.getLocalRotation().set(bone.getLocalRotation());
                 newBone.getLocalScale().set(bone.getLocalScale());
             }
+            newPMDNode.pmdGeometryArray = new PMDGeometry[pmdGeometryArray.length];
             newPMDNode.targets = new PMDMesh[targets.length];
             newPMDNode.skinTargets = new PMDSkinMesh[skinTargets.length];
             int meshCount=0;
@@ -804,9 +938,27 @@ boolean setBoneMatricesFlag = true;
                 if (sp instanceof PMDGeometry) {
                     Mesh mesh = ((Geometry)newSp).getMesh();
                     if (mesh instanceof PMDMesh) {
-                        pmdGeometryArray[meshCount] = (PMDGeometry)sp;
+                       newPMDNode.pmdGeometryArray[meshCount] = (PMDGeometry)sp;
                        newPMDNode.targets[meshCount++] = (PMDMesh)mesh;
                     } else if (mesh instanceof PMDSkinMesh) {
+                        mesh.setMode(Mesh.Mode.Triangles);
+                        if (skinMeshCount != 0) {
+                            PMDSkinMesh skinMesh = (PMDSkinMesh)mesh;
+                            PMDSkinMesh skinMesh0 = newPMDNode.skinTargets[0];
+                            skinMesh.setBuffer(skinMesh0.getBuffer(Type.Position));
+                            skinMesh.setSkinvb2(skinMesh0.getSkinvb2());
+                            skinMesh.setBuffer(skinMesh0.getBuffer(Type.Normal));
+                            skinMesh.setSkinnb2(skinMesh0.getSkinnb2());
+                            skinMesh.setBuffer(skinMesh0.getBuffer(Type.TexCoord));
+                        } else {
+                            PMDSkinMesh skinMesh = (PMDSkinMesh)mesh;
+                            PMDSkinMesh skinMesh0 = skinTargets[0];
+                            skinMesh.setBuffer(skinMesh0.getBuffer(Type.Position).clone());
+                            skinMesh.setSkinvb2(skinMesh0.getSkinvb2().clone());
+                            skinMesh.setBuffer(skinMesh0.getBuffer(Type.Normal).clone());
+                            skinMesh.setSkinnb2(skinMesh0.getSkinnb2().clone());
+                            skinMesh.setBuffer(skinMesh0.getBuffer(Type.TexCoord).clone());
+                        }
                         newPMDNode.skinTargets[skinMeshCount++] = (PMDSkinMesh)mesh;
                     }
                 }
@@ -815,6 +967,7 @@ boolean setBoneMatricesFlag = true;
             for(String skinName : skinMap.keySet()) {
                 Skin skin = skinMap.get(skinName);
                 skin = skin.clone();
+                skin.pmdNode = newPMDNode;
                 newPMDNode.skinMap.put(skinName, skin);
             }
             newPMDNode.skinArray = newPMDNode.skinMap.values().toArray(new Skin[newPMDNode.skinMap.size()]);
@@ -837,6 +990,17 @@ boolean setBoneMatricesFlag = true;
             return newPMDNode;
         } catch(CloneNotSupportedException ex) {
             throw new PMDException(ex);
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if (pmdModel != null) {
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO,"finalize PMDNode "+pmdModel.getModelName());
+//            System.out.println("finalize PMDNode "+pmdModel.getModelName());
+        } else {
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO,"finalize PMDNode");
         }
     }
     

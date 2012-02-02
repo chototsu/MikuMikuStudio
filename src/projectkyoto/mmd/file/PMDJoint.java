@@ -32,13 +32,14 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 import javax.vecmath.Vector3f;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDJoint {
+public class PMDJoint implements Serializable{
 
     private String jointName;
     private int rigidBodyA;

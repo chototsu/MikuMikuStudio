@@ -118,8 +118,12 @@ public class IKControl extends AbstractControl{
                     Vector3f targetModelPos = tmpV2.set(ikBone.getModelSpacePosition());
                     boolean hizaFlag = pmdModel.getBoneList().getBones()[ikData.getIkChildBoneIndex()[boneCount]].isHiza();
                     if (hizaFlag) {
-                        hizaIK(ikData);
-                        break l2;
+                        if (ikData.getIkChainLength() < 2) {
+                            pmdModel.getBoneList().getBones()[ikData.getIkChildBoneIndex()[boneCount]].setHiza(false);
+                        } else {
+                            hizaIK(ikData);
+                            break l2;
+                        }
                     }
 //                    hizaFlag = false;
 //                    if (hizaFlag)
