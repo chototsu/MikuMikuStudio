@@ -1025,13 +1025,19 @@ public class OGLESShaderRenderer implements Renderer {
         if (verboseLogging) {
             logger.info("GLES20.glShaderSource(" + id + ")");
         }
-
-        GLES20.glShaderSource(
-                id,
-                "precision mediump float;\n"
-                + source.getDefines()
-                + source.getSource());
-
+        if (source.getType().equals(ShaderType.Vertex)
+                && GLES20.glGetString(GLES20.GL_RENDERER).indexOf("PowerVR")>=0) {
+            GLES20.glShaderSource(
+                    id,
+                     source.getDefines()
+                    + source.getSource());
+        } else {
+            GLES20.glShaderSource(
+                    id,
+                    "precision mediump float;\n"
+                    + source.getDefines()
+                    + source.getSource());
+        }
         checkGLError();
 
         if (verboseLogging) {
@@ -2787,6 +2793,9 @@ public class OGLESShaderRenderer implements Renderer {
     }
 
     private void checkGLError() {
+        
+    }
+    private void checkGLError2() {
         int error;
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             logger.log(Level.WARNING, "glError {0}", error);
