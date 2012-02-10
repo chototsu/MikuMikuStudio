@@ -236,7 +236,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         VertexBuffer ib = new VertexBuffer(VertexBuffer.Type.Index);
         ShortBuffer isb = BufferUtils.createShortBuffer(md.getIndexList().size());
         VertexBuffer bib = new VertexBuffer(VertexBuffer.Type.BoneIndex);
-        ShortBuffer bisb = BufferUtils.createShortBuffer(md.getIndexList().size() * 4);
+        ShortBuffer bisb = BufferUtils.createShortBuffer(md.getVertexList().size() * 4);
         for (PMDVertex v : md.getVertexList()) {
             vfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
             nfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
@@ -278,7 +278,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mesh.setBuffer(wb);
         mesh.setBuffer(ib);
         mesh.setBuffer(bib);
-        int[] indexArray = new int[meshConverter.getMaxBoneSize()];
+        int[] indexArray = new int[md.getMaxBoneSize()];
         for (int i = 0; i < indexArray.length; i++) {
             if (i < md.getBoneList().size()) {
                 indexArray[i] = md.getBoneList().get(i).shortValue();
