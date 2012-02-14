@@ -30,10 +30,17 @@
 package projectkyoto.mmd.file;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel.MapMode;
+import projectkyoto.mmd.file.util2.BufferUtil;
 
 /**
  *
@@ -48,7 +55,8 @@ public class PMDModel implements Serializable{
     private String comment; // char[256] コメント
     // 頂点リスト
     private int vertCount; // 頂点数
-    private PMDVertex[] vertexList;
+//    private PMDVertex[] vertexList;
+    private ByteBuffer vertexBuffer;
     private int faceVertCount;
     private int faceVertIndex[];
     private int materialCount;
@@ -103,9 +111,15 @@ public class PMDModel implements Serializable{
         modelName = is.readString(20);
         comment = is.readString(256);
         vertCount = is.readInt();
-        vertexList = new PMDVertex[vertCount];
+//        vertexList = new PMDVertex[vertCount];
+//        vertexBuffer = ByteBuffer.allocateDirect(PMDVertex.size() * vertCount);
+        vertexBuffer = BufferUtil.createByteBuffer(PMDVertex.size() * vertCount);
+        vertexBuffer.order(ByteOrder.nativeOrder());
+        PMDVertex tmpVertex = new PMDVertex();
         for (int i = 0; i < vertCount; i++) {
-            vertexList[i] = new PMDVertex(is);
+            tmpVertex.readFromStream(is);
+            tmpVertex.writeToBuffer(vertexBuffer);
+            
         }
         faceVertCount = is.readInt();
         faceVertIndex = new int[faceVertCount];
@@ -141,7 +155,14 @@ public class PMDModel implements Serializable{
 //        rigidBodyList = new PMDRigidBodyList();
 //        jointList = new PMDJointList();
     }
-
+    public PMDVertex getVertex(int i) {
+        return getVertex(i, new PMDVertex());
+    }
+    public PMDVertex getVertex(int i, PMDVertex in) {
+        vertexBuffer.position(PMDVertex.size() * i);
+        in.readFromBuffer(vertexBuffer);
+        return in;
+    }
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -150,8 +171,11 @@ public class PMDModel implements Serializable{
                 + " modelName = " + modelName
                 + " comment = " + comment);
         sb.append(" vertexCount = " + vertCount);
-        for (PMDVertex vertex : vertexList) {
-            sb.append(vertex.toString());
+        PMDVertex tmpVertex = new PMDVertex();
+        vertexBuffer.position(0);
+        for (int i=0;i<vertCount;i++) {
+            tmpVertex.readFromBuffer(vertexBuffer);
+            sb.append(tmpVertex.toString());
         }
         sb.append(" faceVertCount = " + faceVertCount);
         sb.append(" faceVertIndex = {");
@@ -252,13 +276,14 @@ public class PMDModel implements Serializable{
         this.vertCount = vertCount;
     }
 
-    public PMDVertex[] getVertexList() {
-        return vertexList;
+    public ByteBuffer getVertexBuffer() {
+        return vertexBuffer;
     }
 
-    public void setVertexList(PMDVertex[] vertexList) {
-        this.vertexList = vertexList;
+    public void setVertexBuffer(ByteBuffer vertexBuffer) {
+        this.vertexBuffer = vertexBuffer;
     }
+
 
     public PMDBoneList getBoneList() {
         return boneList;

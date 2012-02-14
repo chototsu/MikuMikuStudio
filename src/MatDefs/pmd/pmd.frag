@@ -1,3 +1,11 @@
+#ifdef GL_ES
+# define LOWP       lowp
+# define MEDIUMP    mediump
+#else
+# define LOWP    
+# define MEDIUMP   
+#endif
+
 #import "Common/ShaderLib/Optics.glsllib"
 
 #ifdef SPHERE_MAP_A
@@ -14,9 +22,9 @@
 
 varying vec2 texCoord;
 
-varying vec4 AmbientSum;
-varying vec4 DiffuseSum;
-varying vec4 SpecularSum;
+varying LOWP vec4 AmbientSum;
+varying LOWP vec4 DiffuseSum;
+varying LOWP vec4 SpecularSum;
 
 #ifndef VERTEX_LIGHTING
   varying vec3 vPosition;
@@ -130,7 +138,7 @@ vec2 Optics_SphereCoord2(in vec3 dir){
 }
 
 void main(){
-    vec2 newTexCoord;
+    LOWP vec2 newTexCoord;
  
     #if defined(PARALLAXMAP) || defined(NORMALMAP_PARALLAX)
        float h;
@@ -153,7 +161,7 @@ void main(){
     #else
       vec4 diffuseColor = vec4(1.0);
     #endif
-    float alpha = DiffuseSum.a * diffuseColor.a;
+    LOWP float alpha = DiffuseSum.a * diffuseColor.a;
     //float alpha = (DiffuseSum.a + diffuseColor.a)/2;
     #ifdef ALPHAMAP
        alpha = alpha * texture2D(m_AlphaMap, newTexCoord).r;
@@ -186,7 +194,7 @@ void main(){
     #endif
 
     #ifdef VERTEX_LIGHTING
-       vec2 light = vec2(AmbientSum.a, SpecularSum.a);
+       LOWP vec2 light = vec2(AmbientSum.a, SpecularSum.a);
        #ifdef COLORRAMP
            // light.x = texture2D(m_ColorRamp, vec2(light.x, 0.0)).r;
            // light.y = texture2D(m_ColorRamp, vec2(light.y, 0.0)).r;
@@ -197,7 +205,7 @@ void main(){
        //if (light.y != light.y) {
        //     light.y = 0.0;
        //}
-       vec4 output_color = (((AmbientSum + DiffuseSum) * diffuseColor)
+       LOWP vec4 output_color = (((AmbientSum + DiffuseSum) * diffuseColor)
                       + SpecularSum * specularColor * light.y );
 
     #else

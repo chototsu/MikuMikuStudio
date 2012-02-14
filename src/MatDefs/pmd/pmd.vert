@@ -1,3 +1,10 @@
+#ifdef GL_ES
+# define LOWP       lowp
+# define MEDIUMP    mediump
+#else
+# define LOWP    
+# define MEDIUMP   
+#endif
 // #import "MatDefs/pmd/Skinning.glsllib"
 #ifdef USE_HWSKINNING
 uniform mat4 m_BoneMatrices[NUM_BONES];
@@ -10,23 +17,23 @@ uniform mat4 g_WorldViewMatrix;
 uniform mat3 g_NormalMatrix;
 uniform mat4 g_ViewMatrix;
 
-uniform vec4 m_Ambient;
-uniform vec4 m_Diffuse;
-uniform vec4 m_Specular;
-uniform float m_Shininess;
+uniform LOWP vec4 m_Ambient;
+uniform LOWP vec4 m_Diffuse;
+uniform LOWP vec4 m_Specular;
+uniform LOWP float m_Shininess;
 
-uniform vec4 g_LightColor;
+uniform LOWP vec4 g_LightColor;
 uniform vec4 g_LightPosition;
-uniform vec4 g_AmbientLightColor;
+uniform LOWP vec4 g_AmbientLightColor;
 
-varying vec2 texCoord;
+varying LOWP vec2 texCoord;
 
-varying vec4 AmbientSum;
-varying vec4 DiffuseSum;
-varying vec4 SpecularSum;
+varying LOWP vec4 AmbientSum;
+varying LOWP vec4 DiffuseSum;
+varying LOWP vec4 SpecularSum;
 
 attribute vec3 inPosition;
-attribute vec2 inTexCoord;
+attribute LOWP vec2 inTexCoord;
 attribute vec3 inNormal;
 
 // uniform Sampler2D m_BoneParameter;
@@ -37,7 +44,7 @@ attribute vec3 inNormal;
 #endif
 
 #ifdef VERTEX_COLOR
-  attribute vec4 inColor;
+  attribute LOWP vec4 inColor;
 #endif
 
 #ifndef VERTEX_LIGHTING
@@ -172,7 +179,7 @@ void main(){
 
    vec4 wvLightPos = (g_ViewMatrix * vec4(g_LightPosition.xyz, g_LightColor.w));
    wvLightPos.w = g_LightPosition.w;
-   vec4 lightColor = g_LightColor;
+   LOWP vec4 lightColor = g_LightColor;
 
    #if defined(NORMALMAP) && !defined(VERTEX_LIGHTING)
      vec3 wvTangent = normalize(g_NormalMatrix * inTangent.xyz);
@@ -204,7 +211,7 @@ void main(){
       DiffuseSum  = m_Diffuse  * lightColor;
       SpecularSum = m_Specular * lightColor;
     #else
-      AmbientSum  = vec4(0.2, 0.2, 0.2, 1.0) * g_AmbientLightColor; // Default: ambient color is dark gray
+      AmbientSum  = /*vec4(0.2, 0.2, 0.2, 1.0) * */g_AmbientLightColor; // Default: ambient color is dark gray
       DiffuseSum  = lightColor;
       SpecularSum = lightColor;
     #endif
@@ -218,7 +225,7 @@ void main(){
        vec2 light = computeLighting(wvPosition, wvNormal, viewDir, wvLightPos);
 
        AmbientSum.a  = light.x;
-       SpecularSum.a = light.y * 0.3;
+       SpecularSum.a = light.y /* * 0.3*/;
     #endif
 
     #if defined(USE_REFLECTION) || defined(SPHERE_MAP_A) || defined(SPHERE_MAP_H)

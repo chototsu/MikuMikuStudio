@@ -46,17 +46,17 @@ public class MeshData {
     List<Integer> indexList = new ArrayList<Integer>();
     List<PMDVertex> vertexList = new ArrayList<PMDVertex>();
 
-    void addIndex(int origIndex) {
-        PMDVertex v = model.getVertexList()[origIndex];
-        for (int newIndex = 0; newIndex < vertexList.size(); newIndex++) {
-            if (vertexList.get(newIndex) == v) {
-                indexList.add(newIndex);
-                return;
-            }
-        }
-        indexList.add(vertexList.size());
-        vertexList.add(v);
-    }
+//    void addIndex(int origIndex) {
+//        PMDVertex v = model.getVertexList()[origIndex];
+//        for (int newIndex = 0; newIndex < vertexList.size(); newIndex++) {
+//            if (vertexList.get(newIndex) == v) {
+//                indexList.add(newIndex);
+//                return;
+//            }
+//        }
+//        indexList.add(vertexList.size());
+//        vertexList.add(v);
+//    }
 
     public MeshData(MeshKey meshKey, PMDModel model) {
         this.meshKey = meshKey;

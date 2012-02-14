@@ -1,5 +1,8 @@
 #ifdef USE_HWSKINNING
 uniform mat4 m_BoneMatrices[NUM_BONES];
+attribute vec4 inBoneWeight;
+attribute vec4 inBoneIndices;
+attribute vec4 inBoneIndex;
 #endif
 uniform float m_EdgeSize; 
 // #import "MatDefs/pmd/Skinning.glsllib"
@@ -15,13 +18,13 @@ attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
 
+
+void main(){
+    if (m_EdgeSize != 0.0) {
+   vec4 pos = vec4(inPosition, 1.0);
+   vec4 normal = vec4(inNormal,0.0);
 #ifdef USE_HWSKINNING
-attribute vec4 inBoneWeight;
-attribute vec4 inBoneIndices;
-attribute vec4 inBoneIndex;
-
-
-void Skinning_Compute(inout vec4 position, inout vec4 normal){
+//   Skinning_Compute(pos, normal);
 //    vec4 index  = inBoneIndices;
     vec4 index  = inBoneIndex;
     vec4 weight = inBoneWeight;
@@ -31,27 +34,17 @@ void Skinning_Compute(inout vec4 position, inout vec4 normal){
 
     //for (float i = 1.0; i < 2.0; i += 1.0){
         mat4 skinMat = m_BoneMatrices[int(index.x)];
-        newPos    = weight.x * (skinMat * position);
+        newPos    = weight.x * (skinMat * pos);
         newNormal = weight.x * (skinMat * normal);
         //index = index.yzwx;
         //weight = weight.yzwx;
         skinMat = m_BoneMatrices[int(index.y)];
-        newPos    = newPos + weight.y * (skinMat * position);
+        newPos    = newPos + weight.y * (skinMat * pos);
         newNormal = newNormal + weight.y * (skinMat * normal);
     //}
 
-    position = newPos;
+    pos = newPos;
     normal = newNormal;
-}
-
-#endif
-
-void main(){
-    if (m_EdgeSize != 0.0) {
-   vec4 pos = vec4(inPosition, 1.0);
-   vec4 normal = vec4(inNormal,0.0);
-#ifdef USE_HWSKINNING
-   Skinning_Compute(pos, normal);
 #endif
    normal = normalize(normal);
    pos = pos + normal * m_EdgeSize;

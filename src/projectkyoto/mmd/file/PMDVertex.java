@@ -34,6 +34,7 @@ package projectkyoto.mmd.file;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import javax.vecmath.Vector3f;
 
 /**
@@ -64,15 +65,39 @@ public class PMDVertex implements Serializable{
 
 
     public PMDVertex() {
+        pos = new Vector3f();
+        normal = new Vector3f();
+        uv = new Coords2d();
     }
-    public PMDVertex(DataInputStreamLittleEndian is) throws IOException {
-        pos = PMDUtil.readVector3f(is);
-        normal = PMDUtil.readVector3f(is);
-        uv = new Coords2d(is);
+    public PMDVertex readFromStream(DataInputStreamLittleEndian is) throws IOException {
+        PMDUtil.readVector3f(is, pos);
+        PMDUtil.readVector3f(is, normal);
+        uv.readFromStream(is);
         boneNum1 = is.readUnsignedShort();
         boneNum2 = is.readUnsignedShort();
         boneWeight = is.readByte();
         edgeFlag = is.readByte();
+        return this;
+    }
+    public PMDVertex readFromBuffer(ByteBuffer bb) {
+        PMDUtil.readVector3f(bb, pos);
+        PMDUtil.readVector3f(bb, normal);
+        uv.readFromBuffer(bb);
+        boneNum1 = bb.getShort();
+        boneNum2 = bb.getShort();
+        boneWeight = bb.get();
+        edgeFlag = bb.get();
+        return this;
+    }
+    public PMDVertex writeToBuffer(ByteBuffer bb) {
+        PMDUtil.writeVector3f(bb, pos);
+        PMDUtil.writeVector3f(bb, normal);
+        uv.writeToBuffer(bb);
+        bb.putShort((short)boneNum1);
+        bb.putShort((short)boneNum2);
+        bb.put(boneWeight);
+        bb.put(edgeFlag);
+        return this;
     }
 
     public int getBoneNum1() {
@@ -206,5 +231,8 @@ public class PMDVertex implements Serializable{
         int hash = 7;
         hash = 89 * hash + (this.pos != null ? this.pos.hashCode() : 0);
         return hash;
+    }
+    public static int size() {
+        return 38;
     }
 }

@@ -138,16 +138,22 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         int pmdGeometryIndex = 0;
         for(int i=0;i<meshConverter.getMeshDataList().size();i++) {
             MeshData md = meshConverter.getMeshDataList().get(i);
-            PMDMesh mesh = createMesh(md);
+            PMDMesh mesh = createMesh_old(md);
             PMDGeometry geom = new PMDGeometry("geom" + meshCount++);
             geom.setMesh(mesh);
             PMDMaterial pmdMaterial = md.getMaterial();
             setupMaterial(pmdMaterial, geom);
-            System.out.println(node.attachChild(geom));
+            node.attachChild(geom);
             meshList.add(mesh);
             node.pmdGeometryArray[pmdGeometryIndex++] = geom;
             meshConverter.getMeshDataList().set(i, null);
+//            GeometryOptimizer go = GeometryOptimizer.createNewInstance();
+//            go.add(mesh);
+//            mesh.setInterleaved();    
+//            go.optimize();
         }
+//        go.add(meshList.get(0));
+//        go.add(meshList.get(1));
         createSkinCommonVertData();
         for (PMDMaterial pmdMaterial : meshConverter.getSkinMeshData().getIndexMap().keySet()) {
             PMDSkinMesh mesh = createSkinMesh(pmdMaterial);
@@ -157,11 +163,14 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             System.out.println(node.attachChild(geom));
             skinMeshList.add(mesh);
         }
-        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
+//        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
         createSkinArray();
         createSkeleton();
         node.setSkinData(skinMeshList.toArray(new PMDSkinMesh[skinMeshList.size()]), meshConverter.getSkinMeshData().getVertexList(), skinArray);
         node.targets = meshList.toArray(new PMDMesh[meshList.size()]);
+        meshConverter = null;
+        model.setVertexBuffer(null);
+//        go.optimize();
         node.init();
         node.calcOffsetMatrices();
         node.update();
@@ -215,13 +224,17 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         return mesh;
     }
 
-    PMDMesh createMesh(MeshData md) {
+    PMDMesh createMesh_old(MeshData md) {
+        boolean textureFlag = true;
+        if (md.getMaterial().getTextureFileName().length() == 0) {
+            textureFlag = false;
+        }
         PMDMesh mesh = new PMDMesh();
         mesh.setMode(Mesh.Mode.Triangles);
         VertexBuffer vb = new VertexBuffer(VertexBuffer.Type.Position);
-        FloatBuffer vfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 3);
+        FloatBuffer vfb = BufferUtils.createFloatBuffer(md.getVertIndexList().size() * 3);
         VertexBuffer nb = new VertexBuffer(VertexBuffer.Type.Normal);
-        FloatBuffer nfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 3);
+        FloatBuffer nfb = BufferUtils.createFloatBuffer(md.getVertIndexList().size() * 3);
 
 //        VertexBuffer bvb = new VertexBuffer(VertexBuffer.Type.BindPosePosition);
 //        FloatBuffer bvfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 3);
@@ -230,21 +243,27 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
         VertexBuffer tb = new VertexBuffer(VertexBuffer.Type.TexCoord);
 
-        FloatBuffer tfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 2);
+        FloatBuffer tfb = null;
+        if (textureFlag ) {
+            tfb = BufferUtils.createFloatBuffer(md.getVertIndexList().size() * 2);
+        }
         VertexBuffer wb = new VertexBuffer(VertexBuffer.Type.BoneWeight);
-        FloatBuffer wfb = BufferUtils.createFloatBuffer(md.getVertexList().size() * 4);
+        FloatBuffer wfb = BufferUtils.createFloatBuffer(md.getVertIndexList().size() * 4);
         VertexBuffer ib = new VertexBuffer(VertexBuffer.Type.Index);
-        ShortBuffer isb = BufferUtils.createShortBuffer(md.getIndexList().size());
+        ShortBuffer isb = BufferUtils.createShortBuffer(md.getIndexList().size()/*md.getMaterial().getFaceVertCount()*/);
         VertexBuffer bib = new VertexBuffer(VertexBuffer.Type.BoneIndex);
-        ShortBuffer bisb = BufferUtils.createShortBuffer(md.getVertexList().size() * 4);
-        for (PMDVertex v : md.getVertexList()) {
+        ShortBuffer bisb = BufferUtils.createShortBuffer(md.getVertIndexList().size() * 4);
+        PMDVertex v = new PMDVertex();
+        for (Integer vertIndex : md.getVertIndexList()) {
+            model.getVertex(vertIndex, v);
             vfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
             nfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
 
 //            bvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
 //            bnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
-
-            tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
+            if (textureFlag) {
+                tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
+            }
             float weight = (float) v.getBoneWeight() / 100.0f;
             wfb.put(weight).put(1f - weight).put(0).put(0);
             bisb.put((short) md.getBoneList().indexOf(v.getBoneNum1())).put((short) md.getBoneList().indexOf(v.getBoneNum2())).put((short) 0).put((short) 0);
@@ -260,8 +279,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
 //        bvb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bvfb);
 //        bnb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bnfb);
-
-        tb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, tfb);
+        if (textureFlag) {
+            tb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, tfb);
+        }
         wb.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Float, wfb);
         ib.setupData(VertexBuffer.Usage.Static, 1, VertexBuffer.Format.UnsignedShort, isb);
         bib.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Short, bisb);
@@ -273,6 +293,52 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
 //        mesh.setBuffer(bvb);
 //        mesh.setBuffer(bnb);
+        if (textureFlag) {
+            mesh.setBuffer(tb);
+        }
+        mesh.setBuffer(wb);
+        mesh.setBuffer(ib);
+        mesh.setBuffer(bib);
+        int[] indexArray = new int[md.getBoneList().size()];
+        for (int i = 0; i < indexArray.length; i++) {
+            if (i < md.getBoneList().size()) {
+                indexArray[i] = md.getBoneList().get(i).shortValue();
+            } else {
+                indexArray[i] = 0;
+            }
+        }
+        mesh.setBoneIndexArray(indexArray);
+        mesh.setBoneMatrixArray(new Matrix4f[indexArray.length]);
+        for (int i = 0; i < mesh.getBoneMatrixArray().length; i++) {
+            mesh.getBoneMatrixArray()[i] = new Matrix4f();
+            mesh.getBoneMatrixArray()[i].loadIdentity();
+        }
+        return mesh;
+    }
+    PMDMesh createMesh(MeshData md) {
+        PMDMesh mesh = new PMDMesh();
+        mesh.setMode(Mesh.Mode.Triangles);
+        VertexBuffer vb = new VertexBuffer(VertexBuffer.Type.Position);
+        VertexBuffer nb = new VertexBuffer(VertexBuffer.Type.Normal);
+        VertexBuffer tb = new VertexBuffer(VertexBuffer.Type.TexCoord);
+        VertexBuffer wb = new VertexBuffer(VertexBuffer.Type.BoneWeight);
+        VertexBuffer ib = new VertexBuffer(VertexBuffer.Type.Index);
+        VertexBuffer bib = new VertexBuffer(VertexBuffer.Type.BoneIndex);
+
+        vb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, md.offset, MeshConverter.stride);
+        nb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float,  md.offset, MeshConverter.stride);
+        tb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float,  md.offset, MeshConverter.stride);
+        wb.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Float,  md.offset, MeshConverter.stride);
+        ib.setupData(VertexBuffer.Usage.Static, 1, VertexBuffer.Format.UnsignedShort,  md.offset, MeshConverter.stride);
+        bib.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Short,  md.offset, MeshConverter.stride);
+
+        PMDVertex v = new PMDVertex();
+        mesh.setBuffer(vb);
+        mesh.setBuffer(nb);
+        mesh.setVertCount(md.getVertIndexList().size());
+        
+        mesh.setVbBackup(vb);
+        mesh.setNbBackup(nb);
 
         mesh.setBuffer(tb);
         mesh.setBuffer(wb);
@@ -355,10 +421,10 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mat.setFloat("Shininess", m.getMaterial().getPower());
         if (m.getTextureFileName().length() > 0) {
             StringTokenizer st = new StringTokenizer(m.getTextureFileName(), "*");
-            System.out.println("m.getTextureFileName() = " + m.getTextureFileName());
+//            System.out.println("m.getTextureFileName() = " + m.getTextureFileName());
             while (st.hasMoreElements()) {
                 String fileName = st.nextToken();
-                System.out.println("fileName = " + fileName);
+//                System.out.println("fileName = " + fileName);
                 String s = fileName.substring(fileName.indexOf('.') + 1);
                 Texture texture = assetManager.loadTexture(folderName + fileName /*
                          * m.getTextureFileName()
@@ -580,7 +646,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         folderName = ai.getKey().getFolder();
         meshConverter = new MeshConverter(model);
         meshConverter.convertMesh();
-        model.setVertexList(null);
+//        model.setVertexList(null);
         model.setFaceVertIndex(null);
         PMDNode pmdNode = createNode(ai.getKey().getName());
         if (JmeSystem.getFullName().indexOf("Android") == -1) {

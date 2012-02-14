@@ -874,26 +874,26 @@ boolean setBoneMatricesFlag = true;
     }
 
     public void setGlslSkinning(boolean glslSkinning) {
-        this.glslSkinning = glslSkinning;
-        for (Spatial sp : getChildren()) {
-            if (sp instanceof PMDGeometry) {
-                Mesh mesh = ((PMDGeometry) sp).getMesh();
-                if (mesh instanceof PMDMesh) {
-                    PMDMesh pmdMesh = (PMDMesh)mesh;
-                    resetToBind(pmdMesh);
-                    if (glslSkinning) {
-                        pmdMesh.releaseSoftwareSkinningBufferes();
-                        mesh.getBuffer(Type.Position).setUsage(Usage.Static);
-                        mesh.getBuffer(Type.Normal).setUsage(Usage.Static);
-                    } else {
-                        pmdMesh.createSoftwareSkinningBuffers();
-                        mesh.getBuffer(Type.Position).setUsage(Usage.Dynamic);
-                        mesh.getBuffer(Type.Normal).setUsage(Usage.Dynamic);
-                    }
-                }
-            }
-        }
-        initMaterials();
+//        this.glslSkinning = glslSkinning;
+//        for (Spatial sp : getChildren()) {
+//            if (sp instanceof PMDGeometry) {
+//                Mesh mesh = ((PMDGeometry) sp).getMesh();
+//                if (mesh instanceof PMDMesh) {
+//                    PMDMesh pmdMesh = (PMDMesh)mesh;
+//                    resetToBind(pmdMesh);
+//                    if (glslSkinning) {
+//                        pmdMesh.releaseSoftwareSkinningBufferes();
+//                        mesh.getBuffer(Type.Position).setUsage(Usage.Static);
+//                        mesh.getBuffer(Type.Normal).setUsage(Usage.Static);
+//                    } else {
+//                        pmdMesh.createSoftwareSkinningBuffers();
+//                        mesh.getBuffer(Type.Position).setUsage(Usage.Dynamic);
+//                        mesh.getBuffer(Type.Normal).setUsage(Usage.Dynamic);
+//                    }
+//                }
+//            }
+//        }
+//        initMaterials();
     }
 
     @Override
@@ -980,7 +980,7 @@ boolean setBoneMatricesFlag = true;
                 newPMDNode.skinNormalArray[i] = new javax.vecmath.Vector3f(skinNormalArray[i]);
             }
 //            newPMDNode.offsetMatrices = new Matrix4f[offsetMatrices.length];
-            newPMDNode.setGlslSkinning(newPMDNode.glslSkinning);
+//            newPMDNode.setGlslSkinning(newPMDNode.glslSkinning);
             newPMDNode.skeleton.updateWorldVectors();
             newPMDNode.calcOffsetMatrices();
             newPMDNode.updateSkinBackData();

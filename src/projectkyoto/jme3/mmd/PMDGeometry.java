@@ -120,10 +120,15 @@ public class PMDGeometry extends Geometry {
             newMesh.setBuffer(oldMesh.getVbBackup());
             newMesh.setBuffer(oldMesh.getNbBackup());
             newMesh.setBuffer(oldMesh.getBuffer(Type.Index));
-            newMesh.setBuffer(oldMesh.getBuffer(Type.TexCoord));
+            if (oldMesh.getBuffer(Type.TexCoord) != null) {
+                newMesh.setBuffer(oldMesh.getBuffer(Type.TexCoord));
+            }
             newMesh.setBuffer(oldMesh.getBuffer(Type.BoneIndex));
             newMesh.setBuffer(oldMesh.getBuffer(Type.BoneWeight));
+            if (oldMesh.getBuffer(Type.InterleavedData) != null)
+            newMesh.setBuffer(oldMesh.getBuffer(Type.InterleavedData));
             newPMDGeometry.setMesh(newMesh);
+//            newMesh.setInterleaved();
         }
         newPMDGeometry.glslSkinningMaterial = glslSkinningMaterial.clone();
         newPMDGeometry.noSkinningMaterial = noSkinningMaterial.clone();

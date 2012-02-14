@@ -34,6 +34,8 @@ package projectkyoto.mmd.file.util2;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,9 +58,11 @@ public class MeshConverter implements Serializable{
     int maxBoneSize = DEFAULT_MAX_BONE_SIZE;
     List<MeshData> meshDataList = new ArrayList<MeshData>();
     SkinMeshData skinMeshData;
-    HashMap<PMDVertex, Integer> meshTmpVertMap = new HashMap<PMDVertex, Integer>();
+    HashMap<Integer, Integer> meshTmpVertMap = new HashMap<Integer, Integer>();
     HashMap<Integer, Integer> skinTmpVertMap = new HashMap<Integer, Integer>();
-
+    public ByteBuffer interleavedBuffer;
+    int currentVertIndex = 0;
+    public static int stride = 56;
     public MeshConverter(PMDModel model) {
         this.model = model;
         skinMeshData = new SkinMeshData(this, model);
@@ -93,18 +97,18 @@ public class MeshConverter implements Serializable{
     }
     public void convertMesh() {
         int faceVertNo = 0;
-        for (int materialNo = 0; materialNo < model.getMaterialCount(); materialNo++) {
+        for(int materialNo = 0; materialNo < model.getMaterialCount(); materialNo++) {
             meshTmpVertMap.clear();
             PMDMaterial material = model.getMaterial()[materialNo];
             // find same material
-            MeshData meshData = new MeshData(model, maxBoneSize, material);
+            MeshData meshData = new MeshData(model, maxBoneSize, material, currentVertIndex);
             for(int meshIndex = meshDataList.size()-1;meshIndex >=0;meshIndex--) {
                 PMDMaterial material2 = meshDataList.get(meshIndex).getMaterial();
                 if (material.equals(material2)) {
                     meshData = meshDataList.get(meshIndex);
-                    for(int i=meshData.getVertexList().size()-1;i>=0;i--) {
-                        PMDVertex v = meshData.getVertexList().get(i);
-                        meshTmpVertMap.put(v, i);
+                    for(int i=meshData.getVertIndexList().size()-1;i>=0;i--) {
+                        Integer vertIndex = meshData.getVertIndexList().get(i);
+                        meshTmpVertMap.put(vertIndex, i);
                     }
                     break;
                 }
@@ -123,24 +127,51 @@ public class MeshConverter implements Serializable{
                     addSkinTriangle(material, i1, i2, i3);
                 } else {
                     if (!meshData.addTriangle(this, i1, i2, i3)) {
-                        meshData = new MeshData(model, maxBoneSize, material);
+                        meshData = new MeshData(model, maxBoneSize, material, currentVertIndex);
                         meshTmpVertMap.clear();
                         meshDataList.add(meshData);
                         meshData.addTriangle(this, i1, i2, i3);
                     }
                 }
             }
-            if (meshData.getVertexList().size() == 0) {
+            if (meshData.material.getFaceVertCount() == 0) {
                 meshDataList.remove(meshDataList.size()-1);
             }
         }
-        meshTmpVertMap = null;
+//        meshTmpVertMap = null;
         skinTmpVertMap = null;
+//        createInterleavedBuffer();
     }
+    void createInterleavedBuffer() {
+        int size = 0;
+        for(MeshData md : meshDataList) {
+            md.offset = size * stride;
+            size += md.vertIndexList.size();
+        }
+        interleavedBuffer = ByteBuffer.allocateDirect(size * stride);
+        interleavedBuffer.order(ByteOrder.nativeOrder());
+        PMDVertex tmpVert = new PMDVertex();
+        for(MeshData md : meshDataList) {
+            for(Integer vertIndex : md.getVertIndexList()) {
+                PMDVertex v = model.getVertex(vertIndex, tmpVert);
+                interleavedBuffer.putFloat(v.getPos().x);
+                interleavedBuffer.putFloat(v.getPos().y);
+                interleavedBuffer.putFloat(v.getPos().z);
+                interleavedBuffer.putFloat(v.getNormal().x);
+                interleavedBuffer.putFloat(v.getNormal().y);
+                interleavedBuffer.putFloat(v.getNormal().z);
+                interleavedBuffer.putFloat(v.getUv().getU()).putFloat(1f - v.getUv().getV());
+                float weight = (float) v.getBoneWeight() / 100.0f;
+                interleavedBuffer.putFloat(weight).putFloat(1f - weight)
+                        .putFloat(0).putFloat(0);
+                interleavedBuffer.putShort((short)v.getBoneNum1()).putShort((short)v.getBoneNum2());
+            }
+        }
+    } 
     void printMeshData(MeshData meshData) {
-            System.out.println("vertSize = " + meshData.getVertexList().size()
-                    + " indexSize = " + meshData.getIndexList().size()
-                    + " boneSize = " + meshData.getBoneList().size());
+//            System.out.println("vertSize = " + meshData.getVertexList().size()
+//                    + " indexSize = " + meshData.getIndexList().size()
+//                    + " boneSize = " + meshData.getBoneList().size());
     }
     boolean containsSkin(int i1, int i2, int i3) {
         if (containsSkin(i1)

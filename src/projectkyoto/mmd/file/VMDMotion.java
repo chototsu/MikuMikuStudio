@@ -34,8 +34,10 @@ package projectkyoto.mmd.file;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import javax.vecmath.Point3f;
 import javax.vecmath.Quat4f;
+import projectkyoto.mmd.file.util2.BufferUtil;
 
 /**
  *
@@ -48,7 +50,10 @@ public class VMDMotion implements Serializable{
     private Point3f location;
     private Quat4f rotation;
     private byte[] interpolation = new byte[64];
-
+    public VMDMotion() {
+        location = new Point3f();
+        rotation = new Quat4f();
+    }
     public VMDMotion(DataInputStreamLittleEndian is) throws IOException {
         boneName = is.readString(15);
 //        System.out.println("boneName = "+boneName);
@@ -60,6 +65,20 @@ public class VMDMotion implements Serializable{
         rotation = new Quat4f(is.readFloat(), is.readFloat(), -is.readFloat(), -is.readFloat());
         is.read(interpolation);
     }
+//    public VMDMotion readFromBuffer(ByteBuffer bb) {
+//        boneName = BufferUtil.readString(bb, 15);
+//        frameNo = bb.getInt();
+//        BufferUtil.readPoint3f(bb, location);
+//        BufferUtil.readQuat4f(bb, rotation);
+//        bb.get(interpolation);
+//        return this;
+//    }
+//    public VMDMotion writeToBuffer(ByteBuffer bb) {
+//        BufferUtil.writeString(bb, boneName, 15);
+//        bb.putInt(frameNo);
+//        
+//        return this;
+//    }
 
     @Override
     public String toString() {

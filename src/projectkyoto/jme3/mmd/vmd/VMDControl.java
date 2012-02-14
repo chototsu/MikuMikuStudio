@@ -274,6 +274,10 @@ public class VMDControl extends AbstractControl {
 //        }
 //        tpf = stepTime;
 //        tpf = 1f/15f;
+        if (tpf > 1) {
+            setFrameNo((int)((currentTime + tpf) * 30f));
+            return;
+        }
         boolean needUpdateSkin = false;
         if (tpf != 0 && !pause) {
             tpf += prevTpf;
@@ -484,6 +488,7 @@ public class VMDControl extends AbstractControl {
         }
         currentFrameNo = frameNo;
         currentTime = frameNo / 30f;
+        prevTpf = 0;
         calcBonePosition();
         for (SkinList skinList : skinListArray) {
             skinList.currentCount = skinList.size() - 1;

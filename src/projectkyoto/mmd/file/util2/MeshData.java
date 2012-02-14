@@ -32,6 +32,8 @@
 
 package projectkyoto.mmd.file.util2;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,12 +52,20 @@ public class MeshData {
     int maxBoneSize;
     PMDMaterial material;
     List<Integer>boneList = new ArrayList<Integer>();
-    List<PMDVertex> vertexList = new ArrayList<PMDVertex>();
+//    List<PMDVertex> vertexList = new ArrayList<PMDVertex>();
     List<Integer> indexList = new ArrayList<Integer>();
-    public MeshData(PMDModel model, int maxBoneSize, PMDMaterial material) {
+    public ByteBuffer indexBuffer;
+    List<Integer> vertIndexList = new ArrayList<Integer>();
+    public int offset;
+    private PMDVertex tmpVert = new PMDVertex();
+    public MeshData(PMDModel model, int maxBoneSize, PMDMaterial material
+            , int offset) {
         this.model = model;
         this.maxBoneSize = maxBoneSize;
         this.material = material;
+//        indexBuffer = ByteBuffer.allocateDirect(material.getFaceVertCount() * 2);
+//        indexBuffer.order(ByteOrder.nativeOrder());
+        this.offset = offset;
     }
     public boolean addTriangle(MeshConverter mc, int i1,int i2,int i3) {
         int boneListSizeBefore = boneList.size();
@@ -75,23 +85,37 @@ public class MeshData {
         return false;
     }
     private void addBoneList(int vertIndex) {
-        PMDVertex v = model.getVertexList()[vertIndex];
+        PMDVertex v = model.getVertex(vertIndex, tmpVert);
         if (!boneList.contains(v.getBoneNum1()))
             boneList.add(v.getBoneNum1());
         if (!boneList.contains(v.getBoneNum2()))
             boneList.add(v.getBoneNum2());
     }
     private void addVertex(MeshConverter mc, int vertIndex) {
-        PMDVertex v = model.getVertexList()[vertIndex];
         int newVertIndex;
-        Integer index = mc.meshTmpVertMap.get(v);
+        Integer index = mc.meshTmpVertMap.get(vertIndex);
         if (index != null /*vertexList.contains(v)*/) {
             newVertIndex = index.intValue();//vertexList.indexOf(v);
         } else {
-            newVertIndex = vertexList.size();
-            vertexList.add(v);
-            mc.meshTmpVertMap.put(v, newVertIndex);
+            newVertIndex = vertIndexList.size();
+            vertIndexList.add(vertIndex);
+            mc.meshTmpVertMap.put(vertIndex, newVertIndex);
+            
+//            PMDVertex v = model.getVertex(vertIndex, tmpVert);
+//            mc.currentVertIndex++;
+//            mc.interleavedBuffer.putFloat(v.getPos().x);
+//            mc.interleavedBuffer.putFloat(v.getPos().y);
+//            mc.interleavedBuffer.putFloat(v.getPos().z);
+//            mc.interleavedBuffer.putFloat(v.getNormal().x);
+//            mc.interleavedBuffer.putFloat(v.getNormal().y);
+//            mc.interleavedBuffer.putFloat(v.getNormal().z);
+//            mc.interleavedBuffer.putFloat(v.getUv().getU()).putFloat(1f - v.getUv().getV());
+//            float weight = (float) v.getBoneWeight() / 100.0f;
+//            mc.interleavedBuffer.putFloat(weight).putFloat(1f - weight)
+//                    .putFloat(0).putFloat(0);
+//            mc.interleavedBuffer.putShort((short)v.getBoneNum1()).putShort((short)v.getBoneNum2());
         }
+//        indexBuffer.putShort((short)newVertIndex);
         indexList.add(newVertIndex);
     }
     public List<Integer> getBoneList() {
@@ -100,14 +124,6 @@ public class MeshData {
 
     public void setBoneList(List<Integer> boneList) {
         this.boneList = boneList;
-    }
-
-    public List<Integer> getIndexList() {
-        return indexList;
-    }
-
-    public void setIndexList(List<Integer> indexList) {
-        this.indexList = indexList;
     }
 
     public PMDMaterial getMaterial() {
@@ -134,19 +150,24 @@ public class MeshData {
         this.model = model;
     }
 
-    public List<PMDVertex> getVertexList() {
-        return vertexList;
+    public ByteBuffer getIndexBuffer() {
+        return indexBuffer;
     }
 
-    public void setVertexList(List<PMDVertex> vertexList) {
-        this.vertexList = vertexList;
+    public List<Integer> getVertIndexList() {
+        return vertIndexList;
     }
-    public void printTrinangles() {
-        for(int i=0;i<indexList.size();i++) {
-            PMDVertex v = vertexList.get(indexList.get(i));
-            System.out.println(v);
-        }
+
+    public List<Integer> getIndexList() {
+        return indexList;
     }
+
+//    public void printTrinangles() {
+//        for(int i=0;i<indexList.size();i++) {
+//            PMDVertex v = vertexList.get(indexList.get(i));
+//            System.out.println(v);
+//        }
+//    }
 
     @Override
     public boolean equals(Object obj) {

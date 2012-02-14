@@ -58,7 +58,7 @@ public class SkinMeshData implements Serializable{
         for(PMDSkinData sd : model.getSkinData()) {
             if (sd.getSkinType() == 0) {
                 for(int i=0;i<sd.getSkinVertCount();i++) {
-                    PMDVertex v = model.getVertexList()[sd.getSkinVertData()[i].getSkinVertIndex()];
+                    PMDVertex v = model.getVertex(sd.getSkinVertData()[i].getSkinVertIndex());
                     vertexList.add(v);
                     mc.skinTmpVertMap.put(sd.getSkinVertData()[i].getSkinVertIndex(), i);
                 }
@@ -81,7 +81,7 @@ public class SkinMeshData implements Serializable{
     }
 
     private void addBoneList(int vertIndex) {
-        PMDVertex v = model.getVertexList()[vertIndex];
+        PMDVertex v = model.getVertex(vertIndex);
         if (!boneList.contains(v.getBoneNum1())) {
             boneList.add(v.getBoneNum1());
         }
@@ -91,7 +91,7 @@ public class SkinMeshData implements Serializable{
     }
 
     private void addVertex(MeshConverter mc, List<Integer>indexList, int vertIndex) {
-        PMDVertex v = model.getVertexList()[vertIndex];
+        PMDVertex v = model.getVertex(vertIndex);
         Integer index = mc.skinTmpVertMap.get(vertIndex);
         int newVertIndex;
         if (index != null /*vertexList.contains(v)*/) {
