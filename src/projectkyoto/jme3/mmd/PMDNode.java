@@ -957,7 +957,7 @@ boolean setBoneMatricesFlag = true;
                             skinMesh.setSkinvb2(skinMesh0.getSkinvb2().clone());
                             skinMesh.setBuffer(skinMesh0.getBuffer(Type.Normal).clone());
                             skinMesh.setSkinnb2(skinMesh0.getSkinnb2().clone());
-                            skinMesh.setBuffer(skinMesh0.getBuffer(Type.TexCoord).clone());
+                            skinMesh.setBuffer(skinMesh0.getBuffer(Type.TexCoord));
                         }
                         newPMDNode.skinTargets[skinMeshCount++] = (PMDSkinMesh)mesh;
                     }

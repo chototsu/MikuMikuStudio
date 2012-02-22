@@ -158,7 +158,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             PMDGeometry geom = new PMDGeometry("geom" + meshCount++);
             geom.setMesh(mesh);
             setupMaterial(pmdMaterial, geom);
-            System.out.println(node.attachChild(geom));
+            node.attachChild(geom);
             skinMeshList.add(mesh);
         }
 //        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
@@ -368,13 +368,13 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             geom.setGlslSkinningMaterial(mat);
             geom.setNoSkinningMaterial(mat);
         } else {
+            PMDMesh mesh = (PMDMesh)geom.getMesh();
             mat = createMaterial(m, true);
             geom.setMaterial(mat);
             geom.setGlslSkinningMaterial(mat);
+            mat.setInt("NumBones", mesh.boneIndexArray.length);
             mat = createMaterial(m, false);
             geom.setNoSkinningMaterial(mat);
-            PMDMesh mesh = (PMDMesh)geom.getMesh();
-//            mat.setInt("NumBones", mesh.boneIndexArray.length);
 
         }
         geom.setPmdMaterial(m);
@@ -401,7 +401,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             }
         }
         if (skinning) {
-            mat.setInt("NumBones", meshConverter.getMaxBoneSize());
+//            mat.setInt("NumBones", meshConverter.getMaxBoneSize());
         }
         float alpha = m.getMaterial().getFaceColor().getAlpha();
         if (alpha > 0.99f) {
