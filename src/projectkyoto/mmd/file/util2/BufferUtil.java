@@ -10,6 +10,7 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel.MapMode;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,8 @@ public class BufferUtil {
     public static File tmpDir = null;
     public static final Logger logger = Logger.getLogger(BufferUtil.class.getName());
     public static ByteBuffer createByteBuffer2(int size) {
-        ByteBuffer bb = ByteBuffer.allocate(size);
+        ByteBuffer bb = ByteBuffer.allocateDirect(size);
+        bb.order(ByteOrder.nativeOrder());
         return bb;
     }
     public static ByteBuffer createByteBuffer(int size) {
@@ -39,7 +41,7 @@ public class BufferUtil {
             RandomAccessFile os = new RandomAccessFile(tmpFile, "rw");
             os.seek(size);
             os.write(0);
-            ByteBuffer  bb = os.getChannel().map(MapMode.READ_WRITE, 0, size);
+            MappedByteBuffer  bb = os.getChannel().map(MapMode.READ_WRITE, 0, size);
             os.close();
             tmpFile.delete();
             bb.order(ByteOrder.nativeOrder());

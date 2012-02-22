@@ -136,6 +136,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 //        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
         node.pmdGeometryArray = new PMDGeometry[meshConverter.getMeshDataList().size()];
         int pmdGeometryIndex = 0;
+//        GeometryOptimizer go = GeometryOptimizer.createNewInstance();
         for(int i=0;i<meshConverter.getMeshDataList().size();i++) {
             MeshData md = meshConverter.getMeshDataList().get(i);
             PMDMesh mesh = createMesh_old(md);
@@ -147,13 +148,10 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             meshList.add(mesh);
             node.pmdGeometryArray[pmdGeometryIndex++] = geom;
             meshConverter.getMeshDataList().set(i, null);
-//            GeometryOptimizer go = GeometryOptimizer.createNewInstance();
 //            go.add(mesh);
-//            mesh.setInterleaved();    
-//            go.optimize();
+            mesh.setInterleaved();    
         }
-//        go.add(meshList.get(0));
-//        go.add(meshList.get(1));
+//        go.optimize();
         createSkinCommonVertData();
         for (PMDMaterial pmdMaterial : meshConverter.getSkinMeshData().getIndexMap().keySet()) {
             PMDSkinMesh mesh = createSkinMesh(pmdMaterial);
@@ -248,11 +246,11 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             tfb = BufferUtils.createFloatBuffer(md.getVertIndexList().size() * 2);
         }
         VertexBuffer wb = new VertexBuffer(VertexBuffer.Type.BoneWeight);
-        FloatBuffer wfb = BufferUtils.createFloatBuffer(md.getVertIndexList().size() * 4);
+        FloatBuffer wfb = BufferUtils.createFloatBuffer(md.getVertIndexList().size() * 2);
         VertexBuffer ib = new VertexBuffer(VertexBuffer.Type.Index);
         ShortBuffer isb = BufferUtils.createShortBuffer(md.getIndexList().size()/*md.getMaterial().getFaceVertCount()*/);
         VertexBuffer bib = new VertexBuffer(VertexBuffer.Type.BoneIndex);
-        ShortBuffer bisb = BufferUtils.createShortBuffer(md.getVertIndexList().size() * 4);
+        ShortBuffer bisb = BufferUtils.createShortBuffer(md.getVertIndexList().size() * 2);
         PMDVertex v = new PMDVertex();
         for (Integer vertIndex : md.getVertIndexList()) {
             model.getVertex(vertIndex, v);
@@ -265,8 +263,8 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
             }
             float weight = (float) v.getBoneWeight() / 100.0f;
-            wfb.put(weight).put(1f - weight).put(0).put(0);
-            bisb.put((short) md.getBoneList().indexOf(v.getBoneNum1())).put((short) md.getBoneList().indexOf(v.getBoneNum2())).put((short) 0).put((short) 0);
+            wfb.put(weight).put(1f - weight);
+            bisb.put((short) md.getBoneList().indexOf(v.getBoneNum1())).put((short) md.getBoneList().indexOf(v.getBoneNum2()));
         }
         for (Integer index : md.getIndexList()) {
             isb.put(index.shortValue());
@@ -274,17 +272,17 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         }
 //        System.out.println("isb.capacity() = " + isb.capacity());
 //        System.out.println("isb.capacity() = " + md.getIndexList().size());
-        vb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, vfb);
-        nb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, nfb);
+        vb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, vfb);
+        nb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, nfb);
 
 //        bvb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bvfb);
 //        bnb.setupData(VertexBuffer.Usage.CpuOnly, 3, VertexBuffer.Format.Float, bnfb);
         if (textureFlag) {
             tb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, tfb);
         }
-        wb.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Float, wfb);
+        wb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, wfb);
         ib.setupData(VertexBuffer.Usage.Static, 1, VertexBuffer.Format.UnsignedShort, isb);
-        bib.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Short, bisb);
+        bib.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Short, bisb);
         mesh.setBuffer(vb);
         mesh.setBuffer(nb);
         
@@ -375,6 +373,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             geom.setGlslSkinningMaterial(mat);
             mat = createMaterial(m, false);
             geom.setNoSkinningMaterial(mat);
+            PMDMesh mesh = (PMDMesh)geom.getMesh();
+//            mat.setInt("NumBones", mesh.boneIndexArray.length);
+
         }
         geom.setPmdMaterial(m);
         if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
@@ -512,10 +513,10 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             mat.getAdditionalRenderState().setAlphaTest(true);
 //                    mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
         } else {
-            mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+//            mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 //                    mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
 //                    mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-            mat.getAdditionalRenderState().setAlphaTest(true);
+//            mat.getAdditionalRenderState().setAlphaTest(true);
         }
         return mat;
     }

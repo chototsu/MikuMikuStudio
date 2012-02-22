@@ -127,27 +127,44 @@ vec2 computeLighting(in vec3 wvPos, in vec3 wvNorm, in vec3 wvViewDir, in vec4 w
      return vec2(diffuseFactor, specularFactor) * vec2(lightDir.w);
   }
 #endif
-attribute vec4 inBoneWeight;
-attribute vec4 inBoneIndices;
-attribute vec4 inBoneIndex;
+attribute vec2 inBoneWeight;
+attribute vec2 inBoneIndex;
 #ifdef USE_HWSKINNING
 void Skinning_Compute(inout vec4 position, inout vec4 normal){
 //    vec4 index  = inBoneIndices;
-    vec4 index  = inBoneIndex;
-    vec4 weight = inBoneWeight;
+    vec2 index  = inBoneIndex;
+    vec2 weight = inBoneWeight;
 
-    vec4 newPos    = vec4(0.0,0.0,0.0,0.0);
-    vec4 newNormal = vec4(0.0,0.0,0.0,0.0);
+    vec4 newPos;
+    vec4 newNormal;
 
     //for (float i = 1.0; i < 2.0; i += 1.0){
-        mat4 skinMat = m_BoneMatrices[int(index.x)];
-        newPos    = weight.x * (skinMat * position);
-        newNormal = weight.x * (skinMat * normal);
+        mat4 skinMat;
+#if NUM_BONES != 1
+        if (weight.x == 1.0) {
+            skinMat = m_BoneMatrices[int(index.x)];
+            newPos    = (skinMat * position);
+            newNormal = (skinMat * normal);
+        } else if (weight.x == 0.0) {
+            skinMat = m_BoneMatrices[int(index.y)];
+            newPos    =  (skinMat * position);
+            newNormal = (skinMat * normal);
+        } else {
+            skinMat = m_BoneMatrices[int(index.x)];
+            newPos    = weight.x * (skinMat * position);
+            newNormal = weight.x * (skinMat * normal);
+
+            skinMat = m_BoneMatrices[int(index.y)];
+            newPos    = newPos + weight.y * (skinMat * position);
+            newNormal = newNormal + weight.y * (skinMat * normal);
+        }
+#else
+            skinMat = m_BoneMatrices[0];
+            newPos    = (skinMat * position);
+            newNormal = (skinMat * normal);
+#endif
         //index = index.yzwx;
         //weight = weight.yzwx;
-        skinMat = m_BoneMatrices[int(index.y)];
-        newPos    = newPos + weight.y * (skinMat * position);
-        newNormal = newNormal + weight.y * (skinMat * normal);
     //}
 
     position = newPos;

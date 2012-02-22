@@ -20,7 +20,7 @@
 //#define HQ_ATTENUATION
 
 
-varying vec2 texCoord;
+varying LOWP vec2 texCoord;
 
 varying LOWP vec4 AmbientSum;
 varying LOWP vec4 DiffuseSum;
@@ -166,9 +166,9 @@ void main(){
     #ifdef ALPHAMAP
        alpha = alpha * texture2D(m_AlphaMap, newTexCoord).r;
     #endif
-    if(alpha < 0.1 /*m_AlphaDiscardThreshold*/){
-        discard;
-    }
+    //if(alpha < 0.1 /*m_AlphaDiscardThreshold*/){
+    //    discard;
+    //}
 
     // ***********************
     // Read from textures

@@ -39,6 +39,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +55,7 @@ import projectkyoto.mmd.file.PMDVertex;
 public class MeshConverter implements Serializable{
 
     PMDModel model;
-    public static int DEFAULT_MAX_BONE_SIZE = 20;
+    public static int DEFAULT_MAX_BONE_SIZE = 50;
     int maxBoneSize = DEFAULT_MAX_BONE_SIZE;
     List<MeshData> meshDataList = new ArrayList<MeshData>();
     SkinMeshData skinMeshData;
@@ -141,6 +142,13 @@ public class MeshConverter implements Serializable{
 //        meshTmpVertMap = null;
         skinTmpVertMap = null;
 //        createInterleavedBuffer();
+        Iterator<MeshData> it = meshDataList.iterator();
+        while(it.hasNext()) {
+            MeshData md = it.next();
+            if (md.getIndexList().size() == 0) {
+                it.remove();
+            }
+        }
     }
     void createInterleavedBuffer() {
         int size = 0;

@@ -86,9 +86,9 @@ public class MeshData {
     }
     private void addBoneList(int vertIndex) {
         PMDVertex v = model.getVertex(vertIndex, tmpVert);
-        if (!boneList.contains(v.getBoneNum1()))
+        if (v.getBoneWeight() != 0 && !boneList.contains(v.getBoneNum1()))
             boneList.add(v.getBoneNum1());
-        if (!boneList.contains(v.getBoneNum2()))
+        if (v.getBoneWeight() != 100 && !boneList.contains(v.getBoneNum2()))
             boneList.add(v.getBoneNum2());
     }
     private void addVertex(MeshConverter mc, int vertIndex) {
