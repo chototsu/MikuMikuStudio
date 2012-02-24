@@ -3,10 +3,14 @@ package com.jme3.renderer.android;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import com.jme3.app.AndroidHarness;
+import com.jme3.asset.DesktopAssetManager;
 import com.jme3.math.FastMath;
+import com.jme3.system.JmeSystem;
 import com.jme3.texture.Image;
 import com.jme3.texture.Image.Format;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
 
 public class TextureUtil {
@@ -57,7 +61,7 @@ public class TextureUtil {
         while (height >= 1 || width >= 1) {
             //First of all, generate the texture from our bitmap and set it to the according level
             GLUtils.texImage2D(GL10.GL_TEXTURE_2D, level, bitmap, 0);
-checkGLError();
+//checkGLError();
             if (height == 1 || width == 1) {
                 break;
             }
@@ -81,7 +85,32 @@ checkGLError();
      * @param generateMips
      * @param powerOf2
      */
-    public static void uploadTextureBitmap(final int target, Bitmap bitmap, boolean generateMips, boolean powerOf2)
+    public static void uploadTextureBitmap(final int target, Bitmap bitmap, boolean generateMips, boolean powerOf2) {
+        int MAX_RETRY_COUNT = 1;
+        for(int retryCount = 0;retryCount<MAX_RETRY_COUNT;retryCount++) {
+            try {
+                uploadTextureBitmap2(target, bitmap, generateMips, powerOf2);
+            }catch(OutOfMemoryError ex) {
+                if (!(retryCount < MAX_RETRY_COUNT)){
+                    throw ex;
+                }
+                DesktopAssetManager assetManager = 
+                        (DesktopAssetManager)((AndroidHarness)JmeSystem.getActivity())
+                        .getJmeApplication().getAssetManager();
+                assetManager.clearCache();
+                System.gc();
+                System.runFinalization();
+            }
+        }
+    }
+    /**
+     * <code>uploadTextureBitmap</code> uploads a native android bitmap
+     * @param target
+     * @param bitmap
+     * @param generateMips
+     * @param powerOf2
+     */
+    private static void uploadTextureBitmap2(final int target, Bitmap bitmap, boolean generateMips, boolean powerOf2)
     {
         if (bitmap.isRecycled()) {
             throw new RuntimeException("bitmap is recycled.");
@@ -90,11 +119,19 @@ checkGLError();
         {
             int width = bitmap.getWidth();
             int height = bitmap.getHeight();
-            if (!FastMath.isPowerOfTwo(width) || !FastMath.isPowerOfTwo(height))
+            if (!FastMath.isPowerOfTwo(width) || !FastMath.isPowerOfTwo(height)
+                    || width >= 512 || height >= 512)
             {
                 // scale to power of two
                 width = FastMath.nearestPowerOfTwo(width);
                 height = FastMath.nearestPowerOfTwo(height);
+                while(width >= 512) {
+                    width = width / 2;
+                }
+                while(height >= 512) {
+                    height = height / 2;
+                }
+            Logger.getLogger(TextureUtil.class.getName()).warning("texture size changed.");
                 Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap, width, height, true);
                 bitmap.recycle();
                 bitmap = bitmap2;
@@ -108,7 +145,7 @@ checkGLError();
         else
         {
             GLUtils.texImage2D(target, 0, bitmap, 0);
-checkGLError();
+//checkGLError();
 //bitmap.recycle();
         }
     }
@@ -255,7 +292,7 @@ checkGLError();
                                       0,
                                       data.capacity(),
                                       data);
-checkGLError();
+//checkGLError();
 return;
         }
 
@@ -278,7 +315,7 @@ return;
                                           0,
                                           data.remaining(),
                                           data);
-checkGLError();
+//checkGLError();
             }else{
                 GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D,
                                 i,
@@ -290,14 +327,14 @@ checkGLError();
                                 dataType,
                                 data);
             }
-checkGLError();
+//checkGLError();
             pos += mipSizes[i];
         }
     }
-    private static void checkGLError() {
-        int error;
-        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-            	throw new RuntimeException("glError " + error);
-        }
-    }
+//    private static void checkGLError() {
+//        int error;
+//        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+//            	throw new RuntimeException("glError " + error);
+//        }
+//    }
 }

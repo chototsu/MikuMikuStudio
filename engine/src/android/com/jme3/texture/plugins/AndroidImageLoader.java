@@ -7,6 +7,7 @@ import android.graphics.Matrix;
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetLoader;
 import com.jme3.asset.TextureKey;
+import com.jme3.math.FastMath;
 import com.jme3.texture.Image;
 import com.jme3.texture.Image.Format;
 import com.jme3.util.BufferUtils;
@@ -28,7 +29,18 @@ public class AndroidImageLoader implements AssetLoader {
         Bitmap bitmap = null;
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPurgeable = true;
+            options.inJustDecodeBounds = true;
+            in = info.openStream();
+            BitmapFactory.decodeStream(in,null, options);
+            float scaleW=(float)options.outWidth /256f;  
+            float scaleH=(float)options.outHeight/256f;  
+            float scale =Math.max(scaleW,scaleH);            
+            in.close();
+            in = null;
+            options = new BitmapFactory.Options();
+            options.inJustDecodeBounds=false;  
+            options.inPurgeable = false;
+            options.inSampleSize = (int)FastMath.ceil(scale);
             in = info.openStream();
             bitmap = BitmapFactory.decodeStream(in, null, options);
             if (bitmap == null) {
@@ -58,7 +70,8 @@ public class AndroidImageLoader implements AssetLoader {
                 fmt = Format.RGB565;
                 break;
             default:
-                return null;
+//                return null;
+                throw new IOException("Failed to load image: " + info.getKey().getName());
         }
 
         if (((TextureKey) info.getKey()).isFlipY()) {
