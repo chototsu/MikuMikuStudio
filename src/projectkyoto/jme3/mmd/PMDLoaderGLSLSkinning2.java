@@ -57,9 +57,11 @@ import com.jme3.texture.Texture;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.TempVars;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 import org.lwjgl.opengl.GL11;
@@ -88,7 +90,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
     VertexBuffer skintb;
     Skin skinArray[];
     SkeletonControl skeletonControl;
-
+    HashMap<String, Texture> textureMap = new HashMap<String, Texture>();
     public PMDLoaderGLSLSkinning2() {
     }
     public PMDLoaderGLSLSkinning2(AssetManager assetManager, PMDModel model) {
@@ -151,7 +153,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 //            go.add(mesh);
             mesh.setInterleaved();    
         }
-//        go.optimize();
+//        go.optimize3();
         createSkinCommonVertData();
         for (PMDMaterial pmdMaterial : meshConverter.getSkinMeshData().getIndexMap().keySet()) {
             PMDSkinMesh mesh = createSkinMesh(pmdMaterial);
@@ -282,7 +284,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         }
         wb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, wfb);
         ib.setupData(VertexBuffer.Usage.Static, 1, VertexBuffer.Format.UnsignedShort, isb);
-        bib.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Short, bisb);
+        bib.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.UnsignedShort, bisb);
         mesh.setBuffer(vb);
         mesh.setBuffer(nb);
         
@@ -372,7 +374,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             mat = createMaterial(m, true);
             geom.setMaterial(mat);
             geom.setGlslSkinningMaterial(mat);
-            mat.setInt("NumBones", mesh.boneIndexArray.length);
+//            mat.setInt("NumBones", mesh.boneIndexArray.length);
             mat = createMaterial(m, false);
             geom.setNoSkinningMaterial(mat);
 
@@ -401,7 +403,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             }
         }
         if (skinning) {
-//            mat.setInt("NumBones", meshConverter.getMaxBoneSize());
+            mat.setInt("NumBones", meshConverter.getMaxBoneSize());
         }
         float alpha = m.getMaterial().getFaceColor().getAlpha();
         if (alpha > 0.99f) {
@@ -427,7 +429,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 String fileName = st.nextToken();
 //                System.out.println("fileName = " + fileName);
                 String s = fileName.substring(fileName.indexOf('.') + 1);
-                Texture texture = assetManager.loadTexture(folderName + fileName /*
+                Texture texture = loadTexture(folderName + fileName /*
                          * m.getTextureFileName()
                          */);
                 s = s.toLowerCase();
@@ -448,7 +450,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         if (toonIndex >= 0) {
             String extToonName = model.getToonTextureList().getToonFileName()[toonIndex];
             try {
-                toonTexture = assetManager.loadTexture(folderName + extToonName);
+                toonTexture = loadTexture(folderName + extToonName);
             } catch (Exception ex) {
                 String toonname = null;
                 switch (toonIndex) {
@@ -484,7 +486,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                         break;
                 }
                 if (toonname != null) {
-                    toonTexture = assetManager.loadTexture("toon/" + toonname);
+                    toonTexture = loadTexture("toon/" + toonname);
                 }
             }
         }
@@ -672,5 +674,12 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
     public String getFolderName() {
         return folderName;
     }
-   
+    Texture loadTexture(String name) {
+        Texture tex = textureMap.get(name);
+        if (tex == null) {
+            tex = assetManager.loadTexture(name);
+            textureMap.put(name, tex);
+        }
+        return tex;
+    }
 }
