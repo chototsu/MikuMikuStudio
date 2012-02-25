@@ -20,6 +20,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel.MapMode;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import projectkyoto.mmd.file.util2.BufferUtil;
@@ -67,6 +69,47 @@ public class GeometryOptimizer {
                 
             }
             System.out.println("done");
+        }
+    }
+    String createVBKey(VertexBuffer vb) {
+        StringBuilder sb = new StringBuilder();
+           sb.append(vb.getNumComponents())
+                   .append(",")
+                   .append(vb.getFormat())
+                   .append(",")
+                   .append(vb.isNormalized())
+                   .append(",")
+                   .append(vb.getStride())
+                   .append(",")
+                   .append(vb.getOffset())
+                   .append(",")
+                   .append(vb.getBufferType());
+           return sb.toString();
+    }
+    public void optimize3() {
+        HashMap<String, VertexBuffer>vbMap = new HashMap<String, VertexBuffer>();
+        ArrayList<VertexBuffer> vbList = new ArrayList<VertexBuffer>();
+        for(Mesh mesh : meshSet) {
+            vbList.clear();
+            for(VertexBuffer vb : mesh.getBufferList()) {
+                if (vb.getBufferType().equals(VertexBuffer.Type.Index)
+                        || vb.getBufferType().equals(VertexBuffer.Type.InterleavedData)){
+                    continue;
+                }
+                if (vb.getStride() > 0) {
+                    String key = createVBKey(vb);
+                    System.out.append("key = "+key);
+                    VertexBuffer vb2 = vbMap.get(key);
+                    if (vb2 != null) {
+                        vbList.add(vb2);
+                    } else {
+                        vbMap.put(key, vb);
+                    }
+                }
+            }
+            for(VertexBuffer vb : vbList) {
+//                mesh.setBuffer(vb);
+            }
         }
     }
     public void optimize() {

@@ -56,6 +56,7 @@ import com.jme3.system.JmeSystem;
 import com.jme3.texture.Texture;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.TempVars;
+import com.sun.jmx.remote.util.OrderClassLoaders;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -88,6 +89,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
     VertexBuffer skinnb;
     VertexBuffer skinnb2;
     VertexBuffer skintb;
+    VertexBuffer skinbib;
+    VertexBuffer skinwb;
+    int[] skinIndexArray;
     Skin skinArray[];
     SkeletonControl skeletonControl;
     HashMap<String, Texture> textureMap = new HashMap<String, Texture>();
@@ -171,6 +175,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         meshConverter = null;
         model.setVertexBuffer(null);
 //        go.optimize();
+        FloatBuffer fb = (FloatBuffer)skinvb.getData();
+        node.skinPosBuffer = BufferUtils.createFloatBuffer(fb.limit());
+        projectkyoto.jme3.mmd.nativelib.SkinUtil.copy(fb, node.skinPosBuffer, fb.limit() * 4);
         node.init();
         node.calcOffsetMatrices();
         node.update();
@@ -188,24 +195,56 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         
         skinnb = new VertexBuffer(VertexBuffer.Type.Normal);
         FloatBuffer skinnfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
-        skinnb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb);
+        skinnb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb);
 
         skinnb2 = new VertexBuffer(VertexBuffer.Type.Normal);
         FloatBuffer skinnfb2 = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
-        skinnb2.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb2);
+        skinnb2.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb2);
         
         skintb = new VertexBuffer(VertexBuffer.Type.TexCoord);
         FloatBuffer skintfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 2);
         skintb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, skintfb);
+
+        skinbib = new VertexBuffer(VertexBuffer.Type.BoneIndex);
+        ShortBuffer skinbisb = BufferUtils.createShortBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 2);
+        skinbib.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.UnsignedShort, skinbisb);
+
+        skinwb = new VertexBuffer(VertexBuffer.Type.BoneWeight);
+        FloatBuffer wfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 2);
+        skinwb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float, wfb);
+
         for (PMDVertex v : meshConverter.getSkinMeshData().getVertexList()) {
             skinvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
             skinnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
             skintfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
+            skinbisb.put((short) meshConverter.getSkinMeshData()
+                    .getBoneList().indexOf(v.getBoneNum1()))
+                    .put((short) meshConverter.getSkinMeshData()
+                    .getBoneList().indexOf(v.getBoneNum2()));
+            float weight = (float) v.getBoneWeight() / 100.0f;
+            wfb.put(weight).put(1f - weight);
         }
-        skintb.setUpdateNeeded();
+        skinvfb.position(0);
+        skinvfb2.position(0);
+        skinvfb2.put(skinvfb);
+        skinnfb.position(0);
+        skinnfb2.position(0);
+        skinnfb2.put(skinnfb);
+        skinIndexArray = new int[meshConverter.getSkinMeshData().getBoneList().size()];
+        for (int i = 0; i < skinIndexArray.length; i++) {
+            if (i < meshConverter.getSkinMeshData().getBoneList().size()) {
+                skinIndexArray[i] = meshConverter.getSkinMeshData().getBoneList().get(i).shortValue();
+            } else {
+                skinIndexArray[i] = 0;
+            }
+        }
     }
 
     PMDSkinMesh createSkinMesh(PMDMaterial pmdMaterial) {
+        boolean textureFlag = true;
+        if (pmdMaterial.getTextureFileName().length() == 0) {
+            textureFlag = false;
+        }
         PMDSkinMesh mesh = new PMDSkinMesh();
         List<Integer> indexList = meshConverter.getSkinMeshData().getIndexMap().get(pmdMaterial);
         mesh.setMode(Mesh.Mode.Triangles);
@@ -213,7 +252,11 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mesh.setSkinvb2(skinvb2);
         mesh.setBuffer(skinnb);
         mesh.setSkinnb2(skinnb2);
-        mesh.setBuffer(skintb);
+        if (textureFlag) {
+            mesh.setBuffer(skintb);
+        }
+        mesh.setBuffer(skinbib);
+        mesh.setBuffer(skinwb);
         VertexBuffer ib = new VertexBuffer(VertexBuffer.Type.Index);
         ShortBuffer isb = BufferUtils.createShortBuffer(indexList.size());
         for (Integer index : indexList) {
@@ -221,6 +264,12 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         }
         ib.setupData(VertexBuffer.Usage.Static, 1, VertexBuffer.Format.UnsignedShort, isb);
         mesh.setBuffer(ib);
+        mesh.setBoneIndexArray(skinIndexArray);
+        mesh.setBoneMatrixArray(new Matrix4f[skinIndexArray.length]);
+        for (int i = 0; i < mesh.getBoneMatrixArray().length; i++) {
+            mesh.getBoneMatrixArray()[i] = new Matrix4f();
+            mesh.getBoneMatrixArray()[i].loadIdentity();
+        }
         return mesh;
     }
 
@@ -363,14 +412,14 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
     void setupMaterial(PMDMaterial m, PMDGeometry geom) {
         Material mat;
-        if (geom.getMesh() instanceof PMDSkinMesh) {
+        if (false /*geom.getMesh() instanceof PMDSkinMesh*/) {
 //            mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
             mat = createMaterial(m, false);
             geom.setMaterial(mat);
             geom.setGlslSkinningMaterial(mat);
             geom.setNoSkinningMaterial(mat);
         } else {
-            PMDMesh mesh = (PMDMesh)geom.getMesh();
+//            PMDMesh mesh = (PMDMesh)geom.getMesh();
             mat = createMaterial(m, true);
             geom.setMaterial(mat);
             geom.setGlslSkinningMaterial(mat);
@@ -572,7 +621,8 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             PMDSkinData pmdSkinData = model.getSkinData()[i];
             if (pmdSkinData.getSkinType() != 0) {
                 Skin skin = new Skin(node, pmdSkinData.getSkinName());
-                skin.setSkinData(pmdSkinData);
+                skin.setIndexBuf(pmdSkinData.getIndexBuf());
+                skin.setSkinBuf(pmdSkinData.getSkinBuf());
                 skinList.add(skin);
             }
         }

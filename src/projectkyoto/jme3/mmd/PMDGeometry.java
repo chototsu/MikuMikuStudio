@@ -96,8 +96,15 @@ public class PMDGeometry extends Geometry {
         if (mesh instanceof PMDSkinMesh) {
             PMDSkinMesh oldMesh = (PMDSkinMesh)mesh;
             PMDSkinMesh newMesh = new PMDSkinMesh();
+            newMesh.setBuffer(oldMesh.getBuffer(Type.Position));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.Normal));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.BoneIndex));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.BoneWeight));
             newMesh.boneIndexArray = oldMesh.boneIndexArray;
-//            newMesh.boneMatrixArray = new Matrix4f[mesh.boneMatrixArray.length];
+            newMesh.boneMatrixArray = new Matrix4f[oldMesh.boneMatrixArray.length];
+            if (oldMesh.getBuffer(Type.TexCoord) != null) {
+                newMesh.setBuffer(oldMesh.getBuffer(Type.TexCoord));
+            }
 //            for(int i=0;i<mesh.boneMatrixArray.length;i++) {
 //                newMesh.boneMatrixArray[i] = new Matrix4f();
 //                newMesh.boneMatrixArray[i].loadIdentity();

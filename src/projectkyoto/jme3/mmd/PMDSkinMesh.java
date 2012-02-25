@@ -52,7 +52,7 @@ public class PMDSkinMesh extends Mesh {
     Matrix4f boneMatrixArray[];
     VertexBuffer skinvb2;
     VertexBuffer skinnb2;
-
+    int boneMatricesParamIndex = -1;
     public PMDSkinMesh() {
         super();
     }
