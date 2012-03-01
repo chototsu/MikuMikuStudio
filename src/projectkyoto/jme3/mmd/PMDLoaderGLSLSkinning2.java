@@ -217,10 +217,15 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             skinvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
             skinnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
             skintfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
-            skinbisb.put((short) meshConverter.getSkinMeshData()
-                    .getBoneList().indexOf(v.getBoneNum1()))
-                    .put((short) meshConverter.getSkinMeshData()
-                    .getBoneList().indexOf(v.getBoneNum2()));
+//            skinbisb.put((short) meshConverter.getSkinMeshData()
+//                    .getBoneList().indexOf(v.getBoneNum1()))
+//                    .put((short) meshConverter.getSkinMeshData()
+//                    .getBoneList().indexOf(v.getBoneNum2()));
+            short b1 = (short)meshConverter.getSkinMeshData().getBoneList().indexOf(v.getBoneNum1());
+            short b2 = (short)meshConverter.getSkinMeshData().getBoneList().indexOf(v.getBoneNum2());
+            if (b1 < 0) b1 = 0;
+            if (b2 < 0) b2 = 0;
+            skinbisb.put(b1).put(b2);
             float weight = (float) v.getBoneWeight() / 100.0f;
             wfb.put(weight).put(1f - weight);
         }
@@ -315,7 +320,18 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             }
             float weight = (float) v.getBoneWeight() / 100.0f;
             wfb.put(weight).put(1f - weight);
-            bisb.put((short) md.getBoneList().indexOf(v.getBoneNum1())).put((short) md.getBoneList().indexOf(v.getBoneNum2()));
+            short b1 = (short)md.getBoneList().indexOf(v.getBoneNum1());
+            short b2 = (short)md.getBoneList().indexOf(v.getBoneNum2());
+            if (b1 < 0) b1 = 0;
+            if (b2 < 0) b2 = 0;
+            bisb.put(b1).put(b2);
+//            bisb.put((short) md.getBoneList().indexOf(v.getBoneNum1())).put((short) md.getBoneList().indexOf(v.getBoneNum2()));
+//            if (( weight != 0 && md.getBoneList().indexOf(v.getBoneNum1()) < 0)
+//                    || (weight != 1 && md.getBoneList().indexOf(v.getBoneNum2())<0)){
+//                System.out.println("ERROR!! "+v.getBoneNum1()+" "+v.getBoneNum2());
+//                System.out.println(""+md.getBoneList().indexOf(v.getBoneNum1())+" "+md.getBoneList().indexOf(v.getBoneNum2()));
+//                System.out.println("weight = "+weight);
+//            }
         }
         for (Integer index : md.getIndexList()) {
             isb.put(index.shortValue());

@@ -92,6 +92,7 @@ public class VMDControl extends AbstractControl {
         this.pmdNode = pmdNode;
         this.vmdFile = vmdFile;
         this.physicsControl = physicsControl;
+        resetBonePos();
         if (addPmdNodeFlag) {
             physicsControl.getWorld().addPMDNode(pmdNode);
         }
@@ -297,7 +298,17 @@ public class VMDControl extends AbstractControl {
             }
         }
     }
-
+    protected void resetBonePos() {
+        for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {
+            Bone bone = pmdNode.getSkeleton().getBone(i);
+            bone.setUserControl(false);
+        }
+        pmdNode.getSkeleton().resetAndUpdate();
+        for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {
+            Bone bone = pmdNode.getSkeleton().getBone(i);
+            bone.setUserControl(true);
+        }
+    }
     protected void controlUpdate2(float tpf) {
         if (!pause) {
             currentTime += tpf;
@@ -475,6 +486,7 @@ public class VMDControl extends AbstractControl {
     }
 
     public void setFrameNo(int frameNo) {
+        resetBonePos();
         for (BoneMotionList bml : boneMotionListArray) {
             int count = bml.size() - 1;
             for (int i = 0; i < bml.size(); i++) {
@@ -503,6 +515,7 @@ public class VMDControl extends AbstractControl {
         calcSkins();
 //        resetSkins();
 //        calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
+        pmdNode.getSkeleton().updateWorldVectors();
         physicsControl.getWorld().resetRigidBodyPos();
 //        pmdNode.update();
     }

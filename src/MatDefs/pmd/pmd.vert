@@ -141,27 +141,17 @@ void Skinning_Compute(inout vec4 position, inout vec4 normal){
     //for (float i = 1.0; i < 2.0; i += 1.0){
         mat4 skinMat;
 #if NUM_BONES != 1
-        if (weight.x == 1.0) {
-            skinMat = m_BoneMatrices[int(index.x)];
-            newPos    = (skinMat * position);
-            newNormal = (skinMat * normal);
-        } else if (weight.x == 0.0) {
-            skinMat = m_BoneMatrices[int(index.y)];
-            newPos    =  (skinMat * position);
-            newNormal = (skinMat * normal);
-        } else {
-            skinMat = m_BoneMatrices[int(index.x)];
-            newPos    = weight.x * (skinMat * position);
-            newNormal = weight.x * (skinMat * normal);
+    skinMat = m_BoneMatrices[int(index.x)];
+    newPos    = weight.x * (skinMat * position);
+    newNormal = weight.x * (skinMat * normal);
 
-            skinMat = m_BoneMatrices[int(index.y)];
-            newPos    = newPos + weight.y * (skinMat * position);
-            newNormal = newNormal + weight.y * (skinMat * normal);
-        }
+    skinMat = m_BoneMatrices[int(index.y)];
+    newPos    = newPos + weight.y * (skinMat * position);
+    newNormal = newNormal + weight.y * (skinMat * normal);
 #else
-            skinMat = m_BoneMatrices[0];
-            newPos    = (skinMat * position);
-            newNormal = (skinMat * normal);
+    skinMat = m_BoneMatrices[0];
+    newPos    = (skinMat * position);
+    newNormal = (skinMat * normal);
 #endif
         //index = index.yzwx;
         //weight = weight.yzwx;

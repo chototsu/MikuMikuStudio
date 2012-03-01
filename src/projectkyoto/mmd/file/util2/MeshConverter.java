@@ -46,6 +46,7 @@ import java.util.Set;
 import projectkyoto.mmd.file.PMDMaterial;
 import projectkyoto.mmd.file.PMDModel;
 import projectkyoto.mmd.file.PMDSkinData;
+import projectkyoto.mmd.file.PMDSkinVertData;
 import projectkyoto.mmd.file.PMDVertex;
 
 /**
@@ -55,28 +56,32 @@ import projectkyoto.mmd.file.PMDVertex;
 public class MeshConverter implements Serializable{
 
     PMDModel model;
-    public static int DEFAULT_MAX_BONE_SIZE = 50;
+    public static int DEFAULT_MAX_BONE_SIZE = 20;
     int maxBoneSize = DEFAULT_MAX_BONE_SIZE;
     List<MeshData> meshDataList = new ArrayList<MeshData>();
     SkinMeshData skinMeshData;
     HashMap<Integer, Integer> meshTmpVertMap = new HashMap<Integer, Integer>();
     HashMap<Integer, Integer> skinTmpVertMap = new HashMap<Integer, Integer>();
     public ByteBuffer interleavedBuffer;
+    public ArrayList<ByteBuffer> skinBufferList;
+    public ByteBuffer skinIndexBuffer;
     int currentVertIndex = 0;
     public static int stride = 56;
     public MeshConverter(PMDModel model) {
         this.model = model;
         skinMeshData = new SkinMeshData(this, model);
         initSkinVertSet();
+//        removeUnusedSkinVertex();
     }
     private final void initSkinVertSet() {
         for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {
             PMDSkinData skinData = model.getSkinData()[skinCount];
             if (skinData.getSkinType() == 0) {
                 for(int skinVertCount = 0;skinVertCount<skinData.getSkinVertCount();skinVertCount++) {
-                    VertIndex vi = new VertIndex(skinData.getSkinVertData()[skinVertCount].getSkinVertIndex());
+                    VertIndex vi = new VertIndex(skinData.getIndexBuf().get(skinVertCount));
                     skinVertSet.add(vi);
                 }
+                break;
             }
         }
     }
@@ -150,6 +155,26 @@ public class MeshConverter implements Serializable{
             }
         }
     }
+    void removeUnusedSkinVertex() {
+        HashSet<Integer> tmpSet = new HashSet<Integer>();
+        PMDSkinData skinData0 = null;
+        for(PMDSkinData skinData : model.getSkinData()) {
+            if (skinData.getSkinType() == 0) {
+                skinData0 = skinData;
+                continue;
+            }
+//            for(PMDSkinVertData svd : skinData.getSkinVertData()) {
+//                tmpSet.add(svd.getSkinVertIndex());
+//            }
+        }
+        Iterator<VertIndex> it = skinVertSet.iterator();
+        while(it.hasNext()) {
+            VertIndex vi = it.next();
+            if (!tmpSet.contains(vi.index)) {
+                it.remove();
+            }
+        }
+    }
     void createInterleavedBuffer() {
         int size = 0;
         for(MeshData md : meshDataList) {
@@ -194,19 +219,19 @@ public class MeshConverter implements Serializable{
         tmpvi.index = i;
         return skinVertSet.contains(tmpvi);
     }
-    boolean _containsSkin(int i) {
-        for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {
-            PMDSkinData skinData = model.getSkinData()[skinCount];
-            if (skinData.getSkinType() == 0) {
-                for(int skinVertCount = 0;skinVertCount<skinData.getSkinVertCount();skinVertCount++) {
-                    if (i == skinData.getSkinVertData()[skinVertCount].getSkinVertIndex()) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
+//    boolean _containsSkin(int i) {
+//        for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {
+//            PMDSkinData skinData = model.getSkinData()[skinCount];
+//            if (skinData.getSkinType() == 0) {
+//                for(int skinVertCount = 0;skinVertCount<skinData.getSkinVertCount();skinVertCount++) {
+//                    if (i == skinData.getSkinVertData()[skinVertCount].getSkinVertIndex()) {
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+//    }
     Set<VertIndex> skinVertSet = new java.util.HashSet<VertIndex> ();
     
     void addSkinTriangle(PMDMaterial material, int i1,int i2,int i3) {

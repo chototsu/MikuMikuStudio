@@ -32,8 +32,11 @@
 
 package projectkyoto.mmd.file;
 
+import com.jme3.util.BufferUtils;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 /**
  *
@@ -43,16 +46,26 @@ public class PMDSkinData implements Serializable{
     private String skinName; //20文字
     private int skinVertCount;
     private int skinType; // byte
-    private PMDSkinVertData skinVertData[];
+    private ShortBuffer indexBuf;
+    private FloatBuffer skinBuf;
     public PMDSkinData(DataInputStreamLittleEndian is) throws IOException {
+//        PMDSkinVertData skinVertData[];
         skinName = is.readString(20);
 //        System.out.println("skinName = "+skinName);
         skinVertCount = is.readInt();
         skinType = is.readByte();
 //        System.out.println("skinVertCount = "+skinVertCount);
-        skinVertData = new PMDSkinVertData[skinVertCount];
+//        skinVertData = new PMDSkinVertData[skinVertCount];
+//        for(int i=0;i<skinVertCount;i++) {
+//            skinVertData[i] = new PMDSkinVertData(is);
+//        }
+        indexBuf = BufferUtils.createShortBuffer(skinVertCount);
+        skinBuf = BufferUtils.createFloatBuffer(skinVertCount * 3);
         for(int i=0;i<skinVertCount;i++) {
-            skinVertData[i] = new PMDSkinVertData(is);
+            indexBuf.put((short)is.readInt());
+            skinBuf.put(is.readFloat());
+            skinBuf.put(is.readFloat());
+            skinBuf.put(-is.readFloat());
         }
     }
 
@@ -64,7 +77,7 @@ public class PMDSkinData implements Serializable{
                 +"\nskinType = "+skinType
                 +"\nskinVertData = ");
         for(int i=0;i<skinVertCount;i++) {
-            sb.append(skinVertData[i]);
+//            sb.append(skinVertData[i]);
             sb.append("\n");
         }
         sb.append("}\n");
@@ -95,12 +108,20 @@ public class PMDSkinData implements Serializable{
         this.skinVertCount = skinVertCount;
     }
 
-    public PMDSkinVertData[] getSkinVertData() {
-        return skinVertData;
+    public ShortBuffer getIndexBuf() {
+        return indexBuf;
     }
 
-    public void setSkinVertData(PMDSkinVertData[] skinVertData) {
-        this.skinVertData = skinVertData;
+    public void setIndexBuf(ShortBuffer indexBuf) {
+        this.indexBuf = indexBuf;
+    }
+
+    public FloatBuffer getSkinBuf() {
+        return skinBuf;
+    }
+
+    public void setSkinBuf(FloatBuffer skinBuf) {
+        this.skinBuf = skinBuf;
     }
     
 

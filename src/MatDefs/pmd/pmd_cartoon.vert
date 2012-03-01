@@ -34,27 +34,17 @@ void main(){
     //for (float i = 1.0; i < 2.0; i += 1.0){
         mat4 skinMat;
 #if NUM_BONES != 1
-        if (weight.x == 1.0) {
-            skinMat = m_BoneMatrices[int(index.x)];
-            newPos    = (skinMat * pos);
-            newNormal = (skinMat * normal);
-        } else if (weight.x == 0.0) {
-            skinMat = m_BoneMatrices[int(index.y)];
-            newPos    =  (skinMat * pos);
-            newNormal = (skinMat * normal);
-        } else {
-            skinMat = m_BoneMatrices[int(index.x)];
-            newPos    = weight.x * (skinMat * pos);
-            newNormal = weight.x * (skinMat * normal);
+    skinMat = m_BoneMatrices[int(index.x)];
+    newPos    = weight.x * (skinMat * pos);
+    newNormal = weight.x * (skinMat * normal);
 
-            skinMat = m_BoneMatrices[int(index.y)];
-            newPos    = newPos + weight.y * (skinMat * pos);
-            newNormal = newNormal + weight.y * (skinMat * normal);
-        }
+    skinMat = m_BoneMatrices[int(index.y)];
+    newPos    = newPos + weight.y * (skinMat * pos);
+    newNormal = newNormal + weight.y * (skinMat * normal);
 #else
-            skinMat = m_BoneMatrices[0];
-            newPos    = (skinMat * pos);
-            newNormal = (skinMat * normal);
+    skinMat = m_BoneMatrices[0];
+    newPos    = (skinMat * pos);
+    newNormal = (skinMat * normal);
 #endif
     //}
 
