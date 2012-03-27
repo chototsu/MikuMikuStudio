@@ -34,6 +34,7 @@ package projectkyoto.mmd.file;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -42,11 +43,20 @@ import java.io.Serializable;
 public class PMDBoneDisp implements Serializable{
     private int boneIndex;
     private int boneDispFrameIndex;
+    public PMDBoneDisp() {
+    }
     public PMDBoneDisp(DataInputStreamLittleEndian is) throws IOException {
         boneIndex = is.readUnsignedShort();
         boneDispFrameIndex = is.readUnsignedByte();
     }
-
+    public void readFromBuffer(ByteBuffer bb) {
+        boneIndex = bb.getShort();
+        boneDispFrameIndex = bb.get();
+    }
+    public void writeToBuffer(ByteBuffer bb) {
+        bb.putShort((short)boneIndex);
+        bb.put((byte)boneDispFrameIndex);
+    }
     @Override
     public String toString() {
         return "PMDBoneDisp{" + "boneIndex=" + boneIndex + ", boneDispFrameIndex=" + boneDispFrameIndex + '}';

@@ -34,6 +34,8 @@ package projectkyoto.mmd.file;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import projectkyoto.mmd.file.util2.BufferUtil;
 
 /**
  *
@@ -42,6 +44,9 @@ import java.io.Serializable;
 public class PMDBoneDispNameList implements Serializable{
     private int boneDispNameCount;
     private String[] dispNameArray;
+    
+    public PMDBoneDispNameList() {
+    }
     public PMDBoneDispNameList(DataInputStreamLittleEndian is) throws IOException {
         boneDispNameCount = is.readUnsignedByte();
         dispNameArray = new String[boneDispNameCount];
@@ -49,7 +54,16 @@ public class PMDBoneDispNameList implements Serializable{
             dispNameArray[i] = is.readString(50);
         }
     }
-
+    public void readFromBuffer(ByteBuffer bb) {
+        boneDispNameCount = bb.get();
+        dispNameArray = new String[boneDispNameCount];
+        for(int i=0;i<boneDispNameCount;i++) {
+            dispNameArray[i] = BufferUtil.readString(bb, 50);
+        }
+    }
+    public void writeToBuffer(ByteBuffer bb) {
+//        boneDispNameCou
+    }
     @Override
     public String toString() {
         return "PMDBoneDispNameList{" + "boneDispNameCount=" + boneDispNameCount + ", dispNameArray=" + dispNameArray + '}';

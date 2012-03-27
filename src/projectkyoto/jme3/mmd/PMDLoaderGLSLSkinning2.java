@@ -40,6 +40,7 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -67,6 +68,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import org.lwjgl.opengl.GL11;
 import projectkyoto.mmd.file.*;
+import projectkyoto.mmd.file.pmn.PMNData;
 import projectkyoto.mmd.file.util2.MeshConverter;
 import projectkyoto.mmd.file.util2.MeshData;
 
@@ -155,15 +157,23 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             node.pmdGeometryArray[pmdGeometryIndex++] = geom;
             meshConverter.getMeshDataList().set(i, null);
 //            go.add(mesh);
-            mesh.setInterleaved();    
+//            mesh.setInterleaved();    
         }
 //        go.optimize3();
         createSkinCommonVertData();
+        int numBones = meshConverter.getMaxBoneSize();
+        if (meshConverter.getSkinMeshData().getBoneList().size() > numBones) {
+            if (meshConverter.getSkinMeshData().getBoneList().size() > 56) {
+                throw new TooManyBonesException(Integer.toString(meshConverter.getSkinMeshData().getBoneList().size()));
+            }
+            numBones = meshConverter.getSkinMeshData().getBoneList().size();
+        }
         for (PMDMaterial pmdMaterial : meshConverter.getSkinMeshData().getIndexMap().keySet()) {
             PMDSkinMesh mesh = createSkinMesh(pmdMaterial);
             PMDGeometry geom = new PMDGeometry("geom" + meshCount++);
             geom.setMesh(mesh);
             setupMaterial(pmdMaterial, geom);
+            geom.getMaterial().setInt("NumBones", numBones);
             node.attachChild(geom);
             skinMeshList.add(mesh);
         }
@@ -216,7 +226,14 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         for (PMDVertex v : meshConverter.getSkinMeshData().getVertexList()) {
             skinvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
             skinnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
-            skintfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
+                float f1 = v.getUv().getU();
+                float f2 = v.getUv().getV();
+//                tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
+                f1 = f1 - FastMath.floor(f1);
+                f2 = f2 - FastMath.floor(f2);
+                f2 = 1 - f2;
+                skintfb.put(f1).put(f2);
+//            skintfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
 //            skinbisb.put((short) meshConverter.getSkinMeshData()
 //                    .getBoneList().indexOf(v.getBoneNum1()))
 //                    .put((short) meshConverter.getSkinMeshData()
@@ -316,7 +333,13 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 //            bvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
 //            bnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
             if (textureFlag) {
-                tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
+                float f1 = v.getUv().getU();
+                float f2 = v.getUv().getV();
+//                tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
+                f1 = f1 - FastMath.floor(f1);
+                f2 = f2 - FastMath.floor(f2);
+                f2 = 1 - f2;
+                tfb.put(f1).put(f2);
             }
             float weight = (float) v.getBoneWeight() / 100.0f;
             wfb.put(weight).put(1f - weight);
@@ -365,51 +388,6 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mesh.setBuffer(ib);
         mesh.setBuffer(bib);
         int[] indexArray = new int[md.getBoneList().size()];
-        for (int i = 0; i < indexArray.length; i++) {
-            if (i < md.getBoneList().size()) {
-                indexArray[i] = md.getBoneList().get(i).shortValue();
-            } else {
-                indexArray[i] = 0;
-            }
-        }
-        mesh.setBoneIndexArray(indexArray);
-        mesh.setBoneMatrixArray(new Matrix4f[indexArray.length]);
-        for (int i = 0; i < mesh.getBoneMatrixArray().length; i++) {
-            mesh.getBoneMatrixArray()[i] = new Matrix4f();
-            mesh.getBoneMatrixArray()[i].loadIdentity();
-        }
-        return mesh;
-    }
-    PMDMesh createMesh(MeshData md) {
-        PMDMesh mesh = new PMDMesh();
-        mesh.setMode(Mesh.Mode.Triangles);
-        VertexBuffer vb = new VertexBuffer(VertexBuffer.Type.Position);
-        VertexBuffer nb = new VertexBuffer(VertexBuffer.Type.Normal);
-        VertexBuffer tb = new VertexBuffer(VertexBuffer.Type.TexCoord);
-        VertexBuffer wb = new VertexBuffer(VertexBuffer.Type.BoneWeight);
-        VertexBuffer ib = new VertexBuffer(VertexBuffer.Type.Index);
-        VertexBuffer bib = new VertexBuffer(VertexBuffer.Type.BoneIndex);
-
-        vb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, md.offset, MeshConverter.stride);
-        nb.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float,  md.offset, MeshConverter.stride);
-        tb.setupData(VertexBuffer.Usage.Static, 2, VertexBuffer.Format.Float,  md.offset, MeshConverter.stride);
-        wb.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Float,  md.offset, MeshConverter.stride);
-        ib.setupData(VertexBuffer.Usage.Static, 1, VertexBuffer.Format.UnsignedShort,  md.offset, MeshConverter.stride);
-        bib.setupData(VertexBuffer.Usage.Static, 4, VertexBuffer.Format.Short,  md.offset, MeshConverter.stride);
-
-        PMDVertex v = new PMDVertex();
-        mesh.setBuffer(vb);
-        mesh.setBuffer(nb);
-        mesh.setVertCount(md.getVertIndexList().size());
-        
-        mesh.setVbBackup(vb);
-        mesh.setNbBackup(nb);
-
-        mesh.setBuffer(tb);
-        mesh.setBuffer(wb);
-        mesh.setBuffer(ib);
-        mesh.setBuffer(bib);
-        int[] indexArray = new int[md.getMaxBoneSize()];
         for (int i = 0; i < indexArray.length; i++) {
             if (i < md.getBoneList().size()) {
                 indexArray[i] = md.getBoneList().get(i).shortValue();
@@ -488,8 +466,8 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mat.setColor("Diffuse", ambientAndDiffuseColor);
         mat.setFloat("Shininess", m.getMaterial().getPower());
         if (m.getTextureFileName().length() > 0) {
-            StringTokenizer st = new StringTokenizer(m.getTextureFileName(), "*");
-//            System.out.println("m.getTextureFileName() = " + m.getTextureFileName());
+            StringTokenizer st = new StringTokenizer(m.getTextureFileName().replace("\\", "/"), "*");
+            System.out.println("m.getTextureFileName() = " + m.getTextureFileName());
             while (st.hasMoreElements()) {
                 String fileName = st.nextToken();
 //                System.out.println("fileName = " + fileName);
@@ -499,9 +477,11 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                          */);
                 s = s.toLowerCase();
                 if (s.equals("spa")) {
+//                    texture.setWrap(Texture.WrapMode.Repeat);
                     texture.setMinFilter(Texture.MinFilter.BilinearNoMipMaps);
                     mat.setTexture("SphereMap_A", texture);
                 } else if (s.equals("sph")) {
+//                    texture.setWrap(Texture.WrapMode.Repeat);
                     texture.setMinFilter(Texture.MinFilter.BilinearNoMipMaps);
                     mat.setTexture("SphereMap_H", texture);
                 } else {
@@ -580,7 +560,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             mat.getAdditionalRenderState().setAlphaTest(true);
 //                    mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
         } else {
-//            mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+            mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 //                    mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Back);
 //                    mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 //            mat.getAdditionalRenderState().setAlphaTest(true);
@@ -698,7 +678,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 return loader.load2(ai);
             }catch(OutOfMemoryError ex) {
                 if (errFlag) {
-                    throw new RuntimeException(ex);
+                    throw ex;
                 }
                 errFlag = true;
                 if (ai.getManager() instanceof DesktopAssetManager) {
@@ -715,6 +695,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         folderName = ai.getKey().getFolder();
         meshConverter = new MeshConverter(model);
         meshConverter.convertMesh();
+        PMNData pmdData = meshConverter.createPMNData();
 //        model.setVertexList(null);
         model.setFaceVertIndex(null);
         PMDNode pmdNode = createNode(ai.getKey().getName());

@@ -48,6 +48,7 @@ public class VMDControlMT extends AbstractControl {
     @Override
     protected void controlUpdate(float f) {
         sync();
+        pmdNode.update();
         callable.setTpf(f);
         future = executor.submit(callable);
     }
@@ -55,8 +56,7 @@ public class VMDControlMT extends AbstractControl {
         if (future != null) {
             try {
                 future.get();
-                callable.vmdControl.getPhysicsControl().getWorld().updateRigidBodyPos();
-                pmdNode.update();
+//                callable.vmdControl.getPhysicsControl().getWorld().updateRigidBodyPos();
             } catch (InterruptedException ex) {
                 Logger.getLogger(VMDControlMT.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ExecutionException ex) {
@@ -83,6 +83,7 @@ public class VMDControlMT extends AbstractControl {
         super.setSpatial(spatial);
         if (spatial == null) {
             Logger.getLogger(VMDControlMT.class.getName()).log(Level.INFO,"remove");
+            getCallable().getVmdControl().setSpatial(null);
             if (future != null) {
                 try {
                     future.get();

@@ -503,7 +503,7 @@ public class PMDPhysicsWorld {
 //            applyResultToBone();
 //        }
 //        synchronized(lockObject) {
-            physicsSpace.update(timeStep, 100);
+            physicsSpace.update(timeStep, 5);
 //        }
 //        applyResultToBone();
     }
@@ -550,11 +550,12 @@ public class PMDPhysicsWorld {
             for (int i = 0; i < rbarray.length; i++) {
                 PMDRigidBody rb = rbarray[i];
                 if (true) {
-                    PMDNode pmdNode = rb.getPmdNode();
-                    Node rigidBodyNode = pmdNode.getRigidBodyNode();
-                    rb.updateFromBoneMatrix();
-                    rb.setLinearVelocity(Vector3f.ZERO);
-                    rb.setAngularVelocity(Vector3f.ZERO);
+//                    PMDNode pmdNode = rb.getPmdNode();
+//                    Node rigidBodyNode = pmdNode.getRigidBodyNode();
+//                    rb.updateFromBoneMatrix();
+//                    rb.setLinearVelocity(Vector3f.ZERO);
+//                    rb.setAngularVelocity(Vector3f.ZERO);
+                    rb.reset();
                 }
             }
         }

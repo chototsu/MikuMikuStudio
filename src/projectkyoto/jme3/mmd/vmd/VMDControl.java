@@ -96,7 +96,7 @@ public class VMDControl extends AbstractControl {
         if (addPmdNodeFlag) {
             physicsControl.getWorld().addPMDNode(pmdNode);
         }
-//         physicsControl.getWorld().getPhysicsSpace().addTickListener(tl);
+        physicsControl.getWorld().getPhysicsSpace().addTickListener(tl);
         ikControl = new IKControl(pmdNode);
         boneEnabled = new int[pmdNode.getSkeleton().getBoneCount()];
         for(int i=0;i<boneEnabled.length;i++) {
@@ -215,6 +215,7 @@ public class VMDControl extends AbstractControl {
         }
         boneMotionListArray = motionMap.values().toArray(new BoneMotionList[motionMap.size()]);
         skinListArray = skinMap.values().toArray(new SkinList[skinMap.size()]);
+        setFrameNo(0);
     }
     Quat4f tmpq1 = new Quat4f();
     Quat4f tmpq2 = new Quat4f();
@@ -270,32 +271,19 @@ public class VMDControl extends AbstractControl {
     float accuracy = 1f/120f;
     @Override
     protected void controlUpdate(float tpf) {
-//        for(;time > 0; time -= physicsControl.getWorld().accuracy) {
-//            controlUpdate2(physicsControl.getWorld().accuracy);
-//        }
-//        tpf = stepTime;
-//        tpf = 1f/15f;
-        if (tpf > 1) {
-            setFrameNo((int)((currentTime + tpf) * 30f));
+        if (isPause()) {
             return;
         }
-        boolean needUpdateSkin = false;
-        if (tpf != 0 && !pause) {
-            tpf += prevTpf;
-            for(;tpf > accuracy ; tpf -= accuracy ) {
-                controlUpdate2(accuracy);
-                physicsControl.update(accuracy);
-                physicsControl.getWorld().getPhysicsSpace().distributeEvents();
-                needUpdateSkin = true;
-            }
-//            System.out.println("X = "+pmdNode.getSkeleton().getBone("前髪").getModelSpacePosition().getX());
+        if (tpf > 1) {
+            currentTime += tpf;
+            currentFrameNo = (int)(currentTime * 30f);
+            setFrameNo(currentFrameNo);
+        } else {
+            physicsControl.update(tpf);
             physicsControl.getWorld().applyResultToBone();
-//            pmdNode.getSkeleton().updateWorldVectors();
-            prevTpf = tpf;
-            if (needUpdateSkin) {
-                resetSkins();
-                calcSkins();
-            }
+            resetSkins();
+            calcSkins();
+            physicsControl.getWorld().getPhysicsSpace().distributeEvents();
         }
     }
     protected void resetBonePos() {
@@ -484,7 +472,6 @@ public class VMDControl extends AbstractControl {
             pmdNode.setSkinWeight(skinName, 0f);
         }
     }
-
     public void setFrameNo(int frameNo) {
         resetBonePos();
         for (BoneMotionList bml : boneMotionListArray) {
@@ -517,6 +504,7 @@ public class VMDControl extends AbstractControl {
 //        calcBonePosition(currentFrameNo, pmdNode.getSkeleton());
         pmdNode.getSkeleton().updateWorldVectors();
         physicsControl.getWorld().resetRigidBodyPos();
+        physicsControl.getWorld().resetRigidBodyPos();
 //        pmdNode.update();
     }
 
@@ -534,6 +522,17 @@ public class VMDControl extends AbstractControl {
 
     public int getLastFrameNo() {
         return lastFrameNo;
+    }
+
+    @Override
+    public void setSpatial(Spatial spatial) {
+        super.setSpatial(spatial);
+        if (spatial == null) {
+            if (tl != null) {
+                physicsControl.getWorld().getPhysicsSpace().removeTickListener(tl);
+            }
+            tl = null;
+        }
     }
 
     @Override
@@ -558,7 +557,7 @@ public class VMDControl extends AbstractControl {
 
         @Override
         public void physicsTick(PhysicsSpace ps, float f) {
-            physicsControl.getWorld().applyResultToBone();
+//            physicsControl.getWorld().applyResultToBone();
         }
         
     }
@@ -575,7 +574,7 @@ public class VMDControl extends AbstractControl {
 }
 class BoneMotionList extends ArrayList<VMDMotion> {
 
-    static final int IPTABLESIZE = 64;
+    static final int IPTABLESIZE = 16;
     String boneName;
     Bone bone;
     int boneIndex;

@@ -58,10 +58,14 @@ public class SkinMeshData implements Serializable{
         for(PMDSkinData sd : model.getSkinData()) {
             if (sd.getSkinType() == 0) {
                 for(int i=0;i<sd.getSkinVertCount();i++) {
-                    int skinVertIndex = sd.getIndexBuf().get(i);
-                    PMDVertex v = model.getVertex(skinVertIndex);
-                    vertexList.add(v);
-                    mc.skinTmpVertMap.put(skinVertIndex, i);
+                    int skinVertIndex = sd.getIndexBuf().get(i) & 0xffff;
+                    try {
+                        PMDVertex v = model.getVertex(skinVertIndex);
+                        vertexList.add(v);
+                        mc.skinTmpVertMap.put(skinVertIndex, i);
+                    } catch(Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
                 break;
             }

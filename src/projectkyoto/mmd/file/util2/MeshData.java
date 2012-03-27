@@ -54,7 +54,7 @@ public class MeshData {
     List<Integer>boneList = new ArrayList<Integer>();
 //    List<PMDVertex> vertexList = new ArrayList<PMDVertex>();
     List<Integer> indexList = new ArrayList<Integer>();
-    public ByteBuffer indexBuffer;
+//    public ByteBuffer indexBuffer;
     List<Integer> vertIndexList = new ArrayList<Integer>();
     public int offset;
     private PMDVertex tmpVert = new PMDVertex();
@@ -150,9 +150,9 @@ public class MeshData {
         this.model = model;
     }
 
-    public ByteBuffer getIndexBuffer() {
-        return indexBuffer;
-    }
+//    public ByteBuffer getIndexBuffer() {
+//        return indexBuffer;
+//    }
 
     public List<Integer> getVertIndexList() {
         return vertIndexList;

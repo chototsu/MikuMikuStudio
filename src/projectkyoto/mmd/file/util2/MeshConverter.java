@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +49,9 @@ import projectkyoto.mmd.file.PMDModel;
 import projectkyoto.mmd.file.PMDSkinData;
 import projectkyoto.mmd.file.PMDSkinVertData;
 import projectkyoto.mmd.file.PMDVertex;
+import projectkyoto.mmd.file.pmn.PMNData;
+import projectkyoto.mmd.file.pmn.PMNMesh;
+import projectkyoto.mmd.file.pmn.PMNSkinMesh;
 
 /**
  *
@@ -66,7 +70,7 @@ public class MeshConverter implements Serializable{
     public ArrayList<ByteBuffer> skinBufferList;
     public ByteBuffer skinIndexBuffer;
     int currentVertIndex = 0;
-    public static int stride = 56;
+    PMNData pmnData;
     public MeshConverter(PMDModel model) {
         this.model = model;
         skinMeshData = new SkinMeshData(this, model);
@@ -175,32 +179,6 @@ public class MeshConverter implements Serializable{
             }
         }
     }
-    void createInterleavedBuffer() {
-        int size = 0;
-        for(MeshData md : meshDataList) {
-            md.offset = size * stride;
-            size += md.vertIndexList.size();
-        }
-        interleavedBuffer = ByteBuffer.allocateDirect(size * stride);
-        interleavedBuffer.order(ByteOrder.nativeOrder());
-        PMDVertex tmpVert = new PMDVertex();
-        for(MeshData md : meshDataList) {
-            for(Integer vertIndex : md.getVertIndexList()) {
-                PMDVertex v = model.getVertex(vertIndex, tmpVert);
-                interleavedBuffer.putFloat(v.getPos().x);
-                interleavedBuffer.putFloat(v.getPos().y);
-                interleavedBuffer.putFloat(v.getPos().z);
-                interleavedBuffer.putFloat(v.getNormal().x);
-                interleavedBuffer.putFloat(v.getNormal().y);
-                interleavedBuffer.putFloat(v.getNormal().z);
-                interleavedBuffer.putFloat(v.getUv().getU()).putFloat(1f - v.getUv().getV());
-                float weight = (float) v.getBoneWeight() / 100.0f;
-                interleavedBuffer.putFloat(weight).putFloat(1f - weight)
-                        .putFloat(0).putFloat(0);
-                interleavedBuffer.putShort((short)v.getBoneNum1()).putShort((short)v.getBoneNum2());
-            }
-        }
-    } 
     void printMeshData(MeshData meshData) {
 //            System.out.println("vertSize = " + meshData.getVertexList().size()
 //                    + " indexSize = " + meshData.getIndexList().size()
@@ -237,7 +215,165 @@ public class MeshConverter implements Serializable{
     void addSkinTriangle(PMDMaterial material, int i1,int i2,int i3) {
         skinMeshData.addTriangle(this, material, i1, i2, i3);
     }
+    public PMNData createPMNData() {
+        pmnData = new PMNData();
+        PMNMesh meshArrah[] = new PMNMesh[meshDataList.size()];
+        for(int i=0;i<meshDataList.size();i++) {
+            MeshData md = meshDataList.get(i);
+            PMNMesh pmnMesh = new PMNMesh();
+            createInterleavedBuffer(md, pmnMesh);
+            
+        }
+        PMNSkinMesh pmnSkinMesh = new PMNSkinMesh();
+        ByteBuffer pointBuffer = ByteBuffer.allocateDirect(12 * skinMeshData.vertexList.size());
+        pointBuffer.order(ByteOrder.nativeOrder());
+        pmnSkinMesh.setPointBuffer(pointBuffer.asFloatBuffer());
+        
+        ByteBuffer normalBuffer = ByteBuffer.allocateDirect(12 * skinMeshData.vertexList.size());
+        normalBuffer.order(ByteOrder.nativeOrder());
+        pmnSkinMesh.setNormalBuffer(normalBuffer.asFloatBuffer());
+        
+        ByteBuffer texCoordBuffer = ByteBuffer.allocateDirect(8 * skinMeshData.vertexList.size());
+        texCoordBuffer.order(ByteOrder.nativeOrder());
+        pmnSkinMesh.setTexCoordBuffer(texCoordBuffer.asFloatBuffer());
+        
+        ByteBuffer boneIndexBuffer = ByteBuffer.allocateDirect(4 * skinMeshData.vertexList.size());
+        boneIndexBuffer.order(ByteOrder.nativeOrder());
+        pmnSkinMesh.setBoneIndexBuffer(boneIndexBuffer.asShortBuffer());
 
+        ByteBuffer boneWeightBuffer = ByteBuffer.allocateDirect(8 * skinMeshData.vertexList.size());
+        boneWeightBuffer.order(ByteOrder.nativeOrder());
+        pmnSkinMesh.setBoneWeightBuffer(boneWeightBuffer.asFloatBuffer());
+        for(PMDVertex v : skinMeshData.vertexList) {
+            pointBuffer.putFloat(v.getPos().x)
+                    .putFloat(v.getPos().y)
+                    .putFloat(v.getPos().z);
+            normalBuffer.putFloat(v.getNormal().x)
+                    .putFloat(v.getNormal().y)
+                    .putFloat(v.getNormal().z);
+            texCoordBuffer.putFloat(v.getUv().getU())
+                    .putFloat(v.getUv().getV());
+            short boneIndex = (short)skinMeshData.boneList.indexOf(v.getBoneNum1());
+            if (boneIndex < 0) {
+                boneIndex = 0;
+            }
+            boneIndexBuffer.putShort(boneIndex);
+            boneIndex = (short)skinMeshData.boneList.indexOf(v.getBoneNum2());
+            if (boneIndex < 0) {
+                boneIndex = 0;
+            }
+            boneIndexBuffer.putShort(boneIndex);
+            float weight = (float)v.getBoneWeight() / 100f;
+            boneWeightBuffer.putFloat(weight).putFloat(1f - weight);
+        }
+        pmnSkinMesh.setIndexBufferArray(new ShortBuffer[skinMeshData.indexMap.size()]);
+        pmnSkinMesh.setMaterialIndexArray(new int[skinMeshData.indexMap.size()]);
+        int i=0;
+        for(PMDMaterial m : skinMeshData.indexMap.keySet()) {
+            List<Integer>indexList = skinMeshData.indexMap.get(m);
+            ByteBuffer indexBuffer = ByteBuffer.allocateDirect(2 * indexList.size());
+            indexBuffer.order(ByteOrder.nativeOrder());
+            for(Integer index : indexList) {
+                indexBuffer.putShort(index.shortValue());
+            }
+            pmnSkinMesh.getIndexBufferArray()[i] = indexBuffer.asShortBuffer();
+            for(int mi=0;mi<model.getMaterialCount();mi++) {
+                if (model.getMaterial()[mi] == m) {
+                    pmnSkinMesh.getMaterialIndexArray()[i] = mi;
+                    break;
+                }
+            }
+            i++;
+        }
+        
+        return pmnData;
+    }
+    public void createInterleavedBuffer(MeshData md, PMNMesh pmnMesh) {
+        byte offset = 0;
+        byte[] offsetArray = new byte[5];
+        pmnMesh.setOffsetArray(offsetArray);
+        short[] boneIndexArray = new short[md.boneList.size()];
+        pmnMesh.setBoneIndexArray(boneIndexArray);
+        // point
+        offsetArray[0] = offset;
+        offset += 12;
+        // normal
+        offsetArray[1] = offset;
+        offset += 12;
+        if (md.material.getTextureFileName().length() >= 0) {
+            // texcoord
+            offsetArray[2] = offset;
+            offset += 8;
+        } else {
+            offsetArray[2] = -1;
+        }
+        // boneIndex
+        offsetArray[3] = offset;
+        offset += 4;
+        //boneWeight
+        offsetArray[4] = offset;
+        offset += 8;
+        
+        pmnMesh.setStride(offset);
+        ByteBuffer interleavedBuffer = ByteBuffer.allocateDirect(offset * md.vertIndexList.size());
+        interleavedBuffer.order(ByteOrder.nativeOrder());
+        pmnMesh.setInterleavedBuffer(interleavedBuffer);
+        PMDVertex v = new PMDVertex();
+        for(Integer vertIndex : md.getVertIndexList()) {
+            model.getVertex(vertIndex, v);
+            interleavedBuffer.putFloat(v.getPos().x)
+                    .putFloat(v.getPos().y)
+                    .putFloat(v.getPos().z);
+            interleavedBuffer.putFloat(v.getNormal().x)
+                    .putFloat(v.getNormal().y)
+                    .putFloat(v.getNormal().z);
+            if (offsetArray[2] >= 0) {
+                interleavedBuffer.putFloat(v.getUv().getU())
+                        .putFloat(v.getUv().getV());
+            }
+            short boneIndex = (short)md.boneList.indexOf(v.getBoneNum1());
+            if (boneIndex < 0) {
+                boneIndex = 0;
+            }
+            interleavedBuffer.putShort(boneIndex);
+            boneIndex = (short)md.boneList.indexOf(v.getBoneNum2());
+            if (boneIndex < 0) {
+                boneIndex = 0;
+            }
+            interleavedBuffer.putShort(boneIndex);
+            float weight = (float)v.getBoneWeight() / 100f;
+            interleavedBuffer.putFloat(weight).putFloat(1f - weight);
+        }
+        ByteBuffer indexBuffer = ByteBuffer.allocateDirect(2 * md.getIndexList().size());
+        indexBuffer.order(ByteOrder.nativeOrder());
+        for(Integer index : md.getIndexList()) {
+            indexBuffer.putShort(index.shortValue());
+        }
+        pmnMesh.setIndexBuffer(indexBuffer.asShortBuffer());
+        for(int i=0;i<model.getMaterialCount();i++) {
+            if (model.getMaterial()[i] == md.getMaterial()) {
+                pmnMesh.setMaterialIndex(model.getFaceVertCount());
+                break;
+            }
+        }
+        for(int i=0;i<boneIndexArray.length;i++) {
+            boneIndexArray[i] = md.boneList.get(i).shortValue();
+        }
+    }
+    public int calcPMNSize() {
+        int size = 16;
+        for(MeshData md : meshDataList) {
+            int stride;
+            if (md.material.getTextureFileName().length() >= 0) {
+                stride = 44;
+            } else {
+                stride = 36;
+            }
+            size += stride * md.getVertIndexList().size();
+            size += 2 * md.getIndexList().size();
+        }
+        return size;
+    }
     public int getMaxBoneSize() {
         return maxBoneSize;
     }
@@ -269,13 +405,18 @@ public class MeshConverter implements Serializable{
     public void setSkinMeshData(SkinMeshData skinMeshData) {
         this.skinMeshData = skinMeshData;
     }
+
+    public PMNData getPmnData() {
+        return pmnData;
+    }
+    
     
 }
 class VertIndex implements Serializable{
     int index;
 
     public VertIndex(int index) {
-        this.index = index;
+        this.index = index & 0xffff;
     }
 
     @Override

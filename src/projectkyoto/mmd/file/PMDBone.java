@@ -33,13 +33,15 @@ package projectkyoto.mmd.file;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import javax.vecmath.Vector3f;
+import projectkyoto.mmd.file.util2.BufferUtil;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class PMDBone implements Serializable{
+public class PMDBone implements Serializable {
 
     private String boneName;
     private int parentBoneIndex;
@@ -62,7 +64,8 @@ public class PMDBone implements Serializable{
                 + "}"
                 + "}\n";
     }
-
+    public PMDBone() {
+    }
     public PMDBone(DataInputStreamLittleEndian is) throws IOException {
         boneName = is.readString(20);
         parentBoneIndex = is.readUnsignedShort();
@@ -76,6 +79,29 @@ public class PMDBone implements Serializable{
         } else {
             hiza = false;
         }
+    }
+
+    public void readFromBuffer(ByteBuffer bb) {
+        boneName = BufferUtil.readString(bb, 20);
+        parentBoneIndex = bb.getShort();
+        tailPosBoneIndex = bb.getShort();
+        boneType = bb.get();
+        targetBone = bb.getShort();
+        boneHeadPos = new Vector3f(bb.getFloat(), bb.getFloat(), bb.getFloat());
+        if (boneName.indexOf("ひざ") >= 0) {
+            hiza = true;
+        } else {
+            hiza = false;
+        }
+    }
+
+    public void writeToBuffer(ByteBuffer bb) {
+        BufferUtil.writeString(bb, boneName, 20);
+        bb.putShort((short) parentBoneIndex);
+        bb.putShort((short) tailPosBoneIndex);
+        bb.put((byte) boneType);
+        bb.putShort((short) targetBone);
+        bb.putFloat(boneHeadPos.x).putFloat(boneHeadPos.y).putFloat(boneHeadPos.z);
     }
 
     public Vector3f getBoneHeadPos() {
