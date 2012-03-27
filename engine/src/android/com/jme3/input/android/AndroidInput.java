@@ -751,5 +751,6 @@ public class AndroidInput extends GLSurfaceView implements TouchInput,
 	public void setMouseEventsInvertX(boolean mouseEventsInvertX) {
 	    this.mouseEventsInvertX = mouseEventsInvertX;
 	}
+        
 
 }

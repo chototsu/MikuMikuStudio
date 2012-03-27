@@ -478,6 +478,25 @@ public class VertexBuffer extends NativeObject implements Savable, Cloneable {
         this.lastLimit = data.limit();
         setUpdateNeeded();
     }
+    public void setupData(Usage usage, int components, Format format, int offset, int stride){
+        if (id != -1)
+            throw new UnsupportedOperationException("Data has already been sent. Cannot setupData again.");
+
+        if (usage == null || format == null || data == null)
+            throw new IllegalArgumentException("None of the arguments can be null");
+            
+        if (components < 1 || components > 4)
+            throw new IllegalArgumentException("components must be between 1 and 4");
+
+        this.data = data;
+        this.components = components;
+        this.usage = usage;
+        this.format = format;
+        this.componentsLength = components * format.getComponentSize();
+        this.offset = offset;
+        this.stride = stride;
+        setUpdateNeeded();
+    }
 
     /**
      * Called to update the data in the buffer with new data. Can only
@@ -927,6 +946,10 @@ public class VertexBuffer extends NativeObject implements Savable, Cloneable {
             default:
                 throw new IOException("Unsupported import buffer format: "+format);
         }
+    }
+
+    public int getComponentsLength() {
+        return componentsLength;
     }
 
 }

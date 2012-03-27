@@ -672,12 +672,11 @@ public class Mesh implements Savable, Cloneable {
      * {@link #setInterleaved() interleaved} format.
      */
     public void updateCounts(){
-        if (getBuffer(Type.InterleavedData) != null)
-            throw new IllegalStateException("Should update counts before interleave");
-
+//        if (getBuffer(Type.InterleavedData) != null)
+//            throw new IllegalStateException("Should update counts before interleave");
         VertexBuffer pb = getBuffer(Type.Position);
         VertexBuffer ib = getBuffer(Type.Index);
-        if (pb != null){
+        if (pb != null && pb.getData() != null){
             vertCount = pb.getData().capacity() / pb.getNumComponents();
         }
         if (ib != null){
@@ -732,7 +731,9 @@ public class Mesh implements Savable, Cloneable {
     public int getVertexCount(){
         return vertCount;
     }
-
+    public void setVertCount(int vertCount) {
+        this.vertCount = vertCount;
+    }
     /**
      * Gets the triangle vertex positions at the given triangle index 
      * and stores them into the v1, v2, v3 arguments.

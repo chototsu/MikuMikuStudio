@@ -279,6 +279,7 @@ public class AndroidHarness extends Activity implements TouchListener, DialogInt
      */
     public void onClick(DialogInterface dialog, int whichButton) {
         if (whichButton != -2) {
+            android.os.Process.killProcess(android.os.Process.myPid());
             if (app != null) {
                 app.stop(true);
             }

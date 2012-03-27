@@ -442,8 +442,9 @@ public class OGLESContext implements JmeContext, GLSurfaceView.Renderer
             }
             
         }
-        
-        
+//        if (renderer.adreno_finish_bug) {
+//            GLES20.glFinish();
+//        }
     }
     
     @Override

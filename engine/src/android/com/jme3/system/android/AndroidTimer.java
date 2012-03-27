@@ -45,7 +45,7 @@ public class AndroidTimer extends Timer {
     private static final float INVERSE_TIMER_RESOLUTION = 1f/1000000000L;
     
     private long startTime;
-    private long previousTime;
+    private float previousTime;
     private float tpf;
     private float fps;
     
@@ -83,14 +83,15 @@ public class AndroidTimer extends Timer {
     }
 
     public void update() {
-        tpf = (getTime() - previousTime) * (1.0f / TIMER_RESOLUTION);
+        long timeNow = getTime();
+        tpf = (timeNow) * (1.0f / TIMER_RESOLUTION) - previousTime;
         fps = 1.0f / tpf;
-        previousTime = getTime();
+        previousTime = previousTime += tpf;
     }
     
     public void reset() {
         //startTime = System.currentTimeMillis();
         startTime = System.nanoTime();
-        previousTime = getTime();
+        previousTime = 0;//getTime();
     }
 }

@@ -83,7 +83,7 @@ public class AndroidAssetManager extends DesktopAssetManager {
         this.registerLoader(com.jme3.texture.plugins.DDSLoader.class, "dds");
         this.registerLoader(com.jme3.texture.plugins.PFMLoader.class, "pfm");
         this.registerLoader(com.jme3.texture.plugins.HDRLoader.class, "hdr");
-        this.registerLoader(com.jme3.texture.plugins.TGALoader.class, "tga");
+        this.registerLoader(com.jme3.texture.plugins.AndroidTGALoader.class, "tga");
         this.registerLoader(com.jme3.export.binary.BinaryImporter.class, "j3o");
         this.registerLoader(com.jme3.scene.plugins.OBJLoader.class, "obj");
         this.registerLoader(com.jme3.scene.plugins.MTLLoader.class, "mtl");

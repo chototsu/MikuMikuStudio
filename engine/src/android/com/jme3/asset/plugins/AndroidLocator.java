@@ -19,17 +19,22 @@ public class AndroidLocator implements AssetLocator {
 
     private class AndroidAssetInfo extends AssetInfo {
 
-        private final InputStream in;
-
-        public AndroidAssetInfo(com.jme3.asset.AssetManager manager, AssetKey<?> key, InputStream in)
+//        private final InputStream in;
+        String sAssetPath;
+        public AndroidAssetInfo(com.jme3.asset.AssetManager manager, AssetKey<?> key, String sAssetPath)
         {
             super(manager, key);
-            this.in = in;
+//            this.in = in;
+            this.sAssetPath = sAssetPath;
         }
 
         @Override
         public InputStream openStream() {
-            return in;
+            try {
+                return androidManager.open(sAssetPath);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -63,7 +68,7 @@ public class AndroidLocator implements AssetLocator {
             if (in == null)
                 return null;
 
-            return new AndroidAssetInfo(manager, key, in);
+            return new AndroidAssetInfo(manager, key, sAssetPath);
         } 
         catch (IOException ex) 
         {

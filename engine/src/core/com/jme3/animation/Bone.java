@@ -332,7 +332,7 @@ public final class Bone implements Savable {
      * world transform with this bones' local transform.
      */
     public final void updateWorldVectors() {
-        if (!useModelSpaceVectors) {
+        if (true || !useModelSpaceVectors) {
             if (parent != null) {
                 //rotation
                 parent.worldRot.mult(localRot, worldRot);

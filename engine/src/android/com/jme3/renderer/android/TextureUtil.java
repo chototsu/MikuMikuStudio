@@ -120,17 +120,17 @@ public class TextureUtil {
             int width = bitmap.getWidth();
             int height = bitmap.getHeight();
             if (!FastMath.isPowerOfTwo(width) || !FastMath.isPowerOfTwo(height)
-                    || width >= 512 || height >= 512)
+                    /*|| width >= 512 || height >= 512*/)
             {
                 // scale to power of two
                 width = FastMath.nearestPowerOfTwo(width);
                 height = FastMath.nearestPowerOfTwo(height);
-                while(width >= 512) {
-                    width = width / 2;
-                }
-                while(height >= 512) {
-                    height = height / 2;
-                }
+//                while(width >= 512) {
+//                    width = width / 2;
+//                }
+//                while(height >= 512) {
+//                    height = height / 2;
+//                }
             Logger.getLogger(TextureUtil.class.getName()).warning("texture size changed.");
                 Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap, width, height, true);
                 bitmap.recycle();

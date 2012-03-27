@@ -53,16 +53,21 @@ public class ClasspathLocator implements AssetLocator {
 
     private static class ClasspathAssetInfo extends AssetInfo {
 
-        private URLConnection conn;
-
-        public ClasspathAssetInfo(AssetManager manager, AssetKey key, URLConnection conn){
+//        private URLConnection conn;
+        URL url;
+        public ClasspathAssetInfo(AssetManager manager, AssetKey key, URL url) throws IOException{
             super(manager, key);
-            this.conn = conn;
+            this.url = url;
+//            URLConnection conn = url.openConnection();
+//            conn.setUseCaches(false);
+//            this.conn = conn;
         }
 
         @Override
         public InputStream openStream() {
             try{
+            URLConnection conn = url.openConnection();
+            conn.setUseCaches(false);
                 return conn.getInputStream();
             }catch (IOException ex){
                 return null; // failure..
@@ -127,9 +132,9 @@ public class ClasspathLocator implements AssetLocator {
         }
         
         try{
-            URLConnection conn = url.openConnection();
-            conn.setUseCaches(false);
-            return new ClasspathAssetInfo(manager, key, conn);
+//            URLConnection conn = url.openConnection();
+//            conn.setUseCaches(false);
+            return new ClasspathAssetInfo(manager, key, url);
         }catch (IOException ex){
             throw new AssetLoadException("Failed to read URL " + url, ex);
         }

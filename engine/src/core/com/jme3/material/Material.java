@@ -391,7 +391,7 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
     }
     public int getParamIndex(String name) {
         for(int i=paramValues.size()-1;i>=0;i--) {
-            if (name.equals(paramValues.getValue(i))) {
+            if (name.equals(paramValues.getKey(i))) {
                 return i;
             }
         }

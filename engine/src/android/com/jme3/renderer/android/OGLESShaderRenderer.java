@@ -36,6 +36,9 @@ import android.opengl.GLES10;
 import android.opengl.GLES11;
 import android.opengl.GLES20;
 import android.os.Build;
+import com.jme3.app.AndroidHarness;
+import com.jme3.asset.AssetManager;
+import com.jme3.asset.DesktopAssetManager;
 import com.jme3.asset.TextureKey;
 import com.jme3.light.LightList;
 import com.jme3.material.RenderState;
@@ -108,6 +111,7 @@ public class OGLESShaderRenderer implements Renderer {
     private boolean powerOf2 = false;
     private boolean verboseLogging = false;
     private boolean useVBO = false;
+    public boolean adreno_finish_bug = false;
 
     public OGLESShaderRenderer() {
     }
@@ -407,7 +411,10 @@ public class OGLESShaderRenderer implements Renderer {
         if (Build.VERSION.SDK_INT >= 9){
             useVBO = true;
         }
-        
+        // chekc Adreno200,205,220 bug
+        if (GLES20.glGetString(GLES20.GL_RENDERER).indexOf("Adreno") >=0) {
+            adreno_finish_bug = true;
+        }
         logger.log(Level.INFO, "Caps: {0}", caps);
     }
 
@@ -724,9 +731,9 @@ public class OGLESShaderRenderer implements Renderer {
 
     public void setClipRect(int x, int y, int width, int height) {
         if (!context.clipRectEnabled) {
-            if (verboseLogging) {
+//            if (verboseLogging) {
                 logger.info("GLES20.glEnable(GLES20.GL_SCISSOR_TEST)");
-            }
+//            }
             GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
             checkGLError();
             context.clipRectEnabled = true;
@@ -1974,6 +1981,7 @@ public class OGLESShaderRenderer implements Renderer {
     public void setTexture(int unit, Texture tex) {
         Image image = tex.getImage();
         if (image.isUpdateNeeded()) {
+//            logger.warning("setTexture: isUpdateNeeded");
             Bitmap bmp = (Bitmap)image.getEfficentData();
             if (bmp != null)
             {
@@ -1981,11 +1989,14 @@ public class OGLESShaderRenderer implements Renderer {
             if ( bmp.isRecycled() )
             {
             // We need to reload the bitmap
-            Texture textureReloaded = JmeSystem.newAssetManager().loadTexture((TextureKey)tex.getKey());
+            DesktopAssetManager assetManager = (DesktopAssetManager)((AndroidHarness)JmeSystem.getActivity()).getJmeApplication().getAssetManager();
+            assetManager.deleteFromCache((TextureKey)tex.getKey());
+            Texture textureReloaded = assetManager.loadTexture((TextureKey)tex.getKey());
             image.setEfficentData( textureReloaded.getImage().getEfficentData());
             }
             }
             updateTexImageData(image, tex.getType(), tex.getMinFilter().usesMipMapLevels());
+            setupTextureParams(tex);
         }
 
         int texId = image.getId();
@@ -2027,7 +2038,7 @@ public class OGLESShaderRenderer implements Renderer {
             statistics.onTextureUse(tex.getImage(), false);
         }
 
-        setupTextureParams(tex);
+//        setupTextureParams(tex);
     }
 
     public void clearTextureUnits() {
@@ -2419,7 +2430,7 @@ public class OGLESShaderRenderer implements Renderer {
                     context.boundArrayVBO = bufId;
                 }
 
-                vb.getData().clear();
+//                vb.getData().clear();
 
                 if (verboseLogging) {
                     logger.info("GLES20.glVertexAttribPointer("
@@ -2436,7 +2447,7 @@ public class OGLESShaderRenderer implements Renderer {
                                     convertFormat(vb.getFormat()),
                                     vb.isNormalized(),
                                     vb.getStride(),
-                                    0);
+                                    vb.getOffset());
 
                 attribs[loc] = vb;
             }
