@@ -169,10 +169,11 @@ public class OGLESShaderRenderer implements Renderer {
          */
         String versionStr = GLES20.glGetString(GLES20.GL_SHADING_LANGUAGE_VERSION);
         if (versionStr == null || versionStr.equals("")) {
-            glslVer = -1;
-            throw new UnsupportedOperationException("GLSL and OpenGL2 is "
-                    + "required for the OpenGL ES "
-                    + "renderer!");
+//            glslVer = -1;
+//            throw new UnsupportedOperationException("GLSL and OpenGL2 is "
+//                    + "required for the OpenGL ES "
+//                    + "renderer!");
+            versionStr = "";
         }
         logger.info("GLES20.GL_SHADING_LANGUAGE_VERSION = "+versionStr);
 

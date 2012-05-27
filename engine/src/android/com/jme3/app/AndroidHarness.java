@@ -165,7 +165,7 @@ public class AndroidHarness extends Activity implements TouchListener, DialogInt
             app.start();
             ctx = (OGLESContext) app.getContext();
             view = ctx.createView(input, eglConfigType, eglConfigVerboseLogging);
-            setContentView(view);
+//            setContentView(view);
 
             // Set the screen reolution
             WindowManager wind = this.getWindowManager();

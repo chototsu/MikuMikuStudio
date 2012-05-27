@@ -162,7 +162,7 @@ public class AndroidConfigChooser implements EGLConfigChooser
         {
             result = 2;
         }
-
+        logger.info("getOpenGLVersion result = "+result +" value[0] = "+value[0]);
         return result;                    
     }
     
