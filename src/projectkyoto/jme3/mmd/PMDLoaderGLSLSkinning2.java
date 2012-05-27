@@ -65,7 +65,10 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import projectkyoto.mmd.file.*;
 import projectkyoto.mmd.file.pmn.PMNData;
@@ -97,6 +100,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
     Skin skinArray[];
     SkeletonControl skeletonControl;
     HashMap<String, Texture> textureMap = new HashMap<String, Texture>();
+    public static final Logger logger = Logger.getLogger(PMDLoaderGLSLSkinning2.class.getName());
     public PMDLoaderGLSLSkinning2() {
     }
     public PMDLoaderGLSLSkinning2(AssetManager assetManager, PMDModel model) {
@@ -145,6 +149,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         node.pmdGeometryArray = new PMDGeometry[meshConverter.getMeshDataList().size()];
         int pmdGeometryIndex = 0;
 //        GeometryOptimizer go = GeometryOptimizer.createNewInstance();
+        Map<PMDMaterial, List<PMDGeometry>> childMap = new HashMap<PMDMaterial, List<PMDGeometry>>();
         for(int i=0;i<meshConverter.getMeshDataList().size();i++) {
             MeshData md = meshConverter.getMeshDataList().get(i);
             PMDMesh mesh = createMesh_old(md);
@@ -152,7 +157,13 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             geom.setMesh(mesh);
             PMDMaterial pmdMaterial = md.getMaterial();
             setupMaterial(pmdMaterial, geom);
-            node.attachChild(geom);
+//            node.attachChild(geom);
+            List<PMDGeometry> geomList = childMap.get(pmdMaterial);
+            if (geomList == null) {
+                geomList = new ArrayList<PMDGeometry>();
+                childMap.put(pmdMaterial, geomList);
+            }
+            geomList.add(geom);
             meshList.add(mesh);
             node.pmdGeometryArray[pmdGeometryIndex++] = geom;
             meshConverter.getMeshDataList().set(i, null);
@@ -174,8 +185,22 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             geom.setMesh(mesh);
             setupMaterial(pmdMaterial, geom);
             geom.getMaterial().setInt("NumBones", numBones);
-            node.attachChild(geom);
+//            node.attachChild(geom);
+            List<PMDGeometry> geomList = childMap.get(pmdMaterial);
+            if (geomList == null) {
+                geomList = new ArrayList<PMDGeometry>();
+                childMap.put(pmdMaterial, geomList);
+            }
+            geomList.add(geom);
             skinMeshList.add(mesh);
+        }
+        for(PMDMaterial pmdMaterial : model.getMaterial()) {
+            List<PMDGeometry> list = childMap.get(pmdMaterial);
+            if (list != null) {
+                for(PMDGeometry geom : list) {
+                    node.attachChild(geom);
+                }
+            }
         }
 //        System.out.println("child size = "+node.getChildren().size()+" "+meshList.size()+" "+skinMeshList.size());
         createSkinArray();
@@ -475,6 +500,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 Texture texture = loadTexture(folderName + fileName /*
                          * m.getTextureFileName()
                          */);
+                if (texture == null) {
+                    continue;
+                }
                 s = s.toLowerCase();
                 if (s.equals("spa")) {
 //                    texture.setWrap(Texture.WrapMode.Repeat);
@@ -496,6 +524,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             String extToonName = model.getToonTextureList().getToonFileName()[toonIndex];
             try {
                 toonTexture = loadTexture(folderName + extToonName);
+                if (toonTexture == null) {
+                    throw new Exception();
+                }
             } catch (Exception ex) {
                 String toonname = null;
                 switch (toonIndex) {
@@ -695,7 +726,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         folderName = ai.getKey().getFolder();
         meshConverter = new MeshConverter(model);
         meshConverter.convertMesh();
-        PMNData pmdData = meshConverter.createPMNData();
+//        PMNData pmdData = meshConverter.createPMNData();
 //        model.setVertexList(null);
         model.setFaceVertIndex(null);
         PMDNode pmdNode = createNode(ai.getKey().getName());
@@ -722,11 +753,16 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         return folderName;
     }
     Texture loadTexture(String name) {
+        try {
         Texture tex = textureMap.get(name);
         if (tex == null) {
             tex = assetManager.loadTexture(name);
             textureMap.put(name, tex);
         }
         return tex;
+        } catch(Exception ex) {
+            logger.log(Level.WARNING,"Txture "+name+" not found.",ex);
+            return null;
+        }
     }
 }

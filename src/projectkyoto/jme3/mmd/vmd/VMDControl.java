@@ -149,6 +149,7 @@ public class VMDControl extends AbstractControl {
             }
         }
         initMotionMap();
+        physicsControl.getWorld().setAccuracy(accuracy);
     }
 
     private void initMotionMap() {
@@ -274,17 +275,16 @@ public class VMDControl extends AbstractControl {
         if (isPause()) {
             return;
         }
-        if (tpf > 1) {
-            currentTime += tpf;
-            currentFrameNo = (int)(currentTime * 30f);
-            setFrameNo(currentFrameNo);
-        } else {
+        float time = currentTime + tpf;
+        if (accuracy > 0 && tpf < 1f) {
             physicsControl.update(tpf);
             physicsControl.getWorld().applyResultToBone();
-            resetSkins();
-            calcSkins();
             physicsControl.getWorld().getPhysicsSpace().distributeEvents();
+        } else {
+            controlUpdate2(tpf);
         }
+        resetSkins();
+        calcSkins();
     }
     protected void resetBonePos() {
         for(int i=0;i<pmdNode.getSkeleton().getBoneCount();i++) {

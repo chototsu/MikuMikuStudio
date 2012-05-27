@@ -503,7 +503,7 @@ public class PMDPhysicsWorld {
 //            applyResultToBone();
 //        }
 //        synchronized(lockObject) {
-            physicsSpace.update(timeStep, 5);
+            physicsSpace.update(timeStep, 100);
 //        }
 //        applyResultToBone();
     }
