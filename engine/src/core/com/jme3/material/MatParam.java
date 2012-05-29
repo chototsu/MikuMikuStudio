@@ -151,6 +151,10 @@ public class MatParam implements Savable, Cloneable {
      */
     public void setValue(Object value) {
         this.value = value;
+        if (value instanceof FloatBuffer) {
+            multiData = (FloatBuffer)value;
+            return;
+        }
             switch (type){
                 case Matrix3:
                     Matrix3f m3 = (Matrix3f) value;

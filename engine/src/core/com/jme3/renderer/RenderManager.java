@@ -55,8 +55,10 @@ import com.jme3.shader.UniformBinding;
 import com.jme3.shader.VarType;
 import com.jme3.system.NullRenderer;
 import com.jme3.system.Timer;
+import com.jme3.util.BufferUtils;
 import com.jme3.util.IntMap.Entry;
 import com.jme3.util.TempVars;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -88,10 +90,21 @@ public class RenderManager {
     private int viewX, viewY, viewWidth, viewHeight;
     private float near, far;
     private Matrix4f orthoMatrix = new Matrix4f();
+//    private FloatBuffer orthoMatrixBuf = BufferUtils.createFloatBuffer(16);
     private Matrix4f viewMatrix = new Matrix4f();
+    private FloatBuffer viewMatrixBuf = BufferUtils.createFloatBuffer(16);
     private Matrix4f projMatrix = new Matrix4f();
+    private FloatBuffer projMatrixBuf = BufferUtils.createFloatBuffer(16);
     private Matrix4f viewProjMatrix = new Matrix4f();
+    private FloatBuffer viewProjMatrixBuf = BufferUtils.createFloatBuffer(16);
     private Matrix4f worldMatrix = new Matrix4f();
+    private FloatBuffer worldMatrixBuf = BufferUtils.createFloatBuffer(16);
+    private FloatBuffer worldViewMatrixBuf = BufferUtils.createFloatBuffer(16);
+    private boolean worldViewMatrixBufDirty = true;
+    private FloatBuffer worldViewProjectionMatrixBuf = BufferUtils.createFloatBuffer(16);
+    private boolean worldViewProjectionMatrixBufDirty = true;
+    private FloatBuffer normalMatrixBuf = BufferUtils.createFloatBuffer(9);
+    private boolean normalMatrixBufDirty = true;
     private Vector3f camUp = new Vector3f(),
             camLeft = new Vector3f(),
             camDir = new Vector3f(),
@@ -353,21 +366,22 @@ public class RenderManager {
             Uniform u = params.get(i);
             switch (u.getBinding()) {
                 case WorldMatrix:
-                    u.setValue(VarType.Matrix4, worldMatrix);
+                    u.setValue(VarType.Matrix4, worldMatrixBuf);
                     break;
                 case ViewMatrix:
                     u.setValue(VarType.Matrix4, viewMatrix);
                     break;
                 case ProjectionMatrix:
-                    u.setValue(VarType.Matrix4, projMatrix);
+                    u.setValue(VarType.Matrix4, projMatrixBuf);
                     break;
                 case ViewProjectionMatrix:
-                    u.setValue(VarType.Matrix4, viewProjMatrix);
+                    u.setValue(VarType.Matrix4, viewProjMatrixBuf);
                     break;
                 case WorldViewMatrix:
-                    tempMat4.set(viewMatrix);
-                    tempMat4.multLocal(worldMatrix);
-                    u.setValue(VarType.Matrix4, tempMat4);
+//                    tempMat4.set(viewMatrix);
+//                    tempMat4.multLocal(worldMatrix);
+//                    u.setValue(VarType.Matrix4, tempMat4);
+                    u.setValue(VarType.Matrix4, getWorldViewMatrixBuf());
                     break;
                 case NormalMatrix:
                     tempMat4.set(viewMatrix);
@@ -378,9 +392,10 @@ public class RenderManager {
                     u.setValue(VarType.Matrix3, tempMat3);
                     break;
                 case WorldViewProjectionMatrix:
-                    tempMat4.set(viewProjMatrix);
-                    tempMat4.multLocal(worldMatrix);
-                    u.setValue(VarType.Matrix4, tempMat4);
+//                    tempMat4.set(viewProjMatrix);
+//                    tempMat4.multLocal(worldMatrix);
+//                    u.setValue(VarType.Matrix4, tempMat4);
+                    u.setValue(VarType.Matrix4, getWorldViewProjectionMatrixBuf());
                     break;
                 case WorldMatrixInverse:
                     tempMat4.multLocal(worldMatrix);
@@ -590,6 +605,10 @@ public class RenderManager {
     public void setWorldMatrix(Matrix4f mat) {
         if (shader) {
             worldMatrix.set(mat);
+            worldMatrix.fillFloatBuffer(worldMatrixBuf, true);
+            worldMatrixBuf.position(0);
+            worldViewProjectionMatrixBufDirty = true;
+            normalMatrixBufDirty = true;
         } else {
             renderer.setWorldMatrix(mat);
         }
@@ -969,6 +988,7 @@ public class RenderManager {
             orthoMatrix.loadIdentity();
             orthoMatrix.setTranslation(-1f, -1f, 0f);
             orthoMatrix.setScale(2f / cam.getWidth(), 2f / cam.getHeight(), 0f);
+//            orthoMatrix.fillFloatBuffer(orthoMatrixBuf, true);
         }
     }
 
@@ -983,7 +1003,15 @@ public class RenderManager {
                 projMatrix.set(cam.getProjectionMatrix());
                 viewProjMatrix.set(cam.getViewProjectionMatrix());
             }
-
+//            viewMatrix.fillFloatBuffer(viewMatrixBuf, true);
+//            viewMatrixBuf.position(0);
+            projMatrix.fillFloatBuffer(projMatrixBuf, true);
+            projMatrixBuf.position(0);
+            viewProjMatrix.fillFloatBuffer(viewProjMatrixBuf, true);
+            viewProjMatrixBuf.position(0);
+            worldViewMatrixBufDirty = true;
+            worldViewProjectionMatrixBufDirty = true;
+            normalMatrixBufDirty = true;
             camLoc.set(cam.getLocation());
             cam.getLeft(camLeft);
             cam.getUp(camUp);
@@ -1001,7 +1029,45 @@ public class RenderManager {
 
         }
     }
-
+    private FloatBuffer getWorldViewMatrixBuf() {
+        if (worldViewMatrixBufDirty) {
+            TempVars tmp = TempVars.get();
+            tmp.tempMat4.set(viewMatrix);
+            tmp.tempMat4.multLocal(worldMatrix);
+            tmp.tempMat4.fillFloatBuffer(worldViewMatrixBuf, true);
+            worldViewMatrixBuf.position(0);
+            tmp.release();
+            worldViewMatrixBufDirty = false;
+        }
+        return worldViewMatrixBuf;
+    }
+    private FloatBuffer getWorldViewProjectionMatrixBuf() {
+        if (worldViewProjectionMatrixBufDirty) {
+            TempVars tmp = TempVars.get();
+            tmp.tempMat4.set(viewProjMatrix);
+            tmp.tempMat4.multLocal(worldMatrix);
+            tmp.tempMat4.fillFloatBuffer(worldViewProjectionMatrixBuf, true);
+            worldViewProjectionMatrixBuf.position(0);
+            tmp.release();
+            worldViewProjectionMatrixBufDirty = false;
+        }
+        return worldViewProjectionMatrixBuf;
+    }
+    private FloatBuffer getNormalMatrixBuf() {
+        if (normalMatrixBufDirty) {
+            TempVars tmp = TempVars.get();
+            tmp.tempMat4.set(viewMatrix);
+            tmp.tempMat4.multLocal(worldMatrix);
+            tmp.tempMat4.toRotationMatrix(tmp.tempMat3);
+            tmp.tempMat3.invertLocal();
+            tmp.tempMat3.transposeLocal();
+            tmp.tempMat3.fillFloatBuffer(normalMatrixBuf, true);
+            normalMatrixBuf.position(0);
+            tmp.release();
+            normalMatrixBufDirty = false;
+        }
+        return worldViewProjectionMatrixBuf;
+    }
     /**
      * Set the camera to use for rendering.
      * <p>

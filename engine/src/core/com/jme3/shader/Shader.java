@@ -49,7 +49,10 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public final class Shader extends NativeObject implements Savable {
-
+    private Uniform lightColorUniform;
+    private Uniform lightPositionUniform;
+    private Uniform lightDirectionUniform;
+    private Uniform ambientLightColorUniform;
     private String language;
 
     /**
@@ -330,6 +333,33 @@ public final class Shader extends NativeObject implements Savable {
             uniforms.put(name, uniform);
         }
         return uniform;
+    }
+
+    public Uniform getLightColorUniform() {
+        if (lightColorUniform == null) {
+            lightColorUniform = getUniform("g_LightColor");
+        }
+        return lightColorUniform;
+    }
+
+    public Uniform getLightDirectionUniform() {
+        if (lightDirectionUniform == null) {
+            lightDirectionUniform = getUniform("g_LightDirection");
+        }
+        return lightDirectionUniform;
+    }
+
+    public Uniform getLightPositionUniform() {
+        if (lightPositionUniform == null) {
+            lightPositionUniform = getUniform("g_LightPosition");
+        }
+        return lightPositionUniform;
+    }
+    public Uniform getAmbientColorUniform() {
+        if (ambientLightColorUniform == null) {
+            ambientLightColorUniform = getUniform("g_AmbientLightColor");
+        }
+        return ambientLightColorUniform;
     }
 
     public void removeUniform(String name){

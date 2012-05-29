@@ -108,6 +108,7 @@ public class AndroidHarness extends Activity implements TouchListener, DialogInt
     protected OGLESContext ctx;
     protected GLSurfaceView view = null;
     protected boolean isGLThreadPaused = true;
+    protected AppSettings settings = null;
     final private String ESCAPE_EVENT = "TouchEscape";
 
     @Override
@@ -145,8 +146,9 @@ public class AndroidHarness extends Activity implements TouchListener, DialogInt
         setRequestedOrientation(screenOrientation);
 
         // Create Settings
-        AppSettings settings = new AppSettings(true);
-
+        if (settings == null) {
+            settings = new AppSettings(true);
+        }
         // Create the input class
         AndroidInput input = new AndroidInput(this);
         input.setMouseEventsInvertX(mouseEventsInvertX);

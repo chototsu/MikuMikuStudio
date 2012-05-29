@@ -702,14 +702,14 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
         }
 
         LightList lightList = g.getWorldLightList();
-        Uniform lightColor = shader.getUniform("g_LightColor");
-        Uniform lightPos = shader.getUniform("g_LightPosition");
-        Uniform lightDir = shader.getUniform("g_LightDirection");
+        Uniform lightColor = shader.getLightColorUniform();
+        Uniform lightPos = shader.getLightPositionUniform();
+        Uniform lightDir = shader.getLightDirectionUniform();
         lightColor.setVector4Length(numLights);
         lightPos.setVector4Length(numLights);
         lightDir.setVector4Length(numLights);
 
-        Uniform ambientColor = shader.getUniform("g_AmbientLightColor");
+        Uniform ambientColor = shader.getAmbientColorUniform();
         ambientColor.setValue(VarType.Vector4, getAmbientColor(lightList));
 
         int lightIndex = 0;
@@ -772,10 +772,10 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
 
         Renderer r = rm.getRenderer();
         LightList lightList = g.getWorldLightList();
-        Uniform lightDir = shader.getUniform("g_LightDirection");
-        Uniform lightColor = shader.getUniform("g_LightColor");
-        Uniform lightPos = shader.getUniform("g_LightPosition");
-        Uniform ambientColor = shader.getUniform("g_AmbientLightColor");
+        Uniform lightDir = shader.getLightDirectionUniform();
+        Uniform lightColor = shader.getLightColorUniform();
+        Uniform lightPos = shader.getLightPositionUniform();
+        Uniform ambientColor = shader.getAmbientColorUniform();
         boolean isFirstLight = true;
         boolean isSecondLight = false;
 
