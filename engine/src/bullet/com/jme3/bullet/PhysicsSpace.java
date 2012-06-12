@@ -151,7 +151,7 @@ public class PhysicsSpace {
         //TODO: boroadphase!
         physicsSpaceId = createPhysicsSpace(worldMin.x, worldMin.y, worldMin.z, worldMax.x, worldMax.y, worldMax.z, 3, false);
         pQueueTL.set(pQueue);
-        physicsSpaceTL.set(this);
+//        physicsSpaceTL.set(this);
 
 //        collisionConfiguration = new DefaultCollisionConfiguration();
 //        dispatcher = new CollisionDispatcher(collisionConfiguration);
@@ -437,8 +437,10 @@ public class PhysicsSpace {
             removeCollisionObject((PhysicsCollisionObject) obj);
         } else if (obj instanceof PhysicsJoint) {
             removeJoint((PhysicsJoint) obj);
+        } else if (obj == null) {
+            return;
         } else {
-            throw (new UnsupportedOperationException("Cannot remove this kind of object from the physics space."));
+            throw (new UnsupportedOperationException("Cannot remove this kind of object from the physics space."+obj));
         }
     }
 
@@ -920,17 +922,25 @@ public class PhysicsSpace {
 
     @Override
     protected void finalize() throws Throwable {
-        for(PhysicsJoint o : physicsJoints) {
-            remove(o);
+        for(;;) {
+            try {
+                while(physicsJoints.size() > 0) {
+                    remove(physicsJoints.get(0));
+                }
+                while(physicsNodes.size() > 0) {
+                    for(PhysicsRigidBody node : physicsNodes.values()) {
+                        remove(node);
+                        break;
+                    }
+                }
+                super.finalize();
+                Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Finalizing PhysicsSpace {0}", Long.toHexString(physicsSpaceId));
+                finalizeNative(physicsSpaceId);
+                break;
+            } catch(Exception ex) {
+                Logger.getLogger(PhysicsSpace.class.getName()).log(Level.SEVERE, "finalize failed.", ex);
+            }
         }
-        physicsJoints.clear();
-        for(PhysicsCollisionObject o : physicsNodes.values()) {
-            remove(o);
-        }
-        physicsNodes.clear();
-        super.finalize();
-        Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Finalizing PhysicsSpace {0}", Long.toHexString(physicsSpaceId));
-        finalizeNative(physicsSpaceId);
     }
 
     private native void finalizeNative(long objectId);

@@ -57,6 +57,13 @@ private:
 	JNIEnv* env;
 	JavaVM* vm;
 	btDynamicsWorld* dynamicsWorld;
+
+        btCollisionDispatcher* dispatcher;
+        btConstraintSolver* solver;
+        btBroadphaseInterface* broadphase;
+        btCollisionConfiguration* collisionConfiguration;
+        btOverlappingPairCallback *ghostPairCallback;
+
 	jobject javaPhysicsSpace;
         btThreadSupportInterface* createSolverThreadSupport(int);
         btThreadSupportInterface* createDispatchThreadSupport(int);

@@ -106,12 +106,12 @@ void jmePhysicsSpace::createPhysicsSpace(jfloat minX, jfloat minY, jfloat minZ, 
     //    if(threading){
     //        cci.m_defaultMaxPersistentManifoldPoolSize = 32768;
     //    }
-    btCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration(cci);
+    collisionConfiguration = new btDefaultCollisionConfiguration(cci);
 
     btVector3 min = btVector3(minX, minY, minZ);
     btVector3 max = btVector3(maxX, maxY, maxZ);
 
-    btBroadphaseInterface* broadphase;
+    // btBroadphaseInterface* broadphase;
 
     switch (broadphaseId) {
         case 0:
@@ -135,8 +135,8 @@ void jmePhysicsSpace::createPhysicsSpace(jfloat minX, jfloat minY, jfloat minZ, 
             break;
     }
 
-    btCollisionDispatcher* dispatcher;
-    btConstraintSolver* solver;
+    // btCollisionDispatcher* dispatcher;
+    // btConstraintSolver* solver;
     // use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
     if (threading) {
         btThreadSupportInterface* dispatchThreads = createDispatchThreadSupport(4);
@@ -166,8 +166,8 @@ void jmePhysicsSpace::createPhysicsSpace(jfloat minX, jfloat minY, jfloat minZ, 
         world->getSolverInfo().m_solverMode = SOLVER_SIMD + SOLVER_USE_WARMSTARTING; //+SOLVER_RANDMIZE_ORDER;
         world->getDispatchInfo().m_enableSPU = true;
     }
-
-    broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+    ghostPairCallback = new btGhostPairCallback();
+    broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(ghostPairCallback);
 
     dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
 
@@ -267,6 +267,11 @@ jobject jmePhysicsSpace::getJavaPhysicsSpace() {
 }
 
 jmePhysicsSpace::~jmePhysicsSpace() {
+    delete dispatcher;
+    delete solver;
+    delete broadphase;
+    delete collisionConfiguration;
+    delete ghostPairCallback;
     delete(dynamicsWorld);
     getEnv()->DeleteWeakGlobalRef(this->javaPhysicsSpace);
 }
