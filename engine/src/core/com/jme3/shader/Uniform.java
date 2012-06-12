@@ -50,8 +50,8 @@ public class Uniform extends ShaderVariable {
 
     private static final Integer ZERO_INT = Integer.valueOf(0);
     private static final Float ZERO_FLT = Float.valueOf(0);
-    private static final FloatBuffer ZERO_BUF = BufferUtils.createFloatBuffer(4*4);
-
+//    private static final FloatBuffer ZERO_BUF = BufferUtils.createFloatBuffer(4*4);
+    private static final float[] ZERO_BUF = new float[16];
     /**
      * Currently set value of the uniform.
      */
@@ -218,13 +218,13 @@ public class Uniform extends ShaderVariable {
         updateNeeded = true;
 
         if (multiData != null){
-            ZERO_BUF.clear();
+//            ZERO_BUF.clear();
             multiData.clear();
 
             while (multiData.remaining() > 0){
-                ZERO_BUF.limit( Math.min(multiData.remaining(), 16) );
-                ZERO_BUF.position(0);
-                multiData.put(ZERO_BUF);
+//                ZERO_BUF.limit( Math.min(multiData.remaining(), 16) );
+//                ZERO_BUF.position(0);
+                multiData.put(ZERO_BUF, 0, Math.min(multiData.remaining(), 16));
             }
 
             multiData.clear();
