@@ -42,6 +42,7 @@ import com.jme3.scene.VertexBuffer;
 import com.jme3.util.BufferUtils;
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 /**
  *
@@ -53,6 +54,8 @@ public class PMDMesh extends Mesh {
     Matrix4f boneMatrixArray[];
     VertexBuffer vbBackup;
     VertexBuffer nbBackup;
+    ShortBuffer boneIndexBuffer;
+    FloatBuffer boneMatrixBuffer;
     
     int boneMatricesParamIndex = -1;
 
@@ -177,6 +180,22 @@ public class PMDMesh extends Mesh {
         super.write(ex);
         OutputCapsule c = ex.getCapsule(this);
         c.write(boneIndexArray, "boneIndexArray", null);
+    }
+
+    public ShortBuffer getBoneIndexBuffer() {
+        return boneIndexBuffer;
+    }
+
+    public void setBoneIndexBuffer(ShortBuffer boneIndexBuffer) {
+        this.boneIndexBuffer = boneIndexBuffer;
+    }
+
+    public FloatBuffer getBoneMatrixBuffer() {
+        return boneMatrixBuffer;
+    }
+
+    public void setBoneMatrixBuffer(FloatBuffer boneMatrixBuffer) {
+        this.boneMatrixBuffer = boneMatrixBuffer;
     }
     
 }

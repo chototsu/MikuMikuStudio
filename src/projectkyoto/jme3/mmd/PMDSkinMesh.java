@@ -41,6 +41,7 @@ import com.jme3.scene.VertexBuffer;
 import com.jme3.util.BufferUtils;
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 /**
  *
@@ -53,6 +54,8 @@ public class PMDSkinMesh extends Mesh {
     VertexBuffer skinvb2;
     VertexBuffer skinnb2;
     int boneMatricesParamIndex = -1;
+    ShortBuffer boneIndexBuffer;
+    FloatBuffer boneMatrixBuffer;
     public PMDSkinMesh() {
         super();
     }
@@ -87,6 +90,22 @@ public class PMDSkinMesh extends Mesh {
 
     public void setSkinvb2(VertexBuffer skinvb2) {
         this.skinvb2 = skinvb2;
+    }
+
+    public ShortBuffer getBoneIndexBuffer() {
+        return boneIndexBuffer;
+    }
+
+    public void setBoneIndexBuffer(ShortBuffer boneIndexBuffer) {
+        this.boneIndexBuffer = boneIndexBuffer;
+    }
+
+    public FloatBuffer getBoneMatrixBuffer() {
+        return boneMatrixBuffer;
+    }
+
+    public void setBoneMatrixBuffer(FloatBuffer boneMatrixBuffer) {
+        this.boneMatrixBuffer = boneMatrixBuffer;
     }
     
     BoundingVolume bound = new BoundingBox(Vector3f.ZERO, 20, 20, 20);

@@ -312,11 +312,18 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         ib.setupData(VertexBuffer.Usage.Static, 1, VertexBuffer.Format.UnsignedShort, isb);
         mesh.setBuffer(ib);
         mesh.setBoneIndexArray(skinIndexArray);
+        ShortBuffer boneIndexBuffer = BufferUtils.createShortBuffer(skinIndexArray.length);
+        for(int i=0;i<skinIndexArray.length;i++) {
+            boneIndexBuffer.put((short)skinIndexArray[i]);
+        }
+        mesh.setBoneIndexBuffer(boneIndexBuffer);
         mesh.setBoneMatrixArray(new Matrix4f[skinIndexArray.length]);
         for (int i = 0; i < mesh.getBoneMatrixArray().length; i++) {
             mesh.getBoneMatrixArray()[i] = new Matrix4f();
             mesh.getBoneMatrixArray()[i].loadIdentity();
         }
+        FloatBuffer boneMatrixBuffer = BufferUtils.createFloatBuffer(skinIndexArray.length * 16);
+        mesh.setBoneMatrixBuffer(boneMatrixBuffer);
         return mesh;
     }
 
@@ -413,19 +420,26 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mesh.setBuffer(ib);
         mesh.setBuffer(bib);
         int[] indexArray = new int[md.getBoneList().size()];
+        ShortBuffer indexBuffer = BufferUtils.createShortBuffer(md.getBoneList().size());
         for (int i = 0; i < indexArray.length; i++) {
             if (i < md.getBoneList().size()) {
                 indexArray[i] = md.getBoneList().get(i).shortValue();
             } else {
                 indexArray[i] = 0;
             }
+            indexBuffer.put((short)indexArray[i]);
         }
         mesh.setBoneIndexArray(indexArray);
+        mesh.setBoneIndexBuffer(indexBuffer);
+        FloatBuffer boneMatrixBuffer = BufferUtils.createFloatBuffer(16 * indexArray.length);
         mesh.setBoneMatrixArray(new Matrix4f[indexArray.length]);
+        mesh.setBoneMatrixBuffer(boneMatrixBuffer);
         for (int i = 0; i < mesh.getBoneMatrixArray().length; i++) {
             mesh.getBoneMatrixArray()[i] = new Matrix4f();
             mesh.getBoneMatrixArray()[i].loadIdentity();
+            mesh.getBoneMatrixArray()[i].fillFloatBuffer(boneMatrixBuffer, true);
         }
+        boneMatrixBuffer.position(0);
         return mesh;
     }
 

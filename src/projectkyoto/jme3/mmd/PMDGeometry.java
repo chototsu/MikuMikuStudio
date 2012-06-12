@@ -38,7 +38,9 @@ import com.jme3.math.Matrix4f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer.Type;
+import com.jme3.util.BufferUtils;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import projectkyoto.mmd.file.PMDMaterial;
 
 /**
@@ -112,6 +114,10 @@ public class PMDGeometry extends Geometry {
             newMesh.bound = oldMesh.bound.clone();
             newMesh.setBuffer(oldMesh.getBuffer(Type.Index));
             newPMDGeometry.setMesh(newMesh);
+
+            newMesh.setBoneIndexBuffer(oldMesh.getBoneIndexBuffer());
+            FloatBuffer fb = BufferUtils.createFloatBuffer(oldMesh.getBoneMatrixBuffer().capacity());
+            newMesh.setBoneMatrixBuffer(fb);
         } else {
             PMDMesh oldMesh = (PMDMesh)mesh;
             PMDMesh newMesh = new PMDMesh();
@@ -135,6 +141,10 @@ public class PMDGeometry extends Geometry {
             if (oldMesh.getBuffer(Type.InterleavedData) != null)
             newMesh.setBuffer(oldMesh.getBuffer(Type.InterleavedData));
             newPMDGeometry.setMesh(newMesh);
+            
+            newMesh.setBoneIndexBuffer(oldMesh.getBoneIndexBuffer());
+            FloatBuffer fb = BufferUtils.createFloatBuffer(oldMesh.getBoneMatrixBuffer().capacity());
+            newMesh.setBoneMatrixBuffer(fb);
 //            newMesh.setInterleaved();
         }
         newPMDGeometry.glslSkinningMaterial = glslSkinningMaterial.clone();

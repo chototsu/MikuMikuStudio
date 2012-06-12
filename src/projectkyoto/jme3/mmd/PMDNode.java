@@ -58,6 +58,7 @@ import com.jme3.scene.control.BillboardControl;
 import com.jme3.scene.debug.SkeletonWire;
 import com.jme3.scene.shape.Box;
 import com.jme3.shader.VarType;
+import com.jme3.util.BufferUtils;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,6 +96,7 @@ public class PMDNode extends Node {
 //    int skinBoneArray[];
     AssetManager assetManager;
     Matrix4f[] offsetMatrices;
+    FloatBuffer offsetMatrixbuffer;
     boolean updateNeeded = true;
     boolean skinUpdateNeeded = true;
     boolean wireFrame = false;
@@ -270,6 +272,13 @@ public class PMDNode extends Node {
 
     public Matrix4f[] calcOffsetMatrices() {
         offsetMatrices = skeleton.computeSkinningMatrices();
+        if (offsetMatrixbuffer == null) {
+            offsetMatrixbuffer = BufferUtils.createFloatBuffer(offsetMatrices.length * 16);
+        }
+        offsetMatrixbuffer.position(0);
+        for(Matrix4f m : offsetMatrices) {
+            m.fillFloatBuffer(offsetMatrixbuffer, true);
+        }
         return offsetMatrices;
     }
 boolean setBoneMatricesFlag = true;
@@ -289,18 +298,35 @@ boolean setBoneMatricesFlag = true;
                 PMDMesh pmdMesh = (PMDMesh)g.getMesh();
                 int boneIndexArray[] = pmdMesh.getBoneIndexArray();
                 Matrix4f[] boneMatrixArray = pmdMesh.getBoneMatrixArray();
-                for (int i = pmdMesh.getBoneIndexArray().length-1; i >=0; i--) {
-                    boneMatrixArray[i] = (offsetMatrices[boneIndexArray[i]]);
-                }
+//                for (int i = pmdMesh.getBoneIndexArray().length-1; i >=0; i--) {
+//                    boneMatrixArray[i] = (offsetMatrices[boneIndexArray[i]]);
+//                }
+                
                 if (glslSkinning) {
+//                    if (pmdMesh.boneMatricesParamIndex < 0) {
+//                        m.setParam("BoneMatrices", VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
+//                        pmdMesh.boneMatricesParamIndex = g.getMaterial().getParamIndex("BoneMatrices");
+//                    } else {
+//                        m.setParam(pmdMesh.boneMatricesParamIndex, VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
+//                    }
+                    FloatBuffer fb = pmdMesh.getBoneMatrixBuffer();
+                    fb.position(0);
+//                    for(int i=0;i<pmdMesh.getBoneIndexArray().length;i++) {
+//                        offsetMatrices[pmdMesh.getBoneIndexBuffer().get(i)].fillFloatBuffer(fb, true);
+////                        pmdMesh.getBoneMatrixArray()[i].fillFloatBuffer(fb, true);
+//                    }
+                    projectkyoto.jme3.mmd.nativelib.SkinUtil.copyBoneMatrix(offsetMatrixbuffer, fb, pmdMesh.getBoneIndexBuffer());
+
+//                    fb.position(0);
                     if (pmdMesh.boneMatricesParamIndex < 0) {
-                        m.setParam("BoneMatrices", VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
+                        m.setParam("BoneMatrices", VarType.Matrix4Array, pmdMesh.getBoneMatrixBuffer());
                         pmdMesh.boneMatricesParamIndex = g.getMaterial().getParamIndex("BoneMatrices");
                     } else {
-                        m.setParam(pmdMesh.boneMatricesParamIndex, VarType.Matrix4Array, pmdMesh.getBoneMatrixArray());
+                        m.setParam(pmdMesh.boneMatricesParamIndex, VarType.Matrix4Array, pmdMesh.getBoneMatrixBuffer());
                     }
                 }
             }
+            FloatBuffer fb = null;
             for(int i=getChildren().size()-1;i>=0;i--) {
                 Spatial sp = getChild(i);
                 if (sp instanceof PMDGeometry) {
@@ -310,16 +336,21 @@ boolean setBoneMatricesFlag = true;
                         PMDSkinMesh skinMesh = (PMDSkinMesh)mesh;
                         Material m = g.getMaterial();
                         int boneIndexArray[] = skinMesh.getBoneIndexArray();
-                        Matrix4f[] boneMatrixArray = skinMesh.getBoneMatrixArray();
-                        for (int i2 = skinMesh.getBoneIndexArray().length-1; i2 >=0; i2--) {
-                            boneMatrixArray[i2] = (offsetMatrices[boneIndexArray[i2]]);
+//                        Matrix4f[] boneMatrixArray = skinMesh.getBoneMatrixArray();
+//                        for (int i2 = skinMesh.getBoneIndexArray().length-1; i2 >=0; i2--) {
+//                            boneMatrixArray[i2] = (offsetMatrices[boneIndexArray[i2]]);
+//                        }
+                        if (fb == null) {
+                            fb = skinMesh.getBoneMatrixBuffer();
+                            fb.position(0);
+                            projectkyoto.jme3.mmd.nativelib.SkinUtil.copyBoneMatrix(offsetMatrixbuffer, fb, skinMesh.getBoneIndexBuffer());
                         }
                         if (glslSkinning) {
                             if (skinMesh.boneMatricesParamIndex < 0) {
-                                m.setParam("BoneMatrices", VarType.Matrix4Array, skinMesh.getBoneMatrixArray());
+                                m.setParam("BoneMatrices", VarType.Matrix4Array, fb);
                                 skinMesh.boneMatricesParamIndex = g.getMaterial().getParamIndex("BoneMatrices");
                             } else {
-                                m.setParam(skinMesh.boneMatricesParamIndex, VarType.Matrix4Array, skinMesh.getBoneMatrixArray());
+                                m.setParam(skinMesh.boneMatricesParamIndex, VarType.Matrix4Array, fb);
                             }
                         }
                     }
