@@ -267,7 +267,7 @@ public class AndroidHarness extends Activity implements TouchListener, DialogInt
                 AlertDialog dialog = new AlertDialog.Builder(AndroidHarness.this) // .setIcon(R.drawable.alert_dialog_icon)
                         .setTitle(t != null ? (t.getMessage() != null ? (t.getMessage() + ": " + t.getClass().getName()) : t.getClass().getName()) : "OpenGL Exception").setPositiveButton("Kill", AndroidHarness.this).setMessage(
                         (t != null ? (t.getMessage() != null ? (t.getMessage() + ": " + t.getClass().getName()) : t.getClass().getName()) : "OpenGL Exception")
-                        +"´n"+(errorMsg != null ? errorMsg + ": " : "") + stackTrace).create();
+                        +"\n"+(errorMsg != null ? errorMsg + ": " : "") + stackTrace).create();
                 dialog.show();
             }
         });
