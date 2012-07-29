@@ -475,8 +475,12 @@ public class OGLESContext implements JmeContext, GLSurfaceView.Renderer
     public void destroy(boolean waitFor) 
     {
         needClose.set(true);
-        if (waitFor)
+        if (waitFor) {
             waitFor(false);
+        } else {
+            listener.destroy();
+            listener = null;
+        }
     }
            
     public void destroy()

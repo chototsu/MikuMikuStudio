@@ -86,10 +86,12 @@ public class AndroidAudioRenderer implements AudioRenderer, SoundPool.OnLoadComp
     private Listener listener;
     private boolean audioDisabled = false;
 
-    public AndroidAudioRenderer(Activity context) {
+    public AndroidAudioRenderer(Context context) {
         this.context = context;
         manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        context.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        if (context instanceof Activity) {
+            ((Activity)context).setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        }
         am = context.getAssets();
     }
 

@@ -1,7 +1,9 @@
 package com.jme3.system;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
+import com.jme3.app.Application;
 import com.jme3.util.AndroidLogHandler;
 import com.jme3.asset.AndroidAssetManager;
 import com.jme3.asset.AssetManager;
@@ -23,7 +25,8 @@ public class JmeSystem {
     private static boolean initialized = false;
     private static boolean lowPermissions = false;
     private static Resources res;
-    private static Activity activity;
+    private static Context activity;
+    private static ThreadLocal<Application> app = new ThreadLocal<Application>();
 
     public static void initialize(AppSettings settings) {
         if (initialized) {
@@ -56,6 +59,9 @@ public class JmeSystem {
 
     public static JmeContext newContext(AppSettings settings, Type contextType) {
         initialize(settings);
+        if (settings.getRenderer().startsWith("LiveWallpaper")) {
+            
+        }
         return new OGLESContext();
     }
 
@@ -71,11 +77,18 @@ public class JmeSystem {
         return res;
     }
 
-    public static void setActivity(Activity activity) {
+    public static void setActivity(Context activity) {
         JmeSystem.activity = activity;
+        
+    }
+    public static void setApplication(Application app) {
+        JmeSystem.app.set(app);
+    }
+    public static Application getApplication() {
+        return app.get();
     }
 
-    public static Activity getActivity() {
+    public static Context getActivity() {
         return activity;
     }
 

@@ -37,6 +37,7 @@ import android.opengl.GLES11;
 import android.opengl.GLES20;
 import android.os.Build;
 import com.jme3.app.AndroidHarness;
+import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.DesktopAssetManager;
 import com.jme3.asset.TextureKey;
@@ -270,7 +271,7 @@ public class OGLESShaderRenderer implements Renderer {
          */
         GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_SIZE, intBuf16);
         maxTexSize = intBuf16.get(0);
-        logger.log(Level.INFO, "Maximum Texture Resolution: {0}", maxTexSize);
+        logger.log(Level.INFO, "Maximum Texture Resolution: {0}"+ maxTexSize);
 
         GLES20.glGetIntegerv(GLES20.GL_MAX_CUBE_MAP_TEXTURE_SIZE, intBuf16);
         maxCubeTexSize = intBuf16.get(0);
@@ -1990,7 +1991,13 @@ public class OGLESShaderRenderer implements Renderer {
             if ( bmp.isRecycled() )
             {
             // We need to reload the bitmap
-            DesktopAssetManager assetManager = (DesktopAssetManager)((AndroidHarness)JmeSystem.getActivity()).getJmeApplication().getAssetManager();
+            DesktopAssetManager assetManager;
+            try {
+                assetManager = (DesktopAssetManager)((AndroidHarness)JmeSystem.getActivity()).getJmeApplication().getAssetManager();
+            } catch(ClassCastException ex) {
+                Application app = JmeSystem.getApplication();
+                assetManager = (DesktopAssetManager) app.getAssetManager();
+            }
             assetManager.deleteFromCache((TextureKey)tex.getKey());
             Texture textureReloaded = assetManager.loadTexture((TextureKey)tex.getKey());
             image.setEfficentData( textureReloaded.getImage().getEfficentData());
