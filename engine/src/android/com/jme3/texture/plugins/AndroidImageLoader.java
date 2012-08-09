@@ -34,7 +34,7 @@ public class AndroidImageLoader implements AssetLoader {
             BitmapFactory.decodeStream(in,null, options);
             float scaleW=(float)options.outWidth /256f;  
             float scaleH=(float)options.outHeight/256f;  
-            float scale =Math.max(scaleW,scaleH);            
+            float scale = 1; //Math.max(scaleW,scaleH);            
             in.close();
             in = null;
             options = new BitmapFactory.Options();
