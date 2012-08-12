@@ -30,6 +30,7 @@
 package projectkyoto.mmd.file;
 
 import java.io.BufferedInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -149,8 +150,13 @@ public class PMDModel implements Serializable{
         boneDispList = new PMDBoneDispList(is);
         headerEnglish = new PMDHeaderEnglish(this, is);
         toonTextureList = new PMDToonTextureList(is);
-        rigidBodyList = new PMDRigidBodyList(is);
-        jointList = new PMDJointList(is);
+        try {
+            rigidBodyList = new PMDRigidBodyList(is);
+            jointList = new PMDJointList(is);
+        } catch(EOFException ex) {
+            rigidBodyList = new PMDRigidBodyList();
+            jointList = new PMDJointList();
+        }
 //        toonTextureList = new PMDToonTextureList();
 //        rigidBodyList = new PMDRigidBodyList();
 //        jointList = new PMDJointList();

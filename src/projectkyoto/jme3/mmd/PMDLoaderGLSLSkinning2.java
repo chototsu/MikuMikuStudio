@@ -168,7 +168,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             node.pmdGeometryArray[pmdGeometryIndex++] = geom;
             meshConverter.getMeshDataList().set(i, null);
 //            go.add(mesh);
-//            mesh.setInterleaved();    
+            mesh.setInterleaved();    
         }
 //        go.optimize3();
         createSkinCommonVertData();

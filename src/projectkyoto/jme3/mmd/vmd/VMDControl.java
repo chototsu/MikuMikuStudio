@@ -276,12 +276,19 @@ public class VMDControl extends AbstractControl {
             return;
         }
         float time = currentTime + tpf;
-        if (accuracy > 0 && tpf < 1f) {
+        if (accuracy <= 0) {
+            controlUpdate2(tpf);
+        } else if (tpf < accuracy * 8) {
             physicsControl.update(tpf);
             physicsControl.getWorld().applyResultToBone();
             physicsControl.getWorld().getPhysicsSpace().distributeEvents();
         } else {
-            controlUpdate2(tpf);
+            float accuracy2 = tpf / 8;
+            physicsControl.getWorld().setAccuracy(accuracy2);
+            physicsControl.update(tpf);
+            physicsControl.getWorld().applyResultToBone();
+            physicsControl.getWorld().getPhysicsSpace().distributeEvents();
+            physicsControl.getWorld().setAccuracy(accuracy);
         }
         resetSkins();
         calcSkins();

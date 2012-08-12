@@ -60,6 +60,7 @@ import projectkyoto.mmd.file.PMDModel;
  * @author kobayasi
  */
 public class PMDPhysicsWorld {
+    int maxSteps = 10;
     // bullet physics
     static final Object lockObject = new Object();
     PhysicsSpace physicsSpace;
@@ -503,7 +504,7 @@ public class PMDPhysicsWorld {
 //            applyResultToBone();
 //        }
 //        synchronized(lockObject) {
-            physicsSpace.update(timeStep, 100);
+            physicsSpace.update(timeStep, maxSteps);
 //        }
 //        applyResultToBone();
     }
@@ -617,5 +618,14 @@ public class PMDPhysicsWorld {
     public PhysicsSpace getPhysicsSpace() {
         return physicsSpace;
     }
+
+    public int getMaxSteps() {
+        return maxSteps;
+    }
+
+    public void setMaxSteps(int maxSteps) {
+        this.maxSteps = maxSteps;
+    }
+    
 
 }
