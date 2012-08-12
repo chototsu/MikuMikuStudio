@@ -932,7 +932,7 @@ public class RenderManager {
         }
 
         if (!rq.isQueueEmpty(Bucket.Gui)) {
-            renderer.setDepthRange(0, 0);
+//            renderer.setDepthRange(0, 0);
             setCamera(cam, true);
             rq.renderQueue(Bucket.Gui, this, cam, flush);
             setCamera(cam, false);
