@@ -92,7 +92,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
     VertexBuffer skinvb;
     VertexBuffer skinvb2;
     VertexBuffer skinnb;
-    VertexBuffer skinnb2;
+//    VertexBuffer skinnb2;
     VertexBuffer skintb;
     VertexBuffer skinbib;
     VertexBuffer skinwb;
@@ -135,7 +135,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         skinvb = null;
         skinvb2 = null;
         skinnb = null;
-        skinnb2 = null;
+//        skinnb2 = null;
         skintb = null;
         skeletonControl = null;
         skinArray = null;
@@ -232,9 +232,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         FloatBuffer skinnfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
         skinnb.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb);
 
-        skinnb2 = new VertexBuffer(VertexBuffer.Type.Normal);
-        FloatBuffer skinnfb2 = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
-        skinnb2.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb2);
+//        skinnb2 = new VertexBuffer(VertexBuffer.Type.Normal);
+//        FloatBuffer skinnfb2 = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 3);
+//        skinnb2.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb2);
         
         skintb = new VertexBuffer(VertexBuffer.Type.TexCoord);
         FloatBuffer skintfb = BufferUtils.createFloatBuffer(meshConverter.getSkinMeshData().getVertexList().size() * 2);
@@ -275,8 +275,8 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         skinvfb2.position(0);
         skinvfb2.put(skinvfb);
         skinnfb.position(0);
-        skinnfb2.position(0);
-        skinnfb2.put(skinnfb);
+//        skinnfb2.position(0);
+//        skinnfb2.put(skinnfb);
         skinIndexArray = new int[meshConverter.getSkinMeshData().getBoneList().size()];
         for (int i = 0; i < skinIndexArray.length; i++) {
             if (i < meshConverter.getSkinMeshData().getBoneList().size()) {
@@ -298,7 +298,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         mesh.setBuffer(skinvb);
         mesh.setSkinvb2(skinvb2);
         mesh.setBuffer(skinnb);
-        mesh.setSkinnb2(skinnb2);
+//        mesh.setSkinnb2(skinnb2);
         if (textureFlag) {
             mesh.setBuffer(skintb);
         }

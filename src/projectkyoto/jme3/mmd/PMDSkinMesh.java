@@ -52,7 +52,7 @@ public class PMDSkinMesh extends Mesh {
     int boneIndexArray[];
     Matrix4f boneMatrixArray[];
     VertexBuffer skinvb2;
-    VertexBuffer skinnb2;
+//    VertexBuffer skinnb2;
     int boneMatricesParamIndex = -1;
     ShortBuffer boneIndexBuffer;
     FloatBuffer boneMatrixBuffer;
@@ -76,13 +76,13 @@ public class PMDSkinMesh extends Mesh {
         this.boneMatrixArray = boneMatrixArray;
     }
 
-    public VertexBuffer getSkinnb2() {
-        return skinnb2;
-    }
-
-    public void setSkinnb2(VertexBuffer skinnb2) {
-        this.skinnb2 = skinnb2;
-    }
+//    public VertexBuffer getSkinnb2() {
+//        return skinnb2;
+//    }
+//
+//    public void setSkinnb2(VertexBuffer skinnb2) {
+//        this.skinnb2 = skinnb2;
+//    }
 
     public VertexBuffer getSkinvb2() {
         return skinvb2;
@@ -120,26 +120,25 @@ public class PMDSkinMesh extends Mesh {
 //        newMesh.boneMatrixArray = new Matrix4f[boneMatrixArray.length];
         newMesh.skinvb2 = new VertexBuffer(VertexBuffer.Type.Position);
         FloatBuffer skinvfb2 = BufferUtils.clone((FloatBuffer)this.skinvb2.getData());
-        newMesh.skinvb2.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinvfb2);
+        newMesh.skinvb2.setupData(VertexBuffer.Usage.Stream, 3, VertexBuffer.Format.Float, skinvfb2);
         
-        newMesh.skinnb2 = new VertexBuffer(VertexBuffer.Type.Normal);
-        FloatBuffer skinnfb2 = BufferUtils.clone((FloatBuffer)this.skinnb2.getData());
-        newMesh.skinnb2.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb2);
+//        newMesh.skinnb2 = new VertexBuffer(VertexBuffer.Type.Normal);
+//        FloatBuffer skinnfb2 = BufferUtils.clone((FloatBuffer)this.skinnb2.getData());
+//        newMesh.skinnb2.setupData(VertexBuffer.Usage.Static, 3, VertexBuffer.Format.Float, skinnfb2);
         
         VertexBuffer skinvb1 = new VertexBuffer(VertexBuffer.Type.Position);
 //        FloatBuffer skinvfb1 = BufferUtils.clone((FloatBuffer)this.skinvb2.getData());
         FloatBuffer skinvfb1 = BufferUtils.clone((FloatBuffer)this.getBuffer(VertexBuffer.Type.Position).getData());
-        skinvb1.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinvfb1);
+        skinvb1.setupData(VertexBuffer.Usage.Stream, 3, VertexBuffer.Format.Float, skinvfb1);
         newMesh.clearBuffer(VertexBuffer.Type.Position);
         newMesh.setBuffer(skinvb1);
         
-        VertexBuffer skinnb1 = new VertexBuffer(VertexBuffer.Type.Normal);
+//        VertexBuffer skinnb1 = new VertexBuffer(VertexBuffer.Type.Normal);
 //        FloatBuffer skinnfb1 = BufferUtils.clone((FloatBuffer)this.skinnb2.getData());
-        FloatBuffer skinnfb1 = BufferUtils.clone((FloatBuffer)this.getBuffer(VertexBuffer.Type.Normal).getData());
-        skinnb1.setupData(VertexBuffer.Usage.Dynamic, 3, VertexBuffer.Format.Float, skinnfb1);
-        newMesh.clearBuffer(VertexBuffer.Type.Normal);
-        newMesh.setBuffer(skinnb1);
-
+//        FloatBuffer skinnfb1 = BufferUtils.clone((FloatBuffer)this.getBuffer(VertexBuffer.Type.Normal).getData());
+//        skinnb1.setupData(VertexBuffer.Usage.Stream, 3, VertexBuffer.Format.Float, skinnfb1);
+//        newMesh.clearBuffer(VertexBuffer.Type.Normal);
+//        newMesh.setBuffer(skinnb1);
         return newMesh;
     }
 

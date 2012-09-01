@@ -59,6 +59,7 @@ import com.jme3.scene.debug.SkeletonWire;
 import com.jme3.scene.shape.Box;
 import com.jme3.shader.VarType;
 import com.jme3.util.BufferUtils;
+import java.nio.Buffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -150,13 +151,13 @@ public class PMDNode extends Node {
                             skinMesh.setBuffer(skinvb);
                             skinMesh.setSkinvb2(skinvb2);
                             skinMesh.setBuffer(skinnb);
-                            skinMesh.setSkinnb2(skinnb2);
+//                            skinMesh.setSkinnb2(skinnb2);
                             skinMesh.setBuffer(skintb);
                         } else {
                             skinMesh.setBuffer(skinvb);
                             skinMesh.setSkinvb2(skinvb2);
                             skinMesh.setBuffer(skinnb);
-                            skinMesh.setSkinnb2(skinnb2);
+//                            skinMesh.setSkinnb2(skinnb2);
                             skinMesh.setBuffer(skintb);
                         }
                         skinTargets[skinMeshCount++] = (PMDSkinMesh)mesh;
@@ -211,7 +212,7 @@ public class PMDNode extends Node {
         if (skinTargets != null && skinTargets.length > 0) {
             PMDSkinMesh mesh = skinTargets[0];
             c.write(mesh.getSkinvb2(),"skinvb",null);
-            c.write(mesh.getSkinnb2(),"skinnb",null);
+//            c.write(mesh.getSkinnb2(),"skinnb",null);
             c.write(mesh.getBuffer(Type.TexCoord),"skintb",null);
         }
         c.write(skinArray, "skinArray", null);
@@ -401,17 +402,18 @@ boolean setBoneMatricesFlag = true;
 //        VertexBuffer nb = skinTargets[0].getBuffer(VertexBuffer.Type.Normal);
         skinTargets[0].skinvb2.setUpdateNeeded();
 //        skinTargets[0].skinnb2.setUpdateNeeded();
+        VertexBuffer skinvb2 = skinTargets[0].skinvb2;
         for(PMDSkinMesh skinMesh : skinTargets) {
 //            skinMesh.clearBuffer(Type.Position);
 //            skinMesh.clearBuffer(Type.Normal);
-            skinMesh.setBuffer(skinTargets[0].getSkinvb2());
+            skinMesh.setBuffer(skinvb2);
 //            skinMesh.setBuffer(skinTargets[0].getSkinnb2());
         }
         skinTargets[0].skinvb2 = vb;
 //        skinTargets[0].skinnb2 = nb;
-        vb = skinTargets[0].getBuffer(VertexBuffer.Type.Position);
+//        vb = skinTargets[0].getBuffer(VertexBuffer.Type.Position);
 //        nb = skinTargets[0].getBuffer(VertexBuffer.Type.Normal);
-        vb.setUpdateNeeded();
+//        vb.setUpdateNeeded();
 //        nb.setUpdateNeeded();
     }
     private void softwareSkinUpdate(PMDMesh mesh){
@@ -599,8 +601,8 @@ boolean setBoneMatricesFlag = true;
     void resetToBindSkinBackData(PMDSkinMesh mesh) {
         VertexBuffer vb = mesh.getSkinvb2(); // mesh.getBuffer(VertexBuffer.Type.Position);
         FloatBuffer vfb = (FloatBuffer) vb.getData();
-        VertexBuffer nb = mesh.getSkinnb2(); //mesh.getBuffer(VertexBuffer.Type.Normal);
-        FloatBuffer nfb = (FloatBuffer) nb.getData();
+//        VertexBuffer nb = mesh.getSkinnb2(); //mesh.getBuffer(VertexBuffer.Type.Normal);
+//        FloatBuffer nfb = (FloatBuffer) nb.getData();
 
         VertexBuffer bvb = mesh.getBuffer(VertexBuffer.Type.BindPosePosition);
         FloatBuffer bvfb = (FloatBuffer) bvb.getData();
@@ -610,11 +612,11 @@ boolean setBoneMatricesFlag = true;
         for (int i = 0; i < vfb.capacity(); i++) {
             vfb.put(i, bvfb.get(i));
         }
-        for (int i = 0; i < nfb.capacity(); i++) {
-            nfb.put(i, bnfb.get(i));
-        }
+//        for (int i = 0; i < nfb.capacity(); i++) {
+//            nfb.put(i, bnfb.get(i));
+//        }
         vb.setUpdateNeeded();
-        nb.setUpdateNeeded();
+//        nb.setUpdateNeeded();
     }
     public Set<String> getSkinSet() {
         return skinMap.keySet();
@@ -896,7 +898,7 @@ boolean setBoneMatricesFlag = true;
                             skinMesh.setBuffer(skinMesh0.getBuffer(Type.Position));
                             skinMesh.setSkinvb2(skinMesh0.getSkinvb2());
                             skinMesh.setBuffer(skinMesh0.getBuffer(Type.Normal));
-                            skinMesh.setSkinnb2(skinMesh0.getSkinnb2());
+//                            skinMesh.setSkinnb2(skinMesh0.getSkinnb2());
                             if (skinMesh0.getBuffer(Type.TexCoord) != null)
                                 skinMesh.setBuffer(skinMesh0.getBuffer(Type.TexCoord));
                         } else {
@@ -905,7 +907,7 @@ boolean setBoneMatricesFlag = true;
                             skinMesh.setBuffer(skinMesh0.getBuffer(Type.Position).clone());
                             skinMesh.setSkinvb2(skinMesh0.getSkinvb2().clone());
                             skinMesh.setBuffer(skinMesh0.getBuffer(Type.Normal));
-                            skinMesh.setSkinnb2(skinMesh0.getSkinnb2());
+//                            skinMesh.setSkinnb2(skinMesh0.getSkinnb2());
                             if (skinMesh0.getBuffer(Type.TexCoord) != null)
                                 skinMesh.setBuffer(skinMesh0.getBuffer(Type.TexCoord));
                         }
