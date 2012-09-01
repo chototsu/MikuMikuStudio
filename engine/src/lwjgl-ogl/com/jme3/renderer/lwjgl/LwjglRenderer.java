@@ -2191,8 +2191,10 @@ public class LwjglRenderer implements Renderer {
         IDList attribList = context.attribIndexList;
         for (int i = 0; i < attribList.oldLen; i++) {
             int idx = attribList.oldList[i];
-            glDisableVertexAttribArray(idx);
-            context.boundAttribs[idx] = null;
+            if (idx >= 0) {
+                glDisableVertexAttribArray(idx);
+                context.boundAttribs[idx] = null;
+            }
         }
         context.attribIndexList.copyNewToOld();
     }

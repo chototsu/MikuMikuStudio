@@ -75,10 +75,11 @@ public class IDList {
             if (oldList[i] == idx){
                 // found index in slot i
                 // delete index from old list
-                oldLen --;
-                for (int j = i; j < oldLen; j++){
-                    oldList[j] = oldList[j+1];
-                }
+//                oldLen --;
+//                for (int j = i; j < oldLen; j++){
+//                    oldList[j] = oldList[j+1];
+//                }
+                oldList[i] = -1;
                 return true;
             }
         }

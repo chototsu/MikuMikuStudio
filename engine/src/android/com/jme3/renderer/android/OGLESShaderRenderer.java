@@ -75,7 +75,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
 
-public class OGLESShaderRenderer implements Renderer {
+public final class OGLESShaderRenderer implements Renderer {
 
     private static final Logger logger = Logger.getLogger(OGLESShaderRenderer.class.getName());
     private static final boolean VALIDATE_SHADER = false;
@@ -1691,6 +1691,7 @@ public class OGLESShaderRenderer implements Renderer {
 
     public void readFrameBuffer(FrameBuffer fb, ByteBuffer byteBuf) {
         logger.warning("readFrameBuffer is not supported.");
+        GLES20.glReadPixels(vpX, vpY, vpW, vpH, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, byteBuf);
     }
     /*
     public void readFrameBuffer(FrameBuffer fb, ByteBuffer byteBuf){
@@ -2017,20 +2018,18 @@ public class OGLESShaderRenderer implements Renderer {
         Image[] textures = context.boundTextures;
 
         int type = convertTextureType(tex.getType());
-        if (!context.textureIndexList.moveToNew(unit)) {
+//        if (!context.textureIndexList.moveToNew(unit)) {
 //             if (context.boundTextureUnit != unit){
 //                glActiveTexture(GL_TEXTURE0 + unit);
 //                context.boundTextureUnit = unit;
 //             }
 //             glEnable(type);
-        }
+//        }
 
             if (context.boundTextureUnit != unit) {
                 if (verboseLogging) {
                     logger.info("GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + " + unit + ")");
                 }
-                GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + unit);
-                context.boundTextureUnit = unit;
             }
         if (textures[unit] != image) {
 
@@ -2038,6 +2037,8 @@ public class OGLESShaderRenderer implements Renderer {
                 logger.info("GLES20.glBindTexture(" + type + ", " + texId + ")");
             }
 
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + unit);
+            context.boundTextureUnit = unit;
             GLES20.glBindTexture(type, texId);
             textures[unit] = image;
 
@@ -2050,18 +2051,18 @@ public class OGLESShaderRenderer implements Renderer {
     }
 
     public void clearTextureUnits() {
-        IDList textureList = context.textureIndexList;
-        Image[] textures = context.boundTextures;
-        for (int i = 0; i < textureList.oldLen; i++) {
-            int idx = textureList.oldList[i];
+//        IDList textureList = context.textureIndexList;
+//        Image[] textures = context.boundTextures;
+//        for (int i = 0; i < textureList.oldLen; i++) {
+//            int idx = textureList.oldList[i];
 //            if (context.boundTextureUnit != idx){
-//                glActiveTexture(GL_TEXTURE0 + idx);
+//                GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + idx);
 //                context.boundTextureUnit = idx;
 //            }
-//            glDisable(convertTextureType(textures[idx].getType()));
-            textures[idx] = null;
-        }
-        context.textureIndexList.copyNewToOld();
+//            GLES20.glDisable(GLES20.GL_TEXTURE_2D/*convertTextureType(textures[idx].getType())*/);
+//            textures[idx] = null;
+//        }
+//        context.textureIndexList.copyNewToOld();
     }
 
     public void deleteImage(Image image) {
@@ -2345,15 +2346,17 @@ public class OGLESShaderRenderer implements Renderer {
 
     public void clearVertexAttribs() {
         IDList attribList = context.attribIndexList;
-        for (int i = 0; i < attribList.oldLen; i++) {
+        int oldLen = attribList.oldLen;
+        for (int i = 0; i < oldLen; i++) {
             int idx = attribList.oldList[i];
 
             if (verboseLogging) {
                 logger.info("GLES20.glDisableVertexAttribArray(" + idx + ")");
             }
-
-            GLES20.glDisableVertexAttribArray(idx);
-            context.boundAttribs[idx] = null;
+            if (idx != -1) {
+                GLES20.glDisableVertexAttribArray(idx);
+                context.boundAttribs[idx] = null;
+            }
         }
         context.attribIndexList.copyNewToOld();
     }
@@ -2704,6 +2707,8 @@ public class OGLESShaderRenderer implements Renderer {
         } else {
             indices = mesh.getBuffer(Type.Index);//buffers.get(Type.Index.ordinal());
         }
+        clearVertexAttribs();
+//        clearTextureUnits();
         if (indices != null) {
             drawTriangleList_Array(indices, mesh, count);
         } else {
@@ -2714,8 +2719,6 @@ public class OGLESShaderRenderer implements Renderer {
 
             GLES20.glDrawArrays(convertElementMode(mesh.getMode()), 0, mesh.getVertexCount());
         }
-        clearVertexAttribs();
-        clearTextureUnits();
     }
 
     private void renderMeshDefault(Mesh mesh, int lod, int count) {
@@ -2754,6 +2757,8 @@ public class OGLESShaderRenderer implements Renderer {
                 setVertexAttrib(vb, interleavedData);
             }
         }
+        clearVertexAttribs();
+//        clearTextureUnits();
         if (indices != null) {
             drawTriangleList(indices, mesh, count);
         } else {
@@ -2765,8 +2770,6 @@ public class OGLESShaderRenderer implements Renderer {
 
             GLES20.glDrawArrays(convertElementMode(mesh.getMode()), 0, mesh.getVertexCount());
         }
-        clearVertexAttribs();
-        clearTextureUnits();
     }
 
     public void renderMesh(Mesh mesh, int lod, int count) {
@@ -3001,5 +3004,36 @@ public class OGLESShaderRenderer implements Renderer {
         context.reset();
         boundShader = null;
         lastFb = null;
+    }
+    public void resetBoundsTexture() {
+        context.boundTextures[0] = null;
+        if (context.boundTextureUnit != 0) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            context.boundTextureUnit = 0;
+        }
+//        GLES20.glDisable(GLES20.GL_TEXTURE_2D);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);         
+            //        context.boundTextureUnit = -2;
+//        context.boundElementArrayVBO = -2;
+//        context.boundShaderProgram = -1;
+//        context.boundArrayVBO = -1;
+//        context.boundElementArrayVBO = -1;
+
+        if (context.boundElementArrayVBO != 0) {
+
+
+            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+            context.boundElementArrayVBO = 0;
+        }
+        if (context.boundArrayVBO != 0) {
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+            context.boundArrayVBO = 0;
+        }
+        if (context.boundShaderProgram != 0) {
+            GLES20.glUseProgram(0);
+            checkGLError();
+            boundShader = null;
+            context.boundShaderProgram = 0;
+        }
     }
 }
