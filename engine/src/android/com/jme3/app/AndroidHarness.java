@@ -110,7 +110,7 @@ public class AndroidHarness extends Activity implements TouchListener, DialogInt
     protected boolean isGLThreadPaused = true;
     protected AppSettings settings = null;
     final private String ESCAPE_EVENT = "TouchEscape";
-
+    protected boolean createViewOnCreate = true;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,6 +156,7 @@ public class AndroidHarness extends Activity implements TouchListener, DialogInt
         input.setMouseEventsEnabled(mouseEventsEnabled);
 
         // Create application instance
+        if (createViewOnCreate)
         try {
             if (app == null) {
                 @SuppressWarnings("unchecked")
