@@ -51,6 +51,8 @@ public class VMDFile implements Serializable{
     private VMDSkin skinArray[];
 
     public VMDFile() {
+        motionArray = new VMDMotion[0];
+        skinArray = new VMDSkin[0];
     }
     
     public VMDFile(URL url) throws IOException {
