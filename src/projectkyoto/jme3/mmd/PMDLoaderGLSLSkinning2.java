@@ -191,7 +191,8 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 geomList = new ArrayList<PMDGeometry>();
                 childMap.put(pmdMaterial, geomList);
             }
-            geomList.add(geom);
+            geomList.add(0, geom);
+//            geom.setQueueBucket(Bucket.Transparent);
             skinMeshList.add(mesh);
         }
         for(PMDMaterial pmdMaterial : model.getMaterial()) {
@@ -465,7 +466,11 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
             geom.setQueueBucket(Bucket.Transparent);
         } else {
-            geom.setQueueBucket(Bucket.Inherit);
+            if (m.getTextureFileName().length() > 0) {
+            geom.setQueueBucket(Bucket.Transparent);
+            } else {
+                geom.setQueueBucket(Bucket.Inherit);
+            }
         }
     }
 
@@ -775,7 +780,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         }
         return tex;
         } catch(Exception ex) {
-            logger.log(Level.WARNING,"Txture "+name+" not found.",ex);
+            logger.log(Level.WARNING,"Txture "+name+" not found.");
             return null;
         }
     }

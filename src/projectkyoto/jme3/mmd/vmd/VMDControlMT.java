@@ -82,7 +82,7 @@ public class VMDControlMT extends AbstractControl {
     public void setSpatial(Spatial spatial) {
         super.setSpatial(spatial);
         if (spatial == null) {
-            Logger.getLogger(VMDControlMT.class.getName()).log(Level.INFO,"remove");
+            Logger.getLogger(VMDControlMT.class.getName()).log(Level.INFO,"setSpatial remove");
             getCallable().getVmdControl().setSpatial(null);
             if (future != null) {
                 try {
@@ -94,6 +94,8 @@ public class VMDControlMT extends AbstractControl {
                 }
             }
 //            callable.vmdControl.getPhysicsControl().getWorld().removePMDNode(pmdNode);
+        } else {
+            Logger.getLogger(VMDControlMT.class.getName()).log(Level.INFO,"setSpatial add");
         }
     }
 }
