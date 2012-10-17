@@ -33,6 +33,7 @@
 package projectkyoto.mmd.file;
 
 import com.jme3.util.BufferUtils;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
@@ -66,6 +67,19 @@ public class PMDSkinData implements Serializable{
             skinBuf.put(is.readFloat());
             skinBuf.put(is.readFloat());
             skinBuf.put(-is.readFloat());
+        }
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        PMDUtil.writeString(os, skinName, 20);
+        os.writeInt(skinVertCount);
+        os.writeByte(skinType);
+        indexBuf.position(0);
+        skinBuf.position(0);
+        for(int i=0;i<skinVertCount;i++) {
+            os.writeInt(indexBuf.get() & 0xffff);
+            os.writeFloat(skinBuf.get());
+            os.writeFloat(skinBuf.get());
+            os.writeFloat(-skinBuf.get());
         }
     }
 

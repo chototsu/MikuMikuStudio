@@ -31,6 +31,7 @@
  */
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -67,6 +68,9 @@ public class PMDBone implements Serializable {
     public PMDBone() {
     }
     public PMDBone(DataInputStreamLittleEndian is) throws IOException {
+        readFromStream(is);
+    }
+    public PMDBone readFromStream(DataInputStreamLittleEndian is) throws IOException {
         boneName = is.readString(20);
         parentBoneIndex = is.readUnsignedShort();
         tailPosBoneIndex = is.readUnsignedShort();
@@ -79,6 +83,17 @@ public class PMDBone implements Serializable {
         } else {
             hiza = false;
         }
+        return this;
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        PMDUtil.writeString(os, boneName, 20);
+        os.writeShort(parentBoneIndex);
+        os.writeShort(tailPosBoneIndex);
+        os.writeByte(boneType);
+        os.writeShort(targetBone);
+        os.writeFloat(boneHeadPos.x);
+        os.writeFloat(boneHeadPos.y);
+        os.writeFloat(-boneHeadPos.z);
     }
 
     public void readFromBuffer(ByteBuffer bb) {

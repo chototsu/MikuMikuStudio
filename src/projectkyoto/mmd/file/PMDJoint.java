@@ -31,6 +31,7 @@
  */
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import javax.vecmath.Vector3f;
@@ -102,55 +103,42 @@ public class PMDJoint implements Serializable{
         constRot2 = new Vector3f(-is.readFloat(), -is.readFloat(), is.readFloat());
         
         float tmp;
-//        if (constPos1.x > constPos2.x) {
-//            tmp = constPos1.x;
-//            constPos1.x = constPos2.x;
-//            constPos2.x = tmp;
-//        }
-//        if (constPos1.y > constPos2.y) {
-//            tmp = constPos1.y;
-//            constPos1.y = constPos2.y;
-//            constPos2.y = tmp;
-//        }
-//        if (constPos1.z > constPos2.z) {
-//            tmp = constPos1.z;
-//            constPos1.z = constPos2.z;
-//            constPos2.z = tmp;
-//        }
-
-//        float tmp;
         tmp = constPos1.z;
         constPos1.z = constPos2.z;
         constPos2.z = tmp;
-//
-//        tmp = constRot1.x;
-//        constRot1.x = -constRot2.x;
-//        constRot2.x = -tmp;
-//        tmp = constRot1.y;
-//        constRot1.y = -constRot2.y;
-//        constRot2.y = -tmp;
-//
-//        Vector3f tmpV = constRot1;
-//        constRot1 = constRot2;
-//        constRot1 = constRot2;
-//        constRot2 = tmpV;
-//        constRot1.x *= -1f;
-//        constRot2.x *= -1f;
-//        constRot1.y *= -1f;
-//        constRot2.y *= -1f;
         swapConst(constRot1, constRot2);
-
-        //        tmp = constRot1.z;
-        //        constRot1.z = -constRot2.z;
-        //        constRot2.z = -tmp;
-        //        springPos = new Vector3f(is.readFloat(), is.readFloat(), -is.readFloat());
-        //        springRot = new Vector3f(-is.readFloat(), -is.readFloat(), is.readFloat());
         for (int i = 0; i < 6; i++) {
             stiffness[i] = is.readFloat();
         }
-//        stiffness[2] = -stiffness[2];
-//        stiffness[3] = -stiffness[3];
-//        stiffness[4] = -stiffness[4];
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        PMDUtil.writeString(os, jointName, 20);
+        os.writeInt(rigidBodyA);
+        os.writeInt(rigidBodyB);
+        PMDUtil.writeVector3f(os, jointPos);
+        
+        os.writeFloat(-jointRot.x);
+        os.writeFloat(-jointRot.y);
+        os.writeFloat(jointRot.z);
+        
+        os.writeFloat(constPos1.x);
+        os.writeFloat(constPos1.y);
+        os.writeFloat(-constPos2.z);
+
+        os.writeFloat(constPos2.x);
+        os.writeFloat(constPos2.y);
+        os.writeFloat(-constPos1.z);
+        
+        os.writeFloat(-constRot2.x);
+        os.writeFloat(-constRot2.y);
+        os.writeFloat(constRot1.z);
+        
+        os.writeFloat(-constRot1.x);
+        os.writeFloat(-constRot1.y);
+        os.writeFloat(constRot2.z);
+        for(float f : stiffness) {
+            os.writeFloat(f);
+        }
     }
 
     @Override

@@ -4,8 +4,12 @@
  */
 package projectkyoto.mmd.file.util2;
 
+import com.jme3.util.BufferUtils;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -24,7 +28,7 @@ import javax.vecmath.Quat4f;
  */
 public class BufferUtil {
     public static File tmpDir = null;
-    public static final Logger logger = Logger.getLogger(BufferUtil.class.getName());
+    private static final Logger logger = Logger.getLogger(BufferUtil.class.getName());
     public static ByteBuffer createByteBuffer2(int size) {
         ByteBuffer bb = ByteBuffer.allocateDirect(size);
         bb.order(ByteOrder.nativeOrder());
@@ -120,4 +124,32 @@ public class BufferUtil {
         bb.putFloat(q.z);
         bb.putFloat(q.w);
     }
+    public static void write(ByteBuffer bb, DataOutputStream os, byte[] buf) throws IOException {
+        bb.position(0);
+        final int capacity = bb.capacity();
+        os.writeInt(capacity);
+        while(bb.position() < capacity) {
+            int size = capacity - bb.position();
+            if (size > buf.length) {
+                size = buf.length;
+            }
+            bb.get(buf, 0, size);
+            os.write(buf, 0, size);
+        }
+    }
+    public static ByteBuffer read(DataInputStream is, byte[]buf) throws IOException {
+        final int capacity = is.readInt();
+        ByteBuffer bb = BufferUtils.createByteBuffer(capacity);
+        while(bb.position() < capacity) {
+            int size = capacity - bb.position();
+            if (size > buf.length) {
+                size = buf.length;
+            }
+            is.read(buf, 0, size);
+            bb.put(buf, 0, size);
+        }
+        bb.position(0);
+        return bb;
+    }
+
 }

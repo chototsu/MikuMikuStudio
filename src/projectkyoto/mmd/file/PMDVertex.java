@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -79,6 +80,15 @@ public class PMDVertex implements Serializable{
         edgeFlag = is.readByte();
         return this;
     }
+    public void writeToStream(DataOutput os) throws IOException {
+        PMDUtil.writeVector3f(os, pos);
+        PMDUtil.writeVector3f(os, normal);
+        uv.writeToStream(os);
+        os.writeShort(boneNum1);
+        os.writeShort(boneNum2);
+        os.writeByte(boneWeight);
+        os.writeByte(edgeFlag);
+    }    
     public PMDVertex readFromBuffer(ByteBuffer bb) {
         PMDUtil.readVector3f(bb, pos);
         PMDUtil.readVector3f(bb, normal);

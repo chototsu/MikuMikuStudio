@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -84,6 +85,11 @@ public class XColorRGB implements Serializable{
         red = is.readFloat();
         green = is.readFloat();
         blue = is.readFloat();
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeFloat(red);
+        os.writeFloat(green);
+        os.writeFloat(blue);
     }
     @Override
     public String toString() {

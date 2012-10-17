@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -54,6 +55,10 @@ public class XColorRGBA extends XColorRGB implements Serializable{
     public XColorRGBA(DataInputStreamLittleEndian is) throws IOException {
         super(is);
         alpha = is.readFloat();
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        super.writeToStream(os);
+        os.writeFloat(alpha);
     }
 
     public float getAlpha() {

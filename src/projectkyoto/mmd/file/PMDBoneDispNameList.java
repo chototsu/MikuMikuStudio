@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -52,6 +53,12 @@ public class PMDBoneDispNameList implements Serializable{
         dispNameArray = new String[boneDispNameCount];
         for(int i=0;i<boneDispNameCount;i++) {
             dispNameArray[i] = is.readString(50);
+        }
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeByte(boneDispNameCount);
+        for(String dispName : dispNameArray) {
+            PMDUtil.writeString(os, dispName, 50);
         }
     }
     public void readFromBuffer(ByteBuffer bb) {

@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -48,6 +49,12 @@ public class PMDIKList implements Serializable{
         pmdIKData = new PMDIKData[ikDataCount];
         for(int i=0;i<ikDataCount;i++) {
             pmdIKData[i] = new PMDIKData(is);
+        }
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeShort(ikDataCount);
+        for(PMDIKData ikData : pmdIKData) {
+            ikData.writeToStream(os);
         }
     }
 

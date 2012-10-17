@@ -30,6 +30,7 @@
 package projectkyoto.mmd.file;
 
 import java.io.BufferedInputStream;
+import java.io.DataOutput;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -104,6 +105,10 @@ public class PMDModel implements Serializable{
 
     public void readFromStream(DataInputStreamLittleEndian is) throws
             IOException {
+        readFromStream(is, false);
+    }
+    public void readFromStream(DataInputStreamLittleEndian is, boolean skipVertFlag) throws
+            IOException {
         id = is.readString(3);
         if (!"Pmd".equals(id)) {
             throw new InvalidPMDFileException("Invalid ID:" + id);
@@ -114,29 +119,51 @@ public class PMDModel implements Serializable{
         vertCount = is.readInt();
 //        vertexList = new PMDVertex[vertCount];
 //        vertexBuffer = ByteBuffer.allocateDirect(PMDVertex.size() * vertCount);
-        vertexBuffer = BufferUtil.createByteBuffer(PMDVertex.size() * vertCount);
-        vertexBuffer.order(ByteOrder.nativeOrder());
-        PMDVertex tmpVertex = new PMDVertex();
-        for (int i = 0; i < vertCount; i++) {
-            tmpVertex.readFromStream(is);
-            tmpVertex.writeToBuffer(vertexBuffer);
-            
+        if (skipVertFlag) {
+//            vertexBuffer = BufferUtil.createByteBuffer(PMDVertex.size() * vertCount);
+//            vertexBuffer.order(ByteOrder.nativeOrder());
+//            PMDVertex tmpVertex = new PMDVertex();
+//            for (int i = 0; i < vertCount; i++) {
+//                tmpVertex.readFromStream(is);
+////                tmpVertex.writeToBuffer(vertexBuffer);
+//
+//            }
+            is.skip(38 * vertCount);
+        } else {
+            vertexBuffer = BufferUtil.createByteBuffer(PMDVertex.size() * vertCount);
+            vertexBuffer.order(ByteOrder.nativeOrder());
+            PMDVertex tmpVertex = new PMDVertex();
+            for (int i = 0; i < vertCount; i++) {
+                tmpVertex.readFromStream(is);
+                tmpVertex.writeToBuffer(vertexBuffer);
+            }
         }
         faceVertCount = is.readInt();
-        faceVertIndex = new int[faceVertCount];
-        for (int i = 0; i < faceVertCount; i++) {
-            faceVertIndex[i] = is.readUnsignedShort();
-        }
-        // 逆にする。
-        for (int i = 0; i < faceVertCount; i += 3) {
-            int tmp = faceVertIndex[i];
-            faceVertIndex[i] = faceVertIndex[i + 1];
-            faceVertIndex[i + 1] = tmp;
+        if (skipVertFlag) {
+//            for (int i = 0; i < faceVertCount; i++) {
+//                is.readUnsignedShort();
+//            }
+            long skip = is.skip(faceVertCount * 2);
+            if (skip != faceVertCount * 2) {
+                throw new IllegalArgumentException("skip = "+skip+" "+faceVertCount * 2);
+            }
+        } else {
+            faceVertIndex = new int[faceVertCount];
+            for (int i = 0; i < faceVertCount; i++) {
+                faceVertIndex[i] = is.readUnsignedShort();
+            }
+            // 逆にする。
+            for (int i = 0; i < faceVertCount; i += 3) {
+                int tmp = faceVertIndex[i];
+                faceVertIndex[i] = faceVertIndex[i + 1];
+                faceVertIndex[i + 1] = tmp;
+            }
         }
         materialCount = is.readInt();
         material = new PMDMaterial[materialCount];
         for (int i = 0; i < materialCount; i++) {
             material[i] = new PMDMaterial(is);
+            material[i].setMaterialNo(i);
         }
         boneList = new PMDBoneList(is);
         ikList = new PMDIKList(is);
@@ -161,6 +188,43 @@ public class PMDModel implements Serializable{
 //        rigidBodyList = new PMDRigidBodyList();
 //        jointList = new PMDJointList();
     }
+    public void writeToStream(DataOutput os) throws IOException {
+        PMDUtil.writeString(os, "Pmd", 3);
+        os.writeFloat(version);
+        PMDUtil.writeString(os, modelName, 20);
+        PMDUtil.writeString(os, comment, 256);
+        os.writeInt(vertCount);
+        System.out.print("vertCount out = "+vertCount);
+        for (int i = 0; i < vertCount; i++) {
+            PMDVertex tmpVertex = new PMDVertex();
+            getVertex(i, tmpVertex);
+            tmpVertex.writeToStream(os);
+        }
+        os.writeInt(faceVertCount);
+        for (int i = 0; i < faceVertCount; i += 3) {
+            os.writeShort(faceVertIndex[i+1]);
+            os.writeShort(faceVertIndex[i]);
+            os.writeShort(faceVertIndex[i+2]);
+        }
+        os.writeInt(materialCount);
+        for(PMDMaterial mat : material) {
+            mat.writeToStream(os);
+        }
+        boneList.writeToStream(os);
+        ikList.writeToStream(os);
+        os.writeShort(skinCount);
+        for(PMDSkinData skin : skinData) {
+            skin.writeToStream(os);
+        }
+        skinDispList.writeToStream(os);
+        boneDispNameList.writeToStream(os);
+        boneDispList.writeToStream(os);
+        headerEnglish.writeToStream(os);
+        toonTextureList.writeToStream(os);
+        rigidBodyList.writeToStream(os);
+        jointList.writeToStream(os);
+        
+    }    
     public PMDVertex getVertex(int i) {
         return getVertex(i, new PMDVertex());
     }

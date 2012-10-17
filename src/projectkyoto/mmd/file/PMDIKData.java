@@ -29,9 +29,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -39,14 +39,15 @@ import java.io.Serializable;
  *
  * @author kobayasi
  */
-public class PMDIKData implements Serializable{
+public class PMDIKData implements Serializable {
+
     private int ikBoneIndex;
     private int ikTargetBoneIndex;
     private int ikChainLength;
     private int iterations;
     private float controlWeight;
     private int[] ikChildBoneIndex;
-    
+
     public PMDIKData(DataInputStreamLittleEndian is) throws IOException {
         ikBoneIndex = is.readUnsignedShort();
         ikTargetBoneIndex = is.readUnsignedShort();
@@ -54,22 +55,33 @@ public class PMDIKData implements Serializable{
         iterations = is.readShort();
         controlWeight = is.readFloat();
         ikChildBoneIndex = new int[ikChainLength];
-        for(int i=0;i<ikChainLength;i++) {
+        for (int i = 0; i < ikChainLength; i++) {
             ikChildBoneIndex[i] = is.readUnsignedShort();
+        }
+    }
+
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeShort(ikBoneIndex);
+        os.writeShort(ikTargetBoneIndex);
+        os.writeByte(ikChainLength);
+        os.writeShort(iterations);
+        os.writeFloat(controlWeight);
+        for (int s : ikChildBoneIndex) {
+            os.writeShort(s);
         }
     }
 
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("{ikBoneIndex = "+ikBoneIndex);
-        sb.append("\n").append("ikTargetBoneIndex = "+ikTargetBoneIndex);
-        sb.append(" ikChainLength = "+ikChainLength);
-        sb.append(" \niterations = "+iterations);
-        sb.append("\ncontrolWeight = "+controlWeight);
+        sb.append("{ikBoneIndex = " + ikBoneIndex);
+        sb.append("\n").append("ikTargetBoneIndex = " + ikTargetBoneIndex);
+        sb.append(" ikChainLength = " + ikChainLength);
+        sb.append(" \niterations = " + iterations);
+        sb.append("\ncontrolWeight = " + controlWeight);
         sb.append("\n{");
-        for(int i=0;i<ikChainLength;i++) {
-            sb.append("ikChildBoneIndex = "+ikChildBoneIndex[i]);
+        for (int i = 0; i < ikChainLength; i++) {
+            sb.append("ikChildBoneIndex = " + ikChildBoneIndex[i]);
         }
         sb.append("}");
         return sb.toString();
@@ -122,5 +134,4 @@ public class PMDIKData implements Serializable{
     public void setIterations(int iterations) {
         this.iterations = iterations;
     }
-
 }

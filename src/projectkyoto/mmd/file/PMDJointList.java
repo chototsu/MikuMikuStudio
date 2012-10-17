@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -55,7 +56,12 @@ public class PMDJointList implements Serializable{
             jointArray[i] = new PMDJoint(is);
         }
     }
-
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeInt(jointCount);
+        for(PMDJoint joint : jointArray) {
+            joint.writeToStream(os);
+        }
+    }
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

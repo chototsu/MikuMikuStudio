@@ -88,13 +88,7 @@ public class PMDNode extends Node {
     PMDGeometry[] pmdGeometryArray;
     Map<String, Skin> skinMap = new HashMap<String, Skin>();
     Skin[] skinArray = new Skin[0];
-//    javax.vecmath.Vector3f skinPosArray[];
-//    javax.vecmath.Vector3f skinNormalArray[];
-    javax.vecmath.Vector3f skinPosArrayOrig[];
-//    javax.vecmath.Vector3f skinNormalArrayOrig[];
     FloatBuffer skinPosBuffer;
-//    float skinBoneWeightArray[];
-//    int skinBoneArray[];
     AssetManager assetManager;
     Matrix4f[] offsetMatrices;
     FloatBuffer offsetMatrixbuffer;
@@ -243,23 +237,6 @@ public class PMDNode extends Node {
         this.skinTargets = skinTargets;
         for (Skin skin : skinAray) {
             skinMap.put(skin.getSkinName(), skin);
-        }
-        int skinVertSize = skinVertexList.size();
-//        skinPosArray = new javax.vecmath.Vector3f[skinVertSize];
-//        skinNormalArray = new javax.vecmath.Vector3f[skinVertSize];
-        skinPosArrayOrig = new javax.vecmath.Vector3f[skinVertSize];
-//        skinNormalArrayOrig = new javax.vecmath.Vector3f[skinVertSize];
-//        skinBoneWeightArray = new float[skinVertSize];
-//        skinBoneArray = new int[skinVertSize * 2];
-        for (int i = 0; i < skinVertSize; i++) {
-            PMDVertex v = skinVertexList.get(i);
-            skinPosArrayOrig[i] = v.getPos();
-//            skinPosArray[i] = new javax.vecmath.Vector3f(v.getPos());
-//            skinNormalArrayOrig[i] = v.getNormal();
-//            skinNormalArray[i] = new javax.vecmath.Vector3f(v.getNormal());
-//            skinBoneWeightArray[i] = (float) v.getBoneWeight() / 100f;
-//            skinBoneArray[i * 2] = v.getBoneNum1();
-//            skinBoneArray[i * 2 + 1] = v.getBoneNum2();
         }
     }
 

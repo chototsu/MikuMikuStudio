@@ -31,6 +31,7 @@
  */
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import javax.vecmath.Vector3f;
@@ -60,5 +61,22 @@ public class PMDUtil {
         bb.putFloat(v.y);
         bb.putFloat(v.z);
         return v;
+    }
+    public static void writeString(DataOutput os, String s, int len) throws IOException {
+        byte[] buf = s.getBytes("Shift_JIS");
+        int l = buf.length;
+        if (l > len) {
+            os.write(buf, 0, len);
+        } else {
+            os.write(buf);
+            for(;l < len;l++) {
+                os.writeByte(0);
+            }
+        }
+    }
+    public static void writeVector3f(DataOutput os, Vector3f v) throws IOException{
+        os.writeFloat(v.x);
+        os.writeFloat(v.y);
+        os.writeFloat(-v.z);
     }
 }

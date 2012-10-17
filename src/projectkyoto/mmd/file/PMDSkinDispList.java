@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -47,6 +48,12 @@ public class PMDSkinDispList implements Serializable{
         skinIndexArray = new short[skinDispCount];
         for(int i=0;i<skinDispCount;i++) {
             skinIndexArray[i] = is.readShort();
+        }
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeByte(skinDispCount);
+        for(short s : skinIndexArray) {
+            os.writeShort(s);
         }
     }
 

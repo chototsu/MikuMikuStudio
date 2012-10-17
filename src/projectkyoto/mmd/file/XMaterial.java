@@ -32,6 +32,7 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -52,6 +53,12 @@ public class XMaterial implements Serializable{
         power = is.readFloat();
         specularColor = new XColorRGB(is);
         ambientColor = new XColorRGB(is);
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        faceColor.writeToStream(os);
+        os.writeFloat(power);
+        specularColor.writeToStream(os);
+        ambientColor.writeToStream(os);
     }
 
     @Override

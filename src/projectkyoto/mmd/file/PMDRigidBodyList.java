@@ -24,6 +24,7 @@
  */
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -46,6 +47,12 @@ public class PMDRigidBodyList implements Serializable{
         rigidBodyArray = new PMDRigidBody[rigidBodyCount];
         for (int i = 0; i < rigidBodyCount; i++) {
             rigidBodyArray[i] = new PMDRigidBody(is);
+        }
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeInt(rigidBodyCount);
+        for(PMDRigidBody rigidBody : rigidBodyArray) {
+            rigidBody.writeToStream(os);
         }
     }
 

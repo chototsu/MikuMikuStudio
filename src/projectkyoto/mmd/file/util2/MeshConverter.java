@@ -32,6 +32,11 @@
 
 package projectkyoto.mmd.file.util2;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -67,10 +72,11 @@ public class MeshConverter implements Serializable{
     HashMap<Integer, Integer> meshTmpVertMap = new HashMap<Integer, Integer>();
     HashMap<Integer, Integer> skinTmpVertMap = new HashMap<Integer, Integer>();
     public ByteBuffer interleavedBuffer;
-    public ArrayList<ByteBuffer> skinBufferList;
-    public ByteBuffer skinIndexBuffer;
     int currentVertIndex = 0;
     PMNData pmnData;
+    public MeshConverter() {
+        
+    }
     public MeshConverter(PMDModel model) {
         this.model = model;
         skinMeshData = new SkinMeshData(this, model);
@@ -111,7 +117,7 @@ public class MeshConverter implements Serializable{
             meshTmpVertMap.clear();
             PMDMaterial material = model.getMaterial()[materialNo];
             // find same material
-            MeshData meshData = new MeshData(model, maxBoneSize, material, currentVertIndex);
+            MeshData meshData = new MeshData(model, maxBoneSize, material);
             for(int meshIndex = meshDataList.size()-1;meshIndex >=0;meshIndex--) {
                 PMDMaterial material2 = meshDataList.get(meshIndex).getMaterial();
                 if (material.equals(material2)) {
@@ -137,7 +143,7 @@ public class MeshConverter implements Serializable{
                     addSkinTriangle(material, i1, i2, i3);
                 } else {
                     if (!meshData.addTriangle(this, i1, i2, i3)) {
-                        meshData = new MeshData(model, maxBoneSize, material, currentVertIndex);
+                        meshData = new MeshData(model, maxBoneSize, material);
                         meshTmpVertMap.clear();
                         meshDataList.add(meshData);
                         meshData.addTriangle(this, i1, i2, i3);
@@ -156,8 +162,13 @@ public class MeshConverter implements Serializable{
             MeshData md = it.next();
             if (md.getIndexList().size() == 0) {
                 it.remove();
+            } else {
+                md.createMesh();
             }
         }
+        skinMeshData.createSkinCommonVertData();
+        meshTmpVertMap = null;
+        skinTmpVertMap = null;
     }
     void removeUnusedSkinVertex() {
         HashSet<Integer> tmpSet = new HashSet<Integer>();
@@ -373,6 +384,31 @@ public class MeshConverter implements Serializable{
             size += 2 * md.getIndexList().size();
         }
         return size;
+    }
+    public void write(OutputStream os) throws IOException {
+        DataOutputStream dos = new DataOutputStream(os);
+        byte[] buf = new byte[1024 * 16];
+        dos.writeInt(meshDataList.size());
+        for(int i=0;i<meshDataList.size();i++) {
+            MeshData md = meshDataList.get(i);
+            md.write(dos, buf);
+        }
+        skinMeshData.write(dos, buf);
+        dos.flush();
+    }
+    public void read(InputStream is) throws IOException {
+        DataInputStream dis = new DataInputStream(is);
+        byte[] buf = new byte[1024 * 16];
+        meshDataList = new ArrayList<MeshData>();
+        int meshDataSize = dis.readInt();
+        for(int i=0;i<meshDataSize;i++) {
+            MeshData md = new MeshData(model, maxBoneSize, null);
+            md.read(dis, buf);
+            meshDataList.add(md);
+        }
+        skinMeshData = new SkinMeshData();
+        skinMeshData.model = model;
+        skinMeshData.read(dis, buf);
     }
     public int getMaxBoneSize() {
         return maxBoneSize;
