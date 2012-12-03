@@ -63,7 +63,10 @@ public class VMDMotion implements Serializable{
         location.y = is.readFloat();
         location.z = -is.readFloat();
         rotation = new Quat4f(is.readFloat(), is.readFloat(), -is.readFloat(), -is.readFloat());
-        is.read(interpolation);
+        int pos = 0;
+        while(pos < 64) {
+            pos += is.read(interpolation, pos, 64 - pos);
+        }
     }
 //    public VMDMotion readFromBuffer(ByteBuffer bb) {
 //        boneName = BufferUtil.readString(bb, 15);

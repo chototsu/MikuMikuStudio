@@ -53,25 +53,32 @@ public class PMDFileUtil {
 //            }
         }
     }
-    public static void writePMDCache1(PMDModel model, File file) throws IOException {
+    public static void writePMDCache1(PMDModel model, OutputStream os) throws IOException {
         MeshConverter mc = new MeshConverter(model);
         model.setFaceVertCount(0);
         model.setVertCount(0);
         DataOutputStreamLittleEndian dos = null;
+        dos = new DataOutputStreamLittleEndian(os);
+        // write header
+        PMDUtil.writeString(dos, PMDCACHE1HEADER, 20);
+        dos.writeInt(mc.getMaxBoneSize());
+        model.writeToStream(dos);
+        mc.convertMesh();
+        mc.write(dos);
+        dos.flush();
+    }
+    public static void writePMDCache1(PMDModel model, File file) throws IOException {
+        OutputStream os = null;
         try {
-            dos = new DataOutputStreamLittleEndian(new BufferedOutputStream(new FileOutputStream(file)));
-            // write header
-            PMDUtil.writeString(dos, PMDCACHE1HEADER, 20);
-            dos.writeInt(mc.getMaxBoneSize());
-            model.writeToStream(dos);
-            mc.convertMesh();
-            mc.write(dos);
+            os = new BufferedOutputStream(new FileOutputStream(file));
+            writePMDCache1(model, os);
         } finally {
-            if (dos != null) {
-                dos.close();
+            if (os != null) {
+                os.close();
             }
         }
     }
+    
     public static void createPmdcache1(File file) throws IOException{
         List<String> list = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(file.getName(), ".");
@@ -111,6 +118,47 @@ public class PMDFileUtil {
                 PMDModel pmdModel = new PMDModel(is);
                 writePMDCache1(pmdModel, file);
                 return;
+            }
+        } catch(NumberFormatException ex) {
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+        throw new FileNotFoundException(file.getAbsolutePath());
+    }
+    public static File getOriginalPMDFile(File file) throws IOException{
+        List<String> list = new ArrayList<String>();
+        StringTokenizer st = new StringTokenizer(file.getName(), ".");
+        while(st.hasMoreElements()) {
+            String s = st.nextToken();
+            list.add(s);
+        }
+        if (list.size() < 3) {
+            throw new FileNotFoundException(file.getAbsolutePath());
+        }
+        if (!list.get(list.size()-1).equals("pmdcache1")) {
+            throw new FileNotFoundException(file.getAbsolutePath());
+        }
+        File pmdFile = null;
+        FileInputStream is = null;
+        try {
+            int boneSize = Integer.parseInt(list.get(list.size()-2));
+            String fileName = file.getAbsolutePath();
+            int delmCount = 0;
+            for(int i=fileName.length()-1;i>0;i--) {
+                if (fileName.charAt(i) == '.') {
+                    delmCount++;
+                    if (delmCount == 2) {
+                        fileName = fileName.substring(0, i);
+                        pmdFile = new File(fileName);
+                        break;
+                    }
+                }
+            }
+            if (pmdFile != null) {
+                MeshConverter.DEFAULT_MAX_BONE_SIZE = boneSize;
+                return pmdFile;
             }
         } catch(NumberFormatException ex) {
         } finally {

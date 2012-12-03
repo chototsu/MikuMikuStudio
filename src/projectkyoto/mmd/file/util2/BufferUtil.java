@@ -145,8 +145,8 @@ public class BufferUtil {
             if (size > buf.length) {
                 size = buf.length;
             }
-            is.read(buf, 0, size);
-            bb.put(buf, 0, size);
+            int i = is.read(buf, 0, size);
+            bb.put(buf, 0, i);
         }
         bb.position(0);
         return bb;

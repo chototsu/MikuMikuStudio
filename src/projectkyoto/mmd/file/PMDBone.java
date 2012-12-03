@@ -174,4 +174,45 @@ public class PMDBone implements Serializable {
     public void setHiza(boolean hiza) {
         this.hiza = hiza;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PMDBone other = (PMDBone) obj;
+        if ((this.boneName == null) ? (other.boneName != null) : !this.boneName.equals(other.boneName)) {
+            return false;
+        }
+        if (this.parentBoneIndex != other.parentBoneIndex) {
+            return false;
+        }
+        if (this.tailPosBoneIndex != other.tailPosBoneIndex) {
+            return false;
+        }
+        if (this.boneType != other.boneType) {
+            return false;
+        }
+        if (this.targetBone != other.targetBone) {
+            return false;
+        }
+        if (this.boneHeadPos != other.boneHeadPos && (this.boneHeadPos == null || !this.boneHeadPos.equals(other.boneHeadPos))) {
+            return false;
+        }
+        if (this.hiza != other.hiza) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 79 * hash + (this.boneName != null ? this.boneName.hashCode() : 0);
+        return hash;
+    }
+    
 }

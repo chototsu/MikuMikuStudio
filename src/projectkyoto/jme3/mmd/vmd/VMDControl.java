@@ -46,6 +46,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.vecmath.Point3f;
 import javax.vecmath.Quat4f;
 import projectkyoto.jme3.mmd.PMDNode;
@@ -64,7 +65,7 @@ import projectkyoto.mmd.file.VMDSkin;
  * @author kobayasi
  */
 public class VMDControl extends AbstractControl {
-
+    private static final Logger logger = Logger.getLogger(VMDControl.class.getName());
     final PMDNode pmdNode;
     final VMDFile vmdFile;
     int currentFrameNo = 0;
@@ -81,6 +82,7 @@ public class VMDControl extends AbstractControl {
     final IKControl ikControl;
     TickListener tl = new TickListener();
     float currentTime = 0f;
+    boolean fixedPhysics = false;
 
     public VMDControl(PMDNode pmdNode, VMDFile vmdFile) {
         this(pmdNode, vmdFile, new PhysicsControl());
@@ -150,6 +152,7 @@ public class VMDControl extends AbstractControl {
         }
         initMotionMap();
         physicsControl.getWorld().setAccuracy(accuracy);
+        physicsControl.getWorld().setMaxSteps(100);
     }
 
     private void initMotionMap() {
@@ -276,14 +279,28 @@ public class VMDControl extends AbstractControl {
             return;
         }
         float time = currentTime + tpf;
-        if (accuracy <= 0) {
+        if (accuracy <= 0 || tpf > accuracy * 50f) {
+//            logger.info("tpf = "+tpf+" accuracy * 8 = "+(accuracy * 50f));
             controlUpdate2(tpf);
-        } else if (tpf < accuracy * 8) {
+            physicsControl.getWorld().resetRigidBodyPos();
+            physicsControl.getWorld().resetRigidBodyPos();
+        } else if (fixedPhysics || tpf < accuracy * 3) {
+            physicsControl.getWorld().setAccuracy(accuracy);
             physicsControl.update(tpf);
             physicsControl.getWorld().applyResultToBone();
             physicsControl.getWorld().getPhysicsSpace().distributeEvents();
         } else {
-            float accuracy2 = tpf / 8;
+            float accuracy2;
+            if (tpf > 0.1f) {
+                accuracy2 = tpf;
+            } else if (tpf > 0.05f) {
+                accuracy2 = tpf / 2;
+            } else {
+                accuracy2 = tpf / 3;
+            }
+            if (accuracy2 > 1f / 15f) {
+                accuracy2 = 1f / 15f;
+            }
             physicsControl.getWorld().setAccuracy(accuracy2);
             physicsControl.update(tpf);
             physicsControl.getWorld().applyResultToBone();
@@ -529,6 +546,15 @@ public class VMDControl extends AbstractControl {
 
     public int getLastFrameNo() {
         return lastFrameNo;
+    }
+
+    public boolean isFixedPhysics() {
+        return fixedPhysics;
+    }
+
+    public void setFixedPhysics(boolean fixedPhysics) {
+        this.fixedPhysics = fixedPhysics;
+        logger.info("fixedPhysics = "+fixedPhysics);
     }
 
     @Override

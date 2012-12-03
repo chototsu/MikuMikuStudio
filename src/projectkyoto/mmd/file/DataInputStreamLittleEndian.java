@@ -113,7 +113,10 @@ public class DataInputStreamLittleEndian extends FilterInputStream implements Da
 
     public final String readString(int size) throws IOException {
         byte[] buf = getBuf(size);
-        read(buf, 0, size);
+        int pos = 0;
+        while(pos < size) {
+            pos += read(buf, pos, size - pos);
+        }
         for (int i = 0; i < size; i++) {
             if (buf[i] == 0) {
                 return new String(buf, 0, i, "Shift_JIS").intern();
