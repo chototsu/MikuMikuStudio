@@ -1985,24 +1985,24 @@ public final class OGLESShaderRenderer implements Renderer {
         Image image = tex.getImage();
         if (image.isUpdateNeeded()) {
 //            logger.warning("setTexture: isUpdateNeeded");
-            Bitmap bmp = (Bitmap)image.getEfficentData();
-            if (bmp != null)
-            {
-            // Check if the bitmap got recycled, can happen after wakeup/restart
-            if ( bmp.isRecycled() )
-            {
-            // We need to reload the bitmap
-            DesktopAssetManager assetManager;
-            try {
-                assetManager = (DesktopAssetManager)((AndroidHarness)JmeSystem.getActivity()).getJmeApplication().getAssetManager();
-            } catch(ClassCastException ex) {
-                Application app = JmeSystem.getApplication();
-                assetManager = (DesktopAssetManager) app.getAssetManager();
-            }
-            assetManager.deleteFromCache((TextureKey)tex.getKey());
-            Texture textureReloaded = assetManager.loadTexture((TextureKey)tex.getKey());
-            image.setEfficentData( textureReloaded.getImage().getEfficentData());
-            }
+            if (image.getEfficentData() instanceof Bitmap) {
+                Bitmap bmp = (Bitmap) image.getEfficentData();
+                if (bmp != null) {
+                    // Check if the bitmap got recycled, can happen after wakeup/restart
+                    if (bmp.isRecycled()) {
+                        // We need to reload the bitmap
+                        DesktopAssetManager assetManager;
+                        try {
+                            assetManager = (DesktopAssetManager) ((AndroidHarness) JmeSystem.getActivity()).getJmeApplication().getAssetManager();
+                        } catch (ClassCastException ex) {
+                            Application app = JmeSystem.getApplication();
+                            assetManager = (DesktopAssetManager) app.getAssetManager();
+                        }
+                        assetManager.deleteFromCache((TextureKey) tex.getKey());
+                        Texture textureReloaded = assetManager.loadTexture((TextureKey) tex.getKey());
+                        image.setEfficentData(textureReloaded.getImage().getEfficentData());
+                    }
+                }
             }
             updateTexImageData(image, tex.getType(), tex.getMinFilter().usesMipMapLevels());
             setupTextureParams(tex);
@@ -2026,11 +2026,11 @@ public final class OGLESShaderRenderer implements Renderer {
 //             glEnable(type);
 //        }
 
-            if (context.boundTextureUnit != unit) {
-                if (verboseLogging) {
-                    logger.info("GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + " + unit + ")");
-                }
+        if (context.boundTextureUnit != unit) {
+            if (verboseLogging) {
+                logger.info("GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + " + unit + ")");
             }
+        }
         if (textures[unit] != image) {
 
             if (verboseLogging) {
