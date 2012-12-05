@@ -82,6 +82,7 @@ public class VMDControl extends AbstractControl {
     final IKControl ikControl;
     TickListener tl = new TickListener();
     float currentTime = 0f;
+    float currentTime2 = 0f;
     boolean fixedPhysics = false;
 
     public VMDControl(PMDNode pmdNode, VMDFile vmdFile) {
@@ -278,7 +279,11 @@ public class VMDControl extends AbstractControl {
         if (isPause()) {
             return;
         }
-        float time = currentTime + tpf;
+        currentTime2 += tpf;
+        tpf = currentTime2 - currentTime;
+        if (tpf <= 0) {
+            return;
+        }
         if (accuracy <= 0 || tpf > accuracy * 50f) {
 //            logger.info("tpf = "+tpf+" accuracy * 8 = "+(accuracy * 50f));
             controlUpdate2(tpf);
@@ -511,6 +516,7 @@ public class VMDControl extends AbstractControl {
         }
         currentFrameNo = frameNo;
         currentTime = frameNo / 30f;
+        currentTime2 = currentTime;
         prevTpf = 0;
         calcBonePosition();
         for (SkinList skinList : skinListArray) {
