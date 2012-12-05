@@ -139,7 +139,10 @@ public class OGLESContext implements JmeContext, GLSurfaceView.Renderer
      * @param eglConfigVerboseLogging if true show all found configs
      * @return GLSurfaceView The newly created view
      */    
-    public GLSurfaceView createView(AndroidInput view, ConfigType configType, boolean eglConfigVerboseLogging)
+    public GLSurfaceView createView(AndroidInput view, ConfigType configType, boolean eglConfigVerboseLogging) {
+        return createView(view, configType, eglConfigVerboseLogging, false);
+    }
+    public GLSurfaceView createView(AndroidInput view, ConfigType configType, boolean eglConfigVerboseLogging, boolean antialias)
     {                    
         // Start to set up the view
         this.view = view;    
@@ -169,7 +172,7 @@ public class OGLESContext implements JmeContext, GLSurfaceView.Renderer
             }
                             
             // Create a config chooser
-            AndroidConfigChooser configChooser = new AndroidConfigChooser(configType, eglConfigVerboseLogging);
+            AndroidConfigChooser configChooser = new AndroidConfigChooser(configType, eglConfigVerboseLogging, antialias);
             // Init chooser
             if (!configChooser.findConfig(egl, display))
             {
