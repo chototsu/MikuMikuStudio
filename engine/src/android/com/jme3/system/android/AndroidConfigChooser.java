@@ -23,6 +23,7 @@ public class AndroidConfigChooser implements EGLConfigChooser
     protected EGLConfig fastestConfig = null;
     protected EGLConfig choosenConfig = null;
     protected ConfigType type;
+    protected boolean antialias = false;
     protected int pixelFormat;
     
     protected boolean verbose = false;
@@ -52,6 +53,12 @@ public class AndroidConfigChooser implements EGLConfigChooser
         this.type = type;
         this.verbose = verbose;
     }
+    public AndroidConfigChooser(ConfigType type, boolean verbose, boolean antialias)
+    {
+        this.type = type;
+        this.verbose = verbose;
+        this.antialias = antialias;
+    }
         
     /**
      * Gets called by the GLSurfaceView class to return the best config
@@ -72,33 +79,54 @@ public class AndroidConfigChooser implements EGLConfigChooser
      */
     public boolean findConfig(EGL10 egl, EGLDisplay display)
     {           
-        
+        logger.info("findConfig antialias = "+antialias);
         if (type == ConfigType.BEST)
         {        	
-        	ComponentSizeChooser compChooser = new ComponentSizeChooser(8, 8, 8, 8, 32, 0);
+            if (!antialias) {
+        	ComponentSizeChooser compChooser = new ComponentSizeChooserNormal(8, 8, 8, 8, 32, 0);
         	choosenConfig = compChooser.chooseConfig(egl, display);
 
         	if (choosenConfig == null)
         	{
-                compChooser = new ComponentSizeChooser(8, 8, 8, 0, 32, 0);
+                compChooser = new ComponentSizeChooserNormal(8, 8, 8, 0, 32, 0);
                 choosenConfig = compChooser.chooseConfig(egl, display);
                 if (choosenConfig == null)
                 {
-                    compChooser = new ComponentSizeChooser(8, 8, 8, 8, 16, 0);
+                    compChooser = new ComponentSizeChooserNormal(8, 8, 8, 8, 16, 0);
                     choosenConfig = compChooser.chooseConfig(egl, display);
                     if (choosenConfig == null)
                     {
-                        compChooser = new ComponentSizeChooser(8, 8, 8, 0, 16, 0);
+                        compChooser = new ComponentSizeChooserNormal(8, 8, 8, 0, 16, 0);
                         choosenConfig = compChooser.chooseConfig(egl, display);
                     }
                 }
         	}
+            } else {
+        	ComponentSizeChooser compChooser = new ComponentSizeChooserNvAntialias(8, 8, 8, 8, 32, 0);
+        	choosenConfig = compChooser.chooseConfig(egl, display);
+
+        	if (choosenConfig == null)
+        	{
+//                compChooser = new ComponentSizeChooser(8, 8, 8, 0, 32, 0);
+                choosenConfig = chooseConfigAntialias(egl, display,8, 8, 8, 0, 32, 0);
+                if (choosenConfig == null)
+                {
+//                    compChooser = new ComponentSizeChooser(8, 8, 8, 8, 16, 0);
+                    choosenConfig = chooseConfigAntialias(egl, display,8, 8, 8, 8, 16, 0);
+                    if (choosenConfig == null)
+                    {
+//                        compChooser = new ComponentSizeChooser(8, 8, 8, 0, 16, 0);
+                        choosenConfig = chooseConfigAntialias(egl, display,8, 8, 8, 0, 16, 0);
+                    }
+                }
+        	}
+            }
         	
             logger.info("JME3 using best EGL configuration available here: ");
         }
         else
         {
-        	ComponentSizeChooser compChooser = new ComponentSizeChooser(5, 6, 5, 0, 16, 0);
+        	ComponentSizeChooser compChooser = new ComponentSizeChooserNormal(5, 6, 5, 0, 16, 0);
         	choosenConfig = compChooser.chooseConfig(egl, display);
             logger.info("JME3 using fastest EGL configuration available here: ");
         }
@@ -119,7 +147,44 @@ public class AndroidConfigChooser implements EGLConfigChooser
             return false;
         }        
     }
-    
+    private EGLConfig chooseConfigAntialias(EGL10 egl, EGLDisplay display,int redSize, int greenSize, int blueSize,
+                int alphaSize, int depthSize, int stencilSize) {
+        logger.info("chooseConfigAntialias");
+        BaseConfigChooser cc = new ComponentSizeChooserNvAntialias(
+                redSize,
+                greenSize,
+                blueSize,
+                alphaSize,
+                depthSize,
+                stencilSize);
+        EGLConfig config = cc.chooseConfig(egl, display);
+        if (config == null) {
+            cc = new ComponentSizeChooserAntialiasNormal(
+                    redSize,
+                    greenSize,
+                    blueSize,
+                    alphaSize,
+                    depthSize,
+                    stencilSize);
+            config = cc.chooseConfig(egl, display);
+            if (config == null) {
+                cc = new ComponentSizeChooserNormal(
+                        redSize,
+                        greenSize,
+                        blueSize,
+                        alphaSize,
+                        depthSize,
+                        stencilSize);
+                config = cc.chooseConfig(egl, display);
+                logger.info("chooseConfigAntialias failed");
+            } else {
+                logger.info("chooseConfigAntialias normal");
+            }
+        } else {
+            logger.info("chooseConfigAntialias nVidia");
+        }
+        return config;
+    }
     
     private int getPixelFormat(EGLConfig conf, EGLDisplay display, EGL10 egl)
     {
@@ -289,17 +354,18 @@ public class AndroidConfigChooser implements EGLConfigChooser
      */
     private class ComponentSizeChooser extends BaseConfigChooser 
     {
-        public ComponentSizeChooser(int redSize, int greenSize, int blueSize,
+        public ComponentSizeChooser(int[] configSpec, int redSize, int greenSize, int blueSize,
                 int alphaSize, int depthSize, int stencilSize) 
         {
-            super(new int[] {
+            super(configSpec
+                    /*new int[] {
                     EGL10.EGL_RED_SIZE, redSize,
                     EGL10.EGL_GREEN_SIZE, greenSize,
                     EGL10.EGL_BLUE_SIZE, blueSize,
                     EGL10.EGL_ALPHA_SIZE, alphaSize,
                     EGL10.EGL_DEPTH_SIZE, depthSize,
                     EGL10.EGL_STENCIL_SIZE, stencilSize,
-                    EGL10.EGL_NONE});
+                    EGL10.EGL_NONE}*/);
             mValue = new int[1];
             mRedSize = redSize;
             mGreenSize = greenSize;
@@ -308,7 +374,6 @@ public class AndroidConfigChooser implements EGLConfigChooser
             mDepthSize = depthSize;
             mStencilSize = stencilSize;
        }
-
         @Override
         public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display, EGLConfig[] configs) 
         {
@@ -357,8 +422,64 @@ public class AndroidConfigChooser implements EGLConfigChooser
         protected int mDepthSize;
         protected int mStencilSize;
     }
-    
-    
-    
+    private class ComponentSizeChooserNormal extends ComponentSizeChooser {
+        public ComponentSizeChooserNormal(int redSize, int greenSize, int blueSize,
+                int alphaSize, int depthSize, int stencilSize) {
+            super(
+                    new int[] {
+                    EGL10.EGL_RED_SIZE, redSize,
+                    EGL10.EGL_GREEN_SIZE, greenSize,
+                    EGL10.EGL_BLUE_SIZE, blueSize,
+                    EGL10.EGL_ALPHA_SIZE, alphaSize,
+                    EGL10.EGL_DEPTH_SIZE, depthSize,
+                    EGL10.EGL_STENCIL_SIZE, stencilSize,
+                    EGL10.EGL_RENDERABLE_TYPE, 4 /* EGL_OPENGL_ES2_BIT */,
+                    EGL10.EGL_NONE},
+                    redSize, greenSize, blueSize, 
+                    alphaSize, depthSize, stencilSize);
+        }
+    }
+    private class ComponentSizeChooserNvAntialias extends ComponentSizeChooser {
+        static final int EGL_COVERAGE_BUFFERS_NV = 0x30E0;
+        static final int EGL_COVERAGE_SAMPLES_NV = 0x30E1;
+        public ComponentSizeChooserNvAntialias(int redSize, int greenSize, int blueSize,
+                int alphaSize, int depthSize, int stencilSize) {
+            super(
+                    new int[] {
+                    EGL10.EGL_RED_SIZE, redSize,
+                    EGL10.EGL_GREEN_SIZE, greenSize,
+                    EGL10.EGL_BLUE_SIZE, blueSize,
+                    EGL10.EGL_ALPHA_SIZE, alphaSize,
+                    EGL10.EGL_DEPTH_SIZE, depthSize,
+                    EGL10.EGL_STENCIL_SIZE, stencilSize,
+                    EGL10.EGL_RENDERABLE_TYPE, 4 /* EGL_OPENGL_ES2_BIT */,
+                    EGL_COVERAGE_BUFFERS_NV, 1 /* true */,
+                    EGL_COVERAGE_SAMPLES_NV, 2, // always 5 in practice on tegra 2            
+                    EGL10.EGL_NONE},
+                    redSize, greenSize, blueSize, 
+                    alphaSize, depthSize, stencilSize);
+        }
+    }
+    private class ComponentSizeChooserAntialiasNormal extends ComponentSizeChooser {
+        static final int EGL_COVERAGE_BUFFERS_NV = 0x30E0;
+        static final int EGL_COVERAGE_SAMPLES_NV = 0x30E1;
+        public ComponentSizeChooserAntialiasNormal(int redSize, int greenSize, int blueSize,
+                int alphaSize, int depthSize, int stencilSize) {
+            super(
+                    new int[] {
+                    EGL10.EGL_RED_SIZE, redSize,
+                    EGL10.EGL_GREEN_SIZE, greenSize,
+                    EGL10.EGL_BLUE_SIZE, blueSize,
+                    EGL10.EGL_ALPHA_SIZE, alphaSize,
+                    EGL10.EGL_DEPTH_SIZE, depthSize,
+                    EGL10.EGL_STENCIL_SIZE, stencilSize,
+                    EGL10.EGL_RENDERABLE_TYPE, 4 /* EGL_OPENGL_ES2_BIT */,
+                    EGL10.EGL_SAMPLE_BUFFERS, 1 /* true */,
+                    EGL10.EGL_SAMPLES, 2,
+                    EGL10.EGL_NONE},
+                    redSize, greenSize, blueSize, 
+                    alphaSize, depthSize, stencilSize);
+        }
+    }
     
 }
