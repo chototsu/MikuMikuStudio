@@ -134,7 +134,7 @@ vec2 computeLighting(in vec3 wvPos, in vec3 wvNorm, in vec3 wvViewDir, in vec3 w
 vec2 Optics_SphereCoord2(in vec3 dir){
     float dzplus1 = dir.z + 1.0;
     float m = 2.0 * sqrt(dir.x * dir.x + dir.y * dir.y + dzplus1 * dzplus1);
-    return vec2(dir.x / m + 0.5, dir.y / m + 0.5);
+    return vec2(dir.x / m + 0.5, 0.5 - dir.y / m);
 }
 
 void main(){
@@ -241,30 +241,24 @@ void main(){
 //                       SpecularSum2 * specularColor * light.y ) * 0.8;
        vec4 output_color = (((AmbientSum + DiffuseSum) * diffuseColor)  +
                        SpecularSum2 * specularColor * light.y );
-// output_color=vec4(0);
 #ifdef SPHERE_MAP_A
         vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
-        v2.y = 1.0 - v2.y;
         output_color.xyz +=  (texture2D(m_SphereMap_A, v2).xyz);
-        // output_color.xyz = vec3(normalize(refVec.xyz).x);
 #endif
 #ifdef SPHERE_MAP_H
         vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
-        v2.y = 1.0 - v2.y;
         output_color.xyz *= (texture2D(m_SphereMap_H, v2).xyz);
 #endif
 
     #endif
 #ifdef SPHERE_MAP_A
-        vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
-        v2.y = 1.0 - v2.y;
+        vec2 v2 = Optics_SphereCoord(refVec.xyz);
         output_color.xyz +=  (texture2D(m_SphereMap_A, v2).xyz);
-        // output_color.xyz = vec3(normalize(refVec.xyz).x);
 #endif
 #ifdef SPHERE_MAP_H
-        vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
-        v2.y = 1.0 - v2.y;
+        vec2 v2 = Optics_SphereCoord(refVec.xyz);
         output_color.xyz *= (texture2D(m_SphereMap_H, v2).xyz);
+
 #endif
     output_color.a = alpha;
     gl_FragColor = output_color;

@@ -77,10 +77,10 @@ attribute vec3 inNormal;
      * varying refVec
      */
     void computeRef(in vec4 position, in vec4 normal){
-        vec3 worldPos = (g_WorldMatrix * vec4(normalize(position.xyz),1.0)).xyz;
+        vec3 worldPos = (g_WorldMatrix * position).xyz;
 
-        vec3 I = normalize( g_CameraPosition - worldPos  ).xyz;
-        vec3 N = normalize( (g_WorldMatrix * vec4(normalize(normal.xyz), 0.0)).xyz );
+        vec3 I = normalize( worldPos - g_CameraPosition    ).xyz;
+        vec3 N = normalize( (g_WorldMatrix * normal).xyz );
 
         refVec.xyz = reflect(I, N);
         refVec.w   = 1.0;//m_FresnelParams.x + m_FresnelParams.y * pow(1.0 + dot(I, N), m_FresnelParams.z);
