@@ -375,10 +375,10 @@ public final class OGLESShaderRenderer implements Renderer {
         String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);
         logger.log(Level.INFO, "GL_EXTENSIONS: {0}", extensions);
 
-        GLES20.glGetIntegerv(GLES20.GL_COMPRESSED_TEXTURE_FORMATS, intBuf16);
-        for (int i = 0; i < intBuf16.limit(); i++) {
-            logger.log(Level.INFO, "Compressed Texture Formats: {0}", intBuf16.get(i));
-        }
+//        GLES20.glGetIntegerv(GLES20.GL_COMPRESSED_TEXTURE_FORMATS, intBuf16);
+//        for (int i = 0; i < intBuf16.limit(); i++) {
+//            logger.log(Level.INFO, "Compressed Texture Formats: {0}", intBuf16.get(i));
+//        }
 
         if (extensions.contains("GL_OES_texture_npot")) {
             powerOf2 = true;
