@@ -290,6 +290,14 @@ public class AndroidInput extends GLSurfaceView implements TouchInput,
                     touch.setTime(event.getEventTime());
                     touch.setPressure(event.getPressure(p));
                     processEvent(touch);
+
+                    Vector2f lastPos = lastPositions.get(event.getPointerId(p));
+                    if (lastPos == null)
+                    {
+                        lastPos = new Vector2f(event.getX(p), this.getHeight() - event.getY(p));
+                        lastPositions.put(event.getPointerId(p), lastPos);
+                    }
+                    lastPos.set(event.getX(p), this.getHeight() - event.getY(p));
                 }
                 
                 bWasHandled = true;
