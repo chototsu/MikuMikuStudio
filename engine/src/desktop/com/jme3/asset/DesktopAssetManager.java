@@ -58,7 +58,7 @@ public class DesktopAssetManager implements AssetManager {
 
     private static final Logger logger = Logger.getLogger(AssetManager.class.getName());
 
-    private final AssetCache cache = new AssetCache();
+    private final SoftRefCache cache = new SoftRefCache();
     private final ImplHandler handler = new ImplHandler(this);
 
     private AssetEventListener eventListener = null;
@@ -208,17 +208,17 @@ public class DesktopAssetManager implements AssetManager {
         AssetKey smartKey = null;
         Object o = null;
         if (key.shouldCache()){
-            if (key.useSmartCache()){
-                SmartAssetInfo smartInfo = cache.getFromSmartCache(key);
-                if (smartInfo != null){
-                    smartKey = smartInfo.smartKey.get();
-                    if (smartKey != null){
-                        o = smartInfo.asset;
-                    }
-                }
-            }else{
+//            if (key.useSmartCache()){
+//                SmartAssetInfo smartInfo = cache.getFromSmartCache(key);
+//                if (smartInfo != null){
+//                    smartKey = smartInfo.smartKey.get();
+//                    if (smartKey != null){
+//                        o = smartInfo.asset;
+//                    }
+//                }
+//            }else{
                 o = cache.getFromCache(key);
-            }
+//            }
         }
         if (o == null){
             AssetLoader loader = handler.aquireLoader(key);
