@@ -48,7 +48,7 @@ public class PMDModelKey extends ModelKey{
 
     @Override
     public boolean shouldCache() {
-        return false;
+        return true;
     }
     
 }

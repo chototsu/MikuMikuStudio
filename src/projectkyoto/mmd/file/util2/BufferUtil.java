@@ -28,13 +28,21 @@ import javax.vecmath.Quat4f;
  */
 public class BufferUtil {
     public static File tmpDir = null;
+    public static boolean useTempFile = false;
     private static final Logger logger = Logger.getLogger(BufferUtil.class.getName());
-    public static ByteBuffer createByteBuffer2(int size) {
+    public static ByteBuffer createByteBuffer(int size) {
+        if (useTempFile && tmpDir != null) {
+            return createByteBufferFile(size);
+        } else {
+            return createByteBufferHeap(size);
+        }
+    }
+    private static ByteBuffer createByteBufferHeap(int size) {
         ByteBuffer bb = ByteBuffer.allocateDirect(size);
         bb.order(ByteOrder.nativeOrder());
         return bb;
     }
-    public static ByteBuffer createByteBuffer(int size) {
+    private static ByteBuffer createByteBufferFile(int size) {
         try {
             if (tmpDir != null && logger.isLoggable(Level.INFO)) {
                 logger.log(Level.INFO, "tmpDir = {0}", tmpDir.getAbsoluteFile());

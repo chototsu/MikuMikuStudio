@@ -638,9 +638,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                     throw ex;
                 }
                 errFlag = true;
-                if (ai.getManager() instanceof DesktopAssetManager) {
-                    ((DesktopAssetManager)ai.getManager()).clearCache();
-                }
+//                if (ai.getManager() instanceof DesktopAssetManager) {
+//                    ((DesktopAssetManager)ai.getManager()).clearCache();
+//                }
                 System.gc();
                 System.runFinalization();
             }

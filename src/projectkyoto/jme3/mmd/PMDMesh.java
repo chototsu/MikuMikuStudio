@@ -86,7 +86,7 @@ public class PMDMesh extends Mesh {
     }
 
     @Override
-    public PMDMesh clone() {
+    public synchronized PMDMesh clone() {
         PMDMesh newMesh = (PMDMesh) super.clone();
         boneMatricesParamIndex = -1;
         newMesh.boneMatrixArray = new Matrix4f[boneMatrixArray.length];
@@ -96,6 +96,11 @@ public class PMDMesh extends Mesh {
         newMesh.setBuffer(getBuffer(VertexBuffer.Type.BoneIndex));
         newMesh.setBuffer(getBuffer(VertexBuffer.Type.TexCoord));
         releaseSoftwareSkinningBufferes();
+        FloatBuffer newBoneMatrixBuffer = BufferUtils.createFloatBuffer(boneMatrixBuffer.capacity());
+        boneMatrixBuffer.position(0);
+        newBoneMatrixBuffer.put(boneMatrixBuffer);
+        newBoneMatrixBuffer.position(0);
+        newMesh.setBoneMatrixBuffer(newBoneMatrixBuffer);
         return newMesh;
     }
 

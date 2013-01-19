@@ -104,6 +104,7 @@ public class PMDNode extends Node {
     Node rigidBodyNode;
     Node jointNode;
     boolean glslSkinning = true;
+    private PMDNode original = null;
 
     @Override
     public void read(JmeImporter e) throws IOException {
@@ -911,11 +912,17 @@ boolean setBoneMatricesFlag = true;
 //            newPMDNode.offsetMatrices = new Matrix4f[offsetMatrices.length];
 //            newPMDNode.setGlslSkinning(newPMDNode.glslSkinning);
             newPMDNode.skeleton.updateWorldVectors();
+            newPMDNode.offsetMatrixbuffer = null;
             newPMDNode.calcOffsetMatrices();
             newPMDNode.updateSkinBackData();
             newPMDNode.update();
             newPMDNode.updateSkinBackData();
             newPMDNode.update();
+            if (original != null) {
+                newPMDNode.original = original;
+            } else {
+                newPMDNode.original = this;
+            }
             return newPMDNode;
         } catch(CloneNotSupportedException ex) {
             throw new PMDException(ex);

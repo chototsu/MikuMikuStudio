@@ -115,7 +115,7 @@ public class PMDSkinMesh extends Mesh {
         return bound;
     }
     @Override
-    public PMDSkinMesh clone() {
+    public synchronized PMDSkinMesh clone() {
         PMDSkinMesh newMesh = (PMDSkinMesh)super.clone();
 //        newMesh.boneMatrixArray = new Matrix4f[boneMatrixArray.length];
         newMesh.skinvb2 = new VertexBuffer(VertexBuffer.Type.Position);
@@ -139,6 +139,11 @@ public class PMDSkinMesh extends Mesh {
 //        skinnb1.setupData(VertexBuffer.Usage.Stream, 3, VertexBuffer.Format.Float, skinnfb1);
 //        newMesh.clearBuffer(VertexBuffer.Type.Normal);
 //        newMesh.setBuffer(skinnb1);
+        FloatBuffer newBoneMatrixBuffer = BufferUtils.createFloatBuffer(boneMatrixBuffer.capacity());
+        boneMatrixBuffer.position(0);
+        newBoneMatrixBuffer.put(boneMatrixBuffer);
+        newBoneMatrixBuffer.position(0);
+        newMesh.setBoneMatrixBuffer(newBoneMatrixBuffer);
         return newMesh;
     }
 

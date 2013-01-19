@@ -46,6 +46,9 @@ public class VMDSkin implements Serializable{
     private float weight;
 
     public VMDSkin(DataInputStreamLittleEndian is) throws IOException {
+        readFromStream(is);
+    }
+    public final void readFromStream(DataInputStreamLittleEndian is) throws IOException {
         skinName = is.readString(15);
         flameNo = is.readInt();
         weight = is.readFloat();

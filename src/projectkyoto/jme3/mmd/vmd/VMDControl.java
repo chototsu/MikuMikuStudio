@@ -75,7 +75,7 @@ public class VMDControl extends AbstractControl {
     SkinList[] skinListArray;
     int lastFrameNo = 0;
     boolean pause = false;
-    static final VMDMotionComparator vmc = new VMDMotionComparator();
+    final VMDMotionComparator vmc = new VMDMotionComparator();
     static final VMDSkinComparator vmsc = new VMDSkinComparator();
     final PhysicsControl physicsControl;
     int boneEnabled[];
@@ -157,7 +157,11 @@ public class VMDControl extends AbstractControl {
     }
 
     private void initMotionMap() {
-        for (VMDMotion m : vmdFile.getMotionArray()) {
+        VMDMotion m = new VMDMotion();
+        for(int motionNo = 0;motionNo < vmdFile.getMotionCount();motionNo++) {
+            vmdFile.getMotion(m, motionNo);
+//        }
+//        for (VMDMotion m : vmdFile.getMotionArray()) {
             BoneMotionList motionList = motionMap.get(m.getBoneName());
             if (motionList == null) {
                 motionList = new BoneMotionList();
@@ -172,7 +176,7 @@ public class VMDControl extends AbstractControl {
                 motionList.boneIndex = pmdNode.getSkeleton().getBoneIndex(motionList.bone);
                 motionMap.put(m.getBoneName(), motionList);
             }
-            motionList.add(m);
+            motionList.add(motionNo);
             if (m.getFrameNo() > lastFrameNo) {
                 lastFrameNo = m.getFrameNo();
             }
@@ -201,7 +205,12 @@ public class VMDControl extends AbstractControl {
         for (BoneMotionList ml : motionMap.values()) {
             Collections.sort(ml, vmc);
             ml.setCurrentCount(0);
+//            for(int i=0;i<ml.size();i++) {
+//                System.out.print(ml.getVMDMotion(tmpMotion, i).getFrameNo());
+//                System.out.print(" ");
+//            }
         }
+        System.out.println();
         for (VMDSkin skin : vmdFile.getSkinArray()) {
             SkinList skinList = skinMap.get(skin.getSkinName());
             if (skinList == null) {
@@ -369,7 +378,7 @@ public class VMDControl extends AbstractControl {
             Bone bone = bml.bone;
             if (bone != null && boneEnabled[bml.boneIndex] == 1) {
                 if (bml.size() - 1 < bml.currentCount) {
-                    VMDMotion m1 = bml.get(bml.size() - 1);
+                    VMDMotion m1 = bml.getVMDMotion(tmpMotion2, bml.size() - 1);
                     Quat4f q = m1.getRotation();
                     if (true || bml.boneType == 0 || bml.boneType == 2 || bml.boneType == 1 || bml.boneType == 4) {
                         bone.getLocalRotation().set(q.x, q.y, q.z, q.w);
@@ -380,18 +389,18 @@ public class VMDControl extends AbstractControl {
                         bone.getLocalPosition().set(v.x + p.x, v.y + p.y, v.z + p.z);
                     }
                 } else {
-                    VMDMotion m1, m2;
+                    VMDMotion m1 = tmpMotion2, m2 = tmpMotion3;
                     int count = bml.currentCount;
                     for (;;) {
-                        VMDMotion m = bml.m2;
+                        VMDMotion m = tmpMotion.set(bml.m2);
                         if (m.getFrameNo() > currentFrameNo) {
-                            m1 = bml.m1;
-                            m2 = bml.m2;
+                            m1.set(bml.m1);
+                            m2.set(bml.m2);
                             break;
                         }
                         if (count >= bml.size()) {
-                            m1 = bml.m1;
-                            m2 = bml.m2;
+                            m1.set(bml.m1);
+                            m2.set(bml.m2);
                             break;
                         }
                         count++;
@@ -506,7 +515,7 @@ public class VMDControl extends AbstractControl {
         for (BoneMotionList bml : boneMotionListArray) {
             int count = bml.size() - 1;
             for (int i = 0; i < bml.size(); i++) {
-                VMDMotion m = bml.get(i);
+                VMDMotion m = bml.getVMDMotion(tmpMotion, i);
                 if (m.getFrameNo() > frameNo) {
                     count = i;
                     break;
@@ -609,60 +618,69 @@ public class VMDControl extends AbstractControl {
         this.accuracy = accuracy;
         physicsControl.getWorld().setAccuracy(accuracy);
     }
-    
-}
-class BoneMotionList extends ArrayList<VMDMotion> {
+    private final VMDMotion tmpMotion = new VMDMotion(); 
+    private final VMDMotion tmpMotion2 = new VMDMotion(); 
+    private final VMDMotion tmpMotion3 = new VMDMotion(); 
+    class BoneMotionList extends ArrayList<Integer> {
 
-    static final int IPTABLESIZE = 16;
-    String boneName;
-    Bone bone;
-    int boneIndex;
-    int currentCount;
-    VMDMotion m1,m2;
-    int boneType;
-    final float ipTable[][][] = new float[4][IPTABLESIZE][2];
-    int ipTableIndex = 0;
-    int frame1, frame2;
-    final float val1[] = new float[4];
-    final float val2[] = new float[4];
-
-    void setCurrentCount(int newCount) {
-        if (currentCount != newCount) {
-            currentCount = newCount;
-            if (newCount >= 0 && newCount < size()) {
-                IPUtil.createInterpolationTable(get(currentCount).getInterpolation(), ipTable);
+        static final int IPTABLESIZE = 16;
+        String boneName;
+        Bone bone;
+        int boneIndex;
+        int currentCount;
+        final VMDMotion m1 = new VMDMotion();
+        final VMDMotion m2 = new VMDMotion();
+        int boneType;
+        final float ipTable[][][] = new float[4][IPTABLESIZE][2];
+        int ipTableIndex = 0;
+        int frame1, frame2;
+        final float val1[] = new float[4];
+        final float val2[] = new float[4];
+        VMDMotion getVMDMotion(VMDMotion m, int i) {
+            vmdFile.getMotion(m, get(i));
+            return m;
+        }
+        void setCurrentCount(int newCount) {
+            if (currentCount != newCount) {
+                currentCount = newCount;
+                if (newCount >= 0 && newCount < size()) {
+                    IPUtil.createInterpolationTable(getVMDMotion(tmpMotion, currentCount).getInterpolation(), ipTable);
+                }
+            }
+            ipTableIndex = 0;
+            if (newCount == 0) {
+                getVMDMotion(m1, 0);
+                m2.set(m1);
+            } else if (newCount < size()) {
+                getVMDMotion(m1, newCount-1);
+                getVMDMotion(m2, newCount);
+            } else if (size() > 0) {
+                getVMDMotion(m1, size()-1);
+                m2.set(m1);
+            } else {
+//                m1 = null;
+//                m2 = null;
             }
         }
-        ipTableIndex = 0;
-        if (newCount == 0) {
-            m1 = get(0);
-            m2 = m1;
-        } else if (newCount < size()) {
-            m1 = get(newCount-1);
-            m2 = get(newCount);
-        } else if (size() > 0) {
-            m1 = get(size()-1);
-            m2 = m1;
-        } else {
-            m1 = null;
-            m2 = null;
+    }
+    class VMDMotionComparator implements Comparator<Integer> {
+        final VMDMotion o1 = new VMDMotion();
+        final VMDMotion o2 = new VMDMotion();
+        @Override
+        public int compare(Integer i1, Integer i2) {
+            vmdFile.getMotion(o1, i1);
+            vmdFile.getMotion(o2, i2);
+            if (o1.getFrameNo() < o2.getFrameNo()) {
+                return -1;
+            } else if (o1.getFrameNo() == o2.getFrameNo()) {
+                return 0;
+            } else {
+                return 1;
+            }
         }
     }
 }
 
-class VMDMotionComparator implements Comparator<VMDMotion> {
-
-    @Override
-    public int compare(VMDMotion o1, VMDMotion o2) {
-        if (o1.getFrameNo() < o2.getFrameNo()) {
-            return -1;
-        } else if (o1.getFrameNo() < o2.getFrameNo()) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-}
 
 class SkinList extends ArrayList<VMDSkin> {
 

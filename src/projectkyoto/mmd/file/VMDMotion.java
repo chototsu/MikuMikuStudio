@@ -44,8 +44,9 @@ import projectkyoto.mmd.file.util2.BufferUtil;
  * @author kobayasi
  */
 public class VMDMotion implements Serializable{
-
+    protected VMDFile vmdFile;
     private String boneName; // char[15]
+    private short boneIndex;
     private int frameNo;
     private Point3f location;
     private Quat4f rotation;
@@ -54,9 +55,25 @@ public class VMDMotion implements Serializable{
         location = new Point3f();
         rotation = new Quat4f();
     }
-    public VMDMotion(DataInputStreamLittleEndian is) throws IOException {
+    public VMDMotion(VMDFile vmdFile, DataInputStreamLittleEndian is) throws IOException {
+        this.vmdFile = vmdFile;
+        readFromStream(is);
+    }
+    public final void readFromStream(DataInputStreamLittleEndian is) throws IOException {
         boneName = is.readString(15);
-//        System.out.println("boneName = "+boneName);
+        boneIndex = -1;
+//        for(int i=0;i<vmdFile.boneNames.size();i++) {
+//            if (boneName.equals(vmdFile.boneNames.get(i))) {
+//                boneIndex = (short)i;
+//                break;
+//            }
+//        }
+        boneIndex = (short)vmdFile.boneNames.indexOf(boneName);
+        if (boneIndex < 0) {
+            vmdFile.boneNames.add(boneName);
+//            boneIndex = (short)(vmdFile.boneNames.size() - 1);
+            boneIndex = (short)vmdFile.boneNames.indexOf(boneName);
+        }
         frameNo = is.readInt();
         location = new Point3f();
         location.x = is.readFloat();
@@ -68,20 +85,38 @@ public class VMDMotion implements Serializable{
             pos += is.read(interpolation, pos, 64 - pos);
         }
     }
-//    public VMDMotion readFromBuffer(ByteBuffer bb) {
+    public VMDMotion readFromBuffer(ByteBuffer bb) {
 //        boneName = BufferUtil.readString(bb, 15);
-//        frameNo = bb.getInt();
-//        BufferUtil.readPoint3f(bb, location);
-//        BufferUtil.readQuat4f(bb, rotation);
-//        bb.get(interpolation);
-//        return this;
-//    }
-//    public VMDMotion writeToBuffer(ByteBuffer bb) {
+        boneIndex = bb.getShort();
+        frameNo = bb.getInt();
+        BufferUtil.readPoint3f(bb, location);
+        BufferUtil.readQuat4f(bb, rotation);
+        bb.get(interpolation);
+        return this;
+    }
+    public VMDMotion writeToBuffer(ByteBuffer bb) {
+        int startPos = bb.position();
 //        BufferUtil.writeString(bb, boneName, 15);
-//        bb.putInt(frameNo);
-//        
-//        return this;
-//    }
+        bb.putShort(boneIndex);
+        bb.putInt(frameNo);
+        BufferUtil.writePoint3f(bb, location);
+        BufferUtil.writeQuat4f(bb, rotation);
+        bb.put(interpolation);
+        int endPos = bb.position();
+        if (endPos - startPos != 98) {
+            throw new RuntimeException("size = "+(endPos - startPos));
+        }
+        return this;
+    }
+    public VMDMotion set(VMDMotion m) {
+        boneIndex = m.boneIndex;
+        frameNo = m.frameNo;
+        location.set(m.location);
+        rotation.set(m.rotation);
+        System.arraycopy(m.interpolation, 0, interpolation, 0, 64);
+        vmdFile = m.vmdFile;
+        return m;
+    }
 
     @Override
     public String toString() {
@@ -100,7 +135,7 @@ public class VMDMotion implements Serializable{
     }
 
     public String getBoneName() {
-        return boneName;
+        return vmdFile.boneNames.get(boneIndex);
     }
 
     public void setBoneName(String boneName) {

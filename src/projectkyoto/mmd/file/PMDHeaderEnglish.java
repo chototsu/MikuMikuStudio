@@ -57,11 +57,12 @@ public class PMDHeaderEnglish implements Serializable {
             for (int i = 0; i < boneNameEnglish.length; i++) {
                 boneNameEnglish[i] = is.readString(20);
             }
-            skinNameEnglish = new String[model.getSkinCount() - 1];
-            for (int i = 0; i < skinNameEnglish.length; i++) {
-                skinNameEnglish[i] = is.readString(20);
+            if (model.getSkinCount() > 0) {
+                skinNameEnglish = new String[model.getSkinCount() - 1];
+                for (int i = 0; i < skinNameEnglish.length; i++) {
+                    skinNameEnglish[i] = is.readString(20);
+                }
             }
-
             dispNameEnglish = new String[model.getBoneDispNameList().getBoneDispNameCount()];
             for (int i = 0; i < dispNameEnglish.length; i++) {
                 dispNameEnglish[i] = is.readString(50);

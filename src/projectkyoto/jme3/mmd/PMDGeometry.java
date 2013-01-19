@@ -92,7 +92,7 @@ public class PMDGeometry extends Geometry {
     public PMDGeometry clone() {
         Mesh meshBackup = mesh;
         mesh = new Mesh();
-        PMDGeometry newPMDGeometry = (PMDGeometry)super.clone(false);
+        PMDGeometry newPMDGeometry = (PMDGeometry)super.clone(true);
         mesh = meshBackup;
 //        newPMDGeometry.setMesh(getMesh().clone());
         if (mesh instanceof PMDSkinMesh) {

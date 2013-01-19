@@ -32,6 +32,8 @@ package projectkyoto.jme3.mmd;
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetLoader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import projectkyoto.mmd.file.VMDFile;
 
 /**
@@ -39,12 +41,13 @@ import projectkyoto.mmd.file.VMDFile;
  * @author kobayasi
  */
 public class VMDLoader implements AssetLoader {
-
+    private static final Logger logger = Logger.getLogger(VMDLoader.class.getName());
     public VMDLoader() {
     }
 
     @Override
     public Object load(AssetInfo ai) throws IOException {
+        logger.log(Level.INFO, "load {0}", ai.getKey().getName());
         return new VMDFile(ai.openStream());
     }
 }

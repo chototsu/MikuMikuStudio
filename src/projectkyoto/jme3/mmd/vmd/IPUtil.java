@@ -50,7 +50,7 @@ public class IPUtil {
         return ((3 + 9 * p1 - 9 * p2) * t * t + (6 * p2 - 12 * p1) * t + 3 * p1);
     }
 
-    static float calcIp(final BoneMotionList bml, float x, int offset) {
+    static float calcIp(final VMDControl.BoneMotionList bml, float x, int offset) {
         if (x <= 0) {
             return 0f;
         }
