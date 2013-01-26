@@ -60,6 +60,7 @@ import java.util.logging.Logger;
  * @version $Id: Texture.java 4131 2009-03-19 20:15:28Z blaine.dev $
  */
 public abstract class Texture implements Asset, Savable, Cloneable {
+    private Texture original;
 
     public enum Type {
 
@@ -557,6 +558,11 @@ public abstract class Texture implements Asset, Savable, Cloneable {
 //        if (getTextureKey() != null) {
 //            rVal.setTextureKey(getTextureKey());
 //        }
+        if (original != null) {
+            rVal.original = original;
+        } else {
+            rVal.original = this;
+        }
         return rVal;
     }
 
