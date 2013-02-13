@@ -152,7 +152,7 @@ MaterialDef pmd {
 
         // VertexShader GLSL100 :   Common/MatDefs/Shadow/PreShadow.vert
         FragmentShader GLSL100 : Common/MatDefs/Shadow/PreShadow.frag
-        VertexShader GLSL100:   MatDefs/pmd/pmd.vert
+        VertexShader GLSL100:   MatDefs/pmd/PreShadow_pmd.vert
 
         WorldParameters {
             WorldViewProjectionMatrix
@@ -160,6 +160,7 @@ MaterialDef pmd {
         }
 
         Defines {
+            NUM_BONES : NumBones
             DIFFUSEMAP_ALPHA : DiffuseMap
             USE_HWSKINNING
         }

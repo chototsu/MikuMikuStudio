@@ -69,6 +69,9 @@ public class VMDControlMT extends AbstractControl {
     public VMDCallable getCallable() {
         return callable;
     }
+    public ScheduledThreadPoolExecutor getPool() {
+        return executor;
+    }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {

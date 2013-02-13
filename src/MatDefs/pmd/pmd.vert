@@ -122,7 +122,10 @@ vec2 computeLighting(in vec3 wvPos, in vec3 wvNorm, in vec3 wvViewDir, in vec4 w
      lightComputeDir(wvPos, g_LightColor, wvLightPos, lightDir);
 
      float diffuseFactor = lightComputeDiffuse(wvNorm, lightDir.xyz);
-     float specularFactor = lightComputeSpecular(wvNorm, wvViewDir, lightDir.xyz, m_Shininess);
+     float specularFactor = 0.0;
+     if (m_Shininess != 0.0) {
+        specularFactor = lightComputeSpecular(wvNorm, wvViewDir, lightDir.xyz, m_Shininess);
+     }
      //specularFactor *= step(0.01, diffuseFactor);
      return vec2(diffuseFactor, specularFactor) * vec2(lightDir.w);
   }
