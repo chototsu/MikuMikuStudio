@@ -1034,7 +1034,7 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
         Renderer r = rm.getRenderer();
 
         TechniqueDef techDef = technique.getDef();
-
+        r.setShaderWithoutUpdateUniforms(technique.getShader());
         if (techDef.getLightMode() == LightMode.MultiPass
                 && geom.getWorldLightList().size() == 0) {
             return;

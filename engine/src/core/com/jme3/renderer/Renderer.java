@@ -175,6 +175,7 @@ public interface Renderer {
      * @param shader The shader to use for rendering.
      */
     public void setShader(Shader shader);
+    public void setShaderWithoutUpdateUniforms(Shader shader);
 
     /**
      * Deletes a shader. This method also deletes

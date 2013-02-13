@@ -44,7 +44,6 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.math.Vector4f;
-import com.jme3.renderer.GL1Renderer;
 import com.jme3.renderer.Renderer;
 import com.jme3.shader.VarType;
 import com.jme3.texture.Texture;
@@ -279,9 +278,6 @@ public class MatParam implements Savable, Cloneable {
             }
             technique.updateUniformParam(getPrefixedName(), getVarType(), value, true);
         }
-        if (ffBinding != null && r instanceof GL1Renderer) {
-            ((GL1Renderer) r).setFixedFuncBinding(ffBinding, getValue());
-        }
     }
     void apply(Renderer r, Technique technique, int paramIndex) {
         TechniqueDef techDef = technique.getDef();
@@ -294,9 +290,6 @@ public class MatParam implements Savable, Cloneable {
                 value = getValue();
             }
             technique.updateUniformParam(paramIndex, getVarType(), value, true);
-        }
-        if (ffBinding != null && r instanceof GL1Renderer) {
-            ((GL1Renderer) r).setFixedFuncBinding(ffBinding, getValue());
         }
     }
 

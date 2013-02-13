@@ -1187,6 +1187,54 @@ public class LwjglRenderer implements Renderer {
         }
     }
 
+    public void setShaderWithoutUpdateUniforms(Shader shader) {
+        if (shader == null) {
+            throw new IllegalArgumentException("shader cannot be null");
+//            if (context.boundShaderProgram > 0) {
+//                glUseProgram(0);
+//                statistics.onShaderUse(null, true);
+//                context.boundShaderProgram = 0;
+//                boundShader = null;
+//            }
+        } else {
+            if (shader.isUpdateNeeded()) {
+                updateShaderData(shader);
+            }
+
+            // NOTE: might want to check if any of the
+            // sources need an update?
+
+            if (!shader.isUsable()) {
+                return;
+            }
+
+            assert shader.getId() > 0;
+
+//            updateShaderUniforms(shader);
+            if (context.boundShaderProgram != shader.getId()) {
+                if (VALIDATE_SHADER) {
+                    // check if shader can be used
+                    // with current state
+                    glValidateProgram(shader.getId());
+                    glGetProgram(shader.getId(), GL_VALIDATE_STATUS, intBuf1);
+                    boolean validateOK = intBuf1.get(0) == GL_TRUE;
+                    if (validateOK) {
+                        logger.fine("shader validate success");
+                    } else {
+                        logger.warning("shader validate failure");
+                    }
+                }
+
+                glUseProgram(shader.getId());
+                statistics.onShaderUse(shader, true);
+                context.boundShaderProgram = shader.getId();
+                boundShader = shader;
+            } else {
+                statistics.onShaderUse(shader, false);
+            }
+        }
+    }
+
     public void deleteShaderSource(ShaderSource source) {
         if (source.getId() < 0) {
             logger.warning("Shader source is not uploaded to GPU, cannot delete.");

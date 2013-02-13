@@ -172,7 +172,7 @@ public class Natives {
         if (needLWJGL) {
             logger.log(Level.INFO, "Extraction Directory #1: {0}", getExtractionDir());
             logger.log(Level.INFO, "Extraction Directory #2: {0}", workingDir.toString());
-            logger.log(Level.INFO, "Extraction Directory #3: {0}", System.getProperty("user.dir"));
+//            logger.log(Level.INFO, "Extraction Directory #3: {0}", System.getProperty("user.dir"));
             // LWJGL supports this feature where
             // it can load libraries from this path.
             // This is a fallback method in case the OS doesn't load

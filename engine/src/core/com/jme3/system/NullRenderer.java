@@ -149,4 +149,7 @@ public class NullRenderer implements Renderer {
     public void setAlphaToCoverage(boolean value) {
     }
 
+    public void setShaderWithoutUpdateUniforms(Shader shader) {
+    }
+
 }
