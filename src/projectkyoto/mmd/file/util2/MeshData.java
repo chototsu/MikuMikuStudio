@@ -213,6 +213,7 @@ public class MeshData {
         for (Integer vertIndex : getVertIndexList()) {
             model.getVertex(vertIndex, v);
             vfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
+            v.getNormal().normalize();
             nfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
 
 //            bvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);

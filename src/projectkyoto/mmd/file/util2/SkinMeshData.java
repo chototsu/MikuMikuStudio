@@ -222,6 +222,7 @@ public class SkinMeshData implements Serializable {
 
         for (PMDVertex v : getVertexList()) {
             skinvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
+            v.getNormal().normalize();
             skinnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
             float f1 = v.getUv().getU();
             float f2 = v.getUv().getV();
