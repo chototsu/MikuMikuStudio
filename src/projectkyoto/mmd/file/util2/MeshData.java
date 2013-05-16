@@ -220,11 +220,11 @@ public class MeshData {
 //            bnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
             if (textureFlag) {
                 float f1 = v.getUv().getU();
-                float f2 = v.getUv().getV();
+                float f2 = 1f-v.getUv().getV();
 //                tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
-                f1 = f1 - FastMath.floor(f1);
-                f2 = f2 - FastMath.floor(f2);
-                f2 = 1 - f2;
+//                f1 = f1 - FastMath.floor(f1);
+//                f2 = f2 - FastMath.floor(f2);
+//                f2 = 1 - f2;
                 tfb.put(f1).put(f2);
             }
             float weight = (float) v.getBoneWeight() / 100.0f;

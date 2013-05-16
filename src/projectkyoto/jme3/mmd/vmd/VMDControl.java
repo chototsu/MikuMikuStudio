@@ -181,7 +181,7 @@ public class VMDControl extends AbstractControl {
                     continue;
                 }
                 motionMap.put(m.getBoneName(), motionList);
-logger.info("boneName = "+m.getBoneName()+" "+motionList.boneIndex+" "+motionList.bone);
+//logger.info("boneName = "+m.getBoneName()+" "+motionList.boneIndex+" "+motionList.bone);
                 PMDBone pmdBone = pmdNode.getPmdModel().getBoneList().getBones()[motionList.boneIndex];
                 if (pmdBone.getBoneType() == 9) {
                     // FOLLOW_ROTATE
@@ -229,7 +229,7 @@ logger.info("boneName = "+m.getBoneName()+" "+motionList.boneIndex+" "+motionLis
 //                System.out.print(" ");
 //            }
         }
-        System.out.println();
+//        System.out.println();
         for (VMDSkin skin : vmdFile.getSkinArray()) {
             SkinList skinList = skinMap.get(skin.getSkinName());
             if (skinList == null) {
@@ -385,9 +385,9 @@ logger.info("boneName = "+m.getBoneName()+" "+motionList.boneIndex+" "+motionLis
         for (int i = pmdNode.getSkeleton().getBoneCount() - 1; i >= 0; i--) {
             int i2 = i; //boneEnabled.length -1 - i;
             if (boneEnabled[i2] == 1) {
-                if (!pmdNode.getSkeleton().getBone(i).getName().equals(pmdNode.getPmdModel().getBoneList().getBones()[i2].getBoneName())) {
-                    System.out.println("ERROR " + pmdNode.getSkeleton().getBone(i).getName() + " " + pmdNode.getPmdModel().getBoneList().getBones()[i2].getBoneName());
-                }
+//                if (!pmdNode.getSkeleton().getBone(i).getName().equals(pmdNode.getPmdModel().getBoneList().getBones()[i2].getBoneName())) {
+//                    System.out.println("ERROR " + pmdNode.getSkeleton().getBone(i).getName() + " " + pmdNode.getPmdModel().getBoneList().getBones()[i2].getBoneName());
+//                }
                 Bone bone = pmdNode.getSkeleton().getBone(i);
                 bone.getLocalRotation().loadIdentity();
             }
@@ -602,7 +602,7 @@ logger.info("boneName = "+m.getBoneName()+" "+motionList.boneIndex+" "+motionLis
 
     public void setFixedPhysics(boolean fixedPhysics) {
         this.fixedPhysics = fixedPhysics;
-        logger.info("fixedPhysics = " + fixedPhysics);
+//        logger.info("fixedPhysics = " + fixedPhysics);
     }
 
     @Override

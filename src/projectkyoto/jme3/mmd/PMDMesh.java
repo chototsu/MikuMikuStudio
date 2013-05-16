@@ -30,6 +30,7 @@
 package projectkyoto.jme3.mmd;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bounding.BoundingSphere;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
@@ -78,10 +79,15 @@ public class PMDMesh extends Mesh {
     public void setBoneMatrixArray(Matrix4f[] boneMatrixArray) {
         this.boneMatrixArray = boneMatrixArray;
     }
-    BoundingVolume bound = new BoundingBox(Vector3f.ZERO, 20, 20, 20);
+//    BoundingVolume bound = new BoundingBox(Vector3f.ZERO, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+    BoundingVolume bound = new BoundingBox(Vector3f.ZERO, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
     @Override
     public BoundingVolume getBound() {
+        BoundingBox bb = (BoundingBox)super.getBound();
+        BoundingBox bb2 = new BoundingBox(bb.getCenter(), bb.getXExtent()*2, bb.getYExtent()*2,
+                bb.getZExtent()*2);
+        BoundingBox bb3 = new BoundingBox(bb.getCenter().ZERO,5,5,5);
         return bound;
     }
 

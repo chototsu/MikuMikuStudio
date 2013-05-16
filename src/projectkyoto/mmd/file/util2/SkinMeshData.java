@@ -224,14 +224,14 @@ public class SkinMeshData implements Serializable {
             skinvfb.put(v.getPos().x).put(v.getPos().y).put(v.getPos().z);
             v.getNormal().normalize();
             skinnfb.put(v.getNormal().x).put(v.getNormal().y).put(v.getNormal().z);
-            float f1 = v.getUv().getU();
-            float f2 = v.getUv().getV();
+//            float f1 = v.getUv().getU();
+//            float f2 = v.getUv().getV();
 //                tfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
-            f1 = f1 - FastMath.floor(f1);
-            f2 = f2 - FastMath.floor(f2);
-            f2 = 1 - f2;
-            skintfb.put(f1).put(f2);
-//            skintfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
+//            f1 = f1 - FastMath.floor(f1);
+//            f2 = f2 - FastMath.floor(f2);
+//            f2 = 1 - f2;
+//            skintfb.put(f1).put(f2);
+            skintfb.put(v.getUv().getU()).put(1f - v.getUv().getV());
 //            skinbisb.put((short) meshConverter.getSkinMeshData()
 //                    .getBoneList().indexOf(v.getBoneNum1()))
 //                    .put((short) meshConverter.getSkinMeshData()

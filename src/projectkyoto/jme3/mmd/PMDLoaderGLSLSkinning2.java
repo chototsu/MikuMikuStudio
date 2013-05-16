@@ -97,6 +97,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
     SkeletonControl skeletonControl;
     HashMap<String, Texture> textureMap = new HashMap<String, Texture>();
     public static final Logger logger = Logger.getLogger(PMDLoaderGLSLSkinning2.class.getName());
+    public static boolean interleaveEnabled = true;
     public PMDLoaderGLSLSkinning2() {
     }
     public PMDLoaderGLSLSkinning2(AssetManager assetManager, PMDModel model) {
@@ -164,7 +165,9 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
             node.pmdGeometryArray[pmdGeometryIndex++] = geom;
             meshConverter.getMeshDataList().set(i, null);
 //            go.add(mesh);
-            mesh.setInterleaved();    
+            if (interleaveEnabled) {
+                mesh.setInterleaved();    
+            }
         }
 //        go.optimize3();
         createSkinCommonVertData();
@@ -425,15 +428,15 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
                 }
                 s = s.toLowerCase();
                 if (s.equals("spa")) {
-//                    texture.setWrap(Texture.WrapMode.Repeat);
+                    texture.setWrap(Texture.WrapMode.Repeat);
                     texture.setMinFilter(Texture.MinFilter.BilinearNoMipMaps);
                     mat.setTexture("SphereMap_A", texture);
                 } else if (s.equals("sph")) {
-//                    texture.setWrap(Texture.WrapMode.Repeat);
+                    texture.setWrap(Texture.WrapMode.Repeat);
                     texture.setMinFilter(Texture.MinFilter.BilinearNoMipMaps);
                     mat.setTexture("SphereMap_H", texture);
                 } else {
-//                    texture.setWrap(Texture.WrapMode.Repeat);
+                    texture.setWrap(Texture.WrapMode.Repeat);
                     mat.setTexture("DiffuseMap", texture);
                 }
             }

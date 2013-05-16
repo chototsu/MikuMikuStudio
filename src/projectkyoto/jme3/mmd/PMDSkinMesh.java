@@ -108,11 +108,11 @@ public class PMDSkinMesh extends Mesh {
         this.boneMatrixBuffer = boneMatrixBuffer;
     }
     
-    BoundingVolume bound = new BoundingBox(Vector3f.ZERO, 20, 20, 20);
+    BoundingVolume bound = new BoundingBox(Vector3f.ZERO, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
     @Override
     public BoundingVolume getBound() {
-        return bound;
+        return bound; //super.getBound();
     }
     @Override
     public synchronized PMDSkinMesh clone() {
