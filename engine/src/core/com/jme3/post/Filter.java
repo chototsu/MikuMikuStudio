@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,18 +32,16 @@
 package com.jme3.post;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.material.Material;
 import com.jme3.renderer.Caps;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.Renderer;
 import com.jme3.renderer.ViewPort;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image.Format;
+import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import java.io.IOException;
 import java.util.Collection;
@@ -273,8 +271,6 @@ public abstract class Filter implements Savable {
     protected void cleanUpFilter(Renderer r) {
     }
 
-    ;
-
     /**
      * Must return the material used for this filter.
      * this method is called every frame.
@@ -284,11 +280,18 @@ public abstract class Filter implements Savable {
     protected abstract Material getMaterial();
 
     /**
-     * Override this method if you want to make a pre pass, before the actual rendering of the frame
-     * @param renderManager
-     * @param viewPort
+     * Override if you want to do something special with the depth texture;
+     * @param depthTexture 
      */
-    protected void postQueue(RenderManager renderManager, ViewPort viewPort) {
+    protected void setDepthTexture(Texture depthTexture){
+        getMaterial().setTexture("DepthTexture", depthTexture);
+    }
+
+    /**
+     * Override this method if you want to make a pre pass, before the actual rendering of the frame
+     * @param queue
+     */
+    protected void postQueue(RenderQueue queue) {
     }
 
     /**
@@ -335,7 +338,7 @@ public abstract class Filter implements Savable {
 
     /**
      * returns the name of the filter
-     * @return
+     * @return the Filter's name
      */
     public String getName() {
         return name;

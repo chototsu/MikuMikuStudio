@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.renderer;
 
 import com.jme3.math.ColorRGBA;
 import com.jme3.post.SceneProcessor;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.texture.FrameBuffer;
 import java.util.ArrayList;
@@ -127,6 +127,9 @@ public class ViewPort {
      * @see SceneProcessor
      */
     public void addProcessor(SceneProcessor processor){
+        if (processor == null) {
+            throw new IllegalArgumentException( "Processor cannot be null." );
+        }
         processors.add(processor);
     }
 
@@ -140,8 +143,24 @@ public class ViewPort {
      * @see SceneProcessor
      */
     public void removeProcessor(SceneProcessor processor){
+        if (processor == null) {
+            throw new IllegalArgumentException( "Processor cannot be null." );
+        }
         processors.remove(processor);
         processor.cleanup();
+    }
+    
+    /**
+     * Removes all {@link SceneProcessor scene processors} from this
+     * ViewPort. 
+     * 
+     * @see SceneProcessor
+     */
+    public void clearProcessors() {
+        for (SceneProcessor proc : processors) {
+            proc.cleanup();
+        }
+        processors.clear();
     }
 
     /**
@@ -182,7 +201,7 @@ public class ViewPort {
      * <p>
      * By default color clearing is disabled.
      * 
-     * @param clearDepth Enable/disable color buffer clearing.
+     * @param clearColor Enable/disable color buffer clearing.
      */
     public void setClearColor(boolean clearColor) {
         this.clearColor = clearColor;
@@ -204,7 +223,7 @@ public class ViewPort {
      * <p>
      * By default stencil clearing is disabled.
      * 
-     * @param clearDepth Enable/disable stencil buffer clearing.
+     * @param clearStencil Enable/disable stencil buffer clearing.
      */
     public void setClearStencil(boolean clearStencil) {
         this.clearStencil = clearStencil;
@@ -280,7 +299,13 @@ public class ViewPort {
      * @see Spatial
      */
     public void attachScene(Spatial scene){
+        if (scene == null) {
+            throw new IllegalArgumentException( "Scene cannot be null." );
+        }
         sceneList.add(scene);
+        if (scene instanceof Geometry) {
+            scene.forceRefresh(true, false, true);
+        }
     }
 
     /**
@@ -291,7 +316,13 @@ public class ViewPort {
      * @see #attachScene(com.jme3.scene.Spatial) 
      */
     public void detachScene(Spatial scene){
+        if (scene == null) {
+            throw new IllegalArgumentException( "Scene cannot be null." );
+        }
         sceneList.remove(scene);
+        if (scene instanceof Geometry) {
+            scene.forceRefresh(true, false, true);
+        }
     }
 
     /**

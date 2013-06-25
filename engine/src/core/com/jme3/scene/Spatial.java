@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,19 +35,11 @@ import com.jme3.asset.Asset;
 import com.jme3.asset.AssetKey;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.collision.Collidable;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.InputCapsule;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.light.Light;
 import com.jme3.light.LightList;
 import com.jme3.material.Material;
-import com.jme3.math.Matrix3f;
-import com.jme3.math.Matrix4f;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Transform;
-import com.jme3.math.Vector3f;
+import com.jme3.math.*;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -222,6 +214,25 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
 
             p.refreshFlags |= RF_BOUND;
             p = p.parent;
+        }
+    }
+
+    /**
+     * (Internal use only) Forces a refresh of the given types of data.
+     * 
+     * @param transforms Refresh world transform based on parents'
+     * @param bounds Refresh bounding volume data based on child nodes
+     * @param lights Refresh light list based on parents'
+     */
+    public void forceRefresh(boolean transforms, boolean bounds, boolean lights) {
+        if (transforms) {
+            setTransformRefresh();
+        }
+        if (bounds) {
+            setBoundRefresh();
+        }
+        if (lights) {
+            setLightListRefresh();
         }
     }
 

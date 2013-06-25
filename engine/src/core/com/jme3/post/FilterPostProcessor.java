@@ -31,19 +31,11 @@
  */
 package com.jme3.post;
 
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.renderer.Renderer;
-import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.asset.AssetManager;
-import com.jme3.export.InputCapsule;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.material.Material;
-import com.jme3.renderer.Camera;
-import com.jme3.renderer.Caps;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
+import com.jme3.renderer.*;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image.Format;
 import com.jme3.texture.Texture2D;
@@ -51,6 +43,7 @@ import com.jme3.ui.Picture;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -85,6 +78,7 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
     private int originalHeight;
     private int lastFilterIndex = -1;
     private boolean cameraInit = false;
+    private boolean clearColor= true;
 
     /**
      * Create a FilterProcessor 
@@ -95,7 +89,7 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
     }
 
     /**
-     * Don't use this constructor use {@link FilterPostProcessor(AssetManager assetManager)}<br>
+     * Don't use this constructor, use {@link #FilterPostProcessor(AssetManager assetManager)}<br>
      * This constructor is used for serialization only
      */
     public FilterPostProcessor() {
@@ -106,8 +100,10 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
      * @param filter the filter to add
      */
     public void addFilter(Filter filter) {
+        if (filter == null) {
+            throw new IllegalArgumentException("Filter cannot be null.");
+        }
         filters.add(filter);
-        filter.setProcessor(this);
 
         if (isInitialized()) {
             initFilter(filter, viewPort);
@@ -122,6 +118,9 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
      * @param filter 
      */
     public void removeFilter(Filter filter) {
+        if (filter == null) {
+            throw new IllegalArgumentException("Filter cannot be null.");
+        }
         filters.remove(filter);
         filter.cleanup(renderer);
         updateLastFilterIndex();
@@ -156,14 +155,17 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
      * @param vp 
      */
     private void initFilter(Filter filter, ViewPort vp) {
-        filter.init(assetManager, renderManager, vp, width, height);
+        filter.setProcessor(this);
         if (filter.isRequiresDepthTexture()) {
             if (!computeDepth && renderFrameBuffer != null) {
                 depthTexture = new Texture2D(width, height, Format.Depth24);
                 renderFrameBuffer.setDepthTexture(depthTexture);
             }
             computeDepth = true;
-            filter.getMaterial().setTexture("DepthTexture", depthTexture);
+            filter.init(assetManager, renderManager, vp, width, height);
+            filter.setDepthTexture(depthTexture);
+        } else {
+            filter.init(assetManager, renderManager, vp, width, height);
         }
     }
 
@@ -196,7 +198,7 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
 
         renderManager.setCamera(filterCam, true);
         r.setFrameBuffer(buff);
-        r.clearBuffers(false, true, true);
+        r.clearBuffers(clearColor, true, true);
         renderManager.renderGeometry(fsQuad);
 
     }
@@ -210,7 +212,7 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
         for (Iterator<Filter> it = filters.iterator(); it.hasNext();) {
             Filter filter = it.next();
             if (filter.isEnabled()) {
-                filter.postQueue(renderManager, viewPort);
+                filter.postQueue(rq);
             }
         }
 
@@ -366,6 +368,9 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
             viewPort.getCamera().setViewPort(left, right, bottom, top);
             viewPort.setOutputFrameBuffer(outputBuffer);          
             viewPort = null;
+            for (Filter filter : filters) {
+                filter.cleanup(renderer);
+        }
         }
 
     }
@@ -389,6 +394,16 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
         height = (int) (h * (Math.abs(bottom - top)));
         width = Math.max(1, width);
         height = Math.max(1, height);
+        
+        //Testing original versus actual viewport dimension.
+        //If they are different we are in a multiview situation and color from other view port must not be cleared.
+        //However, not clearing the color can cause issues when AlphaToCoverage is active on the renderer.        
+        if(originalWidth!=width || originalHeight!=height){
+            clearColor = false;
+        }else{
+            clearColor = true;
+        }
+        
         cam.resize(width, height, false);
         cameraInit = true;
         computeDepth = false;
@@ -491,7 +506,7 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
     /**
      * For internal use only<br>
      * returns the depth texture of the scene
-     * @return 
+     * @return the depth texture
      */
     public Texture2D getDepthTexture() {
         return depthTexture;
@@ -500,9 +515,32 @@ public class FilterPostProcessor implements SceneProcessor, Savable {
     /**
      * For internal use only<br>
      * returns the rendered texture of the scene
-     * @return 
+     * @return the filter texture
      */
     public Texture2D getFilterTexture() {
         return filterTexture;
+    }
+    
+    /**
+     * returns the first filter in the list assignable form the given type 
+     * @param <T> 
+     * @param filterType the filter type
+     * @return a filter assignable form the given type 
+     */
+    public <T extends Filter> T getFilter(Class<T> filterType) {
+        for (Filter c : filters) {
+            if (filterType.isAssignableFrom(c.getClass())) {
+                return (T) c;
+}
+        }
+        return null;
+    }
+    
+    /**
+     * returns an unmodifiable version of the filter list.
+     * @return the filters list
+     */
+    public List<Filter> getFilterList(){
+        return Collections.unmodifiableList(filters);
     }
 }

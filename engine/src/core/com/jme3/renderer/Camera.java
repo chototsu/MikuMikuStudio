@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,18 +33,8 @@ package com.jme3.renderer;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bounding.BoundingVolume;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.InputCapsule;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
-import com.jme3.math.FastMath;
-import com.jme3.math.Matrix4f;
-import com.jme3.math.Plane;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
-import com.jme3.math.Vector4f;
+import com.jme3.export.*;
+import com.jme3.math.*;
 import com.jme3.util.TempVars;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -204,7 +194,7 @@ public class Camera implements Savable, Cloneable {
     /**
      * store the value for field parallelProjection
      */
-    private boolean parallelProjection;
+    private boolean parallelProjection = true;
     protected Matrix4f projectionMatrixOverride;
     protected Matrix4f viewMatrix = new Matrix4f();
     protected Matrix4f projectionMatrix = new Matrix4f();
@@ -256,7 +246,7 @@ public class Camera implements Savable, Cloneable {
         onViewPortChange();
         onFrameChange();
 
-        logger.log(Level.INFO, "Camera created (W: {0}, H: {1})", new Object[]{width, height});
+        logger.log(Level.FINE, "Camera created (W: {0}, H: {1})", new Object[]{width, height});
     }
 
     @Override
@@ -392,7 +382,7 @@ public class Camera implements Savable, Cloneable {
      * @param clipPlane the plane
      * @param side the side the camera stands from the plane
      */
-    public void setClipPlane(Plane clipPlane, Plane.Side side) {
+    public void setClipPlane(Plane clipPlane, Plane.Side side) {     
         float sideFactor = 1;
         if (side == Plane.Side.Negative) {
             sideFactor = -1;
@@ -788,6 +778,9 @@ public class Camera implements Savable, Cloneable {
         frustumNear = near;
         frustumFar = far;
 
+        // Camera is no longer parallel projection even if it was before
+        parallelProjection = false;
+
         onFrustumChange();
     }
 
@@ -1179,11 +1172,11 @@ public class Camera implements Savable, Cloneable {
             float topSquared = frustumTop * frustumTop;
 
             float inverseLength = FastMath.invSqrt(nearSquared + leftSquared);
-            coeffLeft[0] = frustumNear * inverseLength;
+            coeffLeft[0] = -frustumNear * inverseLength;
             coeffLeft[1] = -frustumLeft * inverseLength;
 
             inverseLength = FastMath.invSqrt(nearSquared + rightSquared);
-            coeffRight[0] = -frustumNear * inverseLength;
+            coeffRight[0] = frustumNear * inverseLength;
             coeffRight[1] = frustumRight * inverseLength;
 
             inverseLength = FastMath.invSqrt(nearSquared + bottomSquared);
@@ -1306,30 +1299,56 @@ public class Camera implements Savable, Cloneable {
     }
 
     /**
-     * @see Camera#getWorldCoordinates
+     * Computes the z value in projection space from the z value in view space 
+     * Note that the returned value is going non linearly from 0 to 1.
+     * for more explanations on non linear z buffer see
+     * http://www.sjbaker.org/steve/omniv/love_your_z_buffer.html
+     * @param viewZPos the z value in view space.
+     * @return the z value in projection space.
      */
-    public Vector3f getWorldCoordinates(Vector2f screenPos, float zPos) {
-        return getWorldCoordinates(screenPos, zPos, null);
+    public float getViewToProjectionZ(float viewZPos) {
+        float far = getFrustumFar();
+        float near = getFrustumNear();
+        float a = far / (far - near);
+        float b = far * near / (near - far);
+        return a + b / viewZPos;
+    }
+
+    /**
+     * Computes a position in World space given a screen position in screen space (0,0 to width, height)
+     * and a z position in projection space ( 0 to 1 non linear).
+     * This former value is also known as the Z buffer value or non linear depth buffer.
+     * for more explanations on non linear z buffer see
+     * http://www.sjbaker.org/steve/omniv/love_your_z_buffer.html
+     * 
+     * To compute the projection space z from the view space z (distance from cam to object) @see Camera#getViewToProjectionZ
+     * 
+     * @param screenPos 2d coordinate in screen space
+     * @param projectionZPos non linear z value in projection space
+     * @return the position in world space.
+     */
+    public Vector3f getWorldCoordinates(Vector2f screenPos, float projectionZPos) {
+        return getWorldCoordinates(screenPos, projectionZPos, null);
     }
 
     /**
      * @see Camera#getWorldCoordinates
      */
     public Vector3f getWorldCoordinates(Vector2f screenPosition,
-            float zPos, Vector3f store) {
+            float projectionZPos, Vector3f store) {
         if (store == null) {
             store = new Vector3f();
         }
-
+ 
         Matrix4f inverseMat = new Matrix4f(viewProjectionMatrix);
         inverseMat.invertLocal();
 
         store.set(
                 (screenPosition.x / getWidth() - viewPortLeft) / (viewPortRight - viewPortLeft) * 2 - 1,
                 (screenPosition.y / getHeight() - viewPortBottom) / (viewPortTop - viewPortBottom) * 2 - 1,
-                zPos * 2 - 1);
+                projectionZPos * 2 - 1);
 
-        float w = inverseMat.multProj(store, store);
+        float w = inverseMat.multProj(store, store);      
         store.multLocal(1f / w);
 
         return store;
