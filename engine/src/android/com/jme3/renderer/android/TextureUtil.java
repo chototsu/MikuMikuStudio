@@ -14,6 +14,23 @@ import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
 
 public class TextureUtil {
+    public static boolean ENABLE_COMPRESSION = true;
+    private static boolean NPOT = false;
+    private static boolean ETC1support = false;
+    private static boolean DXT1 = false;
+    private static boolean DEPTH24_STENCIL8 = false;
+    private static boolean DEPTH_TEXTURE = true;
+    private static boolean RGBA8 = false;
+    
+    // Same constant used by both GL_ARM_rgba8 and GL_OES_rgb8_rgba8.
+    private static final int GL_RGBA8 = 0x8058;
+    
+    private static final int GL_DXT1 = 0x83F0;
+    private static final int GL_DXT1A = 0x83F1;
+    
+    private static final int GL_DEPTH_STENCIL_OES = 0x84F9;
+    private static final int GL_UNSIGNED_INT_24_8_OES = 0x84FA;
+    private static final int GL_DEPTH24_STENCIL8_OES = 0x88F0;
 
     public static int convertTextureFormat(Format fmt){
         switch (fmt){
@@ -149,7 +166,149 @@ public class TextureUtil {
 //bitmap.recycle();
         }
     }
+    private static void unsupportedFormat(Format fmt) {
+        throw new UnsupportedOperationException("The image format '" + fmt + "' is unsupported by the video hardware.");
+    }
 
+    public static AndroidGLImageFormat getImageFormat(Format fmt) throws UnsupportedOperationException {
+        AndroidGLImageFormat imageFormat = new AndroidGLImageFormat();
+        switch (fmt) {
+            case RGBA16:
+            case RGB16:
+            case RGB10:
+            case Luminance16:
+            case Luminance16Alpha16:
+            case Alpha16:
+            case Depth32:
+            case Depth32F:
+                throw new UnsupportedOperationException("The image format '"
+                        + fmt + "' is not supported by OpenGL ES 2.0 specification.");
+            case Alpha8:
+                imageFormat.format = GLES20.GL_ALPHA;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_BYTE;
+                if (RGBA8) {
+                    imageFormat.renderBufferStorageFormat = GL_RGBA8;
+                } else {
+                    // Highest precision alpha supported by vanilla OGLES2
+                    imageFormat.renderBufferStorageFormat = GLES20.GL_RGBA4;
+                }
+                break;
+            case Luminance8:
+                imageFormat.format = GLES20.GL_LUMINANCE;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_BYTE;
+                if (RGBA8) {
+                    imageFormat.renderBufferStorageFormat = GL_RGBA8;
+                } else {
+                    // Highest precision luminance supported by vanilla OGLES2
+                    imageFormat.renderBufferStorageFormat = GLES20.GL_RGB565;
+                }
+                break;
+            case Luminance8Alpha8:
+                imageFormat.format = GLES20.GL_LUMINANCE_ALPHA;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_BYTE;
+                if (RGBA8) {
+                    imageFormat.renderBufferStorageFormat = GL_RGBA8;
+                } else {
+                    imageFormat.renderBufferStorageFormat = GLES20.GL_RGBA4;
+                }
+                break;
+            case RGB565:
+                imageFormat.format = GLES20.GL_RGB;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_SHORT_5_6_5;
+                imageFormat.renderBufferStorageFormat = GLES20.GL_RGB565;
+                break;
+            case ARGB4444:
+                imageFormat.format = GLES20.GL_RGBA4;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_SHORT_4_4_4_4;
+                imageFormat.renderBufferStorageFormat = GLES20.GL_RGBA4;
+                break;
+            case RGB5A1:
+                imageFormat.format = GLES20.GL_RGBA;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_SHORT_5_5_5_1;
+                imageFormat.renderBufferStorageFormat = GLES20.GL_RGB5_A1;
+                break;
+            case RGB8:
+                imageFormat.format = GLES20.GL_RGB;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_BYTE;
+                if (RGBA8) {
+                    imageFormat.renderBufferStorageFormat = GL_RGBA8;
+                } else {
+                    // Fallback: Use RGB565 if RGBA8 is not available.
+                    imageFormat.renderBufferStorageFormat = GLES20.GL_RGB565;
+                }
+                break;
+            case BGR8:
+                imageFormat.format = GLES20.GL_RGB;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_BYTE;
+                if (RGBA8) {
+                    imageFormat.renderBufferStorageFormat = GL_RGBA8;
+                } else {
+                    imageFormat.renderBufferStorageFormat = GLES20.GL_RGB565;
+                }
+                break;
+            case RGBA8:
+                imageFormat.format = GLES20.GL_RGBA;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_BYTE;
+                if (RGBA8) {
+                    imageFormat.renderBufferStorageFormat = GL_RGBA8;
+                } else {
+                    imageFormat.renderBufferStorageFormat = GLES20.GL_RGBA4;
+                }
+                break;
+            case Depth:
+            case Depth16:
+                if (!DEPTH_TEXTURE) {
+                    unsupportedFormat(fmt);
+                }
+                imageFormat.format = GLES20.GL_DEPTH_COMPONENT;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_SHORT;
+                imageFormat.renderBufferStorageFormat = GLES20.GL_DEPTH_COMPONENT16;
+                break;
+            case Depth24:
+//            case Depth24Stencil8:
+//                if (!DEPTH_TEXTURE) {
+//                    unsupportedFormat(fmt);
+//                }
+//                if (DEPTH24_STENCIL8) {
+//                    // NEW: True Depth24 + Stencil8 format.
+//                    imageFormat.format = GL_DEPTH_STENCIL_OES;
+//                    imageFormat.dataType = GL_UNSIGNED_INT_24_8_OES;
+//                    imageFormat.renderBufferStorageFormat = GL_DEPTH24_STENCIL8_OES;
+//                } else {
+//                    // Vanilla OGLES2, only Depth16 available.
+//                    imageFormat.format = GLES20.GL_DEPTH_COMPONENT;
+//                    imageFormat.dataType = GLES20.GL_UNSIGNED_SHORT;
+//                    imageFormat.renderBufferStorageFormat = GLES20.GL_DEPTH_COMPONENT16;
+//                }
+//                break;
+            case DXT1:
+                if (!DXT1) {
+                    unsupportedFormat(fmt);
+                }
+                imageFormat.format = GL_DXT1;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_BYTE;
+                imageFormat.compress = true;
+                break;
+            case DXT1A:
+                if (!DXT1) {
+                    unsupportedFormat(fmt);
+                }
+                imageFormat.format = GL_DXT1A;
+                imageFormat.dataType = GLES20.GL_UNSIGNED_BYTE;
+                imageFormat.compress = true;
+                break;
+            default:
+                throw new UnsupportedOperationException("Unrecognized format: " + fmt);
+        }
+        return imageFormat;
+    }
+    public static class AndroidGLImageFormat {
+
+        boolean compress = false;
+        int format = -1;
+        int renderBufferStorageFormat = -1;
+        int dataType = -1;
+    }
     public static void uploadTexture(
                                      Image img,
                                      int target,
