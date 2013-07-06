@@ -250,6 +250,91 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
     }
 
     /**
+     * Compares two materials and returns true if they are equal. 
+     * This methods compare definition, parameters, additional render states.
+     * Since materials are mutable objects, implementing equals() properly is not possible, 
+     * hence the name contentEquals().
+     * 
+     * @param otherObj the material to compare to this material
+     * @return true if the materials are equal.
+     */
+    public boolean contentEquals(Object otherObj) {
+        if (!(otherObj instanceof Material)) {
+            return false;
+        }
+        
+        Material other = (Material) otherObj;
+        
+        // Early exit if the material are the same object
+        if (this == other) {
+            return true;
+        }
+
+        // Check material definition        
+        if (this.getMaterialDef() != other.getMaterialDef()) {
+            return false;
+        }
+
+        // Early exit if the size of the params is different
+        if (this.paramValues.size() != other.paramValues.size()) {
+            return false;
+        }
+        
+        // Checking technique
+        if (this.technique != null || other.technique != null) {
+            // Techniques are considered equal if their names are the same
+            // E.g. if user chose custom technique for one material but 
+            // uses default technique for other material, the materials 
+            // are not equal.
+            String thisDefName = this.technique != null ? this.technique.getDef().getName() : "Default";
+            String otherDefName = other.technique != null ? other.technique.getDef().getName() : "Default";
+            if (!thisDefName.equals(otherDefName)) {
+                return false;
+            }
+        }
+
+        // Comparing parameters
+        for (String paramKey : paramValues.keySet()) {
+            MatParam thisParam = this.getParam(paramKey);
+            MatParam otherParam = other.getParam(paramKey);
+
+            // This param does not exist in compared mat
+            if (otherParam == null) {
+                return false;
+            }
+
+            if (!otherParam.equals(thisParam)) {
+                return false;
+            }
+        }
+
+        // Comparing additional render states
+        if (additionalState == null) {
+            if (other.additionalState != null) {
+                return false;
+            }
+        } else {
+            if (!additionalState.equals(other.additionalState)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Works like {@link Object#hashCode() } except it may change together with the material as the material is mutable by definition.
+     */
+    public int contentHashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.def != null ? this.def.hashCode() : 0);
+        hash = 29 * hash + (this.paramValues != null ? this.paramValues.hashCode() : 0);
+        hash = 29 * hash + (this.technique != null ? this.technique.getDef().getName().hashCode() : 0);
+        hash = 29 * hash + (this.additionalState != null ? this.additionalState.contentHashCode() : 0);
+        return hash;
+    }
+    
+    /**
      * Returns the currently active technique.
      * <p>
      * The technique is selected automatically by the {@link RenderManager}
