@@ -2762,7 +2762,7 @@ public final class OGLESShaderRenderer implements Renderer {
             updateBufferData(interleavedData);
         }
 
-        ArrayList<VertexBuffer> buffersList = mesh.getBufferList();
+        SafeArrayList<VertexBuffer> buffersList = mesh.getBufferList();
         for (int i = 0; i < buffersList.size(); i++) {
             VertexBuffer vb = buffersList.get(i);
 
@@ -2856,7 +2856,7 @@ public final class OGLESShaderRenderer implements Renderer {
         } else {
             indices = mesh.getBuffer(Type.Index);// buffers.get(Type.Index.ordinal());
         }
-        ArrayList<VertexBuffer> buffersList = mesh.getBufferList();
+        SafeArrayList<VertexBuffer> buffersList = mesh.getBufferList();
         for (int i = 0; i < buffersList.size(); i++) {
             VertexBuffer vb = buffersList.get(i);
 

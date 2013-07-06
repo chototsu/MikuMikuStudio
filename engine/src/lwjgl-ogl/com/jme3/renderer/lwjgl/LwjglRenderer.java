@@ -69,6 +69,7 @@ import com.jme3.util.BufferUtils;
 import com.jme3.util.IntMap;
 import com.jme3.util.IntMap.Entry;
 import com.jme3.util.ListMap;
+import com.jme3.util.SafeArrayList;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
@@ -2500,7 +2501,7 @@ public class LwjglRenderer implements Renderer {
         }
 
         //IntMap<VertexBuffer> buffers = mesh.getBuffers();
-        ArrayList<VertexBuffer> buffersList = mesh.getBufferList();
+        SafeArrayList<VertexBuffer> buffersList = mesh.getBufferList();
 
         if (mesh.getNumLodLevels() > 0) {
             indices = mesh.getLodLevel(lod);
