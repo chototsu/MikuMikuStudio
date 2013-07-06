@@ -61,7 +61,16 @@ public class AssetKey<T> implements Savable {
     public AssetKey(){
     }
 
-    protected static String getExtension(String name){
+    @Override
+    public AssetKey<T> clone() {
+        try {
+            return (AssetKey<T>) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            throw new AssertionError();
+        }
+    }
+    
+    protected static String getExtension(String name) {
         int idx = name.lastIndexOf('.');
         //workaround for filenames ending with xml and another dot ending before that (my.mesh.xml)
         if (name.toLowerCase().endsWith(".xml")) {
