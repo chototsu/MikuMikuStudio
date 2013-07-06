@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,7 @@
 
 package com.jme3.math;
 
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -387,12 +383,31 @@ public final class Vector3f implements Savable, Cloneable, java.io.Serializable 
         return this;
     }
 
+    /**
+     * Projects this vector onto another vector
+     *
+     * @param other The vector to project this vector onto
+     * @return A new vector with the projection result
+     */
     public Vector3f project(Vector3f other){
         float n = this.dot(other); // A . B
         float d = other.lengthSquared(); // |B|^2
         return new Vector3f(other).normalizeLocal().multLocal(n/d);
     }
 
+    /**
+     * Projects this vector onto another vector, stores the result in this
+     * vector
+     *
+     * @param other The vector to project this vector onto
+     * @return This Vector3f, set to the projection result
+     */
+    public Vector3f projectLocal(Vector3f other){
+        float n = this.dot(other); // A . B
+        float d = other.lengthSquared(); // |B|^2
+        return set(other).normalizeLocal().multLocal(n/d);
+    }
+    
     /**
      * Returns true if this vector is a unit vector (length() ~= 1),
      * returns false otherwise.
@@ -791,10 +806,11 @@ public final class Vector3f implements Savable, Cloneable, java.io.Serializable 
      * in this vector.
      * @param other 
      */
-    public void maxLocal(Vector3f other){
+    public Vector3f maxLocal(Vector3f other){
         x = other.x > x ? other.x : x;
         y = other.y > y ? other.y : y;
         z = other.z > z ? other.z : z;
+        return this;
     }
 
     /**
@@ -803,10 +819,11 @@ public final class Vector3f implements Savable, Cloneable, java.io.Serializable 
      * in this vector.
      * @param other
      */
-    public void minLocal(Vector3f other){
+    public Vector3f minLocal(Vector3f other){
         x = other.x < x ? other.x : x;
         y = other.y < y ? other.y : y;
         z = other.z < z ? other.z : z;
+        return this;
     }
 
     /**

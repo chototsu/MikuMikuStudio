@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,7 @@
  */
 package com.jme3.math;
 
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.TempVars;
 import java.io.IOException;
@@ -552,6 +548,33 @@ public final class Matrix4f implements Savable, Cloneable, java.io.Serializable 
         m31 = matrix[3][1];
         m32 = matrix[3][2];
         m33 = matrix[3][3];
+    }
+    
+    
+    /**
+     * Sets the values of this matrix
+     */
+    public void set(float m00, float m01, float m02, float m03,
+            float m10, float m11, float m12, float m13,
+            float m20, float m21, float m22, float m23,
+            float m30, float m31, float m32, float m33) {
+
+        this.m00 = m00;
+        this.m01 = m01;
+        this.m02 = m02;
+        this.m03 = m03;
+        this.m10 = m10;
+        this.m11 = m11;
+        this.m12 = m12;
+        this.m13 = m13;
+        this.m20 = m20;
+        this.m21 = m21;
+        this.m22 = m22;
+        this.m23 = m23;
+        this.m30 = m30;
+        this.m31 = m31;
+        this.m32 = m32;
+        this.m33 = m33;
     }
 
     /**
@@ -1185,7 +1208,7 @@ public final class Matrix4f implements Savable, Cloneable, java.io.Serializable 
      */
     public Vector4f mult(Vector4f vec, Vector4f store) {
         if (null == vec) {
-            logger.info("Source vector is null, null result returned.");
+            logger.warning("Source vector is null, null result returned.");
             return null;
         }
         if (store == null) {
@@ -1226,7 +1249,7 @@ public final class Matrix4f implements Savable, Cloneable, java.io.Serializable 
      */
     public Vector4f multAcross(Vector4f vec, Vector4f store) {
         if (null == vec) {
-            logger.info("Source vector is null, null result returned.");
+            logger.warning("Source vector is null, null result returned.");
             return null;
         }
         if (store == null) {
@@ -1237,7 +1260,7 @@ public final class Matrix4f implements Savable, Cloneable, java.io.Serializable 
         store.x = m00 * vx + m10 * vy + m20 * vz + m30 * vw;
         store.y = m01 * vx + m11 * vy + m21 * vz + m31 * vw;
         store.z = m02 * vx + m12 * vy + m22 * vz + m32 * vw;
-        store.z = m03 * vx + m13 * vy + m23 * vz + m33 * vw;
+        store.w = m03 * vx + m13 * vy + m23 * vz + m33 * vw;
 
         return store;
     }
@@ -1319,7 +1342,7 @@ public final class Matrix4f implements Savable, Cloneable, java.io.Serializable 
      */
     public Vector3f multAcross(Vector3f vec, Vector3f store) {
         if (null == vec) {
-            logger.info("Source vector is null, null result returned.");
+            logger.warning("Source vector is null, null result returned.");
             return null;
         }
         if (store == null) {
@@ -1721,7 +1744,6 @@ public final class Matrix4f implements Savable, Cloneable, java.io.Serializable 
 
     public Matrix3f toRotationMatrix() {
         return new Matrix3f(m00, m01, m02, m10, m11, m12, m20, m21, m22);
-
     }
 
     public void toRotationMatrix(Matrix3f mat) {
@@ -1734,8 +1756,32 @@ public final class Matrix4f implements Savable, Cloneable, java.io.Serializable 
         mat.m20 = m20;
         mat.m21 = m21;
         mat.m22 = m22;
+	}
 
-    }
+	/**
+	 * Retreives the scale vector from the matrix.
+	 * 
+	 * @return the scale vector
+	 */
+	public Vector3f toScaleVector() {
+		Vector3f result = new Vector3f();
+		this.toScaleVector(result);
+		return result;
+	}
+
+	/**
+	 * Retreives the scale vector from the matrix and stores it into a given
+	 * vector.
+	 * 
+	 * @param the
+	 *            vector where the scale will be stored
+	 */
+	public void toScaleVector(Vector3f vector) {
+		float scaleX = (float) Math.sqrt(m00 * m00 + m10 * m10 + m20 * m20);
+		float scaleY = (float) Math.sqrt(m01 * m01 + m11 * m11 + m21 * m21);
+		float scaleZ = (float) Math.sqrt(m02 * m02 + m12 * m12 + m22 * m22);
+		vector.set(scaleX, scaleY, scaleZ);
+	}
 
     public void setScale(float x, float y, float z) {
         m00 *= x;

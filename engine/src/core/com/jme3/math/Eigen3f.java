@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.math;
 
 import java.util.logging.Level;
@@ -385,7 +384,7 @@ public class Eigen3f implements java.io.Serializable {
 
         logger.info("eigenvalues = ");
         for (int i = 0; i < 3; i++)
-            logger.log(Level.INFO, "{0} ", eigenSystem.getEigenValue(i));
+            logger.log(Level.FINE, "{0} ", eigenSystem.getEigenValue(i));
 
         logger.info("eigenvectors = ");
         for (int i = 0; i < 3; i++) {

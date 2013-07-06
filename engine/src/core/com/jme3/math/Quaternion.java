@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,17 +31,12 @@
  */
 package com.jme3.math;
 
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.util.TempVars;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.nio.FloatBuffer;
 import java.util.logging.Logger;
 
 /**
@@ -67,7 +62,7 @@ public final class Quaternion implements Savable, Cloneable, java.io.Serializabl
     public static final Quaternion IDENTITY = new Quaternion();
     public static final Quaternion DIRECTION_Z = new Quaternion();
     public static final Quaternion ZERO = new Quaternion(0, 0, 0, 0);
-
+    
     static {
         DIRECTION_Z.fromAxes(Vector3f.UNIT_X, Vector3f.UNIT_Y, Vector3f.UNIT_Z);
     }
@@ -238,51 +233,52 @@ public final class Quaternion implements Savable, Cloneable, java.io.Serializabl
 
     /**
      * <code>fromAngles</code> builds a Quaternion from the Euler rotation
-     * angles (y,r,p). Note that we are applying in order: roll, pitch, yaw but
+     * angles (x,y,z) aka (pitch, yaw, rall)). Note that we are applying in order: (y, z, x) aka (yaw, roll, pitch) but
      * we've ordered them in x, y, and z for convenience.
      * @see <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm</a>
      * 
-     * @param yaw
-     *            the Euler yaw of rotation (in radians). (aka Bank, often rot
+     * @param xAngle
+     *            the Euler pitch of rotation (in radians). (aka Attitude, often rot
      *            around x)
-     * @param roll
-     *            the Euler roll of rotation (in radians). (aka Heading, often
+     * @param yAngle
+     *            the Euler yaw of rotation (in radians). (aka Heading, often
      *            rot around y)
-     * @param pitch
-     *            the Euler pitch of rotation (in radians). (aka Attitude, often
+     * @param zAngle
+     *            the Euler roll of rotation (in radians). (aka Bank, often
      *            rot around z)
      */
-    public Quaternion fromAngles(float yaw, float roll, float pitch) {
+    public Quaternion fromAngles(float xAngle, float yAngle, float zAngle) {
         float angle;
-        float sinRoll, sinPitch, sinYaw, cosRoll, cosPitch, cosYaw;
-        angle = pitch * 0.5f;
-        sinPitch = FastMath.sin(angle);
-        cosPitch = FastMath.cos(angle);
-        angle = roll * 0.5f;
-        sinRoll = FastMath.sin(angle);
-        cosRoll = FastMath.cos(angle);
-        angle = yaw * 0.5f;
-        sinYaw = FastMath.sin(angle);
-        cosYaw = FastMath.cos(angle);
+        float sinY, sinZ, sinX, cosY, cosZ, cosX;
+        angle = zAngle * 0.5f;
+        sinZ = FastMath.sin(angle);
+        cosZ = FastMath.cos(angle);
+        angle = yAngle * 0.5f;
+        sinY = FastMath.sin(angle);
+        cosY = FastMath.cos(angle);
+        angle = xAngle * 0.5f;
+        sinX = FastMath.sin(angle);
+        cosX = FastMath.cos(angle);
 
         // variables used to reduce multiplication calls.
-        float cosRollXcosPitch = cosRoll * cosPitch;
-        float sinRollXsinPitch = sinRoll * sinPitch;
-        float cosRollXsinPitch = cosRoll * sinPitch;
-        float sinRollXcosPitch = sinRoll * cosPitch;
+        float cosYXcosZ = cosY * cosZ;
+        float sinYXsinZ = sinY * sinZ;
+        float cosYXsinZ = cosY * sinZ;
+        float sinYXcosZ = sinY * cosZ;
 
-        w = (cosRollXcosPitch * cosYaw - sinRollXsinPitch * sinYaw);
-        x = (cosRollXcosPitch * sinYaw + sinRollXsinPitch * cosYaw);
-        y = (sinRollXcosPitch * cosYaw + cosRollXsinPitch * sinYaw);
-        z = (cosRollXsinPitch * cosYaw - sinRollXcosPitch * sinYaw);
+        w = (cosYXcosZ * cosX - sinYXsinZ * sinX);
+        x = (cosYXcosZ * sinX + sinYXsinZ * cosX);
+        y = (sinYXcosZ * cosX + cosYXsinZ * sinX);
+        z = (cosYXsinZ * cosX - sinYXcosZ * sinX);
 
-        normalize();
+        normalizeLocal();
         return this;
     }
 
     /**
      * <code>toAngles</code> returns this quaternion converted to Euler
      * rotation angles (yaw,roll,pitch).<br/>
+     * Note that the result is not always 100% accurate due to the implications of euler angles.
      * @see <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm">http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm</a>
      * 
      * @param angles
@@ -494,7 +490,7 @@ public final class Quaternion implements Savable, Cloneable, java.io.Serializabl
     /**
      * <code>getRotationColumn</code> returns one of three columns specified
      * by the parameter. This column is returned as a <code>Vector3f</code>
-     * object.  The value is retrieved as if this quaternion was first normalized.
+     * object. The value is retrieved as if this quaternion was first normalized.
      *
      * @param i
      *            the column to retrieve. Must be between 0 and 2.
@@ -590,7 +586,7 @@ public final class Quaternion implements Savable, Cloneable, java.io.Serializabl
     /**
      * <code>toAngleAxis</code> sets a given angle and axis to that
      * represented by the current quaternion. The values are stored as
-     * following: The axis is provided as a parameter and built by the method,
+     * follows: The axis is provided as a parameter and built by the method,
      * the angle is returned as a float.
      *
      * @param axisStore
@@ -831,7 +827,7 @@ public final class Quaternion implements Savable, Cloneable, java.io.Serializabl
      * quaternion multiplication is not commutative so q * p != p * q.
      *
      * It IS safe for q and res to be the same object.
-     * It IS safe for this and res to be the same object.
+     * It IS NOT safe for this and res to be the same object.
      *
      * @param q
      *            the quaternion to multiply this quaternion by.
@@ -1085,29 +1081,31 @@ public final class Quaternion implements Savable, Cloneable, java.io.Serializabl
         return w * w + x * x + y * y + z * z;
     }
 
-    /**
-     * <code>normalize</code> normalizes the current <code>Quaternion</code>
-     * @deprecated The naming of this method doesn't follow convention.
-     * Please use {@link Quaternion#normalizeLocal() } instead.
-     */
-    @Deprecated
-    public void normalize() {
-        float n = FastMath.invSqrt(norm());
-        x *= n;
-        y *= n;
-        z *= n;
-        w *= n;
-    }
+//    /**
+//     * <code>normalize</code> normalizes the current <code>Quaternion</code>
+//     * @deprecated The naming of this method doesn't follow convention.
+//     * Please use {@link Quaternion#normalizeLocal() } instead.
+//     */
+//    @Deprecated
+//    public void normalize() {
+//        float n = FastMath.invSqrt(norm());
+//        x *= n;
+//        y *= n;
+//        z *= n;
+//        w *= n;
+//    }
 
     /**
-     * <code>normalize</code> normalizes the current <code>Quaternion</code>
+     * <code>normalize</code> normalizes the current <code>Quaternion</code>.
+     * The result is stored internally.
      */
-    public void normalizeLocal() {
+    public Quaternion normalizeLocal() {
         float n = FastMath.invSqrt(norm());
         x *= n;
         y *= n;
         z *= n;
         w *= n;
+        return this;
     }
 
     /**
@@ -1132,7 +1130,7 @@ public final class Quaternion implements Savable, Cloneable, java.io.Serializabl
     /**
      * <code>inverse</code> calculates the inverse of this quaternion and
      * returns this quaternion after it is calculated. If this quaternion does
-     * not have an inverse (if it's norma is 0 or less), nothing happens
+     * not have an inverse (if it's normal is 0 or less), nothing happens
      *
      * @return the inverse of this quaternion
      */
@@ -1162,7 +1160,7 @@ public final class Quaternion implements Savable, Cloneable, java.io.Serializabl
     /**
      *
      * <code>toString</code> creates the string representation of this
-     * <code>Quaternion</code>. The values of the quaternion are displace (x,
+     * <code>Quaternion</code>. The values of the quaternion are displaced (x,
      * y, z, w), in the following manner: <br>
      * (x, y, z, w)
      *

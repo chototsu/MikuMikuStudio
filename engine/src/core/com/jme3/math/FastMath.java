@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -166,9 +166,9 @@ final public class FastMath {
      * @return an extrapolation for the given parameters
      */
     public static float extrapolateLinear(float scale, float startValue, float endValue) {
-        if (scale <= 0f) {
-            return startValue;
-        }
+//        if (scale <= 0f) {
+//            return startValue;
+//        }
         return ((1f - scale) * startValue) + (scale * endValue);
     }
 
@@ -187,9 +187,9 @@ final public class FastMath {
         if (store == null) {
             store = new Vector3f();
         }
-        if (scale <= 1f) {
-            return interpolateLinear(scale, startValue, endValue, store);
-        }
+//        if (scale <= 1f) {
+//            return interpolateLinear(scale, startValue, endValue, store);
+//        }
         store.x = extrapolateLinear(scale, startValue.x, endValue.x);
         store.y = extrapolateLinear(scale, startValue.y, endValue.y);
         store.z = extrapolateLinear(scale, startValue.z, endValue.z);
@@ -227,9 +227,9 @@ final public class FastMath {
      * @return catmull-Rom interpolation
      */
     public static float interpolateCatmullRom(float u, float T, float p0, float p1, float p2, float p3) {
-        double c1, c2, c3, c4;
+        float c1, c2, c3, c4;
         c1 = p1;
-        c2 = -1.0 * T * p0 + T * p2;
+        c2 = -1.0f * T * p0 + T * p2;
         c3 = 2 * T * p0 + (T - 3) * p1 + (3 - 2 * T) * p2 + -T * p3;
         c4 = -T * p0 + (2 - T) * p1 + (T - 2) * p2 + T * p3;
 
@@ -410,12 +410,12 @@ final public class FastMath {
     }
 
     /**
-     * Returns the arc cosine of an angle given in radians.<br>
+     * Returns the arc cosine of a value.<br>
      * Special cases:
      * <ul><li>If fValue is smaller than -1, then the result is PI.
      * <li>If the argument is greater than 1, then the result is 0.</ul>
-     * @param fValue The angle, in radians.
-     * @return fValue's acos
+     * @param fValue The value to arc cosine.
+     * @return The angle, in radians.
      * @see java.lang.Math#acos(double)
      */
     public static float acos(float fValue) {
@@ -431,12 +431,12 @@ final public class FastMath {
     }
 
     /**
-     * Returns the arc sine of an angle given in radians.<br>
+     * Returns the arc sine of a value.<br>
      * Special cases:
      * <ul><li>If fValue is smaller than -1, then the result is -HALF_PI.
      * <li>If the argument is greater than 1, then the result is HALF_PI.</ul>
-     * @param fValue The angle, in radians.
-     * @return fValue's asin
+     * @param fValue The value to arc sine.
+     * @return the angle in radians.
      * @see java.lang.Math#asin(double)
      */
     public static float asin(float fValue) {
@@ -483,61 +483,21 @@ final public class FastMath {
     }
 
     /**
-     * Fast Trig functions for x86. This forces the trig functiosn to stay
-     * within the safe area on the x86 processor (-45 degrees to +45 degrees)
-     * The results may be very slightly off from what the Math and StrictMath
-     * trig functions give due to rounding in the angle reduction but it will be
-     * very very close. 
-     * 
-     * note: code from wiki posting on java.net by jeffpk
+     * Returns cosine of an angle. Direct call to java.lang.Math
+     * @see Math#cos(double) 
+     * @param v The angle to cosine.
+     * @return  the cosine of the angle.
      */
-    public static float reduceSinAngle(float radians) {
-        radians %= TWO_PI; // put us in -2PI to +2PI space
-        if (Math.abs(radians) > PI) { // put us in -PI to +PI space
-            radians = radians - (TWO_PI);
-        }
-        if (Math.abs(radians) > HALF_PI) {// put us in -PI/2 to +PI/2 space
-            radians = PI - radians;
-        }
-
-        return radians;
-    }
-
-    /**
-     * Returns sine of a value. 
-     * 
-     * note: code from wiki posting on java.net by jeffpk
-     * 
-     * @param fValue
-     *            The value to sine, in radians.
-     * @return The sine of fValue.
-     * @see java.lang.Math#sin(double)
-     */
-    public static float sin2(float fValue) {
-        fValue = reduceSinAngle(fValue); // limits angle to between -PI/2 and +PI/2
-        if (Math.abs(fValue) <= Math.PI / 4) {
-            return (float) Math.sin(fValue);
-        }
-
-        return (float) Math.cos(Math.PI / 2 - fValue);
-    }
-
-    /**
-     * Returns cos of a value.
-     * 
-     * @param fValue
-     *            The value to cosine, in radians.
-     * @return The cosine of fValue.
-     * @see java.lang.Math#cos(double)
-     */
-    public static float cos2(float fValue) {
-        return sin2(fValue + HALF_PI);
-    }
-
     public static float cos(float v) {
         return (float) Math.cos(v);
     }
 
+    /**
+     * Returns the sine of an angle. Direct call to java.lang.Math
+     * @see Math#sin(double) 
+     * @param v The angle to sine.
+     * @return the sine of the angle.
+     */
     public static float sin(float v) {
         return (float) Math.sin(v);
     }
@@ -784,7 +744,7 @@ final public class FastMath {
     }
 
     /**
-     * Returns a random float between min and max.
+     * Returns a random integer between min and max.
      * 
      * @return A random int between <tt>min</tt> (inclusive) to
      *         <tt>max</tt> (inclusive).
@@ -803,6 +763,9 @@ final public class FastMath {
      */
     public static Vector3f sphericalToCartesian(Vector3f sphereCoords,
             Vector3f store) {
+        if (store == null) {
+            store = new Vector3f();
+        }
         store.y = sphereCoords.x * FastMath.sin(sphereCoords.z);
         float a = sphereCoords.x * FastMath.cos(sphereCoords.z);
         store.x = a * FastMath.cos(sphereCoords.y);
@@ -818,6 +781,9 @@ final public class FastMath {
      */
     public static Vector3f cartesianToSpherical(Vector3f cartCoords,
             Vector3f store) {
+        if (store == null) {
+            store = new Vector3f();
+        }
         float x = cartCoords.x;
         if (x == 0) {
             x = FastMath.FLT_EPSILON;
@@ -839,6 +805,9 @@ final public class FastMath {
      */
     public static Vector3f sphericalToCartesianZ(Vector3f sphereCoords,
             Vector3f store) {
+        if (store == null) {
+            store = new Vector3f();
+        }
         store.z = sphereCoords.x * FastMath.sin(sphereCoords.z);
         float a = sphereCoords.x * FastMath.cos(sphereCoords.z);
         store.x = a * FastMath.cos(sphereCoords.y);
@@ -854,6 +823,9 @@ final public class FastMath {
      */
     public static Vector3f cartesianZToSpherical(Vector3f cartCoords,
             Vector3f store) {
+        if (store == null) {
+            store = new Vector3f();
+        }
         float x = cartCoords.x;
         if (x == 0) {
             x = FastMath.FLT_EPSILON;

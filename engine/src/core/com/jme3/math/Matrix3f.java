@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,7 @@
  */
 package com.jme3.math;
 
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.TempVars;
 import java.io.IOException;
@@ -264,6 +260,53 @@ public final class Matrix3f implements Savable, Cloneable, java.io.Serializable 
         } else {
             throw new IndexOutOfBoundsException("Array size must be 9 or 16 in Matrix3f.get().");
         }
+    }
+    
+    /**
+     * Normalize this matrix and store the result in the store parameter that is
+     * returned.
+     * 
+     * Note that the original matrix is not altered.
+     *
+     * @param store the matrix to store the result of the normalization. If this
+     * parameter is null a new one is created
+     * @return the normalized matrix
+     */
+    public Matrix3f normalize(Matrix3f store) {
+        if (store == null) {
+            store = new Matrix3f();
+        }
+
+        float mag = 1.0f / FastMath.sqrt(
+                m00 * m00
+                + m10 * m10
+                + m20 * m20);
+
+        store.m00 = m00 * mag;
+        store.m10 = m10 * mag;
+        store.m20 = m20 * mag;
+
+        mag = 1.0f / FastMath.sqrt(
+                m01 * m01
+                + m11 * m11
+                + m21 * m21);
+
+        store.m01 = m01 * mag;
+        store.m11 = m11 * mag;
+        store.m21 = m21 * mag;
+
+        store.m02 = store.m10 * store.m21 - store.m11 * store.m20;
+        store.m12 = store.m01 * store.m20 - store.m00 * store.m21;
+        store.m22 = store.m00 * store.m11 - store.m01 * store.m10;
+        return store;
+    }
+
+    /**
+     * Normalize this matrix
+     * @return this matrix once normalized.
+     */
+    public Matrix3f normalizeLocal() {
+        return normalize(this);
     }
 
     /**
@@ -1050,9 +1093,9 @@ public final class Matrix3f implements Savable, Cloneable, java.io.Serializable 
     }
 
     /**
-     * <code>determinant</code> generates the determinate of this matrix.
+     * <code>determinant</code> generates the determinant of this matrix.
      * 
-     * @return the determinate
+     * @return the determinant
      */
     public float determinant() {
         float fCo00 = m11 * m22 - m12 * m21;

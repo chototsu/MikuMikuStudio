@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,14 +29,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.math;
 
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -738,11 +733,12 @@ public final class Vector4f implements Savable, Cloneable, java.io.Serializable 
      * in this vector.
      * @param other
      */
-    public void maxLocal(Vector4f other){
+    public Vector4f maxLocal(Vector4f other){
         x = other.x > x ? other.x : x;
         y = other.y > y ? other.y : y;
         z = other.z > z ? other.z : z;
         w = other.w > w ? other.w : w;
+        return this;
     }
 
     /**
@@ -751,11 +747,12 @@ public final class Vector4f implements Savable, Cloneable, java.io.Serializable 
      * in this vector.
      * @param other
      */
-    public void minLocal(Vector4f other){
+    public Vector4f minLocal(Vector4f other){
         x = other.x < x ? other.x : x;
         y = other.y < y ? other.y : y;
         z = other.z < z ? other.z : z;
         w = other.w < w ? other.w : w;
+        return this;
     }
 
     /**
