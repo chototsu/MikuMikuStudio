@@ -1,6 +1,35 @@
+/*
+ * Copyright (c) 2009-2012 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.animation;
-
-import java.io.IOException;
 
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
@@ -10,6 +39,8 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.jme3.util.TempVars;
+import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * This class represents the track for spatial animation.
@@ -64,8 +95,6 @@ public class SpatialTrack implements Track {
      * 
      * @param time
      *            the current time of the animation
-     * @param spatial
-     *            the spatial that should be animated with this track
      */
     public void setTime(float time, float weight, AnimControl control, AnimChannel channel, TempVars vars) {
         Spatial spatial = control.getSpatial();
@@ -79,14 +108,18 @@ public class SpatialTrack implements Track {
         
         int lastFrame = times.length - 1;
         if (time < 0 || lastFrame == 0) {
-            rotations.get(0, tempQ);
-            translations.get(0, tempV);
+            if (rotations != null)
+                rotations.get(0, tempQ);
+            if (translations != null)
+                translations.get(0, tempV);
             if (scales != null) {
                 scales.get(0, tempS);
             }
         } else if (time >= times[lastFrame]) {
-            rotations.get(lastFrame, tempQ);
-            translations.get(lastFrame, tempV);
+            if (rotations != null)
+                rotations.get(lastFrame, tempQ);
+            if (translations != null)
+                translations.get(lastFrame, tempV);
             if (scales != null) {
                 scales.get(lastFrame, tempS);
             }
@@ -101,13 +134,17 @@ public class SpatialTrack implements Track {
 
             float blend = (time - times[startFrame]) / (times[endFrame] - times[startFrame]);
 
-            rotations.get(startFrame, tempQ);
-            translations.get(startFrame, tempV);
+            if (rotations != null)
+                rotations.get(startFrame, tempQ);
+            if (translations != null)
+                translations.get(startFrame, tempV);
             if (scales != null) {
                 scales.get(startFrame, tempS);
             }
-            rotations.get(endFrame, tempQ2);
-            translations.get(endFrame, tempV2);
+            if (rotations != null)
+                rotations.get(endFrame, tempQ2);
+            if (translations != null)
+                translations.get(endFrame, tempV2);
             if (scales != null) {
                 scales.get(endFrame, tempS2);
             }
@@ -116,8 +153,10 @@ public class SpatialTrack implements Track {
             tempS.interpolate(tempS2, blend);
         }
         
-        spatial.setLocalTranslation(tempV);
-        spatial.setLocalRotation(tempQ);
+        if (translations != null)
+            spatial.setLocalTranslation(tempV);
+        if (rotations != null)
+            spatial.setLocalRotation(tempQ);
         if (scales != null) {
             spatial.setLocalScale(tempS);
         }
@@ -141,25 +180,24 @@ public class SpatialTrack implements Track {
             throw new RuntimeException("BoneTrack with no keyframes!");
         }
 
-        assert times.length == translations.length
-                && times.length == rotations.length;
-
         this.times = times;
-        this.translations = new CompactVector3Array();
-        this.translations.add(translations);
-        this.translations.freeze();
-        this.rotations = new CompactQuaternionArray();
-        this.rotations.add(rotations);
-        this.rotations.freeze();
-
+        if (translations != null) {
+            assert times.length == translations.length;
+            this.translations = new CompactVector3Array();
+            this.translations.add(translations);
+            this.translations.freeze();
+        }
+        if (rotations != null) {
+            assert times.length == rotations.length;
+            this.rotations = new CompactQuaternionArray();
+            this.rotations.add(rotations);
+            this.rotations.freeze();
+        }
         if (scales != null) {
             assert times.length == scales.length;
-            
             this.scales = new CompactVector3Array();
             this.scales.add(scales);
             this.scales.freeze();
-            
-            
         }
     }
 
@@ -167,7 +205,7 @@ public class SpatialTrack implements Track {
      * @return the array of rotations of this track
      */
     public Quaternion[] getRotations() {
-            return rotations.toObjectArray();
+            return rotations == null ? null : rotations.toObjectArray();
     }
 
     /**
@@ -188,7 +226,7 @@ public class SpatialTrack implements Track {
      * @return the array of translations of this track
      */
     public Vector3f[] getTranslations() {
-            return translations.toObjectArray();
+            return translations == null ? null : translations.toObjectArray();
     }
 
     /**
@@ -206,21 +244,13 @@ public class SpatialTrack implements Track {
     public SpatialTrack clone() {
         int tablesLength = times.length;
 
-        float[] times = this.times.clone();
-        Vector3f[] sourceTranslations = this.getTranslations();
-        Quaternion[] sourceRotations = this.getRotations();
-        Vector3f[] sourceScales = this.getScales();
+        float[] timesCopy = this.times.clone();
+        Vector3f[] translationsCopy = this.getTranslations() == null ? null : Arrays.copyOf(this.getTranslations(), tablesLength);
+        Quaternion[] rotationsCopy = this.getRotations() == null ? null : Arrays.copyOf(this.getRotations(), tablesLength);
+        Vector3f[] scalesCopy = this.getScales() == null ? null : Arrays.copyOf(this.getScales(), tablesLength);
 
-        Vector3f[] translations = new Vector3f[tablesLength];
-        Quaternion[] rotations = new Quaternion[tablesLength];
-        Vector3f[] scales = new Vector3f[tablesLength];
-        for (int i = 0; i < tablesLength; ++i) {
-            translations[i] = sourceTranslations[i].clone();
-            rotations[i] = sourceRotations[i].clone();
-            scales[i] = sourceScales != null ? sourceScales[i].clone() : new Vector3f(1.0f, 1.0f, 1.0f);
-        }
         //need to use the constructor here because of the final fields used in this class
-        return new SpatialTrack(times, translations, rotations, scales);
+        return new SpatialTrack(timesCopy, translationsCopy, rotationsCopy, scalesCopy);
     }
 	
     @Override

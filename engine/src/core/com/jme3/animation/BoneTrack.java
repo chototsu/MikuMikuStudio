@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,7 @@
  */
 package com.jme3.animation;
 
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.InputCapsule;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.util.TempVars;
@@ -186,8 +182,10 @@ public final class BoneTrack implements Track {
      * The transforms can be interpolated in some method from the keyframes.
      *
      * @param time the current time of the animation
-     * @param skeleton the skeleton to which the bone belong
      * @param weight the weight of the animation
+     * @param control
+     * @param channel
+     * @param vars
      */
     public void setTime(float time, float weight, AnimControl control, AnimChannel channel, TempVars vars) {
         BitSet affectedBones = channel.getAffectedBones();
@@ -245,11 +243,11 @@ public final class BoneTrack implements Track {
             tempS.interpolate(tempS2, blend);
         }
 
-        if (weight != 1f) {
+//        if (weight != 1f) {
             target.blendAnimTransforms(tempV, tempQ, scales != null ? tempS : null, weight);
-        } else {
-            target.setAnimTransforms(tempV, tempQ, scales != null ? tempS : null);
-        }
+//        } else {
+//            target.setAnimTransforms(tempV, tempQ, scales != null ? tempS : null);
+//        }
     }
     
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,14 +31,11 @@
  */
 package com.jme3.animation;
 
-import java.io.IOException;
-
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
+import com.jme3.scene.Spatial;
+import com.jme3.util.SafeArrayList;
 import com.jme3.util.TempVars;
+import java.io.IOException;
 
 /**
  * The animation class updates the animation target with the tracks of a given type.
@@ -46,27 +43,26 @@ import com.jme3.util.TempVars;
  * @author Kirill Vainer, Marcin Roguski (Kaelthas)
  */
 public class Animation implements Savable, Cloneable {
-    
+
     /** 
      * The name of the animation. 
      */
     private String name;
-    
     /** 
      * The length of the animation. 
      */
     private float length;
-    
     /** 
      * The tracks of the animation. 
      */
-    private Track[] tracks;
-    
+    private SafeArrayList<Track> tracks = new SafeArrayList<Track>(Track.class);
+
     /**
      * Serialization-only. Do not use.
      */
-    public Animation() {}
-    
+    public Animation() {
+    }
+
     /**
      * Creates a new <code>Animation</code> with the given name and length.
      * 
@@ -77,24 +73,24 @@ public class Animation implements Savable, Cloneable {
         this.name = name;
         this.length = length;
     }
-    
+
     /**
      * The name of the bone animation
      * @return name of the bone animation
      */
     public String getName() {
-    	return name;
+        return name;
     }
-    
+
     /**
      * Returns the length in seconds of this animation
      * 
      * @return the length in seconds of this animation
      */
     public float getLength() {
-    	return length;
+        return length;
     }
-    
+
     /**
      * This method sets the current time of the animation.
      * This method behaves differently for every known track type.
@@ -106,77 +102,87 @@ public class Animation implements Savable, Cloneable {
      * @param channel the animation channel
      */
     void setTime(float time, float blendAmount, AnimControl control, AnimChannel channel, TempVars vars) {
-        if (tracks == null)
+        if (tracks == null) {
             return;
-        
-        for (int i = 0; i < tracks.length; i++){
-            tracks[i].setTime(time, blendAmount, control, channel, vars);
         }
-        
-        /*
-        if (tracks != null && tracks.length > 0) {
-            Track<?> trackInstance = tracks[0];
-            
-            if (trackInstance instanceof SpatialTrack) {
-                Spatial spatial = control.getSpatial();
-                if (spatial != null) {
-                    ((SpatialTrack) tracks[0]).setTime(time, spatial, blendAmount);
-                }
-            } else if (trackInstance instanceof BoneTrack) {
-                BitSet affectedBones = channel.getAffectedBones();
-                Skeleton skeleton = control.getSkeleton();
-                for (int i = 0; i < tracks.length; ++i) {
-                    if (affectedBones == null || affectedBones.get(((BoneTrack) tracks[i]).getTargetIndex())) {
-                        ((BoneTrack) tracks[i]).setTime(time, skeleton, blendAmount);
-                    }
-                }
-            } else if (trackInstance instanceof PoseTrack) {
-                Spatial spatial = control.getSpatial();
-                List<Mesh> meshes = new ArrayList<Mesh>();
-                this.getMeshes(spatial, meshes);
-                if (meshes.size() > 0) {
-                    Mesh[] targets = meshes.toArray(new Mesh[meshes.size()]);
-                    for (int i = 0; i < tracks.length; ++i) {
-                        ((PoseTrack) tracks[i]).setTime(time, targets, blendAmount);
-                    }
-                }
-            }
+
+        for (Track track : tracks) {
+            track.setTime(time, blendAmount, control, channel, vars);
         }
-        */
     }
-    
+
     /**
      * Set the {@link Track}s to be used by this animation.
-     * <p>
-     * The array should be organized so that the appropriate Track can
-     * be retrieved based on a bone index. 
      * 
-     * @param tracks The tracks to set.
+     * @param tracksArray The tracks to set.
      */
-    public void setTracks(Track[] tracks){
-        this.tracks = tracks;
+    public void setTracks(Track[] tracksArray) {
+        for (Track track : tracksArray) {
+            tracks.add(track);
+        }
     }
-    
+
+    /**
+     * Adds a track to this animation
+     * @param track the track to add
+     */
+    public void addTrack(Track track) {
+        tracks.add(track);
+    }
+
+    /**
+     * removes a track from this animation
+     * @param track the track to remove
+     */
+    public void removeTrack(Track track) {
+        tracks.remove(track);
+        if (track instanceof ClonableTrack) {
+            ((ClonableTrack) track).cleanUp();
+        }
+    }
+
     /**
      * Returns the tracks set in {@link #setTracks(com.jme3.animation.Track[]) }.
      * 
      * @return the tracks set previously
      */
     public Track[] getTracks() {
-    	return tracks;
+        return tracks.getArray();
     }
-    
+
     /**
      * This method creates a clone of the current object.
      * @return a clone of the current object
      */
-   @Override
-   public Animation clone() {
+    @Override
+    public Animation clone() {
         try {
             Animation result = (Animation) super.clone();
-            result.tracks = tracks.clone();
-            for (int i = 0; i < tracks.length; ++i) {
-                result.tracks[i] = this.tracks[i].clone();
+            result.tracks = new SafeArrayList<Track>(Track.class);
+            for (Track track : tracks) {
+                result.tracks.add(track.clone());
+            }
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+
+    /**
+     * 
+     * @param spat
+     * @return 
+     */
+    public Animation cloneForSpatial(Spatial spat) {
+        try {
+            Animation result = (Animation) super.clone();
+            result.tracks = new SafeArrayList<Track>(Track.class);
+            for (Track track : tracks) {
+                if (track instanceof ClonableTrack) {
+                    result.tracks.add(((ClonableTrack) track).cloneForSpatial(spat));
+                } else {
+                    result.tracks.add(track);
+                }
             }
             return result;
         } catch (CloneNotSupportedException e) {
@@ -188,13 +194,13 @@ public class Animation implements Savable, Cloneable {
     public String toString() {
         return getClass().getSimpleName() + "[name=" + name + ", length=" + length + ']';
     }
-    
-   @Override
+
+    @Override
     public void write(JmeExporter ex) throws IOException {
         OutputCapsule out = ex.getCapsule(this);
         out.write(name, "name", null);
         out.write(length, "length", 0f);
-        out.write(tracks, "tracks", null);
+        out.write(tracks.getArray(), "tracks", null);
     }
 
     @Override
@@ -202,9 +208,17 @@ public class Animation implements Savable, Cloneable {
         InputCapsule in = im.getCapsule(this);
         name = in.readString("name", null);
         length = in.readFloat("length", 0f);
-        
+
         Savable[] arr = in.readSavableArray("tracks", null);
-        tracks = new Track[arr.length];
-        System.arraycopy(arr, 0, tracks, 0, arr.length);
+        if (arr != null) {
+            // NOTE: Backward compat only .. Some animations have no
+            // tracks set at all even though it makes no sense.
+            // Since there's a null check in setTime(),
+            // its only appropriate that the check is made here as well.
+            tracks = new SafeArrayList<Track>(Track.class);
+            for (Savable savable : arr) {
+                tracks.add((Track) savable);
+            }
+        }
     }
 }

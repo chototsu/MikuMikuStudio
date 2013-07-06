@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.animation;
 
 import com.jme3.math.FastMath;
@@ -61,38 +60,69 @@ public final class AnimChannel {
     private float speed;
     private float timeBlendFrom;
     private float speedBlendFrom;
+    private boolean notified=false;
 
     private LoopMode loopMode, loopModeBlendFrom;
     
     private float blendAmount = 1f;
     private float blendRate   = 0;
-
+    
     private static float clampWrapTime(float t, float max, LoopMode loopMode){
-        if (max == Float.POSITIVE_INFINITY)
-            return t;
-        
-        if (t < 0f){
-            //float tMod = -(-t % max);
-            switch (loopMode){
-                case DontLoop:
-                    return 0;
-                case Cycle:
-                    return t;
-                case Loop:
-                    return max - t;
-            }
-        }else if (t > max){
-            switch (loopMode){
-                case DontLoop:
-                    return max;
-                case Cycle:
-                    return /*-max;*/-(2f * max - t);
-                case Loop:
-                    return t - max;
-            }
+        if (t == 0) {
+            return 0; // prevent division by 0 errors
         }
-
+        
+        switch (loopMode) {
+            case Cycle:
+                boolean sign = ((int) (t / max) % 2) != 0;
+                float result;
+                
+//                if (t < 0){
+//                    result = sign ? t % max : -(max + (t % max));
+//                } else {
+                    // NOTE: This algorithm seems stable for both high and low
+                    // tpf so for now its a keeper.
+                    result = sign ? -(max - (t % max)) : t % max;
+//                }
+                    
+//                if (result <= 0 || result >= max) {
+//                    System.out.println("SIGN: " + sign + ", RESULT: " + result + ", T: " + t + ", M: " + max);
+//                }
+                
+                return result;
+            case DontLoop:
+                return t > max ? max : (t < 0 ? 0 : t);
+            case Loop:
+                return t % max;
+        }
         return t;
+        
+        
+//        if (max == Float.POSITIVE_INFINITY)
+//            return t;
+//        
+//        if (t < 0f){
+//            //float tMod = -(-t % max);
+//            switch (loopMode){
+//                case DontLoop:
+//                    return 0;
+//                case Cycle:
+//                    return t;
+//                case Loop:
+//                    return max - t;
+//            }
+//        }else if (t > max){
+//            switch (loopMode){
+//                case DontLoop:
+//                    return max;
+//                case Cycle:
+//                    return -(2f * max - t) % max;
+//                case Loop:
+//                    return t % max;
+//            }
+//        }
+//
+//        return t;
     }
 
     AnimChannel(AnimControl control){
@@ -206,7 +236,7 @@ public final class AnimChannel {
      */
     public void setAnim(String name, float blendTime){
         if (name == null)
-            throw new NullPointerException();
+            throw new IllegalArgumentException("name cannot be null");
 
         if (blendTime < 0f)
             throw new IllegalArgumentException("blendTime cannot be less than zero");
@@ -225,12 +255,15 @@ public final class AnimChannel {
             loopModeBlendFrom = loopMode;
             blendAmount = 0f;
             blendRate   = 1f / blendTime;
+        }else{
+            blendFrom = null;
         }
 
         animation = anim;
         time = 0;
         speed = 1f;
         loopMode = LoopMode.Loop;
+        notified = false;
     }
 
     /**
@@ -316,14 +349,33 @@ public final class AnimChannel {
     BitSet getAffectedBones(){
         return affectedBones;
     }
+    
+    public void reset(boolean rewind){
+        if(rewind){
+            setTime(0);        
+            if(control.getSkeleton()!=null){
+                control.getSkeleton().resetAndUpdate();
+            }else{
+                TempVars vars = TempVars.get();
+                update(0, vars);
+                vars.release();    
+            }
+        }
+        animation = null;
+       // System.out.println("Setting notified false");
+        notified = false;
+    }
 
     void update(float tpf, TempVars vars) {
         if (animation == null)
             return;
 
-        if (blendFrom != null){
+        if (blendFrom != null && blendAmount != 1.0f){
+            // The blendFrom anim is set, the actual animation
+            // playing will be set 
+//            blendFrom.setTime(timeBlendFrom, 1f, control, this, vars);
             blendFrom.setTime(timeBlendFrom, 1f - blendAmount, control, this, vars);
-            //blendFrom.setTime(timeBlendFrom, control.skeleton, 1f - blendAmount, affectedBones);
+            
             timeBlendFrom += tpf * speedBlendFrom;
             timeBlendFrom = clampWrapTime(timeBlendFrom,
                                           blendFrom.getLength(),
@@ -339,25 +391,28 @@ public final class AnimChannel {
                 blendFrom = null;
             }
         }
-
+        
         animation.setTime(time, blendAmount, control, this, vars);
-        //animation.setTime(time, control.skeleton, blendAmount, affectedBones);
         time += tpf * speed;
 
         if (animation.getLength() > 0){
-            if (time >= animation.getLength()) {
-                control.notifyAnimCycleDone(this, animation.getName());
-            } else if (time < 0) {
+            if (!notified && (time >= animation.getLength() || time < 0)) {
+                if (loopMode == LoopMode.DontLoop) {
+                    // Note that this flag has to be set before calling the notify
+                    // since the notify may start a new animation and then unset
+                    // the flag.
+                    notified = true;
+                }
                 control.notifyAnimCycleDone(this, animation.getName());
             } 
         }
 
         time = clampWrapTime(time, animation.getLength(), loopMode);
         if (time < 0){
+            // Negative time indicates that speed should be inverted
+            // (for cycle loop mode only)
             time = -time;
             speed = -speed;
         }
-
-        
     }
 }

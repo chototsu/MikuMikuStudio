@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,16 +31,8 @@
  */
 package com.jme3.animation;
 
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.InputCapsule;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
-import com.jme3.math.Matrix3f;
-import com.jme3.math.Matrix4f;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Transform;
-import com.jme3.math.Vector3f;
+import com.jme3.export.*;
+import com.jme3.math.*;
 import com.jme3.scene.Node;
 import com.jme3.util.TempVars;
 import java.io.IOException;
@@ -63,7 +55,6 @@ public final class Bone implements Savable {
      * Animation transforms are not applied to this bone when enabled.
      */
     private boolean userControl = false;
-    private boolean useModelSpaceVectors = false;
     /**
      * The attachment node.
      */
@@ -94,8 +85,16 @@ public final class Bone implements Savable {
     private Vector3f worldPos = new Vector3f();
     private Quaternion worldRot = new Quaternion();
     private Vector3f worldScale = new Vector3f();
-    //used for getCombinedTransform 
+    
+    // Used for getCombinedTransform
     private Transform tmpTransform = new Transform();
+    
+    /**
+     * Used to handle blending from one animation to another.
+     * See {@link #blendAnimTransforms(com.jme3.math.Vector3f, com.jme3.math.Quaternion, com.jme3.math.Vector3f, float)}
+     * on how this variable is used.
+     */
+    private transient float currentWeightSum = -1;
 
     /**
      * Creates a new bone with the given name.
@@ -332,27 +331,45 @@ public final class Bone implements Savable {
      * world transform with this bones' local transform.
      */
     public final void updateWorldVectors() {
-        if (true || !useModelSpaceVectors) {
-            if (parent != null) {
-                //rotation
-                parent.worldRot.mult(localRot, worldRot);
-
-                //scale
-                //For scale parent scale is not taken into account!
-                // worldScale.set(localScale);
-                parent.worldScale.mult(localScale, worldScale);
-
-                //translation
-                //scale and rotation of parent affect bone position            
-                parent.worldRot.mult(localPos, worldPos);
-                worldPos.multLocal(parent.worldScale);
-                worldPos.addLocal(parent.worldPos);
+        if (currentWeightSum == 1f) {
+            currentWeightSum = -1;
+        } else if (currentWeightSum != -1f) {
+            // Apply the weight to the local transform
+            if (currentWeightSum == 0) {
+                localRot.set(initialRot);
+                localPos.set(initialPos);
+                localScale.set(initialScale);
             } else {
-                worldRot.set(localRot);
-                worldPos.set(localPos);
-                worldScale.set(localScale);
+                float invWeightSum = 1f - currentWeightSum;
+                localRot.nlerp(initialRot, invWeightSum);
+                localPos.interpolate(initialPos, invWeightSum);
+                localScale.interpolate(initialScale, invWeightSum);
             }
+            
+            // Future invocations of transform blend will start over.
+            currentWeightSum = -1;
         }
+        
+        if (parent != null) {
+            //rotation
+            parent.worldRot.mult(localRot, worldRot);
+
+            //scale
+            //For scale parent scale is not taken into account!
+            // worldScale.set(localScale);
+            parent.worldScale.mult(localScale, worldScale);
+
+            //translation
+            //scale and rotation of parent affect bone position            
+            parent.worldRot.mult(localPos, worldPos);
+            worldPos.multLocal(parent.worldScale);
+            worldPos.addLocal(parent.worldPos);
+        } else {
+            worldRot.set(localRot);
+            worldPos.set(localPos);
+            worldScale.set(localScale);
+        }
+
         if (attachNode != null) {
             attachNode.setLocalTranslation(worldPos);
             attachNode.setLocalRotation(worldRot);
@@ -471,6 +488,12 @@ public final class Bone implements Savable {
         // TODO: add scale here ???
         worldPos.set(translation);
         worldRot.set(rotation);
+        
+        //if there is an attached Node we need to set it's local transforms too.
+        if(attachNode != null){
+            attachNode.setLocalTranslation(translation);
+            attachNode.setLocalRotation(rotation);
+        }
     }
 
     /**
@@ -489,7 +512,7 @@ public final class Bone implements Savable {
      * Attach models and effects to this node to make
      * them follow this bone's motions.
      */
-    public Node getAttachmentsNode() {
+    Node getAttachmentsNode() {
         if (attachNode == null) {
             attachNode = new Node(name + "_attachnode");
             attachNode.setUserData("AttachedBone", this);
@@ -526,34 +549,70 @@ public final class Bone implements Savable {
         }
     }
 
+    /**
+     * Blends the given animation transform onto the bone's local transform.
+     * <p>
+     * Subsequent calls of this method stack up, with the final transformation
+     * of the bone computed at {@link #updateWorldVectors() } which resets
+     * the stack.
+     * <p>
+     * E.g. a single transform blend with weight = 0.5 followed by an
+     * updateWorldVectors() call will result in final transform = transform * 0.5.
+     * Two transform blends with weight = 0.5 each will result in the two
+     * transforms blended together (nlerp) with blend = 0.5.
+     * 
+     * @param translation The translation to blend in
+     * @param rotation The rotation to blend in
+     * @param scale The scale to blend in
+     * @param weight The weight of the transform to apply. Set to 1.0 to prevent
+     * any other transform from being applied until updateWorldVectors().
+     */
     void blendAnimTransforms(Vector3f translation, Quaternion rotation, Vector3f scale, float weight) {
         if (userControl) {
             return;
         }
-
-        TempVars vars = TempVars.get();
-//        assert vars.lock();
-
-        Vector3f tmpV = vars.vect1;
-        Vector3f tmpV2 = vars.vect2;
-        Quaternion tmpQ = vars.quat1;
-
-        //location
-        tmpV.set(initialPos).addLocal(translation);
-        localPos.interpolate(tmpV, weight);
-
-        //rotation
-        tmpQ.set(initialRot).multLocal(rotation);
-        localRot.nlerp(tmpQ, weight);
-
-        //scale
-        if (scale != null) {
-            tmpV2.set(initialScale).multLocal(scale);
-            localScale.interpolate(tmpV2, weight);
+        
+        if (weight == 0) {
+            // Do not apply this transform at all.
+            return;
         }
 
+        if (currentWeightSum == 1){
+            return; // More than 2 transforms are being blended
+        } else if (currentWeightSum == -1 || currentWeightSum == 0) {
+            // Set the transform fully
+            localPos.set(initialPos).addLocal(translation);
+            localRot.set(initialRot).multLocal(rotation);
+            if (scale != null) {
+                localScale.set(initialScale).multLocal(scale);
+            }
+            // Set the weight. It will be applied in updateWorldVectors().
+            currentWeightSum = weight;
+        } else {
+            // The weight is already set. 
+            // Blend in the new transform.
+            TempVars vars = TempVars.get();
 
-        vars.release();
+            Vector3f tmpV = vars.vect1;
+            Vector3f tmpV2 = vars.vect2;
+            Quaternion tmpQ = vars.quat1;
+            
+            tmpV.set(initialPos).addLocal(translation);
+            localPos.interpolate(tmpV, weight);
+
+            tmpQ.set(initialRot).multLocal(rotation);
+            localRot.nlerp(tmpQ, weight);
+
+            if (scale != null) {
+                tmpV2.set(initialScale).multLocal(scale);
+                localScale.interpolate(tmpV2, weight);
+            }
+        
+            // Ensures no new weights will be blended in the future.
+            currentWeightSum = 1;
+            
+            vars.release();
+        }
     }
 
     /**
@@ -591,14 +650,6 @@ public final class Bone implements Savable {
     @Override
     public String toString() {
         return this.toString(0);
-    }
-
-    public boolean isUseModelSpaceVectors() {
-        return useModelSpaceVectors;
-    }
-
-    public void setUseModelSpaceVectors(boolean useModelSpaceVectors) {
-        this.useModelSpaceVectors = useModelSpaceVectors;
     }
 
     @Override

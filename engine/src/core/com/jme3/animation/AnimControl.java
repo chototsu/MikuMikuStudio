@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,7 @@
  */
 package com.jme3.animation;
 
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.InputCapsule;
-import com.jme3.export.OutputCapsule;
-import com.jme3.export.Savable;
+import com.jme3.export.*;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Mesh;
@@ -47,6 +43,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * <code>AnimControl</code> is a Spatial control that allows manipulation
@@ -74,21 +71,17 @@ public final class AnimControl extends AbstractControl implements Cloneable {
      * Skeleton object must contain corresponding data for the targets' weight buffers.
      */
     Skeleton skeleton;
-
     /** only used for backward compatibility */
     @Deprecated
     private SkeletonControl skeletonControl;
-
     /**
      * List of animations
      */
-    HashMap<String, Animation> animationMap;
-
+    HashMap<String, Animation> animationMap = new HashMap<String, Animation>();
     /**
      * Animation channels
      */
     private transient ArrayList<AnimChannel> channels = new ArrayList<AnimChannel>();
-
     /**
      * Animation event listeners
      */
@@ -120,13 +113,16 @@ public final class AnimControl extends AbstractControl implements Cloneable {
             AnimControl clone = (AnimControl) super.clone();
             clone.spatial = spatial;
             clone.channels = new ArrayList<AnimChannel>();
-            
-            if (skeleton != null){
+            clone.listeners = new ArrayList<AnimEventListener>();
+
+            if (skeleton != null) {
                 clone.skeleton = new Skeleton(skeleton);
             }
-            
-            // animationMap is reference-copied, animation data should be shared
-            // to reduce memory usage.
+
+            // animationMap is cloned, but only ClonableTracks will be cloned as they need a reference to a cloned spatial
+            for (Entry<String, Animation> animEntry : animationMap.entrySet()) {
+                clone.animationMap.put(animEntry.getKey(), animEntry.getValue().cloneForSpatial(spatial));
+            }
             
             return clone;
         } catch (CloneNotSupportedException ex) {
@@ -215,6 +211,11 @@ public final class AnimControl extends AbstractControl implements Cloneable {
      * @see AnimControl#createChannel()
      */
     public void clearChannels() {
+        for (AnimChannel animChannel : channels) {
+            for (AnimEventListener list : listeners) {
+                list.onAnimCycleDone(this, animChannel, animChannel.getAnimationName());
+            }
+        }
         channels.clear();
     }
 
@@ -276,7 +277,7 @@ public final class AnimControl extends AbstractControl implements Cloneable {
      */
     @Override
     public void setSpatial(Spatial spatial) {
-        if (spatial == null && skeletonControl != null){
+        if (spatial == null && skeletonControl != null) {
             this.spatial.removeControl(skeletonControl);
         }
 
@@ -316,13 +317,13 @@ public final class AnimControl extends AbstractControl implements Cloneable {
 
         return a.getLength();
     }
-    
+
     /**
      * Internal use only.
      */
     @Override
     protected void controlUpdate(float tpf) {
-        if (skeleton != null){
+        if (skeleton != null) {
             skeleton.reset(); // reset skeleton to bind pose
         }
 
@@ -332,7 +333,7 @@ public final class AnimControl extends AbstractControl implements Cloneable {
         }
         vars.release();
 
-        if (skeleton != null){
+        if (skeleton != null) {
             skeleton.updateWorldVectors();
         }
     }
@@ -357,12 +358,15 @@ public final class AnimControl extends AbstractControl implements Cloneable {
         super.read(im);
         InputCapsule in = im.getCapsule(this);
         skeleton = (Skeleton) in.readSavable("skeleton", null);
-        animationMap = (HashMap<String, Animation>) in.readStringSavableMap("animations", null);
+        HashMap<String, Animation> loadedAnimationMap = (HashMap<String, Animation>) in.readStringSavableMap("animations", null);
+        if (loadedAnimationMap != null) {
+            animationMap = loadedAnimationMap;
+        }
 
-        if (im.getFormatVersion() == 0){
+        if (im.getFormatVersion() == 0) {
             // Changed for backward compatibility with j3o files generated 
             // before the AnimControl/SkeletonControl split.
-            
+
             // If we find a target mesh array the AnimControl creates the 
             // SkeletonControl for old files and add it to the spatial.        
             // When backward compatibility won't be needed anymore this can deleted        
