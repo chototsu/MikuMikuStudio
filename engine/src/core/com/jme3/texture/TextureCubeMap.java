@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,14 +29,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.texture;
 
+import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
-import com.jme3.export.InputCapsule;
 import com.jme3.export.OutputCapsule;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 /**
  * Describes a cubemap texture.
@@ -63,9 +64,10 @@ public class TextureCubeMap extends Texture {
      * Face of the Cubemap as described by its directional offset from the
      * origin.
      */
-//    public enum Face {
-//        PositiveX, NegativeX, PositiveY, NegativeY, PositiveZ, NegativeZ;
-//    }
+    public enum Face {
+
+        PositiveX, NegativeX, PositiveY, NegativeY, PositiveZ, NegativeZ;
+    }
 
     public TextureCubeMap(){
         super();
@@ -74,6 +76,20 @@ public class TextureCubeMap extends Texture {
     public TextureCubeMap(Image img){
         super();
         setImage(img);
+    }
+    
+    public TextureCubeMap(int width, int height, Image.Format format){
+        this(createEmptyLayeredImage(width, height, 6, format));
+    }
+
+    private static Image createEmptyLayeredImage(int width, int height,
+            int layerCount, Image.Format format) {
+        ArrayList<ByteBuffer> layers = new ArrayList<ByteBuffer>();
+        for(int i = 0; i < layerCount; i++) {
+            layers.add(null);
+        }
+        Image image = new Image(format, width, height, 0, layers);
+        return image;
     }
 
     public Texture createSimpleClone() {
