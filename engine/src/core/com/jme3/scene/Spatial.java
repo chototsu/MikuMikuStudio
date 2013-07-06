@@ -33,6 +33,7 @@ package com.jme3.scene;
 
 import com.jme3.asset.Asset;
 import com.jme3.asset.AssetKey;
+import com.jme3.asset.CloneableSmartAsset;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.collision.Collidable;
 import com.jme3.export.*;
@@ -50,12 +51,7 @@ import com.jme3.scene.control.Control;
 import com.jme3.util.SafeArrayList;
 import com.jme3.util.TempVars;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -68,7 +64,7 @@ import java.util.logging.Logger;
  * @author Joshua Slack
  * @version $Revision: 4075 $, $Data$
  */
-public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
+public abstract class Spatial implements Savable, Cloneable, Collidable, CloneableSmartAsset, Asset {
 
     private static final Logger logger = Logger.getLogger(Spatial.class.getName());
 
@@ -99,31 +95,47 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
          */
         Never;
     }
+
+    /**
+     * Specifies if this spatial should be batched
+     */
+    public enum BatchHint {
+
+        /** 
+         * Do whatever our parent does. If no parent, default to {@link #Always}.
+         */
+        Inherit,
+        /** 
+         * This spatial will always be batched when attached to a BatchNode.
+         */
+        Always,
+        /** 
+         * This spatial will never be batched when attached to a BatchNode.
+         */
+        Never;
+    }
     /**
      * Refresh flag types
      */
     protected static final int RF_TRANSFORM = 0x01, // need light resort + combine transforms
-            RF_BOUND = 0x02,
-            RF_LIGHTLIST = 0x04; // changes in light lists          
+                               RF_BOUND = 0x02,
+                               RF_LIGHTLIST = 0x04; // changes in light lists 
     
     protected CullHint cullHint = CullHint.Inherit;
-    
+    protected BatchHint batchHint = BatchHint.Inherit;
     /** 
      * Spatial's bounding volume relative to the world.
      */
     protected BoundingVolume worldBound;
-    
     /**
      * LightList
      */
     protected LightList localLights;
     protected transient LightList worldLights;
-    
     /** 
      * This spatial's name.
      */
     protected String name;
-    
     // scale values
     protected transient Camera.FrustumIntersect frustrumIntersects = Camera.FrustumIntersect.Intersects;
     protected RenderQueue.Bucket queueBucket = RenderQueue.Bucket.Inherit;
@@ -133,14 +145,12 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
     protected Transform worldTransform;
     protected SafeArrayList<Control> controls = new SafeArrayList<Control>(Control.class);
     protected HashMap<String, Savable> userData = null;
-    
     /**
      * Used for smart asset caching
      * 
      * @see AssetKey#useSmartCache() 
      */
-    protected AssetKey key; 
-    
+    protected AssetKey key;
     /** 
      * Spatial's parent, or null if it has none.
      */
@@ -177,14 +187,14 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
         this.name = name;
     }
 
-    public void setKey(AssetKey key){
+    public void setKey(AssetKey key) {
         this.key = key;
     }
-    
-    public AssetKey getKey(){
+
+    public AssetKey getKey() {
         return key;
     }
-    
+
     /**
      * Indicate that the transform of this spatial has changed and that
      * a refresh is required.
@@ -205,7 +215,6 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
     protected void setBoundRefresh() {
         refreshFlags |= RF_BOUND;
 
-        // XXX: Replace with a recursive call?
         Spatial p = parent;
         while (p != null) {
             if ((p.refreshFlags & RF_BOUND) != 0) {
@@ -216,7 +225,7 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
             p = p.parent;
         }
     }
-
+    
     /**
      * (Internal use only) Forces a refresh of the given types of data.
      * 
@@ -401,11 +410,16 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
 
     /**
      * <code>lookAt</code> is a convenience method for auto-setting the local
-     * rotation based on a position and an up vector. It computes the rotation
+     * rotation based on a position in world space and an up vector. It computes the rotation
      * to transform the z-axis to point onto 'position' and the y-axis to 'up'.
      * Unlike {@link Quaternion#lookAt(com.jme3.math.Vector3f, com.jme3.math.Vector3f) } 
      * this method takes a world position to look at and not a relative direction.
      *
+     * Note : 28/01/2013 this method has been fixed as it was not taking into account the parent rotation.
+     * This was resulting in improper rotation when the spatial had rotated parent nodes.
+     * This method is intended to work in world space, so no matter what parent graph the 
+     * spatial has, it will look at the given position in world space.
+     * 
      * @param position
      *            where to look at in terms of world coordinates
      * @param upVector
@@ -418,11 +432,17 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
         TempVars vars = TempVars.get();
 
         Vector3f compVecA = vars.vect4;
-        vars.release();
-
+      
         compVecA.set(position).subtractLocal(worldTranslation);
-        getLocalRotation().lookAt(compVecA, upVector);
-
+        getLocalRotation().lookAt(compVecA, upVector);        
+        
+        if ( getParent() != null ) {
+            Quaternion rot=vars.quat1;
+            rot =  rot.set(parent.getWorldRotation()).inverseLocal().multLocal(getLocalRotation());
+            rot.normalizeLocal();
+            setLocalRotation(rot);
+        }
+        vars.release();
         setTransformRefresh();
     }
 
@@ -567,7 +587,7 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
             return;
         }
 
-        for (Control c : controls.getArray() ) {
+        for (Control c : controls.getArray()) {
             c.render(rm, vp);
         }
     }
@@ -627,7 +647,7 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
     public <T extends Control> T getControl(Class<T> controlType) {
         for (Control c : controls.getArray()) {
             if (controlType.isAssignableFrom(c.getClass())) {
-                return (T)c;
+                return (T) c;
             }
         }
         return null;
@@ -994,15 +1014,15 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
     }
 
     /**
-     * Rotates the spatial by the yaw, roll and pitch angles (in radians),
-     * in the local coordinate space.
+     * Rotates the spatial by the xAngle, yAngle and zAngle angles (in radians),
+     * (aka pitch, yaw, roll) in the local coordinate space.
      *
      * @return The spatial on which this method is called, e.g <code>this</code>.
      */
-    public Spatial rotate(float yaw, float roll, float pitch) {
+    public Spatial rotate(float xAngle, float yAngle, float zAngle) {
         TempVars vars = TempVars.get();
         Quaternion q = vars.quat1;
-        q.fromAngles(yaw, roll, pitch);
+        q.fromAngles(xAngle, yAngle, zAngle);
         rotate(q);
         vars.release();
 
@@ -1035,6 +1055,16 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
             return parent.getCullHint();
         } else {
             return CullHint.Dynamic;
+        }
+    }
+
+    public BatchHint getBatchHint() {
+        if (batchHint != BatchHint.Inherit) {
+            return batchHint;
+        } else if (parent != null) {
+            return parent.getBatchHint();
+        } else {
+            return BatchHint.Always;
         }
     }
 
@@ -1153,7 +1183,9 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
 
             clone.controls = new SafeArrayList<Control>(Control.class);
             for (int i = 0; i < controls.size(); i++) {
-                clone.controls.add(controls.get(i).cloneForSpatial(clone));
+                Control newControl = controls.get(i).cloneForSpatial(clone);
+                newControl.setSpatial(clone);
+                clone.controls.add(newControl);
             }
 
             if (userData != null) {
@@ -1197,7 +1229,9 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
             userData = new HashMap<String, Savable>();
         }
 
-        if (data instanceof Savable) {
+        if(data == null){
+            userData.remove(key);            
+        }else if (data instanceof Savable) {
             userData.put(key, (Savable) data);
         } else {
             userData.put(key, new UserData(UserData.getObjectType(data), data));
@@ -1260,13 +1294,14 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
         capsule.write(name, "name", null);
         capsule.write(worldBound, "world_bound", null);
         capsule.write(cullHint, "cull_mode", CullHint.Inherit);
+        capsule.write(batchHint, "batch_hint", BatchHint.Inherit);
         capsule.write(queueBucket, "queue", RenderQueue.Bucket.Inherit);
         capsule.write(shadowMode, "shadow_mode", ShadowMode.Inherit);
         capsule.write(localTransform, "transform", Transform.IDENTITY);
         capsule.write(localLights, "lights", null);
-        
+
         // Shallow clone the controls array to convert its type.
-        capsule.writeSavableArrayList( new ArrayList(controls), "controlsList", null);
+        capsule.writeSavableArrayList(new ArrayList(controls), "controlsList", null);
         capsule.writeStringSavableMap(userData, "user_data", null);
     }
 
@@ -1276,6 +1311,7 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
         name = ic.readString("name", null);
         worldBound = (BoundingVolume) ic.readSavable("world_bound", null);
         cullHint = ic.readEnum("cull_mode", CullHint.class, CullHint.Inherit);
+        batchHint = ic.readEnum("batch_hint", BatchHint.class, BatchHint.Inherit);
         queueBucket = ic.readEnum("queue", RenderQueue.Bucket.class,
                 RenderQueue.Bucket.Inherit);
         shadowMode = ic.readEnum("shadow_mode", ShadowMode.class,
@@ -1321,10 +1357,29 @@ public abstract class Spatial implements Savable, Cloneable, Collidable, Asset {
     }
 
     /**
+     * <code>setBatchHint</code> sets how batching should work on this
+     * spatial. NOTE: You must set this AFTER attaching to a 
+     * parent or it will be reset with the parent's cullMode value.
+     *
+     * @param hint
+     *            one of BatchHint.Never, BatchHint.Always, BatchHint.Inherit 
+     */
+    public void setBatchHint(BatchHint hint) {
+        batchHint = hint;
+    }
+
+    /**
      * @return the cullmode set on this Spatial
      */
     public CullHint getLocalCullHint() {
         return cullHint;
+    }
+
+    /**
+     * @return the batchHint set on this Spatial
+     */
+    public BatchHint getLocalBatchHint() {
+        return batchHint;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,9 +35,9 @@ import com.jme3.asset.AssetNotFoundException;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResults;
+import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
-import com.jme3.export.InputCapsule;
 import com.jme3.export.OutputCapsule;
 import com.jme3.material.Material;
 import com.jme3.math.Matrix4f;
@@ -59,6 +59,9 @@ import java.util.logging.Logger;
  */
 public class Geometry extends Spatial {
 
+    // Version #1: removed shared meshes. 
+    // models loaded with shared mesh will be automatically fixed.
+    public static final int SAVABLE_VERSION = 1;
     private static final Logger logger = Logger.getLogger(Geometry.class.getName());
     protected Mesh mesh;
     protected transient int lodLevel = 0;
@@ -75,16 +78,7 @@ public class Geometry extends Spatial {
     /**
      * the start index of this geom's mesh in the batchNode mesh
      */
-    protected int startIndex;
-    /**
-     * the previous transforms of the geometry used to compute world transforms
-     */
-    protected Transform prevBatchTransforms = null;
-    /**
-     * the cached offset matrix used when the geometry is batched
-     */
-    protected Matrix4f cachedOffsetMat = null;
-
+    protected int startIndex;    
     /**
      * Serialization only. Do not use.
      */
@@ -288,11 +282,8 @@ public class Geometry extends Spatial {
         super.updateWorldTransforms();
         computeWorldMatrix();
 
-        if (isBatched()) {
-            computeOffsetTransform();
-            batchNode.updateSubBatch(this);
-            prevBatchTransforms.set(batchNode.getTransforms(this));
-
+        if (isBatched()) {        
+            batchNode.updateSubBatch(this);     
         }
         // geometry requires lights to be sorted
         worldLights.sort(true);
@@ -305,9 +296,7 @@ public class Geometry extends Spatial {
      */
     protected void batch(BatchNode node, int startIndex) {
         this.batchNode = node;
-        this.startIndex = startIndex;
-        prevBatchTransforms = new Transform();
-        cachedOffsetMat = new Matrix4f();
+        this.startIndex = startIndex;       
         setCullHint(CullHint.Always);
     }
 
@@ -316,65 +305,40 @@ public class Geometry extends Spatial {
      */
     protected void unBatch() {
         this.startIndex = 0;
-        prevBatchTransforms = null;
-        cachedOffsetMat = null;
-        //once the geometry is removed from the screnegraph we call batch on the batchNode before unreferencing it.
-        this.batchNode.batch();
-        this.batchNode = null;
+        //once the geometry is removed from the screnegraph the batchNode needs to be rebatched.
+        if (batchNode != null) {
+            this.batchNode.setNeedsFullRebatch(true);
+            this.batchNode = null;
+        }
         setCullHint(CullHint.Dynamic);
     }
 
     @Override
     public boolean removeFromParent() {
-        boolean removed = super.removeFromParent();
+        return super.removeFromParent();
+    }
+
+    @Override
+    protected void setParent(Node parent) {
+        super.setParent(parent);
         //if the geometry is batched we also have to unbatch it
-        if (isBatched()) {
+        if (parent == null && isBatched()) {
             unBatch();
         }
-        return removed;
     }
 
-    /**
-     * Recomputes the cached offset matrix used when the geometry is batched     * 
-     */
-    public void computeOffsetTransform() {
-        TempVars vars = TempVars.get();
-        Matrix4f tmpMat = vars.tempMat42;
-
-        // Compute the cached world matrix
-        cachedOffsetMat.loadIdentity();
-        cachedOffsetMat.setRotationQuaternion(prevBatchTransforms.getRotation());
-        cachedOffsetMat.setTranslation(prevBatchTransforms.getTranslation());
-
-
-        Matrix4f scaleMat = vars.tempMat4;
-        scaleMat.loadIdentity();
-        scaleMat.scale(prevBatchTransforms.getScale());
-        cachedOffsetMat.multLocal(scaleMat);
-        cachedOffsetMat.invertLocal();
-
-        tmpMat.loadIdentity();
-        tmpMat.setRotationQuaternion(batchNode.getTransforms(this).getRotation());
-        tmpMat.setTranslation(batchNode.getTransforms(this).getTranslation());
-        scaleMat.loadIdentity();
-        scaleMat.scale(batchNode.getTransforms(this).getScale());
-        tmpMat.multLocal(scaleMat);
-
-        tmpMat.mult(cachedOffsetMat, cachedOffsetMat);
-
-        vars.release();
-    }
 
     /**
      * Indicate that the transform of this spatial has changed and that
      * a refresh is required.
      */
-    @Override
-    protected void setTransformRefresh() {
-        refreshFlags |= RF_TRANSFORM;
-        setBoundRefresh();
-    }
-
+    // NOTE: Spatial has an identical implementation of this method,
+    // thus it was commented out.
+//    @Override
+//    protected void setTransformRefresh() {
+//        refreshFlags |= RF_TRANSFORM;
+//        setBoundRefresh();
+//    }
     /**
      * Recomputes the matrix returned by {@link Geometry#getWorldMatrix() }.
      * This will require a localized transform update for this geometry.
@@ -474,6 +438,11 @@ public class Geometry extends Spatial {
     @Override
     public Geometry clone(boolean cloneMaterial) {
         Geometry geomClone = (Geometry) super.clone(cloneMaterial);
+        //this geometry is batched but the clonned one should not be
+        if (isBatched()) {
+            geomClone.batchNode = null;
+            geomClone.unBatch();
+        }
         geomClone.cachedWorldMat = cachedWorldMat.clone();
         if (material != null) {
             if (cloneMaterial) {
@@ -541,8 +510,7 @@ public class Geometry extends Spatial {
                 material = im.getAssetManager().loadMaterial(matName);
             } catch (AssetNotFoundException ex) {
                 // Cannot find J3M file.
-                logger.log(Level.FINE, "Could not load J3M file {0} for Geometry.",
-                        matName);
+                logger.log(Level.FINE, "Cannot locate {0} for geometry {1}", new Object[]{matName, key});
             }
         }
         // If material is NULL, try to load it from the geometry
@@ -550,5 +518,13 @@ public class Geometry extends Spatial {
             material = (Material) ic.readSavable("material", null);
         }
         ignoreTransform = ic.readBoolean("ignoreTransform", false);
+
+        if (ic.getSavableVersion(Geometry.class) == 0) {
+            // Fix shared mesh (if set)
+            Mesh sharedMesh = getUserData(UserData.JME_SHAREDMESH);
+            if (sharedMesh != null) {
+                getMesh().extractVertexData(sharedMesh);
+            }
+        }
     }
 }

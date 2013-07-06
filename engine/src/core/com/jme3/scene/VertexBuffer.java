@@ -743,6 +743,22 @@ public class VertexBuffer extends NativeObject implements Savable, Cloneable {
      * match.
      */
     public void copyElement(int inIndex, VertexBuffer outVb, int outIndex){
+        copyElements(inIndex, outVb, outIndex, 1);
+    }
+
+    /**
+     * Copies a sequence of elements of data from this <code>VertexBuffer</code>
+     * to the given output VertexBuffer.
+     * 
+     * @param inIndex The input element index
+     * @param outVb The buffer to copy to
+     * @param outIndex The output element index
+     * @param len The number of elements to copy
+     * 
+     * @throws IllegalArgumentException If the formats of the buffers do not
+     * match.
+     */
+    public void copyElements(int inIndex, VertexBuffer outVb, int outIndex, int len){
         if (outVb.format != format || outVb.components != components)
             throw new IllegalArgumentException("Buffer format mismatch. Cannot copy");
 
