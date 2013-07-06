@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,21 +29,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.bounding;
 
 import com.jme3.collision.Collidable;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.Savable;
-import com.jme3.math.Matrix4f;
+import com.jme3.math.*;
 import java.io.IOException;
 import java.nio.FloatBuffer;
-
-import com.jme3.math.Plane;
-import com.jme3.math.Ray;
-import com.jme3.math.Transform;
-import com.jme3.math.Vector3f;
 
 /**
  * <code>BoundingVolume</code> defines an interface for dealing with
@@ -54,12 +48,28 @@ import com.jme3.math.Vector3f;
  */
 public abstract class BoundingVolume implements Savable, Cloneable, Collidable {
 
+    /**
+     * The type of bounding volume being used.
+     */
     public enum Type {
-        Sphere, AABB, OBB, Capsule;
+        /**
+         * {@link BoundingSphere}
+         */
+        Sphere, 
+        
+        /**
+         * {@link BoundingBox}.
+         */
+        AABB, 
+        
+        /**
+         * Currently unsupported by jME3.
+         */
+        Capsule;
     }
 
     protected int checkPlane = 0;
-    Vector3f center = new Vector3f();
+    protected Vector3f center = new Vector3f();
 
     public BoundingVolume() {
     }

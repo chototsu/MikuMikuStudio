@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,20 +39,11 @@ import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
+import com.jme3.math.*;
+import com.jme3.scene.Mesh;
+import com.jme3.util.TempVars;
 import java.io.IOException;
 import java.nio.FloatBuffer;
-
-import com.jme3.math.FastMath;
-import com.jme3.math.Matrix3f;
-import com.jme3.math.Matrix4f;
-import com.jme3.math.Plane;
-import com.jme3.math.Ray;
-import com.jme3.math.Transform;
-import com.jme3.math.Triangle;
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Mesh;
-import com.jme3.util.BufferUtils;
-import com.jme3.util.TempVars;
 //import com.jme.scene.TriMesh;
 
 /**
@@ -188,7 +179,7 @@ public class BoundingBox extends BoundingVolume {
         vars.release();
     }
 
-    public static final void checkMinMax(Vector3f min, Vector3f max, Vector3f point) {
+    public static void checkMinMax(Vector3f min, Vector3f max, Vector3f point) {
         if (point.x < min.x) {
             min.x = point.x;
         }
@@ -229,30 +220,42 @@ public class BoundingBox extends BoundingVolume {
         }
 
         TempVars vars = TempVars.get();
+        
+        float[] tmpArray = vars.skinPositions;
 
-        BufferUtils.populateFromBuffer(vars.vect1, points, 0);
-        float minX = vars.vect1.x, minY = vars.vect1.y, minZ = vars.vect1.z;
-        float maxX = vars.vect1.x, maxY = vars.vect1.y, maxZ = vars.vect1.z;
+        float minX = Float.POSITIVE_INFINITY, minY = Float.POSITIVE_INFINITY, minZ = Float.POSITIVE_INFINITY;
+        float maxX = Float.NEGATIVE_INFINITY, maxY = Float.NEGATIVE_INFINITY, maxZ = Float.NEGATIVE_INFINITY;
+        
+        int iterations = (int) FastMath.ceil(points.limit() / ((float) tmpArray.length));
+        for (int i = iterations - 1; i >= 0; i--) {
+            int bufLength = Math.min(tmpArray.length, points.remaining());
+            points.get(tmpArray, 0, bufLength);
 
-        for (int i = 1, len = points.remaining() / 3; i < len; i++) {
-            BufferUtils.populateFromBuffer(vars.vect1, points, i);
+            for (int j = 0; j < bufLength; j += 3) {
+                vars.vect1.x = tmpArray[j];
+                vars.vect1.y = tmpArray[j+1];
+                vars.vect1.z = tmpArray[j+2];
+                
+                if (vars.vect1.x < minX) {
+                    minX = vars.vect1.x;
+                }
+                if (vars.vect1.x > maxX) {
+                    maxX = vars.vect1.x;
+                }
 
-            if (vars.vect1.x < minX) {
-                minX = vars.vect1.x;
-            } else if (vars.vect1.x > maxX) {
-                maxX = vars.vect1.x;
-            }
+                if (vars.vect1.y < minY) {
+                    minY = vars.vect1.y;
+                }
+                if (vars.vect1.y > maxY) {
+                    maxY = vars.vect1.y;
+                }
 
-            if (vars.vect1.y < minY) {
-                minY = vars.vect1.y;
-            } else if (vars.vect1.y > maxY) {
-                maxY = vars.vect1.y;
-            }
-
-            if (vars.vect1.z < minZ) {
-                minZ = vars.vect1.z;
-            } else if (vars.vect1.z > maxZ) {
-                maxZ = vars.vect1.z;
+                if (vars.vect1.z < minZ) {
+                    minZ = vars.vect1.z;
+                }
+                if (vars.vect1.z > maxZ) {
+                    maxZ = vars.vect1.z;
+                }
             }
         }
 
@@ -365,12 +368,12 @@ public class BoundingBox extends BoundingVolume {
     }
 
     /**
-     * <code>merge</code> combines this sphere with a second bounding sphere.
-     * This new sphere contains both bounding spheres and is returned.
+     * <code>merge</code> combines this bounding box with a second bounding box.
+     * This new box contains both bounding box and is returned.
      * 
      * @param volume
-     *            the sphere to combine with this sphere.
-     * @return the new sphere
+     *            the bounding box to combine with this bounding box.
+     * @return the new bounding box
      */
     public BoundingVolume merge(BoundingVolume volume) {
         if (volume == null) {
