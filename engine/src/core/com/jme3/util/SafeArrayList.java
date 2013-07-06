@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.util;
 
 import java.util.*;
@@ -66,7 +65,7 @@ import java.util.*;
  *  original snapshot.
  *  </ul>  
  *
- *  @version   $Revision: 7856 $
+ *  @version   $Revision$
  *  @author    Paul Speed
  */
 public class SafeArrayList<E> implements List<E> {
@@ -318,6 +317,25 @@ public class SafeArrayList<E> implements List<E> {
         // So far JME doesn't use subList that I can see so I'm nerfing it.
         List<E> raw =  Arrays.asList(getArray()).subList(fromIndex, toIndex);
         return Collections.unmodifiableList(raw);
+    }
+ 
+    public String toString() {
+ 
+        E[] array = getArray();
+        if( array.length == 0 ) {
+            return "[]";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for( int i = 0; i < array.length; i++ ) {
+            if( i > 0 )
+                sb.append( ", " );
+            E e = array[i];
+            sb.append( e == this ? "(this Collection)" : e );
+        }
+        sb.append(']');
+        return sb.toString();
     }
  
     protected class ArrayIterator<E> implements ListIterator<E> {
