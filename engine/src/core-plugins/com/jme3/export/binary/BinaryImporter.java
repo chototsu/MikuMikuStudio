@@ -124,23 +124,25 @@ public final class BinaryImporter implements JmeImporter {
 //            throw new IllegalArgumentException("Model assets must be loaded using a ModelKey");
 
         assetManager = info.getManager();
+        if ("j3o".equals(info.getKey().getExtension())) {
+            InputStream is = null;
+            try {
+                is = info.openStream();
+                Savable s = load(is);
 
-        InputStream is = null;
-        try {
-            is = info.openStream();
-            Savable s = load(is);
-            
-            return s;
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, "An error occured while loading jME binary object", ex);
-        } finally {
-            if (is != null){
-                try {
-                    is.close();
-                } catch (IOException ex) {}
+                return s;
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, "An error occured while loading jME binary object", ex);
+            } finally {
+                if (is != null){
+                    try {
+                        is.close();
+                    } catch (IOException ex) {}
+                }
+
             }
         }
-        return null;
+        return assetManager.loadAsset(info.getKey());
     }
 
     public Savable load(InputStream is) throws IOException {

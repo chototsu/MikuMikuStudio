@@ -90,14 +90,18 @@ extern "C" {
     (JNIEnv *env, jclass clazz, jlong shapeId, jobject callback) {
         btCollisionShape* shape = reinterpret_cast<btCollisionShape*>(shapeId);
         if (shape->isConcave()) {
-            btConcaveShape* concave = reinterpret_cast<btConcaveShape*>(shape);
+//            fprintf(stdout,"Concave shape");
+//            fflush(stdout);
+            btConcaveShape* concave = (btConcaveShape*) shape;
             DebugCallback* clb = new DebugCallback(env, callback);
             btVector3 min = btVector3(-1e30, -1e30, -1e30);
             btVector3 max = btVector3(1e30, 1e30, 1e30);
             concave->processAllTriangles(clb, min, max);
             delete(clb);
         } else if (shape->isConvex()) {
-            btConvexShape* convexShape = reinterpret_cast<btConvexShape*>(shape);
+//            fprintf(stdout,"Convex shape");
+//            fflush(stdout);
+            btConvexShape* convexShape = (btConvexShape*) shape;
             // Check there is a hull shape to render
             if (convexShape->getUserPointer() == NULL) {
                 // create a hull approximation

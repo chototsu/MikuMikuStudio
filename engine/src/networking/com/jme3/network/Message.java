@@ -37,7 +37,7 @@ import com.jme3.network.serializing.Serializable;
 /**
  *  Interface implemented by all network messages.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7068 $
  *  @author    Paul Speed
  */
 @Serializable()

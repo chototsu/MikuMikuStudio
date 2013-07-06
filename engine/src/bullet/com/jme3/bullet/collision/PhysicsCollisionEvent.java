@@ -53,9 +53,12 @@ public class PhysicsCollisionEvent extends EventObject {
 
     public PhysicsCollisionEvent(int type, PhysicsCollisionObject nodeA, PhysicsCollisionObject nodeB, long manifoldPointObjectId) {
         super(nodeA);
+        this.type = type;
+        this.nodeA = nodeA;
+        this.nodeB = nodeB;
         this.manifoldPointObjectId = manifoldPointObjectId;
     }
-    
+
     /**
      * used by event factory, called when event is destroyed
      */
@@ -65,6 +68,26 @@ public class PhysicsCollisionEvent extends EventObject {
         this.nodeA = null;
         this.nodeB = null;
         this.manifoldPointObjectId = 0;
+//        this.localPointA = null;
+//        this.localPointB = null;
+//        this.positionWorldOnB = null;
+//        this.positionWorldOnA = null;
+//        this.normalWorldOnB = null;
+//        this.distance1 = null
+//        this.combinedFriction = null;
+//        this.combinedRestitution = null;
+//        this.partId0 = null;
+//        this.partId1 = null;
+//        this.index0 = null;
+//        this.index1 = null;
+//        this.userPersistentData = null;
+//        this.appliedImpulse = null;
+//        this.lateralFrictionInitialized = null;
+//        this.appliedImpulseLateral1 = null;
+//        this.appliedImpulseLateral2 = null;
+//        this.lifeTime = null;
+//        this.lateralFrictionDir1 = null;
+//        this.lateralFrictionDir2 = null;
     }
 
     /**
@@ -76,6 +99,26 @@ public class PhysicsCollisionEvent extends EventObject {
         this.nodeA = source;
         this.nodeB = nodeB;
         this.manifoldPointObjectId = manifoldPointObjectId;
+//        this.localPointA.set(localPointA);
+//        this.localPointB.set(localPointB);
+//        this.positionWorldOnB.set(positionWorldOnB);
+//        this.positionWorldOnA.set(positionWorldOnA);
+//        this.normalWorldOnB.set(normalWorldOnB);
+//        this.distance1 = distance1;
+//        this.combinedFriction = combinedFriction;
+//        this.combinedRestitution = combinedRestitution;
+//        this.partId0 = partId0;
+//        this.partId1 = partId1;
+//        this.index0 = index0;
+//        this.index1 = index1;
+//        this.userPersistentData = userPersistentData;
+//        this.appliedImpulse = appliedImpulse;
+//        this.lateralFrictionInitialized = lateralFrictionInitialized;
+//        this.appliedImpulseLateral1 = appliedImpulseLateral1;
+//        this.appliedImpulseLateral2 = appliedImpulseLateral2;
+//        this.lifeTime = lifeTime;
+//        this.lateralFrictionDir1.set(lateralFrictionDir1);
+//        this.lateralFrictionDir2.set(lateralFrictionDir2);
     }
 
     public int getType() {
@@ -124,45 +167,37 @@ public class PhysicsCollisionEvent extends EventObject {
         return getAppliedImpulseLateral2(manifoldPointObjectId);
     }
     private native float getAppliedImpulseLateral2(long manifoldPointObjectId);
-
+    
     public float getCombinedFriction() {
         return getCombinedFriction(manifoldPointObjectId);
     }
     private native float getCombinedFriction(long manifoldPointObjectId);
-
+    
     public float getCombinedRestitution() {
         return getCombinedRestitution(manifoldPointObjectId);
     }
     private native float getCombinedRestitution(long manifoldPointObjectId);
-
+    
     public float getDistance1() {
         return getDistance1(manifoldPointObjectId);
     }
     private native float getDistance1(long manifoldPointObjectId);
-
+    
     public int getIndex0() {
         return getIndex0(manifoldPointObjectId);
     }
     private native int getIndex0(long manifoldPointObjectId);
-
+    
     public int getIndex1() {
         return getIndex1(manifoldPointObjectId);
     }
     private native int getIndex1(long manifoldPointObjectId);
-
-    public Vector3f getLateralFrictionDir1() {
-        return getLateralFrictionDir1(new Vector3f());
-    }
 
     public Vector3f getLateralFrictionDir1(Vector3f lateralFrictionDir1) {
         getLateralFrictionDir1(manifoldPointObjectId, lateralFrictionDir1);
         return lateralFrictionDir1;
     }
     private native void getLateralFrictionDir1(long manifoldPointObjectId, Vector3f lateralFrictionDir1);
-
-    public Vector3f getLateralFrictionDir2() {
-        return getLateralFrictionDir2(new Vector3f());
-    }
 
     public Vector3f getLateralFrictionDir2(Vector3f lateralFrictionDir2) {
         getLateralFrictionDir2(manifoldPointObjectId, lateralFrictionDir2);
@@ -180,29 +215,17 @@ public class PhysicsCollisionEvent extends EventObject {
     }
     private native int getLifeTime(long manifoldPointObjectId);
 
-    public Vector3f getLocalPointA() {
-        return getLocalPointA(new Vector3f());
-    }
-    
     public Vector3f getLocalPointA(Vector3f localPointA) {
         getLocalPointA(manifoldPointObjectId, localPointA);
         return localPointA;
     }
     private native void getLocalPointA(long manifoldPointObjectId, Vector3f localPointA);
 
-    public Vector3f getLocalPointB() {
-        return getLocalPointB(new Vector3f());
-    }
-    
     public Vector3f getLocalPointB(Vector3f localPointB) {
         getLocalPointB(manifoldPointObjectId, localPointB);
         return localPointB;
     }
     private native void getLocalPointB(long manifoldPointObjectId, Vector3f localPointB);
-
-    public Vector3f getNormalWorldOnB() {
-        return getNormalWorldOnB(new Vector3f());
-    }
 
     public Vector3f getNormalWorldOnB(Vector3f normalWorldOnB) {
         getNormalWorldOnB(manifoldPointObjectId, normalWorldOnB);
@@ -214,26 +237,18 @@ public class PhysicsCollisionEvent extends EventObject {
         return getPartId0(manifoldPointObjectId);
     }
     private native int getPartId0(long manifoldPointObjectId);
-
+    
     public int getPartId1() {
         return getPartId1(manifoldPointObjectId);
     }
-
+    
     private native int getPartId1(long manifoldPointObjectId);
-
-    public Vector3f getPositionWorldOnA() {
-        return getPositionWorldOnA(new Vector3f());
-    }
 
     public Vector3f getPositionWorldOnA(Vector3f positionWorldOnA) {
         getPositionWorldOnA(positionWorldOnA);
         return positionWorldOnA;
     }
     private native void getPositionWorldOnA(long manifoldPointObjectId, Vector3f positionWorldOnA);
-
-    public Vector3f getPositionWorldOnB() {
-        return getPositionWorldOnB(new Vector3f());
-    }
 
     public Vector3f getPositionWorldOnB(Vector3f positionWorldOnB) {
         getPositionWorldOnB(manifoldPointObjectId, positionWorldOnB);

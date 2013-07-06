@@ -92,13 +92,13 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
     private native long createGhostObject();
 
     private native void setGhostFlags(long objectId);
-
+    
     @Override
     public void setCollisionShape(CollisionShape collisionShape) {
         super.setCollisionShape(collisionShape);
         if (objectId == 0) {
             buildObject();
-        } else {
+        }else{
             attachCollisionShape(objectId, collisionShape.getObjectId());
         }
     }
@@ -110,7 +110,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
     public void setPhysicsLocation(Vector3f location) {
         setPhysicsLocation(objectId, location);
     }
-
+    
     private native void setPhysicsLocation(long objectId, Vector3f location);
 
     /**
@@ -120,7 +120,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
     public void setPhysicsRotation(Matrix3f rotation) {
         setPhysicsRotation(objectId, rotation);
     }
-
+    
     private native void setPhysicsRotation(long objectId, Matrix3f rotation);
 
     /**
@@ -130,7 +130,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
     public void setPhysicsRotation(Quaternion rotation) {
         setPhysicsRotation(objectId, rotation);
     }
-
+    
     private native void setPhysicsRotation(long objectId, Quaternion rotation);
 
     /**
@@ -143,7 +143,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
         getPhysicsLocation(objectId, trans);
         return trans;
     }
-
+    
     private native void getPhysicsLocation(long objectId, Vector3f vector);
 
     /**
@@ -156,7 +156,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
         getPhysicsRotation(objectId, rot);
         return rot;
     }
-
+    
     private native void getPhysicsRotation(long objectId, Quaternion rot);
 
     /**
@@ -169,7 +169,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
         getPhysicsRotationMatrix(objectId, rot);
         return rot;
     }
-
+    
     private native void getPhysicsRotationMatrix(long objectId, Matrix3f rot);
 
     /**
@@ -180,7 +180,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
         getPhysicsLocation(objectId, vec);
         return vec;
     }
-
+    
     /**
      * @return the physicsLocation
      */
@@ -202,6 +202,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
 //    public PairCachingGhostObject getObjectId() {
 //        return gObject;
 //    }
+
     /**
      * destroys this PhysicsGhostNode and removes it from memory
      */
@@ -222,10 +223,8 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
 //        }
         return overlappingObjects;
     }
-
     protected native void getOverlappingObjects(long objectId);
-
-    private void addOverlappingObject_native(PhysicsCollisionObject co) {
+    protected void addOverlappingObject(PhysicsCollisionObject co) {
         overlappingObjects.add(co);
     }
 
@@ -236,7 +235,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
     public int getOverlappingCount() {
         return getOverlappingCount(objectId);
     }
-
+    
     private native int getOverlappingCount(long objectId);
 
     /**
@@ -251,7 +250,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
     public void setCcdSweptSphereRadius(float radius) {
         setCcdSweptSphereRadius(objectId, radius);
     }
-
+    
     private native void setCcdSweptSphereRadius(long objectId, float radius);
 
     public void setCcdMotionThreshold(float threshold) {
@@ -263,7 +262,7 @@ public class PhysicsGhostObject extends PhysicsCollisionObject {
     public float getCcdSweptSphereRadius() {
         return getCcdSweptSphereRadius(objectId);
     }
-
+    
     private native float getCcdSweptSphereRadius(long objectId);
 
     public float getCcdMotionThreshold() {

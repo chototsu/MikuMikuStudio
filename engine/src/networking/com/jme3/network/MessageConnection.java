@@ -37,7 +37,7 @@ package com.jme3.network;
  *  The source of a received message and the common abstract interface
  *  of client->server and server->client objects. 
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7010 $
  *  @author    Paul Speed
  */
 public interface MessageConnection

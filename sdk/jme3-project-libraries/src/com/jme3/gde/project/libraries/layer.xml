@@ -3,6 +3,7 @@
 <filesystem>
     <folder name="org-netbeans-api-project-libraries">
         <folder name="Libraries">
+            <file name="MikuMikuDance.xml" url="MikuMikuDance.xml"/>
             <file name="jme3-libraries.xml" url="jme3-libraries.xml"/>
             <file name="jme3-libraries-lwjgl-minimum.xml" url="jme3-libraries-lwjgl-minimum.xml"/>
             <file name="jme3-libraries-gui.xml" url="jme3-libraries-gui.xml"/>

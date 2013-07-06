@@ -41,7 +41,7 @@ import java.net.InetAddress;
  *  will be setup the same as if Network.connectToServer
  *  had been called.  
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7106 $
  *  @author    Paul Speed
  */
 public interface NetworkClient extends Client

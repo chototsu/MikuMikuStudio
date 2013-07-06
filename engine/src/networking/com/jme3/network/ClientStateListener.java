@@ -37,7 +37,7 @@ package com.jme3.network;
  *  Listener that is notified about the connection state of
  *  a Client.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7451 $
  *  @author    Paul Speed
  */
 public interface ClientStateListener

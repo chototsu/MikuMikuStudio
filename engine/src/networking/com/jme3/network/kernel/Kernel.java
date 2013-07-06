@@ -41,7 +41,7 @@ import com.jme3.network.Filter;
  *  Defines the basic byte[] passing messaging
  *  kernel.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7123 $
  *  @author    Paul Speed
  */
 public interface Kernel

@@ -16,8 +16,10 @@ import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -186,6 +188,14 @@ public class RagdollUtils {
 
         return new HullCollisionShape(p);
     }
+    static int getBoneIndex(Buffer buf, int index) {
+        if (buf instanceof ByteBuffer) {
+            ByteBuffer boneIndices = (ByteBuffer) buf;
+            return boneIndices.get(index);
+        }
+        ShortBuffer boneIndices = (ShortBuffer) buf;
+        return boneIndices.get(index);
+    }
 
     /**
      * returns a list of points for the given bone
@@ -196,11 +206,27 @@ public class RagdollUtils {
      * @return 
      */
     private static List<Float> getPoints(Mesh mesh, int boneIndex, Vector3f initialScale, Vector3f offset, float weightThreshold) {
-
+        if (mesh == null) {
+            throw new RuntimeException("mesh is null ");
+        }
+        if (initialScale == null) {
+            throw new RuntimeException("initialScale is null ");
+        }
+        if (offset == null) {
+            throw new RuntimeException("offset is null ");
+        }
+        if (mesh.getFloatBuffer(Type.Position) == null) {
+            throw new RuntimeException("verticies is null ");
+        }
+        if (mesh.getBuffer(Type.BoneIndex) == null) {
+            throw new RuntimeException("boneIndices is null ");
+        }
+        if (mesh.getBuffer(Type.BoneWeight) == null) {
+            throw new RuntimeException("boneWeight is null ");
+        }
         FloatBuffer vertices = mesh.getFloatBuffer(Type.Position);
-        ByteBuffer boneIndices = (ByteBuffer) mesh.getBuffer(Type.BoneIndex).getData();
+        Buffer boneIndices = (Buffer) mesh.getBuffer(Type.BoneIndex).getData();
         FloatBuffer boneWeight = (FloatBuffer) mesh.getBuffer(Type.BoneWeight).getData();
-
         vertices.rewind();
         boneIndices.rewind();
         boneWeight.rewind();
@@ -214,7 +240,7 @@ public class RagdollUtils {
             boolean add = false;
             int start = i / 3 * 4;
             for (k = start; k < start + 4; k++) {
-                if (boneIndices.get(k) == boneIndex && boneWeight.get(k) >= weightThreshold) {
+                if (getBoneIndex(boneIndices, k) == boneIndex && boneWeight.get(k) >= weightThreshold) {
                     add = true;
                     break;
                 }

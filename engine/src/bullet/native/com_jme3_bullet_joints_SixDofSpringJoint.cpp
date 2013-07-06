@@ -78,6 +78,7 @@ JNIEXPORT jlong JNICALL Java_com_jme3_bullet_joints_SixDofSpringJoint_createJoin
         jmeClasses::initJavaClasses(env);
         btRigidBody* bodyA = reinterpret_cast<btRigidBody*>(bodyIdA);
         btRigidBody* bodyB = reinterpret_cast<btRigidBody*>(bodyIdB);
+
         btTransform transA;
         jmeBulletUtil::convert(env, pivotA, &transA.getOrigin());
         jmeBulletUtil::convert(env, rotA, &transA.getBasis());

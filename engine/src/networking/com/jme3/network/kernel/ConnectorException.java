@@ -37,7 +37,7 @@ package com.jme3.network.kernel;
  *  Represents a client-side connection error, usually encapsulating
  *  an IOException as its cause.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7009 $
  *  @author    Paul Speed
  */
 public class ConnectorException extends RuntimeException

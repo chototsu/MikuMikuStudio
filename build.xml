@@ -12,7 +12,8 @@
     
     <target name="default" depends="zip"/>
 
-    <target name="build" description="Builds the complete GDE, copies over engine libraries." depends="-check-platform, -update-sdk-platform-config">
+<!--    <target name="build" description="Builds the complete SDK" depends="-check-platform, -update-sdk-platform-config">-->
+    <target name="build" description="Builds the complete SDK">
         <ant dir="engine" target="update-sdk"/>
         <ant dir="sdk" target="build"/>
     </target>
@@ -22,12 +23,12 @@
         <ant dir="engine" target="dist"/>
     </target>
 
-    <target name="clean" description="Clean all build products" depends="-check-platform, -update-sdk-platform-config">
+    <target name="clean" description="Clean all build products">
         <ant dir="engine" target="clean"/>
         <ant dir="sdk" target="clean"/>
     </target>
 
-    <target name="run" description="Runs the SDK" depends="-check-platform, -update-sdk-platform-config">
+    <target name="run" description="Runs the SDK">
         <ant dir="engine" target="update-sdk"/>
         <ant dir="sdk" target="run"/>
     </target>
@@ -42,7 +43,9 @@
     <target name="-check-platform" depends="-check-platform-present" unless="platform.present">
         <property file="sdk/nbproject/project.properties"/>
         <echo message="Downloading base platform, this only has to be done once."/>
-        <get src="http://jmonkeyengine.com/updates/nightly/${app.version}/platform-base.zip" dest="./" skipexisting="false"/>
+        <!--get src="http://jmonkeyengine.googlecode.com/files/platform-base.zip" dest="./" skipexisting="true"/-->
+        <get src="http://jmonkeyengine.com/platform/base/alpha/platform-base.zip" dest="./" skipexisting="false"/>
+        <!--get src="http://jmonkeyengine.com/updates/${app.version}/platform-base.zip" dest="./" skipexisting="false"/-->
         <unzip src="platform-base.zip" dest="./"/>
         <antcall target="-update-sdk-platform-config"/>
         <delete file="platform-base.zip"/>
@@ -72,16 +75,7 @@
        ****************************************************************
       -->
       
-    <target name="hudson-nightly" depends="-check-platform, -update-sdk-platform-config">
-        <exec executable="svn" dir="engine">
-            <arg value="cleanup" />
-        </exec>
-        <exec executable="svn" dir="engine">
-            <arg value="revert" />
-        </exec>
-        <exec executable="svn" dir="engine">
-            <arg value="cleanup" />
-        </exec>
+    <target name="hudson-nightly" depends="update-platform">
         <exec executable="svn" dir="engine">
             <arg value="update" />
         </exec>
@@ -91,16 +85,7 @@
         <ant dir="sdk" target="hudson-nightly"/>
     </target>
 
-    <target name="hudson-stable" depends="-check-platform, -update-sdk-platform-config">
-        <exec executable="svn" dir="engine">
-            <arg value="cleanup" />
-        </exec>
-        <exec executable="svn" dir="engine">
-            <arg value="revert" />
-        </exec>
-        <exec executable="svn" dir="engine">
-            <arg value="cleanup" />
-        </exec>
+    <target name="hudson-stable" depends="update-platform">
         <exec executable="svn" dir="engine">
             <arg value="update" />
         </exec>

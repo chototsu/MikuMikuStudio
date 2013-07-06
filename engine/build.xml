@@ -189,6 +189,11 @@
             <include name="**/jME3-bullet.jar"/>
             <include name="**/jME3-bullet-natives.jar"/>
         </fileset>
+        <fileset id="mmd-jars" dir="lib/">
+            <include name="MMDLoaderJME3-lib.jar"/>
+            <include name="MMDLoaderJME3-source.jar"/>
+            <include name="MMDLoaderJME3-javadoc.jar"/>
+        </fileset>
 
         <!--clear old files-->
         <delete dir="${jmp_dir}/JME3TestsTemplate/src/"/>
@@ -202,6 +207,7 @@
         <copy file="${dist.jar}" toDir="${jmp_dir}/jme3-core-baselibs/release/modules/ext/" overwrite="true" failonerror="true" verbose="false"/>
         <copy toDir="${jmp_dir}/jme3-core-baselibs/release/modules/ext/" overwrite="true" failonerror="true" verbose="false" flatten="true">
             <fileset refid="jme3-jars"/>
+            <fileset refid="mmd-jars"/>
         </copy>
         <!--natives need to be in jme3 package for jme to work in jMP-->
         <copy file="dist/lib/jME3-lwjgl-natives.jar" toDir="${jmp_dir}/jme3-core-baselibs/release/modules/ext/" overwrite="true" failonerror="true" verbose="false"/>
@@ -213,6 +219,7 @@
         <copy file="${dist.jar}" toDir="${jmp_dir}/jme3-project-baselibs/release/libs/" overwrite="true" failonerror="true" verbose="false"/>
         <copy toDir="${jmp_dir}/jme3-project-baselibs/release/libs/" overwrite="true" failonerror="true" verbose="false" flatten="true">
             <fileset refid="jme3-jars"/>
+            <fileset refid="mmd-jars"/>
         </copy>
 
         <!--jMonkeyPlatform external libraries-->

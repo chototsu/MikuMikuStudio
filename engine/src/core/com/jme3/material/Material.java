@@ -65,6 +65,7 @@ import com.jme3.texture.Texture;
 import com.jme3.util.ListMap;
 import com.jme3.util.TempVars;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -107,6 +108,7 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
     private ListMap<String, MatParam> paramValues = new ListMap<String, MatParam>();
     private Technique technique;
     private HashMap<String, Technique> techniques = new HashMap<String, Technique>();
+    private Technique[] techniqueArray = null;
     private int nextTexUnit = 0;
     private RenderState additionalState = null;
     private RenderState mergedRenderState = new RenderState();
@@ -215,6 +217,7 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
             }
             mat.technique = null;
             mat.techniques = new HashMap<String, Technique>();
+            mat.techniqueArray = null;
 
             mat.paramValues = new ListMap<String, MatParam>();
             for (int i = 0; i < paramValues.size(); i++) {
@@ -386,7 +389,14 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
 
         return newName;
     }
-
+    public int getParamIndex(String name) {
+        for(int i=paramValues.size()-1;i>=0;i--) {
+            if (name.equals(paramValues.getValue(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
     /**
      * Pass a parameter to the material shader.
      *
@@ -396,19 +406,50 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
      */
     public void setParam(String name, VarType type, Object value) {
         name = checkSetParam(type, name);
-
+        boolean techniqueUpdateNeeded = false;
         MatParam val = getParam(name);
-        if (technique != null) {
-            technique.notifySetParam(name, type, value);
-        }
+//        if (technique != null) {
+//            technique.notifySetParam(name, type, value);
+//        }
+
         if (val == null) {
             MatParam paramDef = def.getMaterialParam(name);
-            paramValues.put(name, new MatParam(type, name, value, paramDef.getFixedFuncBinding()));
+            val = new MatParam(type, name, value, paramDef.getFixedFuncBinding());
+            val.setValue(value);
+            paramValues.put(name, val);
+            techniqueUpdateNeeded = true;
         } else {
             val.setValue(value);
         }
+        Object value2 = val.multiData != null ? val.multiData : value;
+        if (techniqueArray == null) {
+            setTechniqueArray();
+        }
+        for(Technique tech : techniqueArray) {
+            tech.notifySetParam(name, type, value2);
+        }
+        if (techniqueUpdateNeeded) {
+            for(Technique tech : techniqueArray) {
+                tech.setNeedReload(true);
+            }
+        }
     }
+    public void setParam(int paramIndex, VarType type, Object value) {
+        MatParam val = paramValues.getValue(paramIndex);
+//        if (technique != null) {
+//            technique.notifySetParam(name, type, value);
+//        }
 
+        val.setValue(value);
+        Object value2 = val.multiData != null ? val.multiData : value;
+        if (techniqueArray == null) {
+            setTechniqueArray();
+        }
+        paramValues.getValue(0);
+        for(Technique tech : techniqueArray) {
+            tech.notifySetParam(paramIndex, type, value2);
+        }
+    }
     /**
      * Clear a parameter from this material. The parameter must exist
      * @param name the name of the parameter to clear
@@ -419,9 +460,16 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
 
         MatParam matParam = getParam(name);
         if (matParam != null) {
-            paramValues.remove(name);
-            if (technique != null) {
-                technique.notifyClearParam(name);
+//            paramValues.remove(name);
+            paramValues.put(name, null);
+//            if (technique != null) {
+//                technique.notifyClearParam(name);
+//            }
+            if (techniqueArray == null) {
+                setTechniqueArray();
+            }
+            for(Technique tech : techniqueArray) {
+                tech.notifyClearParam(name);
             }
             if (matParam instanceof MatParamTexture) {
                 int texUnit = ((MatParamTexture) matParam).getUnit();
@@ -450,7 +498,8 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
         }
 
         int texUnit = val.getUnit();
-        paramValues.remove(name);
+//        paramValues.remove(name);
+        paramValues.put(name, null);
         nextTexUnit--;
         for (MatParam param : paramValues.values()) {
             if (param instanceof MatParamTexture) {
@@ -477,17 +526,29 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
         if (value == null) {
             throw new IllegalArgumentException();
         }
-
+        boolean techniqueUpdateNeeded = false;
         name = checkSetParam(type, name);
         MatParamTexture val = getTextureParam(name);
         if (val == null) {
             paramValues.put(name, new MatParamTexture(type, name, value, nextTexUnit++));
+            techniqueUpdateNeeded = true;
         } else {
             val.setTextureValue(value);
         }
 
-        if (technique != null) {
-            technique.notifySetParam(name, type, nextTexUnit - 1);
+//        if (technique != null) {
+//            technique.notifySetParam(name, type, nextTexUnit - 1);
+//        }
+        if (techniqueArray == null) {
+            setTechniqueArray();
+        }
+        for(Technique tech : techniqueArray) {
+            tech.notifySetParam(name, type, nextTexUnit - 1);
+        }
+        if (techniqueUpdateNeeded) {
+            for(Technique tech : techniqueArray) {
+                tech.setNeedReload(true);
+            }
         }
 
         // need to recompute sort ID
@@ -848,7 +909,7 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
                     if (rendererCaps.containsAll(techDef.getRequiredCaps())) {
                         // use the first one that supports all the caps
                         tech = new Technique(this, techDef);
-                        techniques.put(name, tech);
+                        putTechnique(name, tech);
                         break;
                     }
                     lastTech = techDef;
@@ -873,7 +934,7 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
                 }
 
                 tech = new Technique(this, techDef);
-                techniques.put(name, tech);
+                putTechnique(name, tech);
             }
         } else if (technique == tech) {
             // attempting to switch to an already
@@ -882,7 +943,9 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
         }
 
         technique = tech;
-        tech.makeCurrent(def.getAssetManager());
+        if (technique.isNeedReload()) {
+            tech.makeCurrent(def.getAssetManager(), paramValues);
+        }
 
         // shader was changed
         sortingId = -1;
@@ -899,7 +962,7 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
                 selectTechnique("Default", rm);
             }
         } else if (technique.isNeedReload()) {
-            technique.makeCurrent(def.getAssetManager());
+            technique.makeCurrent(def.getAssetManager(), paramValues);
         }
     }
 
@@ -987,7 +1050,11 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
             }
         }
 
-
+        boolean needReloadParams = false;
+        if (technique.isNeedReload()) {
+            technique.makeCurrent(def.getAssetManager(), paramValues);
+            needReloadParams = true;
+        }
         // update camera and world matrices
         // NOTE: setWorldTransform should have been called already
         if (techDef.isUsingShaders()) {
@@ -997,9 +1064,11 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
         }
 
         // setup textures and uniforms
-        for (int i = 0; i < paramValues.size(); i++) {
+        for (int i = paramValues.size()-1; i >=0 ; i--) {
             MatParam param = paramValues.getValue(i);
-            param.apply(r, technique);
+            if (param != null) {
+                param.apply(r, technique, i);
+            }
         }
 
         Shader shader = technique.getShader();
@@ -1116,7 +1185,7 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
             // not available
             for (MatParam param : def.getMaterialParams()){
                 if (param.getValue() != null && paramValues.get(param.getName()) == null){
-                    setParam(param.getName(), param.getVarType(), param.getValue());
+                    setParam(param.getPrefixedName(), param.getVarType(), param.getValue());
                 }
             }
         }
@@ -1141,5 +1210,12 @@ public class Material implements Asset, Cloneable, Savable, Comparable<Material>
         if (separateTexCoord) {
             setBoolean("SeparateTexCoord", true);
         }
+    }
+    void putTechnique(String name, Technique tech) {
+        techniques.put(name, tech);
+        techniqueArray = null;
+    }
+    void setTechniqueArray() {
+        techniqueArray = techniques.values().toArray(new Technique[techniques.size()]);
     }
 }

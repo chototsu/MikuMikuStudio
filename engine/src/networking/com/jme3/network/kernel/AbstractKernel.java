@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  *  and queuing any results for the caller to retrieve on their own
  *  thread.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7009 $
  *  @author    Paul Speed
  */
 public abstract class AbstractKernel implements Kernel

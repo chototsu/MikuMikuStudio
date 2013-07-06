@@ -61,7 +61,7 @@ extern "C" {
      */
     JNIEXPORT void JNICALL Java_com_jme3_bullet_collision_shapes_GImpactCollisionShape_finalizeNative
     (JNIEnv * env, jobject object, jlong meshId) {
-        btTriangleIndexVertexArray* array = reinterpret_cast<btTriangleIndexVertexArray*> (meshId);
+        btTriangleIndexVertexArray* array = reinterpret_cast<btTriangleIndexVertexArray*>(meshId);
         delete(array);
     }
     

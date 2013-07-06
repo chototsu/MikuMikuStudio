@@ -38,6 +38,8 @@ import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.export.Savable;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Matrix4f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -47,7 +49,9 @@ import com.jme3.renderer.Renderer;
 import com.jme3.shader.VarType;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture.WrapMode;
+import com.jme3.util.BufferUtils;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
 /**
  * Describes a material parameter. This is used for both defining a name and type
@@ -62,7 +66,7 @@ public class MatParam implements Savable, Cloneable {
     protected String prefixedName;
     protected Object value;
     protected FixedFuncBinding ffBinding;
-
+    protected FloatBuffer multiData = null;
     /**
      * Create a new material parameter. For internal use only.
      */
@@ -147,12 +151,145 @@ public class MatParam implements Savable, Cloneable {
      */
     public void setValue(Object value) {
         this.value = value;
+            switch (type){
+                case Matrix3:
+                    Matrix3f m3 = (Matrix3f) value;
+                    if (multiData == null)
+                        multiData = BufferUtils.createFloatBuffer(9);
+
+                    m3.fillFloatBuffer(multiData, true);
+                    multiData.clear();
+                    break;
+                case Matrix4:
+                    Matrix4f m4 = (Matrix4f) value;
+                    if (multiData == null)
+                        multiData = BufferUtils.createFloatBuffer(16);
+
+                    m4.fillFloatBuffer(multiData, true);
+                    multiData.clear();
+                    break;
+                case FloatArray:
+                    float[] fa = (float[]) value;
+                    if (multiData == null){
+                        multiData = BufferUtils.createFloatBuffer(fa);
+                    }else{
+                        multiData = BufferUtils.ensureLargeEnough(multiData, fa.length);
+                    }
+
+                    multiData.put(fa);
+                    multiData.clear();
+                    break;
+                case Vector2Array:
+                    Vector2f[] v2a = (Vector2f[]) value;
+                    if (multiData == null){
+                        multiData = BufferUtils.createFloatBuffer(v2a);
+                    } else {
+                        multiData = BufferUtils.ensureLargeEnough(multiData, v2a.length * 2);
+                    }
+
+                    for (int i = 0; i < v2a.length; i++)
+                        BufferUtils.setInBuffer(v2a[i], multiData, i);
+
+                    multiData.clear();
+                    break;
+                case Vector3Array:
+                    Vector3f[] v3a = (Vector3f[]) value;
+                    if (multiData == null){
+                        multiData = BufferUtils.createFloatBuffer(v3a);
+                    } else{
+                        multiData = BufferUtils.ensureLargeEnough(multiData, v3a.length * 3);
+                    }
+
+                    for (int i = 0; i < v3a.length; i++)
+                        BufferUtils.setInBuffer(v3a[i], multiData, i);
+
+                    multiData.clear();
+                    break;
+                case Vector4Array:
+                    Quaternion[] v4a = (Quaternion[]) value;
+                    if (multiData == null){
+                        multiData = BufferUtils.createFloatBuffer(v4a);
+                    } else {
+                        multiData = BufferUtils.ensureLargeEnough(multiData, v4a.length * 4);
+                    }
+
+                    for (int i = 0; i < v4a.length; i++)
+                        BufferUtils.setInBuffer(v4a[i], multiData, i);
+
+                    multiData.clear();
+                    break;
+                case Matrix3Array:
+                    Matrix3f[] m3a = (Matrix3f[]) value;
+
+                    if (multiData == null)
+                        multiData = BufferUtils.createFloatBuffer(m3a.length * 9);
+                    else{
+                        multiData = BufferUtils.ensureLargeEnough(multiData, m3a.length * 9);
+                    }
+
+                    for (int i = 0; i < m3a.length; i++)
+                        m3a[i].fillFloatBuffer(multiData, true);
+
+                    multiData.clear();
+                    break;
+                case Matrix4Array:
+                    Matrix4f[] m4a = (Matrix4f[]) value;
+
+                    if (multiData == null)
+                        multiData = BufferUtils.createFloatBuffer(m4a.length * 16);
+                    else{
+                        multiData = BufferUtils.ensureLargeEnough(multiData, m4a.length * 16);
+                    }
+
+                    for (int i = 0; i < m4a.length; i++)
+                        m4a[i].fillFloatBuffer(multiData, true);
+
+                    multiData.clear();
+                    break;
+                // Only use check if equals optimization for primitive values
+                case Int:
+                case Float:
+                case Boolean:
+                    if (this.value != null && this.value.equals(value))
+                        return;
+
+                    this.value = value;
+                    multiData = null;
+                    break;
+                default:
+                    this.value = value;
+                    multiData = null;
+                    break;
+            }
     }
 
     void apply(Renderer r, Technique technique) {
         TechniqueDef techDef = technique.getDef();
         if (techDef.isUsingShaders()) {
-            technique.updateUniformParam(getPrefixedName(), getVarType(), getValue(), true);
+            Object value;
+            if (multiData != null) {
+                value = multiData;
+                multiData.clear();
+            } else {
+                value = getValue();
+            }
+            technique.updateUniformParam(getPrefixedName(), getVarType(), value, true);
+        }
+        if (ffBinding != null && r instanceof GL1Renderer) {
+            ((GL1Renderer) r).setFixedFuncBinding(ffBinding, getValue());
+        }
+    }
+    void apply(Renderer r, Technique technique, int paramIndex) {
+        TechniqueDef techDef = technique.getDef();
+        if (techDef.isUsingShaders()) {
+            Object value;
+            if (multiData != null) {
+                value = multiData;
+                multiData.clear();
+            } else {
+                value = getValue();
+            }
+            technique.updateUniformParam(paramIndex, getVarType(), value, true);
         }
         if (ffBinding != null && r instanceof GL1Renderer) {
             ((GL1Renderer) r).setFixedFuncBinding(ffBinding, getValue());

@@ -231,7 +231,7 @@ public class VehicleControl extends PhysicsVehicle implements PhysicsControl {
     }
 
     public void setPhysicsSpace(PhysicsSpace space) {
-        createVehicle(space);
+//        createVehicle(space);
         if (space == null) {
             if (this.space != null) {
                 this.space.removeCollisionObject(this);

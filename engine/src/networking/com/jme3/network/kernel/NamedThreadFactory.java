@@ -40,7 +40,7 @@ import java.util.concurrent.ThreadFactory;
  *  default thread factory but adds a prefix to the beginning
  *  of the thread name.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7314 $
  *  @author    Paul Speed
  */
 public class NamedThreadFactory implements ThreadFactory

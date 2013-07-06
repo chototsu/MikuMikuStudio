@@ -172,7 +172,7 @@ public abstract class PhysicsCollisionObject implements Savable {
     public int getCollideWithGroups() {
         return collisionGroupsMask;
     }
-
+    
     protected void initUserPointer() {
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "initUserPointer() objectId = {0}", Long.toHexString(objectId));
         initUserPointer(objectId, collisionGroup, collisionGroupsMask);

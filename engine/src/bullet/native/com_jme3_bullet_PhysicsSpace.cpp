@@ -192,8 +192,8 @@ extern "C" {
         }
         jmeUserPointer *userPointer = (jmeUserPointer*)collisionObject->getUserPointer();
         userPointer -> space = space;
-        space->getDynamicsWorld()->addCollisionObject(collisionObject,
-                btBroadphaseProxy::CharacterFilter,
+        space->getDynamicsWorld()->addCollisionObject(collisionObject, 
+                btBroadphaseProxy::CharacterFilter, 
                 btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter
         );
     }
@@ -285,7 +285,7 @@ extern "C" {
             env->ThrowNew(newExc, "The vehicle object does not exist.");
             return;
         }
-        space->getDynamicsWorld()->addVehicle(actionObject);
+        space->getDynamicsWorld()->addAction(actionObject);
     }
 
     /*
@@ -390,9 +390,6 @@ extern "C" {
     JNIEXPORT void JNICALL Java_com_jme3_bullet_PhysicsSpace_finalizeNative
     (JNIEnv * env, jobject object, jlong spaceId) {
         jmePhysicsSpace* space = reinterpret_cast<jmePhysicsSpace*>(spaceId);
-        if (space == NULL) {
-            return;
-        }
         delete(space);
     }
 

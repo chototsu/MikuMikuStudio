@@ -66,7 +66,7 @@ import java.util.*;
  *  original snapshot.
  *  </ul>  
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7856 $
  *  @author    Paul Speed
  */
 public class SafeArrayList<E> implements List<E> {

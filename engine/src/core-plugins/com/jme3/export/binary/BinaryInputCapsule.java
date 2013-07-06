@@ -1082,7 +1082,7 @@ final class BinaryInputCapsule implements InputCapsule {
                 // Developers that have previously saved their exports using the old exporter (wich uses native encoding), can temporarly
                 // remove the ""ISO8859_1" parameter, and change the above if statement to "if (false)".
                 // They should then import and re-export their models using the same enviroment they were orginally created in.
-                return new String(bytes, "ISO8859_1");
+                return new String(bytes, "UTF8");
             }
         } catch (UnsupportedEncodingException uee) {
             // as a last resort fall back to platform native.
@@ -1094,7 +1094,7 @@ final class BinaryInputCapsule implements InputCapsule {
                     "While your export may load correctly by falling back, using it on different platforms or java versions might lead to "+
                     "very strange inconsitenties. You should probably re-export your work. See ISSUE 276 in the jME issue tracker."
             );
-            return new String(bytes);
+            return new String(bytes, "UTF8");
         }
     }
 

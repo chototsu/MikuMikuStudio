@@ -391,13 +391,11 @@ public class PhysicsRigidBody extends PhysicsCollisionObject {
 //
 //    private native void setRestitution(long objectId, float factor);
 //
-    public void setLinearDamping(float linearDamping) {
-        setDamping(objectId, linearDamping, getAngularDamping());
-    }
-    
-    public void setAngularDamping(float angularDamping) {
-        setAngularDamping(objectId, angularDamping);
-    }
+//    public void setAngularDamping(float angularDamping) {
+////        constructionInfo.angularDamping = angularDamping;
+////        rBody.setDamping(constructionInfo.linearDamping, angularDamping);
+//        
+//    }
     private native void setAngularDamping(long objectId, float factor);
 
     public float getLinearDamping() {

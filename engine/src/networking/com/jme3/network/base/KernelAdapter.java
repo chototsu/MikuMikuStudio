@@ -60,7 +60,7 @@ import com.jme3.network.serializing.Serializer;
  *  objects to 32676 bytes... even though, for example,
  *  datagram packets can hold twice that. :P</p>  
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7450 $
  *  @author    Paul Speed
  */
 public class KernelAdapter extends Thread

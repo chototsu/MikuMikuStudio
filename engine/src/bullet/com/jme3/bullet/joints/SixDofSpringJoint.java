@@ -59,11 +59,11 @@ import java.util.logging.Logger;
  */
 public class SixDofSpringJoint extends SixDofJoint {
 
-   final boolean       springEnabled[] = new boolean[6];
-   final float equilibriumPoint[] = new float[6];
-   final float springStiffness[] = new float[6];
-   final float springDamping[] = new float[6]; // between 0 and 1 (1 == no damping)
-
+	final boolean		springEnabled[] = new boolean[6];
+	final float	equilibriumPoint[] = new float[6];
+	final float	springStiffness[] = new float[6];
+	final float	springDamping[] = new float[6]; // between 0 and 1 (1 == no damping)
+    
     public SixDofSpringJoint() {
     }
 
@@ -78,15 +78,15 @@ public class SixDofSpringJoint extends SixDofJoint {
         enableSpring(objectId, index, onOff);
     }
     native void enableSpring(long objctId, int index, boolean onOff);
-
+    
     public void setStiffness(int index, float stiffness) {
         setStiffness(objectId, index, stiffness);
     }
     native void setStiffness(long objctId, int index, float stiffness);
-
+    
     public void setDamping(int index, float damping) {
         setDamping(objectId, index, damping);
-
+        
     }
     native void setDamping(long objctId, int index, float damping);
     public void setEquilibriumPoint() { // set the current constraint position/orientation as an equilibrium point for all DOF
@@ -99,5 +99,5 @@ public class SixDofSpringJoint extends SixDofJoint {
     native void setEquilibriumPoint(long objctId, int index);
     @Override
     native long createJoint(long objectIdA, long objectIdB, Vector3f pivotA, Matrix3f rotA, Vector3f pivotB, Matrix3f rotB, boolean useLinearReferenceFrameA);
-
+    
 }

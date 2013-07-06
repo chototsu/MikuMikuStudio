@@ -127,10 +127,25 @@
                 <package>jme3tools.navigation</package>
                 <package>jme3tools.nvtex</package>
                 <package>jme3tools.optimize</package>
+                <package>projectkyoto.jme3.mmd</package>
+                <package>projectkyoto.jme3.mmd.ik</package>
+                <package>projectkyoto.jme3.mmd.nativebullet</package>
+                <package>projectkyoto.jme3.mmd.vmd</package>
+                <package>projectkyoto.mmd.file</package>
+                <package>projectkyoto.mmd.file.util</package>
+                <package>projectkyoto.mmd.file.util2</package>
             </public-packages>
             <class-path-extension>
-                <runtime-relative-path>ext/jME3-jbullet.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jME3-jbullet.jar</binary-origin>
+                <runtime-relative-path>ext/jME3-bullet-natives.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jME3-bullet-natives.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/jME3-bullet.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jME3-bullet.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/MMDLoaderJME3-lib.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/MMDLoaderJME3-lib.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/jMonkeyEngine3.jar</runtime-relative-path>

@@ -922,10 +922,13 @@ public class Mesh implements Savable, Cloneable {
     }
 
     public void setBuffer(VertexBuffer vb){
-        if (buffers.containsKey(vb.getBufferType().ordinal()))
-            throw new IllegalArgumentException("Buffer type already set: "+vb.getBufferType());
+//        if (buffers.containsKey(vb.getBufferType().ordinal()))
+//            throw new IllegalArgumentException("Buffer type already set: "+vb.getBufferType());
 
-        buffers.put(vb.getBufferType().ordinal(), vb);
+        VertexBuffer vb2 = buffers.put(vb.getBufferType().ordinal(), vb);
+        if (vb2 != null) {
+            buffersList.remove(vb2);
+        }
         buffersList.add(vb);
         updateCounts();
     }

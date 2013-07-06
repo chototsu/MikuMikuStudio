@@ -46,7 +46,7 @@ import com.jme3.network.kernel.udp.UdpKernel;
  *  The main service provider for conveniently creating
  *  server and client instances.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7107 $
  *  @author    Paul Speed
  */
 public class Network

@@ -43,6 +43,7 @@ import com.jme3.shader.ShaderKey;
 import com.jme3.shader.Uniform;
 import com.jme3.shader.UniformBinding;
 import com.jme3.shader.VarType;
+import com.jme3.util.ListMap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,6 +62,11 @@ public class Technique implements Savable {
     private DefineList defines;
     private Shader shader;
     private boolean needReload = true;
+    
+    ListMap<String, MatParam> paramValues;
+    
+    Uniform[] uniformArray;
+    String[] defineNameArray;
 
     /**
      * Creates a new technique instance that implements the given
@@ -75,6 +81,12 @@ public class Technique implements Savable {
         if (def.isUsingShaders()) {
             this.worldBindUniforms = new ArrayList<Uniform>();
             this.defines = new DefineList();
+            for (MatParam param : owner.getParams()) {
+                String defineName = def.getShaderParamDefine(param.getName());
+                if (defineName != null) {
+                    defines.set(defineName, param.getVarType(), param.getValue());
+                }
+            }
         }
     }
 
@@ -126,8 +138,18 @@ public class Technique implements Savable {
             defines.set(defineName, type, value);
             needReload = true;
         }
-        if (shader != null) {
-            updateUniformParam(paramName, type, value);
+//        if (shader != null) {
+//            updateUniformParam(paramName, type, value);
+//        }
+    }
+    void notifySetParam(int paramIndex, VarType type, Object value) {
+        if (defineNameArray == null) {
+            return;
+        }
+        String defineName = defineNameArray[paramIndex];
+        if (defineName != null) {
+            defines.set(defineName, type, value);
+            needReload = true;
         }
     }
 
@@ -145,6 +167,26 @@ public class Technique implements Savable {
                 paramName = "m_" + paramName;
             }
             shader.removeUniform(paramName);
+            for(int i=uniformArray.length-1;i>=0;i--) {
+                if (paramName.equals(uniformArray[i].getName())) {
+                    uniformArray[i] = null;
+                }
+            }
+        }
+    }
+    void notifyClearParam(int paramIndex) {
+        if (shader == null) {
+            return;
+        }
+        String defineName = defineNameArray[paramIndex];
+        if (defineName != null) {
+            defines.remove(defineName);
+            needReload = true;
+        }
+        if (shader != null) {
+            String paramName = uniformArray[paramIndex].getName();
+            shader.removeUniform(paramName);
+            uniformArray[paramIndex] = null;
         }
     }
 
@@ -168,11 +210,37 @@ public class Technique implements Savable {
         }
 //        u.setLastChanger(owner);
     }
+    void updateUniformParam(int paramIndex, VarType type, Object value, boolean ifNotOwner) {
+        Uniform u = uniformArray[paramIndex];
+        if (u == null) {
+            u = shader.getUniform(paramValues.getValue(paramIndex).getPrefixedName());
+            uniformArray[paramIndex] = u;
+        }
+
+//        if (ifNotOwner && u.getLastChanger() == owner)
+//            return;
+
+        switch (type) {
+            case Texture2D: // fall intentional
+            case Texture3D:
+            case TextureArray:
+            case TextureCubeMap:
+            case Int:
+                u.setValue(VarType.Int, value);
+                break;
+            default:
+                u.setValue(type, value);
+                break;
+        }
+//        u.setLastChanger(owner);
+    }
 
     void updateUniformParam(String paramName, VarType type, Object value) {
         updateUniformParam(paramName, type, value, false);
     }
-
+    void updateUniformParam(int paramIndex, VarType type, Object value) {
+        updateUniformParam(paramIndex, type, value, false);
+    }
     /**
      * Returns true if the technique must be reloaded.
      * <p>
@@ -186,32 +254,51 @@ public class Technique implements Savable {
         return needReload;
     }
 
+    public void setNeedReload(boolean needReload) {
+        this.needReload = needReload;
+    }
+
     /**
      * Prepares the technique for use by loading the shader and setting
      * the proper defines based on material parameters.
      * 
      * @param assetManager The asset manager to use for loading shaders.
      */
-    public void makeCurrent(AssetManager assetManager) {
+    public void makeCurrent(AssetManager assetManager, ListMap<String, MatParam> paramValues) {
+        this.paramValues = paramValues;
+        defineNameArray = new String[paramValues.size()];
+        for(int i=paramValues.size()-1;i>=0;i--) {
+            defineNameArray[i] = def.getShaderParamDefine(paramValues.getValue(i).getName());
+        }
         // check if reload is needed..
         if (def.isUsingShaders()) {
-            DefineList newDefines = new DefineList();
-            Collection<MatParam> params = owner.getParams();
-            for (MatParam param : params) {
-                String defineName = def.getShaderParamDefine(param.getName());
-                if (defineName != null) {
-                    newDefines.set(defineName, param.getVarType(), param.getValue());
-                }
-            }
+//            DefineList newDefines = new DefineList();
+//            Collection<MatParam> params = owner.getParams();
+//            for (MatParam param : params) {
+//                String defineName = def.getShaderParamDefine(param.getName());
+//                if (defineName != null) {
+//                    newDefines.set(defineName, param.getVarType(), param.getValue());
+//                }
+//            }
 
-            if (!needReload && defines.getCompiled().equals(newDefines.getCompiled())) {
-                newDefines = null;
+            if (!needReload /*&& defines.getCompiled().equals(newDefines.getCompiled())*/) {
+//                newDefines = null;
                 // defines have not been changed..
             } else {
-                defines.clear();
-                defines.addFrom(newDefines);
+//                defines.clear();
+//                defines.addFrom(newDefines);
                 // defines changed, recompile needed
                 loadShader(assetManager);
+                if (shader != null) {
+                    uniformArray = new Uniform[paramValues.size()];
+//                    for(int i=paramValues.size()-1;i>=0;i--) {
+//                        uniformArray[i] = shader.getUniform(paramValues.getValue(i).getPrefixedName());
+//                    }
+                    defineNameArray = new String[paramValues.size()];
+                    for(int i=paramValues.size()-1;i>=0;i--) {
+                        defineNameArray[i] = def.getShaderParamDefine(paramValues.getValue(i).getName());
+                    }
+                }
             }
         }
     }

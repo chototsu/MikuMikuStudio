@@ -329,7 +329,7 @@ public class PhysicsSpace {
 //            }
 //        });
 //    }
-    private void addCollisionEvent_native(PhysicsCollisionObject node, PhysicsCollisionObject node1, long manifoldPointObjectId) {
+    public void addCollisionEvent(PhysicsCollisionObject node, PhysicsCollisionObject node1, long manifoldPointObjectId) {
 //        System.out.println("addCollisionEvent:"+node.getObjectId()+" "+ node1.getObjectId());
         collisionEvents.add(eventFactory.getEvent(PhysicsCollisionEvent.TYPE_PROCESSED, node, node1, manifoldPointObjectId));
     }
@@ -615,7 +615,9 @@ public class PhysicsSpace {
         Logger.getLogger(PhysicsSpace.class.getName()).log(Level.INFO, "Adding RigidBody {0} to physics space.", node.getObjectId());
         if (node instanceof PhysicsVehicle) {
             Logger.getLogger(PhysicsSpace.class.getName()).log(Level.INFO, "Adding vehicle constraint {0} to physics space.", Long.toHexString(((PhysicsVehicle) node).getVehicleId()));
+            ((PhysicsVehicle) node).createVehicle(this);
             addVehicle(physicsSpaceId, ((PhysicsVehicle) node).getVehicleId());
+//            dynamicsWorld.addVehicle(((PhysicsVehicle) node).getVehicleId());
         }
     }
 
@@ -623,6 +625,8 @@ public class PhysicsSpace {
         if (node instanceof PhysicsVehicle) {
             Logger.getLogger(PhysicsSpace.class.getName()).log(Level.INFO, "Removing vehicle constraint {0} from physics space.", Long.toHexString(((PhysicsVehicle) node).getVehicleId()));
             removeVehicle(physicsSpaceId, ((PhysicsVehicle) node).getVehicleId());
+            ((PhysicsVehicle) node).setPhysicsSpaceInternal(null);
+//            dynamicsWorld.removeVehicle(((PhysicsVehicle) node).getVehicleId());
         }
         Logger.getLogger(PhysicsSpace.class.getName()).log(Level.INFO, "Removing RigidBody {0} from physics space.", Long.toHexString(node.getObjectId()));
         physicsNodes.remove(node.getObjectId());

@@ -851,6 +851,7 @@ public class OGLESShaderRenderer implements Renderer {
 
         uniform.clearUpdateNeeded();
         FloatBuffer fb;
+        int size;
         switch (uniform.getVarType()) {
             case Float:
                 if (verboseLogging) {
@@ -2713,7 +2714,11 @@ public class OGLESShaderRenderer implements Renderer {
         } else {
             indices = buffers.get(Type.Index.ordinal());
         }
-        for (Entry<VertexBuffer> entry : buffers) {
+        Entry<VertexBuffer> table[] = buffers.getTable();
+        for (Entry<VertexBuffer> entry : table) {
+            if (entry == null) {
+                continue;
+            }
             VertexBuffer vb = entry.getValue();
 
             if (vb.getBufferType() == Type.InterleavedData

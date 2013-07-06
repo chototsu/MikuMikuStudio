@@ -136,8 +136,8 @@ public class Statistics {
     public void onShaderUse(Shader shader, boolean wasSwitched){
         assert shader.getId() >= 1;
 
-        if (!shadersUsed.contains(shader.getId()))
-            shadersUsed.add(shader.getId());
+//        if (!shadersUsed.contains(shader.id))
+//            shadersUsed.add(shader.id);
 
         if (wasSwitched)
             numShaderSwitches++;
@@ -159,8 +159,8 @@ public class Statistics {
     public void onTextureUse(Image image, boolean wasSwitched){
         assert image.getId() >= 1;
 
-        if (!texturesUsed.contains(image.getId()))
-            texturesUsed.add(image.getId());
+//        if (!texturesUsed.contains(image.id))
+//            texturesUsed.add(image.id);
 
         if (wasSwitched)
             numTextureBinds ++;
@@ -176,8 +176,8 @@ public class Statistics {
         if (fb != null){
             assert fb.getId() >= 1;
 
-            if (!fbosUsed.contains(fb.getId()))
-                fbosUsed.add(fb.getId());
+//            if (!fbosUsed.contains(fb.id))
+//                fbosUsed.add(fb.id);
         }
 
         if (wasSwitched)

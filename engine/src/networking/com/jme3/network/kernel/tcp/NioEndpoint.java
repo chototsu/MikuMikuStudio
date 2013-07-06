@@ -45,7 +45,7 @@ import com.jme3.network.kernel.*;
  *  channel IO based connection information and keeps
  *  track of the outbound data queue for the channel.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7049 $
  *  @author    Paul Speed
  */
 public class NioEndpoint implements Endpoint

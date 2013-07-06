@@ -1092,7 +1092,10 @@ public class RenderManager {
         }
 
         if (processors != null) {
-            for (SceneProcessor proc : processors) {
+            int procSize = processors.size();
+//            for (SceneProcessor proc : processors) {
+            for(int i=0;i<procSize;i++) {
+                SceneProcessor proc = processors.get(i);
                 if (!proc.isInitialized()) {
                     proc.initialize(this, vp);
                 }
@@ -1117,7 +1120,10 @@ public class RenderManager {
         }
 
         if (processors != null) {
-            for (SceneProcessor proc : processors) {
+            int procSize = processors.size();
+//            for (SceneProcessor proc : processors) {
+            for(int i=0;i<procSize;i++) {
+                SceneProcessor proc = processors.get(i);
                 proc.postQueue(vp.getQueue());
             }
         }
@@ -1125,7 +1131,10 @@ public class RenderManager {
         flushQueue(vp);
 
         if (processors != null) {
-            for (SceneProcessor proc : processors) {
+            int procSize = processors.size();
+//            for (SceneProcessor proc : processors) {
+            for(int i=0;i<procSize;i++) {
+                SceneProcessor proc = processors.get(i);
                 proc.postFrame(vp.getOutputFrameBuffer());
             }
         }

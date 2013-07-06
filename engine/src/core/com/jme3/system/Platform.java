@@ -60,6 +60,13 @@ public enum Platform {
     /**
      * Android x86
      */
-    Android_X86;
-    
+    Android_X86,
+    /**
+     * Solaris x86
+     */
+    SolarisX86,
+    /**
+     * Solaris amd64
+     */
+    SolarisAMD64;    
 }

@@ -37,7 +37,7 @@ package com.jme3.network.kernel;
  *  Provides information about an added or
  *  removed connection.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7009 $
  *  @author    Paul Speed
  */
 public class EndpointEvent

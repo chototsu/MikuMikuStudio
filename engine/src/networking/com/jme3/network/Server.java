@@ -38,7 +38,7 @@ import java.util.Collection;
  *  Represents a host that can send and receive messages to
  *  a set of remote client connections.
  *  
- *  @version   $Revision$
+ *  @version   $Revision: 7152 $
  *  @author    Paul Speed
  */
 public interface Server

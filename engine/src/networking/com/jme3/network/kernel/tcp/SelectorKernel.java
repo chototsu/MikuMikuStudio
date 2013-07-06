@@ -52,7 +52,7 @@ import com.jme3.network.kernel.*;
 /**
  *  A Kernel implementation based on NIO selectors.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7260 $
  *  @author    Paul Speed
  */
 public class SelectorKernel extends AbstractKernel

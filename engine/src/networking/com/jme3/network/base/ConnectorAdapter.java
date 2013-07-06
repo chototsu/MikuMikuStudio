@@ -56,7 +56,7 @@ import java.util.concurrent.BlockingQueue;
  *  objects to 32676 bytes... even though, for example,
  *  datagram packets can hold twice that. :P</p>  
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7977 $
  *  @author    Paul Speed
  */
 public class ConnectorAdapter extends Thread

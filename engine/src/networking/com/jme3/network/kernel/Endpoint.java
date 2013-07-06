@@ -38,7 +38,7 @@ import java.nio.ByteBuffer;
  *  An abstract endpoint in a Kernel that can be used for
  *  sending/receiving messages within the kernel space.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7049 $
  *  @author    Paul Speed
  */
 public interface Endpoint

@@ -50,7 +50,7 @@ import com.jme3.network.serializing.Serializer;
  *  A default implementation of the Server interface that delegates
  *  its network connectivity to kernel.Kernel.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7854 $
  *  @author    Paul Speed
  */
 public class DefaultServer implements Server

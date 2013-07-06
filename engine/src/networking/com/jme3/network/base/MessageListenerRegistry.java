@@ -44,7 +44,7 @@ import com.jme3.network.MessageListener;
  *  Keeps track of message listeners registered to specific
  *  types or to any type.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7154 $
  *  @author    Paul Speed
  */
 public class MessageListenerRegistry<S> implements MessageListener<S>

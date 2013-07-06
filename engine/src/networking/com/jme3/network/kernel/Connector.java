@@ -40,7 +40,7 @@ import java.nio.ByteBuffer;
  *  only ever receive data from one Endpoint and so bypasses
  *  the envelope wrapping.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7012 $
  *  @author    Paul Speed
  */
 public interface Connector

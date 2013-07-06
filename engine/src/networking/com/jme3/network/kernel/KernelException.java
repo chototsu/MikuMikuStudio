@@ -37,7 +37,7 @@ package com.jme3.network.kernel;
  *  Represents a kernel-level error, usually encapsulating
  *  an IOException as its cause.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7009 $
  *  @author    Paul Speed
  */
 public class KernelException extends RuntimeException

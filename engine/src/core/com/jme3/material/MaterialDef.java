@@ -34,6 +34,7 @@ package com.jme3.material;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.shader.VarType;
+import com.jme3.util.ListMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,7 +58,8 @@ public class MaterialDef {
 
     private List<TechniqueDef> defaultTechs;
     private Map<String, TechniqueDef> techniques;
-    private Map<String, MatParam> matParams;
+    private ListMap<String, MatParam> matParams;
+    
 
     /**
      * Serialization only. Do not use.
@@ -75,7 +77,7 @@ public class MaterialDef {
         this.assetManager = assetManager;
         this.name = name;
         techniques = new HashMap<String, TechniqueDef>();
-        matParams = new HashMap<String, MatParam>();
+        matParams = new ListMap<String, MatParam>();
         defaultTechs = new ArrayList<TechniqueDef>();
         logger.log(Level.INFO, "Loaded material definition: {0}", name);
     }
@@ -191,4 +193,8 @@ public class MaterialDef {
         return techniques.get(name);
     }
 
+    public ListMap<String, MatParam> getMatParams() {
+        return matParams;
+    }
+    
 }

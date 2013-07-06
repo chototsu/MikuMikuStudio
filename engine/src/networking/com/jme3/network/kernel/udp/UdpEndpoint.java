@@ -44,7 +44,7 @@ import com.jme3.network.kernel.*;
  *  UDP connection information for return messaging,
  *  identification of envelope sources, etc.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7256 $
  *  @author    Paul Speed
  */
 public class UdpEndpoint implements Endpoint

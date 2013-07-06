@@ -44,7 +44,7 @@ import com.jme3.network.kernel.*;
  *  A straight forward datagram socket-based UDP connector 
  *  implementation.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7086 $
  *  @author    Paul Speed
  */
 public class UdpConnector implements Connector

@@ -37,7 +37,7 @@ package com.jme3.network;
  *  Represents a remote connection to a server that can be used
  *  for sending and receiving messages.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7451 $
  *  @author    Paul Speed
  */
 public interface Client extends MessageConnection

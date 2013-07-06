@@ -49,7 +49,7 @@ import com.jme3.network.kernel.*;
 /**
  *  A Kernel implementation using UDP packets.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7258 $
  *  @author    Paul Speed
  */
 public class UdpKernel extends AbstractKernel

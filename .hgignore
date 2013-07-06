@@ -1,0 +1,17 @@
+\.orig$
+\.orig\..*$
+\.chg\..*$
+\.rej$
+\.conflict\~$
+^bullet-trunk\.*
+/build$
+/dist$
+nbproject/private$
+/JmeTestsProject.zip$
+^sdk/JME3TestsTemplate/src$
+^sdk/jme3-project-libraries/release$
+^sdk/jme3-core-baselibs/release$
+^sdk/jme3-core-libraries/release$
+^sdk/jme3-project-baselibs/release$
+^sdk/jme3-project-testdata/release$
+^platform-base\.zip$

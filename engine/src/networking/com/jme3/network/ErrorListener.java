@@ -36,7 +36,7 @@ package com.jme3.network;
 /**
  *  Notified when errors happen on a connection.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7451 $
  *  @author    Paul Speed
  */
 public interface ErrorListener<S>

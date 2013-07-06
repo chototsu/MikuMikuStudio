@@ -38,7 +38,7 @@ import java.util.Set;
  *  This is the connection back to a client that is being
  *  hosted in a server instance.  
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7485 $
  *  @author    Paul Speed
  */
 public interface HostedConnection extends MessageConnection

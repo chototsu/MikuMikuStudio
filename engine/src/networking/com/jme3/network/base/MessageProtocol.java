@@ -50,7 +50,7 @@ import com.jme3.network.serializing.Serializer;
  *  where two bytes represent the (short) length of the data
  *  and the rest is the raw data for the Serializers class.</p>
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7976 $
  *  @author    Paul Speed
  */
 public class MessageProtocol

@@ -38,7 +38,7 @@ import java.nio.ByteBuffer;
  *  Encapsulates a received piece of data.  This is used by the Kernel
  *  to track incoming chunks of data.  
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7009 $
  *  @author    Paul Speed
  */
 public class Envelope

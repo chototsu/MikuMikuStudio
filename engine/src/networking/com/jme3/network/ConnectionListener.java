@@ -37,7 +37,7 @@ package com.jme3.network;
  *  Listener that is notified about connection arrivals and
  *  removals within a server.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7010 $
  *  @author    Paul Speed
  */
 public interface ConnectionListener

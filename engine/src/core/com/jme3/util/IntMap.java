@@ -165,7 +165,9 @@ public final class IntMap<T> implements Iterable<Entry<T>>, Cloneable {
         }
         return null;
     }
-
+    public Entry<T>[] getTable() {
+        return table;
+    } 
     public T remove(int key) {
         int index = key & mask;
         Entry prev = table[index];
@@ -198,7 +200,7 @@ public final class IntMap<T> implements Iterable<Entry<T>>, Cloneable {
         }
         size = 0;
     }
-
+    private IntMapIterator intMapIterator = new IntMapIterator();
     public Iterator<Entry<T>> iterator() {
         iterator.beginUse();
         return iterator;

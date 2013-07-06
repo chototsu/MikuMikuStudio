@@ -48,7 +48,7 @@ import jme3test.network.TestChatServer.ChatMessage;
  *  A simple test chat server.  When SM implements a set
  *  of standard chat classes this can become a lot simpler.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7593 $
  *  @author    Paul Speed
  */
 public class TestChatClient extends JFrame {

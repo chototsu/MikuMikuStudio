@@ -37,7 +37,7 @@ import java.io.IOException;
 /**
  *  A general exception from the serialization routines.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7118 $
  *  @author    Paul Speed
  */
 public class SerializerException extends IOException

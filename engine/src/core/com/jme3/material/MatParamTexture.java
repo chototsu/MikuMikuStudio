@@ -48,7 +48,14 @@ public class MatParamTexture extends MatParam {
             technique.updateUniformParam(getPrefixedName(), getVarType(), getUnit(), true);
         }
     }
-
+    @Override
+    public void apply(Renderer r, Technique technique, int paramIndex) {
+        TechniqueDef techDef = technique.getDef();
+        r.setTexture(getUnit(), getTextureValue());
+        if (techDef.isUsingShaders()) {
+            technique.updateUniformParam(paramIndex, getVarType(), getUnit(), true);
+        }
+    }
     @Override
     public void write(JmeExporter ex) throws IOException {
         super.write(ex);

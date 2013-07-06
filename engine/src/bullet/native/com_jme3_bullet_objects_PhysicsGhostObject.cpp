@@ -168,7 +168,7 @@ extern "C" {
         }
         jmeBulletUtil::convert(env, &ghost->getWorldTransform().getBasis(), value);
     }
-
+    
     class jmeGhostOverlapCallback : public btOverlapCallback {
         JNIEnv* m_env;
         jobject m_object;
@@ -190,7 +190,7 @@ extern "C" {
                 m_env->Throw(m_env->ExceptionOccurred());
                 return false;
             }
-
+            
             return false;
         }
     };

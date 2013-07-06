@@ -45,7 +45,7 @@ package com.jme3.network;
  *  and the messages will always be delivered to that connection in the 
  *  order that they were delivered.</p>   
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7046 $
  *  @author    Paul Speed
  */
 public interface MessageListener<S>

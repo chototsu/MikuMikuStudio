@@ -6,7 +6,7 @@
     <property file="src/bullet/native/bullet.properties"/>
     <!-- condition for mac platform check -->
     <condition property="isSolaris">
-        <os name="SunOS"/>
+       <os name="SunOS"/>
     </condition>
     <condition property="isMac">
         <and>
@@ -25,9 +25,9 @@
             <not>
                 <os family="mac"/>
             </not>
-            <not>
-                <os name="SunOS"/>
-            </not>
+	    <not>
+	      <os name="SunOS"/>
+	    </not>
         </and>
     </condition>
     <!-- condition for x86_64 check -->
@@ -144,20 +144,20 @@
             <includepath path="${bullet.osx.java.include}"/>
             <includepath path="${bullet.bullet.include}"/>
             <compilerarg value="-syslibroot ${bullet.osx.syslibroot}"/>
-            <!--compilerarg value="-arch"/>
-            <compilerarg value="ppc"/-->
+            <compilerarg value="-arch"/>
+            <compilerarg value="ppc"/>
             <compilerarg value="-arch"/>
             <compilerarg value="i386"/>
             <compilerarg value="-arch"/>
             <compilerarg value="x86_64"/>
             <linker name="${bullet.osx.compiler}">
-                <!--libset dir="${bullet.folder}/src/BulletSoftBody" libs="BulletSoftBody"/-->
+                <libset dir="${bullet.folder}/src/BulletSoftBody" libs="BulletSoftBody"/>
                 <libset dir="${bullet.folder}/src/BulletMultiThreaded" libs="BulletMultiThreaded"/>
                 <libset dir="${bullet.folder}/src/BulletDynamics" libs="BulletDynamics"/>
                 <libset dir="${bullet.folder}/src/BulletCollision" libs="BulletCollision"/>
                 <libset dir="${bullet.folder}/src/LinearMath" libs="LinearMath"/>
-                <!--linkerarg value="-arch"/>
-                <linkerarg value="ppc"/-->
+                <linkerarg value="-arch"/>
+                <linkerarg value="ppc"/>
                 <linkerarg value="-arch"/>
                 <linkerarg value="i386"/>
                 <linkerarg value="-arch"/>
@@ -180,10 +180,10 @@
             <includepath path="${bullet.java.include}/linux"/>
             <includepath path="${bullet.bullet.include}"/>
             <!--compilerarg value="-m32"/-->
-            <!--compilerarg value="-static-libgcc"/>
-            <compilerarg value="-fPIC"/-->
+	<compilerarg value="-m32"/>
+	<compilerarg value="-static-libgcc"/>
             <linker name="${bullet.linux.compiler}">
-                <!-- linkerarg value="-static-libgcc"/ -->
+	<!-- linkerarg value="-static-libgcc"/ -->
                 <libset dir="${bullet.folder}/src/BulletMultiThreaded" libs="BulletMultiThreaded"/>
                 <libset dir="${bullet.folder}/src/BulletDynamics" libs="BulletDynamics"/>
                 <libset dir="${bullet.folder}/src/BulletCollision" libs="BulletCollision"/>
@@ -192,7 +192,6 @@
         </cc>
         <delete file="${bullet.output.dir}/linux/history.xml"/>
     </target>
-    
     <target name="-nativelib-solaris" if="isSolaris">
         <echo message="Building Solaris version of native bullet"/>
         <mkdir dir="${bullet.output.dir}/linux"/>
@@ -205,16 +204,17 @@
             <includepath path="${bullet.java.include}/solaris"/>
             <includepath path="${bullet.bullet.include}"/>
             <!--compilerarg value="-m32"/-->
-            <compilerarg value="-m32"/>
-            <compilerarg value="-fno-strict-aliasing"/>
-            <compilerarg value="-pthread"/>
-            <compilerarg value="-fPIC"/>
-            <compilerarg value="-D_REENTRANT"/>
-            <compilerarg value="-static-libstdc++"/>
-            <compilerarg value="-static-libgcc"/>
-            <compilerarg value="-D_REENTRANT"/>
+	<compilerarg value="-m64"/>
+	<compilerarg value="-fno-strict-aliasing"/>
+	<compilerarg value="-pthread"/>
+	<compilerarg value="-fPIC"/>
+	<compilerarg value="-D_REENTRANT"/>
+	<compilerarg value="-static-libstdc++"/>
+	<compilerarg value="-static-libgcc"/>
+	<compilerarg value="-D_REENTRANT"/>
             <linker name="${bullet.solaris.compiler}">
-                <linkerarg value="-R/usr/sfw/lib"/>
+	<linkerarg value="-R/usr/sfw/lib"/>
+	<linkerarg value="-m64"/>
                 <libset dir="${bullet.folder}/src/BulletMultiThreaded" libs="BulletMultiThreaded"/>
                 <libset dir="${bullet.folder}/src/BulletDynamics" libs="BulletDynamics"/>
                 <libset dir="${bullet.folder}/src/BulletCollision" libs="BulletCollision"/>
@@ -227,7 +227,7 @@
     <target name="-nativelib-windows" if="isWindows">
         <echo message="Building Windows version of native bullet"/>
         <mkdir dir="${bullet.output.dir}/windows"/>
-        <cc multithreaded="" name="${bullet.windows.compiler}" warnings="none" debug="${bullet.compile.debug}" outtype="shared" outfile="${bullet.output.dir}/windows/${bullet.library.name}" objdir="${bullet.build.dir}">
+        <cc multithreaded="true" name="${bullet.windows.compiler}" warnings="none" debug="${bullet.compile.debug}" outtype="shared" outfile="${bullet.output.dir}/windows/${bullet.library.name}" objdir="${bullet.build.dir}">
             <fileset dir="${bullet.source.dir}">
                 <include name="*.cpp">
                 </include>
@@ -235,12 +235,14 @@
             <includepath path="${bullet.java.include}"/>
             <includepath path="${bullet.java.include}/win32"/>
             <includepath path="${bullet.bullet.include}"/>
+            <includepath path="src/bullet/native"/>
             <!--compilerarg value="-m32"/-->
+	<!-- compilerarg value="-static-libgcc -static-libstdc++"/ -->
             <linker name="${bullet.windows.compiler}" debug="${bullet.compile.debug}" >
                 <linkerarg value="-o${bullet.library.name}.dll" />
                 <linkerarg value="--kill-at" />
-                <linkerarg value="-static"/>
-                <libset dir="${bullet.folder}/lib" libs="BulletMultiThreaded,BulletDynamics,BulletCollision,LinearMath"/> 
+	<linkerarg value="-static"/>
+                <libset dir="${bullet.folder}/lib/Release" libs="BulletMultiThreaded,BulletDynamics,BulletCollision,LinearMath"/> 
             </linker>
         </cc>
         <delete file="${bullet.output.dir}/windows/history.xml"/>

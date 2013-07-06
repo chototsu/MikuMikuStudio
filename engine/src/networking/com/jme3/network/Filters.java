@@ -37,7 +37,7 @@ import java.util.*;
 /**
  *  Static utility methods pertaining to Filter instances.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 8257 $
  *  @author    Paul Speed
  */
 public class Filters 

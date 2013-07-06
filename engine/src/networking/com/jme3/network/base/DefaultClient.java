@@ -50,7 +50,7 @@ import com.jme3.network.serializing.Serializer;
  *  A default implementation of the Client interface that delegates
  *  its network connectivity to a kernel.Connector.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7525 $
  *  @author    Paul Speed
  */
 public class DefaultClient implements Client

@@ -45,7 +45,7 @@ import com.jme3.network.kernel.*;
  *  does not use any separate threading.  It relies completely on
  *  the buffering in the OS network layer.
  *
- *  @version   $Revision$
+ *  @version   $Revision: 7033 $
  *  @author    Paul Speed
  */
 public class SocketConnector implements Connector

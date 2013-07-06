@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module: projectkyoto.mmd.sdk/1
+OpenIDE-Module-Implementation-Version: 0
+OpenIDE-Module-Layer: projectkyoto/mmd/sdk/layer.xml
+OpenIDE-Module-Localizing-Bundle: projectkyoto/mmd/sdk/Bundle.properties
+
