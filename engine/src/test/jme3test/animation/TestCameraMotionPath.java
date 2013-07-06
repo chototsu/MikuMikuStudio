@@ -49,6 +49,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.CameraControl;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
 
@@ -73,7 +74,7 @@ public class TestCameraMotionPath extends SimpleApplication {
         cam.setLocation(new Vector3f(8.4399185f, 11.189463f, 14.267577f));
         camNode = new CameraNode("Motion cam", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
-        camNode.getControl(0).setEnabled(false);
+        camNode.getControl(CameraControl.class).setEnabled(false);
         path = new MotionPath();
         path.setCycle(true);
         path.addWayPoint(new Vector3f(20, 3, 0));
@@ -170,11 +171,11 @@ public class TestCameraMotionPath extends SimpleApplication {
                         playing = false;
                         cameraMotionControl.stop();
                         chaser.setEnabled(true);
-                        camNode.getControl(0).setEnabled(false);
+                        camNode.getControl(CameraControl.class).setEnabled(false);
                     } else {
                         playing = true;
                         chaser.setEnabled(false);
-                        camNode.getControl(0).setEnabled(true);
+                        camNode.getControl(CameraControl.class).setEnabled(true);
                         cameraMotionControl.play();
                     }
                 }

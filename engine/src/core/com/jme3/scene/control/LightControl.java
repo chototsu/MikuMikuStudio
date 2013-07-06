@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,14 +31,15 @@
  */
 package com.jme3.scene.control;
 
+import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.Light;
 import com.jme3.light.PointLight;
-import com.jme3.math.Quaternion;
+import com.jme3.light.SpotLight;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
@@ -130,12 +131,12 @@ public class LightControl extends AbstractControl {
         if (light instanceof DirectionalLight) {
             ((DirectionalLight) light).setDirection(vars.vect1.set(spatial.getWorldTranslation()).multLocal(-1.0f));
         }
+
+        if (light instanceof SpotLight) {
+            ((SpotLight) light).setPosition(spatial.getWorldTranslation());            
+            ((SpotLight) light).setDirection(spatial.getWorldRotation().multLocal(vars.vect1.set(Vector3f.UNIT_Y).multLocal(-1)));
+        }
         vars.release();
-        //TODO add code for Spot light here when it's done
-//        if( light instanceof SpotLight){
-//            ((SpotLight)light).setPosition(spatial.getWorldTranslation());                
-//            ((SpotLight)light).setRotation(spatial.getWorldRotation());
-//        }
 
     }
 
@@ -174,18 +175,21 @@ public class LightControl extends AbstractControl {
         return control;
     }
     private static final String CONTROL_DIR_NAME = "controlDir";
-
+    private static final String LIGHT_NAME = "light";
+    
     @Override
     public void read(JmeImporter im) throws IOException {
         super.read(im);
-        im.getCapsule(this).readEnum(CONTROL_DIR_NAME,
-                ControlDirection.class, ControlDirection.SpatialToLight);
+        InputCapsule ic = im.getCapsule(this);
+        controlDir = ic.readEnum(CONTROL_DIR_NAME, ControlDirection.class, ControlDirection.SpatialToLight);
+        light = (Light)ic.readSavable(LIGHT_NAME, null);
     }
 
     @Override
     public void write(JmeExporter ex) throws IOException {
         super.write(ex);
-        ex.getCapsule(this).write(controlDir, CONTROL_DIR_NAME,
-                ControlDirection.SpatialToLight);
+        OutputCapsule oc = ex.getCapsule(this);
+        oc.write(controlDir, CONTROL_DIR_NAME, ControlDirection.SpatialToLight);
+        oc.write(light, LIGHT_NAME, null);
     }
 }

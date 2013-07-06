@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.scene.control;
 
 import com.jme3.export.Savable;
@@ -60,18 +59,6 @@ public interface Control extends Savable {
      * from user code.
      */
     public void setSpatial(Spatial spatial);
-
-    /**
-     * @param enabled Enable or disable the control. If disabled, update()
-     * should do nothing.
-     */
-    public void setEnabled(boolean enabled);
-
-    /**
-     * @return True if enabled, false otherwise.
-     * @see Control#setEnabled(boolean)
-     */
-    public boolean isEnabled();
 
     /**
      * Updates the control. This should not be called from user code.

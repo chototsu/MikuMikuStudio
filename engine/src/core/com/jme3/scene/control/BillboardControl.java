@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,10 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.scene.control;
-
-import java.io.IOException;
 
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
@@ -47,6 +44,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import java.io.IOException;
 
 public class BillboardControl extends AbstractControl {
 

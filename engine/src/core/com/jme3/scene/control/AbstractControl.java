@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.scene.control;
 
+import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
-import com.jme3.export.InputCapsule;
 import com.jme3.export.OutputCapsule;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -55,7 +54,7 @@ public abstract class AbstractControl implements Control {
     }
 
     public void setSpatial(Spatial spatial) {
-        if (this.spatial != null && spatial != null) {
+        if (this.spatial != null && spatial != null && spatial != this.spatial) {
             throw new IllegalStateException("This control has already been added to a Spatial");
         }   
         this.spatial = spatial;
@@ -82,6 +81,29 @@ public abstract class AbstractControl implements Control {
      * To be implemented in subclass.
      */
     protected abstract void controlRender(RenderManager rm, ViewPort vp);
+
+    /**
+     *  Default implementation of cloneForSpatial() that
+     *  simply clones the control and sets the spatial.
+     *  <pre>
+     *  AbstractControl c = clone();
+     *  c.spatial = null;
+     *  c.setSpatial(spatial);
+     *  </pre>
+     *
+     *  Controls that wish to be persisted must be Cloneable.
+     */
+    @Override
+    public Control cloneForSpatial(Spatial spatial) {
+        try {
+            AbstractControl c = (AbstractControl)clone();
+            c.spatial = null; // to keep setSpatial() from throwing an exception
+            c.setSpatial(spatial);
+            return c;
+        } catch(CloneNotSupportedException e) {
+            throw new RuntimeException( "Can't clone control for spatial", e );
+        } 
+    }
 
     public void update(float tpf) {
         if (!enabled)

@@ -47,6 +47,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.control.CameraControl;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import de.lessvoid.nifty.Nifty;
 import java.io.IOException;
@@ -277,7 +278,7 @@ public class Cinematic extends AbstractCinematicEvent implements AppState {
     public CameraNode bindCamera(String cameraName, Camera cam) {
         CameraNode node = new CameraNode(cameraName, cam);
         node.setControlDir(ControlDirection.SpatialToCamera);
-        node.getControl(0).setEnabled(false);
+        node.getControl(CameraControl.class).setEnabled(false);
         cameras.put(cameraName, node);
         scene.attachChild(node);
         return node;
@@ -289,7 +290,7 @@ public class Cinematic extends AbstractCinematicEvent implements AppState {
 
     private void enableCurrentCam(boolean enabled) {
         if (currentCam != null) {
-            currentCam.getControl(0).setEnabled(enabled);
+            currentCam.getControl(CameraControl.class).setEnabled(enabled);
         }
     }
 
