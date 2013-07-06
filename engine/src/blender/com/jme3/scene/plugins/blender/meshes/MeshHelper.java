@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,20 +31,14 @@
  */
 package com.jme3.scene.plugins.blender.meshes;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import com.jme3.asset.BlenderKey.FeaturesToLoad;
-import com.jme3.material.Material;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
@@ -61,9 +55,6 @@ import com.jme3.scene.plugins.blender.file.Structure;
 import com.jme3.scene.plugins.blender.materials.MaterialContext;
 import com.jme3.scene.plugins.blender.materials.MaterialHelper;
 import com.jme3.scene.plugins.blender.objects.Properties;
-import com.jme3.scene.plugins.blender.textures.TextureHelper;
-import com.jme3.scene.plugins.blender.textures.UVCoordinatesGenerator;
-import com.jme3.texture.Texture;
 import com.jme3.util.BufferUtils;
 
 /**
@@ -72,6 +63,7 @@ import com.jme3.util.BufferUtils;
  * @author Marcin Roguski (Kaelthas)
  */
 public class MeshHelper extends AbstractBlenderHelper {
+    private static final Logger LOGGER = Logger.getLogger(MeshHelper.class.getName());
 
     /**
      * This constructor parses the given blender version and stores the result. Some functionalities may differ in different blender
@@ -79,9 +71,11 @@ public class MeshHelper extends AbstractBlenderHelper {
      * 
      * @param blenderVersion
      *            the version read from the blend file
+     * @param blenderContext
+     *            the blender context
      */
-    public MeshHelper(String blenderVersion) {
-        super(blenderVersion);
+    public MeshHelper(String blenderVersion, BlenderContext blenderContext) {
+        super(blenderVersion, blenderContext);
     }
 
     /**
@@ -94,8 +88,7 @@ public class MeshHelper extends AbstractBlenderHelper {
      */
     @SuppressWarnings("unchecked")
     public List<Geometry> toMesh(Structure structure, BlenderContext blenderContext) throws BlenderFileException {
-        List<Geometry> geometries = (List<Geometry>) blenderContext.getLoadedFeature(structure.getOldMemoryAddress(),
-                LoadedFeatureDataType.LOADED_FEATURE);
+        List<Geometry> geometries = (List<Geometry>) blenderContext.getLoadedFeature(structure.getOldMemoryAddress(), LoadedFeatureDataType.LOADED_FEATURE);
         if (geometries != null) {
             List<Geometry> copiedGeometries = new ArrayList<Geometry>(geometries.size());
             for (Geometry geometry : geometries) {
@@ -104,158 +97,37 @@ public class MeshHelper extends AbstractBlenderHelper {
             return copiedGeometries;
         }
 
-        // helpers
-        TextureHelper textureHelper = blenderContext.getHelper(TextureHelper.class);
-
         // reading mesh data
         String name = structure.getName();
         MeshContext meshContext = new MeshContext();
 
-        // reading vertices
-        Vector3f[] vertices = this.getVertices(structure, blenderContext);
-        int verticesAmount = vertices.length;
-
-        // vertices Colors
-        List<float[]> verticesColors = this.getVerticesColors(structure, blenderContext);
-
-        // reading faces
-        // the following map sorts faces by material number (because in jme Mesh can have only one material)
-        Map<Integer, List<Integer>> meshesMap = new HashMap<Integer, List<Integer>>();
-        Pointer pMFace = (Pointer) structure.getFieldValue("mface");
-        List<Structure> mFaces = null;
-        if (pMFace.isNotNull()) {
-            mFaces = pMFace.fetchData(blenderContext.getInputStream());
-            if (mFaces == null || mFaces.size() == 0) {
-                return new ArrayList<Geometry>(0);
-            }
-        } else{
-        	mFaces = new ArrayList<Structure>(0);
+        // reading materials
+        MaterialHelper materialHelper = blenderContext.getHelper(MaterialHelper.class);
+        MaterialContext[] materials = null;
+        if ((blenderContext.getBlenderKey().getFeaturesToLoad() & FeaturesToLoad.MATERIALS) != 0) {
+            materials = materialHelper.getMaterials(structure, blenderContext);
         }
 
-        Pointer pMTFace = (Pointer) structure.getFieldValue("mtface");
-        List<Vector2f> uvCoordinates = null;
-        List<Structure> mtFaces = null;
+        // reading vertices and their colors
+        Vector3f[][] verticesAndNormals = this.getVerticesAndNormals(structure, blenderContext);
+        List<byte[]> verticesColors = this.getVerticesColors(structure, blenderContext);
 
-        if (pMTFace.isNotNull()) {
-            mtFaces = pMTFace.fetchData(blenderContext.getInputStream());
-            int facesAmount = ((Number) structure.getFieldValue("totface")).intValue();
-            if (mtFaces.size() != facesAmount) {
-                throw new BlenderFileException("The amount of faces uv coordinates is not equal to faces amount!");
-            }
-            uvCoordinates = new ArrayList<Vector2f>();
+        MeshBuilder meshBuilder = new MeshBuilder(verticesAndNormals, verticesColors, this.areGeneratedTexturesPresent(materials));
+
+        if (this.isBMeshCompatible(structure)) {
+            this.readBMesh(meshBuilder, structure, blenderContext);
+        } else {
+            this.readTraditionalFaces(meshBuilder, structure, blenderContext);
         }
 
-        // normalMap merges normals of faces that will be rendered smooth
-        Map<Vector3f, Vector3f> normalMap = new HashMap<Vector3f, Vector3f>(verticesAmount);
-
-        List<Vector3f> normalList = new ArrayList<Vector3f>();
-        List<Vector3f> vertexList = new ArrayList<Vector3f>();
-        // indicates if the material with the specified number should have a texture attached
-        Map<Integer, Texture> materialNumberToTexture = new HashMap<Integer, Texture>();
-        // this map's key is the vertex index from 'vertices 'table and the value are indices from 'vertexList'
-        // positions (it simply tells which vertex is referenced where in the result list)
-        Map<Integer, List<Integer>> vertexReferenceMap = new HashMap<Integer, List<Integer>>(verticesAmount);
-        int vertexColorIndex = 0;
-        for (int i = 0; i < mFaces.size(); ++i) {
-            Structure mFace = mFaces.get(i);
-            boolean smooth = (((Number) mFace.getFieldValue("flag")).byteValue() & 0x01) != 0x00;
-            DynamicArray<Number> uvs = null;
-            boolean materialWithoutTextures = false;
-            Pointer pImage = null;
-            if (mtFaces != null) {
-                Structure mtFace = mtFaces.get(i);
-                pImage = (Pointer) mtFace.getFieldValue("tpage");
-                materialWithoutTextures = pImage.isNull();
-                // uvs always must be added wheater we have texture or not
-                uvs = (DynamicArray<Number>) mtFace.getFieldValue("uv");
-                uvCoordinates.add(new Vector2f(uvs.get(0, 0).floatValue(), uvs.get(0, 1).floatValue()));
-                uvCoordinates.add(new Vector2f(uvs.get(1, 0).floatValue(), uvs.get(1, 1).floatValue()));
-                uvCoordinates.add(new Vector2f(uvs.get(2, 0).floatValue(), uvs.get(2, 1).floatValue()));
-            }
-            int matNr = ((Number) mFace.getFieldValue("mat_nr")).intValue();
-            Integer materialNumber = Integer.valueOf(materialWithoutTextures ? -1 * matNr - 1 : matNr);
-            List<Integer> indexList = meshesMap.get(materialNumber);
-            if (indexList == null) {
-                indexList = new ArrayList<Integer>();
-                meshesMap.put(materialNumber, indexList);
-            }
-
-            // attaching image to texture (face can have UV's and image whlie its material may have no texture attached)
-            if (pImage != null && pImage.isNotNull() && !materialNumberToTexture.containsKey(materialNumber)) {
-                Texture texture = textureHelper.getTextureFromImage(pImage.fetchData(blenderContext.getInputStream()).get(0),
-                        blenderContext);
-                if (texture != null) {
-                    materialNumberToTexture.put(materialNumber, texture);
-                }
-            }
-
-            int v1 = ((Number) mFace.getFieldValue("v1")).intValue();
-            int v2 = ((Number) mFace.getFieldValue("v2")).intValue();
-            int v3 = ((Number) mFace.getFieldValue("v3")).intValue();
-            int v4 = ((Number) mFace.getFieldValue("v4")).intValue();
-
-            Vector3f n;
-            if(fixUpAxis) {
-            	n = FastMath.computeNormal(vertices[v1], vertices[v3], vertices[v2]);
-            } else {
-            	n = FastMath.computeNormal(vertices[v1], vertices[v2], vertices[v3]);
-            }
-            this.addNormal(n, normalMap, smooth, vertices[v1], vertices[v2], vertices[v3]);
-            normalList.add(normalMap.get(vertices[v1]));
-            normalList.add(normalMap.get(vertices[v2]));
-            normalList.add(normalMap.get(vertices[v3]));
-
-            this.appendVertexReference(v1, vertexList.size(), vertexReferenceMap);
-            indexList.add(vertexList.size());
-            vertexList.add(vertices[v1]);
-
-            this.appendVertexReference(v2, vertexList.size(), vertexReferenceMap);
-            indexList.add(vertexList.size());
-            vertexList.add(vertices[v2]);
-
-            this.appendVertexReference(v3, vertexList.size(), vertexReferenceMap);
-            indexList.add(vertexList.size());
-            vertexList.add(vertices[v3]);
-
-            if (v4 > 0) {
-                if (uvs != null) {
-                    uvCoordinates.add(new Vector2f(uvs.get(0, 0).floatValue(), uvs.get(0, 1).floatValue()));
-                    uvCoordinates.add(new Vector2f(uvs.get(2, 0).floatValue(), uvs.get(2, 1).floatValue()));
-                    uvCoordinates.add(new Vector2f(uvs.get(3, 0).floatValue(), uvs.get(3, 1).floatValue()));
-                }
-                this.appendVertexReference(v1, vertexList.size(), vertexReferenceMap);
-                indexList.add(vertexList.size());
-                vertexList.add(vertices[v1]);
-
-                this.appendVertexReference(v3, vertexList.size(), vertexReferenceMap);
-                indexList.add(vertexList.size());
-                vertexList.add(vertices[v3]);
-
-                this.appendVertexReference(v4, vertexList.size(), vertexReferenceMap);
-                indexList.add(vertexList.size());
-                vertexList.add(vertices[v4]);
-
-                this.addNormal(n, normalMap, smooth, vertices[v4]);
-                normalList.add(normalMap.get(vertices[v1]));
-                normalList.add(normalMap.get(vertices[v3]));
-                normalList.add(normalMap.get(vertices[v4]));
-
-                if (verticesColors != null) {
-                    verticesColors.add(vertexColorIndex + 3, verticesColors.get(vertexColorIndex));
-                    verticesColors.add(vertexColorIndex + 4, verticesColors.get(vertexColorIndex + 2));
-                }
-                vertexColorIndex += 6;
-            } else {
-                if (verticesColors != null) {
-                    verticesColors.remove(vertexColorIndex + 3);
-                    vertexColorIndex += 3;
-                }
-            }
+        if (meshBuilder.isEmpty()) {
+            geometries = new ArrayList<Geometry>(0);
+            blenderContext.addLoadedFeatures(structure.getOldMemoryAddress(), structure.getName(), structure, geometries);
+            blenderContext.setMeshContext(structure.getOldMemoryAddress(), meshContext);
+            return geometries;
         }
-        meshContext.setVertexList(vertexList);
-        meshContext.setVertexReferenceMap(vertexReferenceMap);
 
-        Vector3f[] normals = normalList.toArray(new Vector3f[normalList.size()]);
+        meshContext.setVertexReferenceMap(meshBuilder.getVertexReferenceMap());
 
         // reading vertices groups (from the parent)
         Structure parent = blenderContext.peekParent();
@@ -267,194 +139,281 @@ public class MeshHelper extends AbstractBlenderHelper {
             verticesGroups[defIndex++] = def.getFieldValue("name").toString();
         }
 
-        // reading materials
-        MaterialHelper materialHelper = blenderContext.getHelper(MaterialHelper.class);
-        Material[] materials = null;
-        Material[] nonTexturedMaterials = null;
-        if ((blenderContext.getBlenderKey().getFeaturesToLoad() & FeaturesToLoad.MATERIALS) != 0) {
-            materials = materialHelper.getMaterials(structure, blenderContext);
-            nonTexturedMaterials = materials == null ? null : new Material[materials.length];// fill it when needed
-        }
-
         // creating the result meshes
-        geometries = new ArrayList<Geometry>(meshesMap.size());
+        geometries = new ArrayList<Geometry>(meshBuilder.getMeshesPartAmount());
 
-        VertexBuffer verticesBuffer = new VertexBuffer(Type.Position);
-        verticesBuffer.setupData(Usage.Stream, 3, Format.Float,
-                BufferUtils.createFloatBuffer(vertexList.toArray(new Vector3f[vertexList.size()])));
-
-        // initial vertex position (used with animation)
-        VertexBuffer verticesBind = new VertexBuffer(Type.BindPosePosition);
-        verticesBind.setupData(Usage.CpuOnly, 3, Format.Float, BufferUtils.clone(verticesBuffer.getData()));
-
-        VertexBuffer normalsBuffer = new VertexBuffer(Type.Normal);
-        normalsBuffer.setupData(Usage.Stream, 3, Format.Float, BufferUtils.createFloatBuffer(normals));
-
-        // initial normals position (used with animation)
-        VertexBuffer normalsBind = new VertexBuffer(Type.BindPoseNormal);
-        normalsBind.setupData(Usage.CpuOnly, 3, Format.Float, BufferUtils.clone(normalsBuffer.getData()));
-
-        VertexBuffer uvCoordsBuffer = null;
-        if (uvCoordinates != null) {
-            uvCoordsBuffer = new VertexBuffer(Type.TexCoord);
-            uvCoordsBuffer.setupData(Usage.Static, 2, Format.Float,
-                    BufferUtils.createFloatBuffer(uvCoordinates.toArray(new Vector2f[uvCoordinates.size()])));
-        }
-
-        //reading custom properties
+        // reading custom properties
         Properties properties = this.loadProperties(structure, blenderContext);
 
         // generating meshes
-        FloatBuffer verticesColorsBuffer = this.createFloatBuffer(verticesColors);
-        for (Entry<Integer, List<Integer>> meshEntry : meshesMap.entrySet()) {
+        for (Entry<Integer, List<Integer>> meshEntry : meshBuilder.getMeshesMap().entrySet()) {
+            int materialIndex = meshEntry.getKey();
+            // key is the material index (or -1 if the material has no texture)
+            // value is a list of vertex indices
             Mesh mesh = new Mesh();
 
             // creating vertices indices for this mesh
             List<Integer> indexList = meshEntry.getValue();
-            int[] indices = new int[indexList.size()];
-            for (int i = 0; i < indexList.size(); ++i) {
-                indices[i] = indexList.get(i).intValue();
+            if (meshBuilder.getVerticesAmount(materialIndex) <= Short.MAX_VALUE) {
+                short[] indices = new short[indexList.size()];
+                for (int i = 0; i < indexList.size(); ++i) {
+                    indices[i] = indexList.get(i).shortValue();
+                }
+                mesh.setBuffer(Type.Index, 1, indices);
+            } else {
+                int[] indices = new int[indexList.size()];
+                for (int i = 0; i < indexList.size(); ++i) {
+                    indices[i] = indexList.get(i).intValue();
+                }
+                mesh.setBuffer(Type.Index, 1, indices);
             }
 
-            // setting vertices
-            mesh.setBuffer(Type.Index, 1, indices);
+            VertexBuffer verticesBuffer = new VertexBuffer(Type.Position);
+            verticesBuffer.setupData(Usage.Static, 3, Format.Float, BufferUtils.createFloatBuffer(meshBuilder.getVertices(materialIndex)));
+
+            // initial vertex position (used with animation)
+            VertexBuffer verticesBind = new VertexBuffer(Type.BindPosePosition);
+            verticesBind.setupData(Usage.CpuOnly, 3, Format.Float, BufferUtils.createFloatBuffer(meshBuilder.getVertices(materialIndex)));
+
+            VertexBuffer normalsBuffer = new VertexBuffer(Type.Normal);
+            normalsBuffer.setupData(Usage.Static, 3, Format.Float, BufferUtils.createFloatBuffer(meshBuilder.getNormals(materialIndex)));
+
+            // initial normals position (used with animation)
+            VertexBuffer normalsBind = new VertexBuffer(Type.BindPoseNormal);
+            normalsBind.setupData(Usage.CpuOnly, 3, Format.Float, BufferUtils.createFloatBuffer(meshBuilder.getNormals(materialIndex)));
+
             mesh.setBuffer(verticesBuffer);
-            mesh.setBuffer(verticesBind);
+            meshContext.setBindPoseBuffer(materialIndex, verticesBind);// this is stored in the context and applied when needed (when animation is applied to the mesh)
 
             // setting vertices colors
-            if (verticesColorsBuffer != null) {
-                mesh.setBuffer(Type.Color, 4, verticesColorsBuffer);
+            if (verticesColors != null) {
+                mesh.setBuffer(Type.Color, 4, meshBuilder.getVertexColorsBuffer(materialIndex));
+                mesh.getBuffer(Type.Color).setNormalized(true);
             }
 
             // setting faces' normals
             mesh.setBuffer(normalsBuffer);
-            mesh.setBuffer(normalsBind);
+            meshContext.setBindNormalBuffer(materialIndex, normalsBind);// this is stored in the context and applied when needed (when animation is applied to the mesh)
 
             // creating the result
             Geometry geometry = new Geometry(name + (geometries.size() + 1), mesh);
-            if (materials != null) {
-                int materialNumber = meshEntry.getKey().intValue();
-                Material material;
-                if (materialNumber >= 0) {
-                    material = materials[materialNumber];
-                    if (materialNumberToTexture.containsKey(Integer.valueOf(materialNumber))) {
-                        if (material.getMaterialDef().getAssetName().contains("Lighting")) {
-                            if (!materialHelper.hasTexture(material, MaterialHelper.TEXTURE_TYPE_DIFFUSE)) {
-                                material = material.clone();
-                                material.setTexture(MaterialHelper.TEXTURE_TYPE_DIFFUSE,
-                                        materialNumberToTexture.get(Integer.valueOf(materialNumber)));
-                            }
-                        } else {
-                            if (!materialHelper.hasTexture(material, MaterialHelper.TEXTURE_TYPE_COLOR)) {
-                                material = material.clone();
-                                material.setTexture(MaterialHelper.TEXTURE_TYPE_COLOR,
-                                        materialNumberToTexture.get(Integer.valueOf(materialNumber)));
-                            }
-                        }
-                    }
-                } else {
-                    materialNumber = -1 * (materialNumber + 1);
-                    if (nonTexturedMaterials[materialNumber] == null) {
-                        nonTexturedMaterials[materialNumber] = materialHelper.getNonTexturedMaterial(materials[materialNumber],
-                                TextureHelper.TEX_IMAGE);
-                    }
-                    material = nonTexturedMaterials[materialNumber];
-                }
-                geometry.setMaterial(material);
-                if (material.isTransparent()) {
-                    geometry.setQueueBucket(Bucket.Transparent);
-                }
-            } else {
-                geometry.setMaterial(blenderContext.getDefaultMaterial());
-            }
             if (properties != null && properties.getValue() != null) {
-                geometry.setUserData("properties", properties);
+                this.applyProperties(geometry, properties);
             }
             geometries.add(geometry);
+            meshContext.putGeometry(materialIndex, geometry);
         }
 
-        //applying uvCoordinates for all the meshes
-        if (uvCoordsBuffer != null) {
-            for (Geometry geom : geometries) {
-                geom.getMesh().setBuffer(uvCoordsBuffer);
-            }
-        } else {
-            Map<Material, List<Geometry>> materialMap = new HashMap<Material, List<Geometry>>();
-            for (Geometry geom : geometries) {
-                Material material = geom.getMaterial();
-                List<Geometry> geomsWithCommonMaterial = materialMap.get(material);
-                if (geomsWithCommonMaterial == null) {
-                    geomsWithCommonMaterial = new ArrayList<Geometry>();
-                    materialMap.put(material, geomsWithCommonMaterial);
-                }
-                geomsWithCommonMaterial.add(geom);
-
-            }
-            for (Entry<Material, List<Geometry>> entry : materialMap.entrySet()) {
-                MaterialContext materialContext = blenderContext.getMaterialContext(entry.getKey());
-                if (materialContext != null && materialContext.getTexturesCount() > 0) {
-                    VertexBuffer coords = UVCoordinatesGenerator.generateUVCoordinates(materialContext.getUvCoordinatesType(),
-                            materialContext.getProjectionType(), materialContext.getTextureDimension(),
-                            materialContext.getProjection(0), entry.getValue());
-                    //setting the coordinates inside the mesh context
-                    for (Geometry geometry : entry.getValue()) {
-                        meshContext.addUVCoordinates(geometry, coords);
-                    }
-                }
-            }
-        }
-
+        // store the data in blender context before applying the material
         blenderContext.addLoadedFeatures(structure.getOldMemoryAddress(), structure.getName(), structure, geometries);
         blenderContext.setMeshContext(structure.getOldMemoryAddress(), meshContext);
+
+        // apply materials only when all geometries are in place
+        if (materials != null) {
+            for (Geometry geometry : geometries) {
+                int materialNumber = meshContext.getMaterialIndex(geometry);
+                if (materials[materialNumber] != null) {
+                    List<Vector2f> uvCoordinates = meshBuilder.getUVCoordinates(materialNumber);
+                    MaterialContext materialContext = materials[materialNumber];
+                    materialContext.applyMaterial(geometry, structure.getOldMemoryAddress(), uvCoordinates, blenderContext);
+                } else {
+                    geometry.setMaterial(blenderContext.getDefaultMaterial());
+                    LOGGER.warning("The importer came accross mesh that points to a null material. Default material is used to prevent loader from crashing, " + "but the model might look not the way it should. Sometimes blender does not assign materials properly. " + "Enter the edit mode and assign materials once more to your faces.");
+                }
+            }
+        } else {
+            // add UV coordinates if they are defined even if the material is not applied to the model
+            VertexBuffer uvCoordsBuffer = null;
+            if (meshBuilder.hasUVCoordinates()) {
+                List<Vector2f> uvs = meshBuilder.getUVCoordinates(0);
+                uvCoordsBuffer = new VertexBuffer(Type.TexCoord);
+                uvCoordsBuffer.setupData(Usage.Static, 2, Format.Float, BufferUtils.createFloatBuffer(uvs.toArray(new Vector2f[uvs.size()])));
+            }
+
+            for (Geometry geometry : geometries) {
+                geometry.setMaterial(blenderContext.getDefaultMaterial());
+                if (uvCoordsBuffer != null) {
+                    geometry.getMesh().setBuffer(uvCoordsBuffer);
+                }
+            }
+        }
+
         return geometries;
     }
 
     /**
-     * This method adds a normal to a normals' map. This map is used to merge normals of a vertor that should be rendered smooth.
+     * Tells if the given mesh structure supports BMesh.
      * 
-     * @param normalToAdd
-     *            a normal to be added
-     * @param normalMap
-     *            merges normals of faces that will be rendered smooth; the key is the vertex and the value - its normal vector
-     * @param smooth
-     *            the variable that indicates wheather to merge normals (creating the smooth mesh) or not
-     * @param vertices
-     *            a list of vertices read from the blender file
+     * @param meshStructure
+     *            the mesh structure
+     * @return <b>true</b> if BMesh is supported and <b>false</b> otherwise
      */
-    public void addNormal(Vector3f normalToAdd, Map<Vector3f, Vector3f> normalMap, boolean smooth, Vector3f... vertices) {
-        for (Vector3f v : vertices) {
-            Vector3f n = normalMap.get(v);
-            if (!smooth || n == null) {
-                normalMap.put(v, normalToAdd.clone());
-            } else {
-                n.addLocal(normalToAdd).normalizeLocal();
+    private boolean isBMeshCompatible(Structure meshStructure) {
+        Pointer pMLoop = (Pointer) meshStructure.getFieldValue("mloop");
+        Pointer pMPoly = (Pointer) meshStructure.getFieldValue("mpoly");
+        return pMLoop != null && pMPoly != null && pMLoop.isNotNull() && pMPoly.isNotNull();
+    }
+
+    /**
+     * This method reads the mesh from the new BMesh system.
+     * 
+     * @param meshBuilder
+     *            the mesh builder
+     * @param meshStructure
+     *            the mesh structure
+     * @param blenderContext
+     *            the blender context
+     * @throws BlenderFileException
+     *             an exception is thrown when there are problems with the
+     *             blender file
+     */
+    @SuppressWarnings("unchecked")
+    private void readBMesh(MeshBuilder meshBuilder, Structure meshStructure, BlenderContext blenderContext) throws BlenderFileException {
+        Pointer pMLoop = (Pointer) meshStructure.getFieldValue("mloop");
+        Pointer pMPoly = (Pointer) meshStructure.getFieldValue("mpoly");
+        Pointer pMEdge = (Pointer) meshStructure.getFieldValue("medge");
+        Pointer pMLoopUV = (Pointer) meshStructure.getFieldValue("mloopuv");
+        Vector2f[] uvCoordinatesForFace = new Vector2f[3];
+
+        if (pMPoly.isNotNull() && pMLoop.isNotNull() && pMEdge.isNotNull()) {
+            int faceIndex = 0;
+            List<Structure> polys = pMPoly.fetchData(blenderContext.getInputStream());
+            List<Structure> loops = pMLoop.fetchData(blenderContext.getInputStream());
+            List<Structure> loopuvs = pMLoopUV.isNotNull() ? pMLoopUV.fetchData(blenderContext.getInputStream()) : null;
+            for (Structure poly : polys) {
+                int materialNumber = ((Number) poly.getFieldValue("mat_nr")).intValue();
+                int loopStart = ((Number) poly.getFieldValue("loopstart")).intValue();
+                int totLoop = ((Number) poly.getFieldValue("totloop")).intValue();
+                boolean smooth = (((Number) poly.getFieldValue("flag")).byteValue() & 0x01) != 0x00;
+                int[] vertexIndexes = new int[totLoop];
+                Vector2f[] uvs = loopuvs != null ? new Vector2f[totLoop] : null;
+
+                for (int i = loopStart; i < loopStart + totLoop; ++i) {
+                    vertexIndexes[i - loopStart] = ((Number) loops.get(i).getFieldValue("v")).intValue();
+                    if (uvs != null) {
+                        DynamicArray<Number> loopUVS = (DynamicArray<Number>) loopuvs.get(i).getFieldValue("uv");
+                        uvs[i - loopStart] = new Vector2f(loopUVS.get(0).floatValue(), loopUVS.get(1).floatValue());
+                    }
+                }
+
+                int i = 0;
+                while (i < totLoop - 2) {
+                    int v1 = vertexIndexes[0];
+                    int v2 = vertexIndexes[i + 1];
+                    int v3 = vertexIndexes[i + 2];
+
+                    if (uvs != null) {// uvs always must be added wheater we
+                                      // have texture or not
+                        uvCoordinatesForFace[0] = uvs[0];
+                        uvCoordinatesForFace[1] = uvs[i + 1];
+                        uvCoordinatesForFace[2] = uvs[i + 2];
+                    }
+
+                    meshBuilder.appendFace(v1, v2, v3, smooth, materialNumber, uvs == null ? null : uvCoordinatesForFace, false, faceIndex);
+
+                    ++i;
+                }
+                ++faceIndex;
             }
         }
     }
 
     /**
-     * This method fills the vertex reference map. The vertices are loaded once and referenced many times in the model. This map is created
-     * to tell where the basic vertices are referenced in the result vertex lists. The key of the map is the basic vertex index, and its key
-     * - the reference indices list.
+     * This method reads the mesh from traditional triangle/quad storing
+     * structures.
      * 
-     * @param basicVertexIndex
-     *            the index of the vertex from its basic table
-     * @param resultIndex
-     *            the index of the vertex in its result vertex list
-     * @param vertexReferenceMap
-     *            the reference map
+     * @param meshBuilder
+     *            the mesh builder
+     * @param meshStructure
+     *            the mesh structure
+     * @param blenderContext
+     *            the blender context
+     * @throws BlenderFileException
+     *             an exception is thrown when there are problems with the
+     *             blender file
      */
-    protected void appendVertexReference(int basicVertexIndex, int resultIndex, Map<Integer, List<Integer>> vertexReferenceMap) {
-        List<Integer> referenceList = vertexReferenceMap.get(Integer.valueOf(basicVertexIndex));
-        if (referenceList == null) {
-            referenceList = new ArrayList<Integer>();
-            vertexReferenceMap.put(Integer.valueOf(basicVertexIndex), referenceList);
+    @SuppressWarnings("unchecked")
+    private void readTraditionalFaces(MeshBuilder meshBuilder, Structure meshStructure, BlenderContext blenderContext) throws BlenderFileException {
+        Pointer pMFace = (Pointer) meshStructure.getFieldValue("mface");
+        List<Structure> mFaces = pMFace.isNotNull() ? pMFace.fetchData(blenderContext.getInputStream()) : null;
+        if (mFaces != null && mFaces.size() > 0) {
+            Pointer pMTFace = (Pointer) meshStructure.getFieldValue("mtface");
+            List<Structure> mtFaces = null;
+
+            if (pMTFace.isNotNull()) {
+                mtFaces = pMTFace.fetchData(blenderContext.getInputStream());
+                int facesAmount = ((Number) meshStructure.getFieldValue("totface")).intValue();
+                if (mtFaces.size() != facesAmount) {
+                    throw new BlenderFileException("The amount of faces uv coordinates is not equal to faces amount!");
+                }
+            }
+
+            // indicates if the material with the specified number should have a
+            // texture attached
+            Vector2f[] uvCoordinatesForFace = new Vector2f[3];
+            for (int i = 0; i < mFaces.size(); ++i) {
+                Structure mFace = mFaces.get(i);
+                int materialNumber = ((Number) mFace.getFieldValue("mat_nr")).intValue();
+                boolean smooth = (((Number) mFace.getFieldValue("flag")).byteValue() & 0x01) != 0x00;
+                DynamicArray<Number> uvs = null;
+
+                if (mtFaces != null) {
+                    Structure mtFace = mtFaces.get(i);
+                    // uvs always must be added wheater we have texture or not
+                    uvs = (DynamicArray<Number>) mtFace.getFieldValue("uv");
+                    uvCoordinatesForFace[0] = new Vector2f(uvs.get(0, 0).floatValue(), uvs.get(0, 1).floatValue());
+                    uvCoordinatesForFace[1] = new Vector2f(uvs.get(1, 0).floatValue(), uvs.get(1, 1).floatValue());
+                    uvCoordinatesForFace[2] = new Vector2f(uvs.get(2, 0).floatValue(), uvs.get(2, 1).floatValue());
+                }
+
+                int v1 = ((Number) mFace.getFieldValue("v1")).intValue();
+                int v2 = ((Number) mFace.getFieldValue("v2")).intValue();
+                int v3 = ((Number) mFace.getFieldValue("v3")).intValue();
+                int v4 = ((Number) mFace.getFieldValue("v4")).intValue();
+
+                meshBuilder.appendFace(v1, v2, v3, smooth, materialNumber, uvs == null ? null : uvCoordinatesForFace, false, i);
+                if (v4 > 0) {
+                    if (uvs != null) {
+                        uvCoordinatesForFace[0] = new Vector2f(uvs.get(0, 0).floatValue(), uvs.get(0, 1).floatValue());
+                        uvCoordinatesForFace[1] = new Vector2f(uvs.get(2, 0).floatValue(), uvs.get(2, 1).floatValue());
+                        uvCoordinatesForFace[2] = new Vector2f(uvs.get(3, 0).floatValue(), uvs.get(3, 1).floatValue());
+                    }
+                    meshBuilder.appendFace(v1, v3, v4, smooth, materialNumber, uvs == null ? null : uvCoordinatesForFace, true, i);
+                }
+            }
+        } else {
+            Pointer pMEdge = (Pointer) meshStructure.getFieldValue("medge");
+            List<Structure> mEdges = pMEdge.isNotNull() ? pMEdge.fetchData(blenderContext.getInputStream()) : null;
+            if (mEdges != null && mEdges.size() > 0) {
+                for (int i = 0; i < mEdges.size(); ++i) {
+                    Structure mEdge = mEdges.get(i);
+                    boolean smooth = (((Number) mEdge.getFieldValue("flag")).byteValue() & 0x01) != 0x00;
+
+                    int v1 = ((Number) mEdge.getFieldValue("v1")).intValue();
+                    int v2 = ((Number) mEdge.getFieldValue("v2")).intValue();
+
+                    meshBuilder.appendEdge(v1, v2, smooth);
+                }
+            }
         }
-        referenceList.add(Integer.valueOf(resultIndex));
     }
 
     /**
-     * This method returns the vertices colors. Each vertex is stored in float[4] array.
+     * @return <b>true</b> if the material has at least one generated component and <b>false</b> otherwise
+     */
+    private boolean areGeneratedTexturesPresent(MaterialContext[] materials) {
+        if (materials != null) {
+            for (MaterialContext material : materials) {
+                if (material != null && material.hasGeneratedTextures()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method returns the vertices colors. Each vertex is stored in byte[4] array.
      * 
      * @param meshStructure
      *            the structure containing the mesh data
@@ -464,19 +423,19 @@ public class MeshHelper extends AbstractBlenderHelper {
      * @throws BlenderFileException
      *             this exception is thrown when the blend file structure is somehow invalid or corrupted
      */
-    public List<float[]> getVerticesColors(Structure meshStructure, BlenderContext blenderContext) throws BlenderFileException {
+    public List<byte[]> getVerticesColors(Structure meshStructure, BlenderContext blenderContext) throws BlenderFileException {
         Pointer pMCol = (Pointer) meshStructure.getFieldValue("mcol");
-        List<float[]> verticesColors = null;
+        List<byte[]> verticesColors = null;
         List<Structure> mCol = null;
         if (pMCol.isNotNull()) {
-            verticesColors = new LinkedList<float[]>();
+            verticesColors = new ArrayList<byte[]>();
             mCol = pMCol.fetchData(blenderContext.getInputStream());
             for (Structure color : mCol) {
-                float r = ((Number) color.getFieldValue("r")).byteValue() / 256.0f;
-                float g = ((Number) color.getFieldValue("g")).byteValue() / 256.0f;
-                float b = ((Number) color.getFieldValue("b")).byteValue() / 256.0f;
-                float a = ((Number) color.getFieldValue("a")).byteValue() / 256.0f;
-                verticesColors.add(new float[]{b, g, r, a});
+                byte r = ((Number) color.getFieldValue("r")).byteValue();
+                byte g = ((Number) color.getFieldValue("g")).byteValue();
+                byte b = ((Number) color.getFieldValue("b")).byteValue();
+                byte a = ((Number) color.getFieldValue("a")).byteValue();
+                verticesColors.add(new byte[] { b, g, r, a });
             }
         }
         return verticesColors;
@@ -489,32 +448,38 @@ public class MeshHelper extends AbstractBlenderHelper {
      *            the structure containing the mesh data
      * @param blenderContext
      *            the blender context
-     * @return a list of vertices colors, each color belongs to a single vertex
+     * @return a list of two - element arrays, the first element is the vertex and the second - its normal
      * @throws BlenderFileException
      *             this exception is thrown when the blend file structure is somehow invalid or corrupted
      */
     @SuppressWarnings("unchecked")
-    private Vector3f[] getVertices(Structure meshStructure, BlenderContext blenderContext) throws BlenderFileException {
-        int verticesAmount = ((Number) meshStructure.getFieldValue("totvert")).intValue();
-        Vector3f[] vertices = new Vector3f[verticesAmount];
-        if (verticesAmount == 0) {
-            return vertices;
+    private Vector3f[][] getVerticesAndNormals(Structure meshStructure, BlenderContext blenderContext) throws BlenderFileException {
+        int count = ((Number) meshStructure.getFieldValue("totvert")).intValue();
+        Vector3f[][] result = new Vector3f[count][2];
+        if (count == 0) {
+            return result;
         }
 
         Pointer pMVert = (Pointer) meshStructure.getFieldValue("mvert");
         List<Structure> mVerts = pMVert.fetchData(blenderContext.getInputStream());
-        if(this.fixUpAxis) {
-        	for (int i = 0; i < verticesAmount; ++i) {
+        if (this.fixUpAxis) {
+            for (int i = 0; i < count; ++i) {
                 DynamicArray<Number> coordinates = (DynamicArray<Number>) mVerts.get(i).getFieldValue("co");
-                vertices[i] = new Vector3f(coordinates.get(0).floatValue(), coordinates.get(2).floatValue(), coordinates.get(1).floatValue());
+                result[i][0] = new Vector3f(coordinates.get(0).floatValue(), coordinates.get(2).floatValue(), -coordinates.get(1).floatValue());
+
+                DynamicArray<Number> normals = (DynamicArray<Number>) mVerts.get(i).getFieldValue("no");
+                result[i][1] = new Vector3f(normals.get(0).shortValue() / 32767.0f, normals.get(2).shortValue() / 32767.0f, -normals.get(1).shortValue() / 32767.0f);
             }
         } else {
-        	for (int i = 0; i < verticesAmount; ++i) {
+            for (int i = 0; i < count; ++i) {
                 DynamicArray<Number> coordinates = (DynamicArray<Number>) mVerts.get(i).getFieldValue("co");
-                vertices[i] = new Vector3f(coordinates.get(0).floatValue(), coordinates.get(1).floatValue(), coordinates.get(2).floatValue());
+                result[i][0] = new Vector3f(coordinates.get(0).floatValue(), coordinates.get(1).floatValue(), coordinates.get(2).floatValue());
+
+                DynamicArray<Number> normals = (DynamicArray<Number>) mVerts.get(i).getFieldValue("no");
+                result[i][1] = new Vector3f(normals.get(0).shortValue() / 32767.0f, normals.get(1).shortValue() / 32767.0f, normals.get(2).shortValue() / 32767.0f);
             }
         }
-        return vertices;
+        return result;
     }
 
     @Override

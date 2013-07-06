@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,12 +43,13 @@ public class BlenderFileException extends Exception {
      * Constructor. Creates an exception with no description.
      */
     public BlenderFileException() {
+        // this constructor has no message
     }
 
     /**
      * Constructor. Creates an exception containing the given message.
      * @param message
-     *        the message describing the problem that occured
+     *            the message describing the problem that occured
      */
     public BlenderFileException(String message) {
         super(message);
@@ -57,7 +58,7 @@ public class BlenderFileException extends Exception {
     /**
      * Constructor. Creates an exception that is based upon other thrown object. It contains the whole stacktrace then.
      * @param throwable
-     *        an exception/error that occured
+     *            an exception/error that occured
      */
     public BlenderFileException(Throwable throwable) {
         super(throwable);
@@ -66,9 +67,9 @@ public class BlenderFileException extends Exception {
     /**
      * Constructor. Creates an exception with both a message and stacktrace.
      * @param message
-     *        the message describing the problem that occured
+     *            the message describing the problem that occured
      * @param throwable
-     *        an exception/error that occured
+     *            an exception/error that occured
      */
     public BlenderFileException(String message, Throwable throwable) {
         super(message, throwable);

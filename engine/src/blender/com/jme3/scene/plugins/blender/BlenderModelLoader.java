@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,9 +37,11 @@ import java.util.logging.Logger;
 
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.BlenderKey;
-import com.jme3.light.Light;
+import com.jme3.asset.BlenderKey.FeaturesToLoad;
+import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.plugins.blender.constraints.ConstraintHelper;
 import com.jme3.scene.plugins.blender.exceptions.BlenderFileException;
 import com.jme3.scene.plugins.blender.file.FileBlockHeader;
 
@@ -55,23 +57,30 @@ public class BlenderModelLoader extends BlenderLoader {
     public Spatial load(AssetInfo assetInfo) throws IOException {
         try {
             this.setup(assetInfo);
-            
+
             BlenderKey blenderKey = blenderContext.getBlenderKey();
             Node modelRoot = new Node(blenderKey.getName());
-            
+
             for (FileBlockHeader block : blocks) {
                 if (block.getCode() == FileBlockHeader.BLOCK_OB00) {
                     Object object = this.toObject(block.getStructure(blenderContext));
-                    if (object instanceof Node) {
-                        LOGGER.log(Level.INFO, "{0}: {1}--> {2}", new Object[]{((Node) object).getName(), ((Node) object).getLocalTranslation().toString(), ((Node) object).getParent() == null ? "null" : ((Node) object).getParent().getName()});
+
+                    if (object instanceof LightNode && (blenderKey.getFeaturesToLoad() & FeaturesToLoad.LIGHTS) != 0) {
+                        modelRoot.addLight(((LightNode) object).getLight());
+                        modelRoot.attachChild((LightNode) object);
+                    } else if (object instanceof Node && (blenderKey.getFeaturesToLoad() & FeaturesToLoad.OBJECTS) != 0) {
+                        LOGGER.log(Level.FINE, "{0}: {1}--> {2}", new Object[] { ((Node) object).getName(), ((Node) object).getLocalTranslation().toString(), ((Node) object).getParent() == null ? "null" : ((Node) object).getParent().getName() });
                         if (((Node) object).getParent() == null) {
-                            modelRoot.attachChild( (Node) object );
+                            modelRoot.attachChild((Node) object);
                         }
-                    }else if (object instanceof Light){
-                        modelRoot.addLight( (Light) object );
                     }
                 }
             }
+
+            // bake constraints after everything is loaded
+            ConstraintHelper constraintHelper = blenderContext.getHelper(ConstraintHelper.class);
+            constraintHelper.bakeConstraints(blenderContext);
+
             blenderContext.dispose();
             return modelRoot;
         } catch (BlenderFileException e) {

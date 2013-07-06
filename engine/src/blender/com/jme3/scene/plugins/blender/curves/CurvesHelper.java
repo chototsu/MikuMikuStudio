@@ -1,12 +1,45 @@
+/*
+ * Copyright (c) 2009-2012 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme3.scene.plugins.blender.curves;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.jme3.material.Material;
@@ -20,7 +53,9 @@ import com.jme3.math.Vector3f;
 import com.jme3.math.Vector4f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
+import com.jme3.scene.mesh.IndexBuffer;
 import com.jme3.scene.plugins.blender.AbstractBlenderHelper;
 import com.jme3.scene.plugins.blender.BlenderContext;
 import com.jme3.scene.plugins.blender.exceptions.BlenderFileException;
@@ -29,8 +64,8 @@ import com.jme3.scene.plugins.blender.file.DynamicArray;
 import com.jme3.scene.plugins.blender.file.FileBlockHeader;
 import com.jme3.scene.plugins.blender.file.Pointer;
 import com.jme3.scene.plugins.blender.file.Structure;
+import com.jme3.scene.plugins.blender.materials.MaterialContext;
 import com.jme3.scene.plugins.blender.materials.MaterialHelper;
-import com.jme3.scene.plugins.blender.meshes.MeshHelper;
 import com.jme3.scene.plugins.blender.objects.Properties;
 import com.jme3.scene.shape.Curve;
 import com.jme3.scene.shape.Surface;
@@ -38,24 +73,27 @@ import com.jme3.util.BufferUtils;
 
 /**
  * A class that is used in mesh calculations.
- * @author Marcin Roguski
+ * 
+ * @author Marcin Roguski (Kaelthas)
  */
 public class CurvesHelper extends AbstractBlenderHelper {
+    private static final Logger LOGGER                      = Logger.getLogger(CurvesHelper.class.getName());
 
-    private static final Logger LOGGER = Logger.getLogger(CurvesHelper.class.getName());
     /** Minimum basis U function degree for NURBS curves and surfaces. */
-    protected int minimumBasisUFunctionDegree = 4;
+    protected int               minimumBasisUFunctionDegree = 4;
     /** Minimum basis V function degree for NURBS curves and surfaces. */
-    protected int minimumBasisVFunctionDegree = 4;
+    protected int               minimumBasisVFunctionDegree = 4;
 
     /**
      * This constructor parses the given blender version and stores the result. Some functionalities may differ in
      * different blender versions.
      * @param blenderVersion
-     *        the version read from the blend file
+     *            the version read from the blend file
+     * @param blenderContext
+     *            the blender context
      */
-    public CurvesHelper(String blenderVersion) {
-        super(blenderVersion);
+    public CurvesHelper(String blenderVersion, BlenderContext blenderContext) {
+        super(blenderVersion, blenderContext);
     }
 
     /**
@@ -75,13 +113,13 @@ public class CurvesHelper extends AbstractBlenderHelper {
         boolean isFront = (flag & 0x02) != 0 && !is3D;
         boolean isBack = (flag & 0x04) != 0 && !is3D;
         if (isFront) {
-            LOGGER.warning("No front face in curve implemented yet!");//TODO: implement front face
+            LOGGER.warning("No front face in curve implemented yet!");// TODO: implement front face
         }
         if (isBack) {
-            LOGGER.warning("No back face in curve implemented yet!");//TODO: implement back face
+            LOGGER.warning("No back face in curve implemented yet!");// TODO: implement back face
         }
 
-        //reading nurbs (and sorting them by material)
+        // reading nurbs (and sorting them by material)
         List<Structure> nurbStructures = ((Structure) curveStructure.getFieldValue("nurb")).evaluateListBase(blenderContext);
         Map<Number, List<Structure>> nurbs = new HashMap<Number, List<Structure>>();
         for (Structure nurb : nurbStructures) {
@@ -94,17 +132,20 @@ public class CurvesHelper extends AbstractBlenderHelper {
             nurbList.add(nurb);
         }
 
-        //getting materials
+        // getting materials
         MaterialHelper materialHelper = blenderContext.getHelper(MaterialHelper.class);
-        Material[] materials = materialHelper.getMaterials(curveStructure, blenderContext);
-        if (materials == null) {
-            materials = new Material[]{blenderContext.getDefaultMaterial().clone()};
-        }
-        for (Material material : materials) {
-            material.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+        MaterialContext[] materialContexts = materialHelper.getMaterials(curveStructure, blenderContext);
+        Material defaultMaterial = null;
+        if (materialContexts != null) {
+            for (MaterialContext materialContext : materialContexts) {
+                materialContext.setFaceCullMode(FaceCullMode.Off);
+            }
+        } else {
+            defaultMaterial = blenderContext.getDefaultMaterial().clone();
+            defaultMaterial.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         }
 
-        //getting or creating bevel object
+        // getting or creating bevel object
         List<Geometry> bevelObject = null;
         Pointer pBevelObject = (Pointer) curveStructure.getFieldValue("bevobj");
         if (pBevelObject.isNotNull()) {
@@ -119,53 +160,50 @@ public class CurvesHelper extends AbstractBlenderHelper {
                 float handlerLength = bevelDepth / 2.0f;
 
                 List<Vector3f> conrtolPoints = new ArrayList<Vector3f>(extrude > 0.0f ? 19 : 13);
-                conrtolPoints.add(new Vector3f(-bevelDepth, extrude, 0));
-                conrtolPoints.add(new Vector3f(-bevelDepth, handlerLength + extrude, 0));
-
-                conrtolPoints.add(new Vector3f(-handlerLength, bevelDepth + extrude, 0));
-                conrtolPoints.add(new Vector3f(0, bevelDepth + extrude, 0));
-                conrtolPoints.add(new Vector3f(handlerLength, bevelDepth + extrude, 0));
-
-                conrtolPoints.add(new Vector3f(bevelDepth, extrude + handlerLength, 0));
-                conrtolPoints.add(new Vector3f(bevelDepth, extrude, 0));
-                conrtolPoints.add(new Vector3f(bevelDepth, extrude - handlerLength, 0));
-
                 if (extrude > 0.0f) {
-                    conrtolPoints.add(new Vector3f(bevelDepth, -extrude + handlerLength, 0));
-                    conrtolPoints.add(new Vector3f(bevelDepth, -extrude, 0));
-                    conrtolPoints.add(new Vector3f(bevelDepth, -extrude - handlerLength, 0));
+                    conrtolPoints.add(new Vector3f(-bevelDepth, 0, extrude));
+                    conrtolPoints.add(new Vector3f(-bevelDepth, 0, -handlerLength + extrude));
+                    conrtolPoints.add(new Vector3f(-bevelDepth, 0, handlerLength - extrude));
                 }
 
-                conrtolPoints.add(new Vector3f(handlerLength, -bevelDepth - extrude, 0));
-                conrtolPoints.add(new Vector3f(0, -bevelDepth - extrude, 0));
-                conrtolPoints.add(new Vector3f(-handlerLength, -bevelDepth - extrude, 0));
+                conrtolPoints.add(new Vector3f(-bevelDepth, 0, -extrude));
+                conrtolPoints.add(new Vector3f(-bevelDepth, 0, -handlerLength - extrude));
 
-                conrtolPoints.add(new Vector3f(-bevelDepth, -handlerLength - extrude, 0));
-                conrtolPoints.add(new Vector3f(-bevelDepth, -extrude, 0));
+                conrtolPoints.add(new Vector3f(-handlerLength, 0, -bevelDepth - extrude));
+                conrtolPoints.add(new Vector3f(0, 0, -bevelDepth - extrude));
+                conrtolPoints.add(new Vector3f(handlerLength, 0, -bevelDepth - extrude));
 
                 if (extrude > 0.0f) {
-                    conrtolPoints.add(new Vector3f(-bevelDepth, handlerLength - extrude, 0));
-
-                    conrtolPoints.add(new Vector3f(-bevelDepth, -handlerLength + extrude, 0));
-                    conrtolPoints.add(new Vector3f(-bevelDepth, extrude, 0));
+                    conrtolPoints.add(new Vector3f(bevelDepth, 0, -extrude - handlerLength));
+                    conrtolPoints.add(new Vector3f(bevelDepth, 0, -extrude));
+                    conrtolPoints.add(new Vector3f(bevelDepth, 0, -extrude + handlerLength));
                 }
+
+                conrtolPoints.add(new Vector3f(bevelDepth, 0, extrude - handlerLength));
+                conrtolPoints.add(new Vector3f(bevelDepth, 0, extrude));
+                conrtolPoints.add(new Vector3f(bevelDepth, 0, extrude + handlerLength));
+
+                conrtolPoints.add(new Vector3f(handlerLength, 0, bevelDepth + extrude));
+                conrtolPoints.add(new Vector3f(0, 0, bevelDepth + extrude));
+                conrtolPoints.add(new Vector3f(-handlerLength, 0, bevelDepth + extrude));
+
+                conrtolPoints.add(new Vector3f(-bevelDepth, 0, handlerLength + extrude));
+                conrtolPoints.add(new Vector3f(-bevelDepth, 0, extrude));
 
                 Spline bevelSpline = new Spline(SplineType.Bezier, conrtolPoints, 0, false);
                 Curve bevelCurve = new Curve(bevelSpline, bevResol);
                 bevelObject = new ArrayList<Geometry>(1);
                 bevelObject.add(new Geometry("", bevelCurve));
             } else if (extrude > 0.0f) {
-                Spline bevelSpline = new Spline(SplineType.Linear, new Vector3f[]{
-                            new Vector3f(0, extrude, 0), new Vector3f(0, -extrude, 0)
-                        }, 1, false);
+                Spline bevelSpline = new Spline(SplineType.Linear, new Vector3f[] { new Vector3f(0, 0, -extrude), new Vector3f(0, 0, extrude) }, 1, false);
                 Curve bevelCurve = new Curve(bevelSpline, bevResol);
                 bevelObject = new ArrayList<Geometry>(1);
                 bevelObject.add(new Geometry("", bevelCurve));
             }
         }
 
-        //getting taper object
-        Curve taperObject = null;
+        // getting taper object
+        Spline taperObject = null;
         Pointer pTaperObject = (Pointer) curveStructure.getFieldValue("taperobj");
         if (bevelObject != null && pTaperObject.isNotNull()) {
             Pointer pTaperStructure = (Pointer) pTaperObject.fetchData(blenderContext.getInputStream()).get(0).getFieldValue("data");
@@ -174,35 +212,40 @@ public class CurvesHelper extends AbstractBlenderHelper {
         }
 
         Vector3f loc = this.getLoc(curveStructure);
-        //creating the result curves
+        // creating the result curves
         List<Geometry> result = new ArrayList<Geometry>(nurbs.size());
         for (Entry<Number, List<Structure>> nurbEntry : nurbs.entrySet()) {
             for (Structure nurb : nurbEntry.getValue()) {
                 int type = ((Number) nurb.getFieldValue("type")).intValue();
                 List<Geometry> nurbGeoms = null;
-                if ((type & 0x01) != 0) {//Bezier curve
+                if ((type & 0x01) != 0) {// Bezier curve
                     nurbGeoms = this.loadBezierCurve(loc, nurb, bevelObject, taperObject, blenderContext);
-                } else if ((type & 0x04) != 0) {//NURBS
+                } else if ((type & 0x04) != 0) {// NURBS
                     nurbGeoms = this.loadNurb(loc, nurb, bevelObject, taperObject, blenderContext);
                 }
-                if (nurbGeoms != null) {//setting the name and assigning materials
+                if (nurbGeoms != null) {// setting the name and assigning materials
                     for (Geometry nurbGeom : nurbGeoms) {
-                        nurbGeom.setMaterial(materials[nurbEntry.getKey().intValue()]);
+                        if (materialContexts != null) {
+                            materialContexts[nurbEntry.getKey().intValue()].applyMaterial(nurbGeom, curveStructure.getOldMemoryAddress(), null, blenderContext);
+                        } else {
+                            nurbGeom.setMaterial(defaultMaterial);
+                        }
                         nurbGeom.setName(name);
                         result.add(nurbGeom);
                     }
                 }
             }
         }
-        
-        //reading custom properties
-		Properties properties = this.loadProperties(curveStructure, blenderContext);
-		if(properties != null && properties.getValue() != null) {
-			for(Geometry geom : result) {
-				geom.setUserData("properties", properties);
-			}
-		}
-        
+
+        // reading custom properties
+        if (blenderContext.getBlenderKey().isLoadObjectProperties()) {
+            Properties properties = this.loadProperties(curveStructure, blenderContext);
+            // the loaded property is a group property, so we need to get each value and set it to Spatial
+            if (result instanceof Spatial && properties != null && properties.getValue() != null) {
+                this.applyProperties((Spatial) result, properties);
+            }
+        }
+
         return result;
     }
 
@@ -222,8 +265,7 @@ public class CurvesHelper extends AbstractBlenderHelper {
      * @throws BlenderFileException
      *             an exception is thrown when there are problems with the blender file
      */
-    protected List<Geometry> loadBezierCurve(Vector3f loc, Structure nurb, List<Geometry> bevelObject, Curve taperObject,
-            BlenderContext blenderContext) throws BlenderFileException {
+    protected List<Geometry> loadBezierCurve(Vector3f loc, Structure nurb, List<Geometry> bevelObject, Spline taperObject, BlenderContext blenderContext) throws BlenderFileException {
         Pointer pBezierTriple = (Pointer) nurb.getFieldValue("bezt");
         List<Geometry> result = new ArrayList<Geometry>();
         if (pBezierTriple.isNotNull()) {
@@ -231,27 +273,44 @@ public class CurvesHelper extends AbstractBlenderHelper {
             int resolution = ((Number) nurb.getFieldValue("resolu")).intValue();
             boolean cyclic = (((Number) nurb.getFieldValue("flagu")).intValue() & 0x01) != 0;
 
-            //creating the curve object
+            // creating the curve object
             BezierCurve bezierCurve = new BezierCurve(0, pBezierTriple.fetchData(blenderContext.getInputStream()), 3);
             List<Vector3f> controlPoints = bezierCurve.getControlPoints();
+            if (fixUpAxis) {
+                for (Vector3f v : controlPoints) {
+                    float y = v.y;
+                    v.y = v.z;
+                    v.z = -y;
+                }
+            }
+
+            if (bevelObject != null && taperObject == null) {// create taper object using the scales of the bezier triple
+                int triplesCount = controlPoints.size() / 3;
+                List<Vector3f> taperControlPoints = new ArrayList<Vector3f>(triplesCount);
+                for (int i = 0; i < triplesCount; ++i) {
+                    taperControlPoints.add(new Vector3f(controlPoints.get(i * 3 + 1).x, bezierCurve.getRadius(i), 0));
+                }
+                taperObject = new Spline(SplineType.Linear, taperControlPoints, 0, false);
+            }
+
             if (cyclic) {
-                //copy the first three points at the end
+                // copy the first three points at the end
                 for (int i = 0; i < 3; ++i) {
                     controlPoints.add(controlPoints.get(i));
                 }
             }
-            //removing the first and last handles
+            // removing the first and last handles
             controlPoints.remove(0);
             controlPoints.remove(controlPoints.size() - 1);
 
-            //creating curve
+            // creating curve
             Spline spline = new Spline(SplineType.Bezier, controlPoints, 0, false);
             Curve curve = new Curve(spline, resolution);
-            if (bevelObject == null) {//creating a normal curve
+            if (bevelObject == null) {// creating a normal curve
                 Geometry curveGeometry = new Geometry(null, curve);
                 result.add(curveGeometry);
-                //TODO: use front and back flags; surface excluding algorithm for bezier circles should be added
-            } else {//creating curve with bevel and taper shape
+                // TODO: use front and back flags; surface excluding algorithm for bezier circles should be added
+            } else {// creating curve with bevel and taper shape
                 result = this.applyBevelAndTaper(curve, bevelObject, taperObject, smooth, blenderContext);
             }
         }
@@ -275,11 +334,10 @@ public class CurvesHelper extends AbstractBlenderHelper {
      *             an exception is throw when problems with blender loaded data occurs
      */
     @SuppressWarnings("unchecked")
-    protected List<Geometry> loadNurb(Vector3f loc, Structure nurb, List<Geometry> bevelObject, Curve taperObject,
-            BlenderContext blenderContext) throws BlenderFileException {
-        //loading the knots
+    protected List<Geometry> loadNurb(Vector3f loc, Structure nurb, List<Geometry> bevelObject, Spline taperObject, BlenderContext blenderContext) throws BlenderFileException {
+        // loading the knots
         List<Float>[] knots = new List[2];
-        Pointer[] pKnots = new Pointer[]{(Pointer) nurb.getFieldValue("knotsu"), (Pointer) nurb.getFieldValue("knotsv")};
+        Pointer[] pKnots = new Pointer[] { (Pointer) nurb.getFieldValue("knotsu"), (Pointer) nurb.getFieldValue("knotsv") };
         for (int i = 0; i < knots.length; ++i) {
             if (pKnots[i].isNotNull()) {
                 FileBlockHeader fileBlockHeader = blenderContext.getFileBlock(pKnots[i].getOldMemoryAddress());
@@ -293,13 +351,13 @@ public class CurvesHelper extends AbstractBlenderHelper {
             }
         }
 
-        //loading the flags and orders (basis functions degrees)
+        // loading the flags and orders (basis functions degrees)
         int flagU = ((Number) nurb.getFieldValue("flagu")).intValue();
         int flagV = ((Number) nurb.getFieldValue("flagv")).intValue();
         int orderU = ((Number) nurb.getFieldValue("orderu")).intValue();
         int orderV = ((Number) nurb.getFieldValue("orderv")).intValue();
 
-        //loading control points and their weights
+        // loading control points and their weights
         int pntsU = ((Number) nurb.getFieldValue("pntsu")).intValue();
         int pntsV = ((Number) nurb.getFieldValue("pntsv")).intValue();
         List<Structure> bPoints = ((Pointer) nurb.getFieldValue("bp")).fetchData(blenderContext.getInputStream());
@@ -329,17 +387,17 @@ public class CurvesHelper extends AbstractBlenderHelper {
 
         int resolu = ((Number) nurb.getFieldValue("resolu")).intValue() + 1;
         List<Geometry> result;
-        if (knots[1] == null) {//creating the curve
+        if (knots[1] == null) {// creating the curve
             Spline nurbSpline = new Spline(controlPoints.get(0), knots[0]);
             Curve nurbCurve = new Curve(nurbSpline, resolu);
             if (bevelObject != null) {
-                result = this.applyBevelAndTaper(nurbCurve, bevelObject, taperObject, true, blenderContext);//TODO: smooth
+                result = this.applyBevelAndTaper(nurbCurve, bevelObject, taperObject, true, blenderContext);// TODO: smooth
             } else {
                 result = new ArrayList<Geometry>(1);
                 Geometry nurbGeometry = new Geometry("", nurbCurve);
                 result.add(nurbGeometry);
             }
-        } else {//creating the nurb surface
+        } else {// creating the nurb surface
             int resolv = ((Number) nurb.getFieldValue("resolv")).intValue() + 1;
             Surface nurbSurface = Surface.createNurbsSurface(controlPoints, knots, resolu, resolv, orderU, orderV);
             Geometry nurbGeometry = new Geometry("", nurbSurface);
@@ -350,33 +408,41 @@ public class CurvesHelper extends AbstractBlenderHelper {
     }
 
     /**
-     * This method returns the taper scale that should be applied to the object.
-     * @param taperPoints
-     *            the taper points
-     * @param taperLength
-     *            the taper curve length
+     * The method computes the taper scale on the given point on the curve.
+     * 
+     * @param taper
+     *            the taper object that defines the scale
      * @param percent
-     *            the percent of way along the whole taper curve
-     * @param store
-     *            the vector where the result will be stored
+     *            the percent of the 'road' along the curve
+     * @return scale on the pointed place along the curve
      */
-    protected float getTaperScale(float[] taperPoints, float taperLength, float percent) {
-        float length = taperLength * percent;
-        float currentLength = 0;
-        Vector3f p = new Vector3f();
-        int i;
-        for (i = 0; i < taperPoints.length - 6 && currentLength < length; i += 3) {
-            p.set(taperPoints[i], taperPoints[i + 1], taperPoints[i + 2]);
-            p.subtractLocal(taperPoints[i + 3], taperPoints[i + 4], taperPoints[i + 5]);
-            currentLength += p.length();
+    protected float getTaperScale(Spline taper, float percent) {
+        if (taper == null) {
+            return 1;// return scale = 1 if no taper is applied
         }
-        currentLength -= p.length();
-        float leftLength = length - currentLength;
-        float percentOnSegment = p.length() == 0 ? 0 : leftLength / p.length();
-        Vector3f store = FastMath.interpolateLinear(percentOnSegment,
-                new Vector3f(taperPoints[i], taperPoints[i + 1], taperPoints[i + 2]),
-                new Vector3f(taperPoints[i + 3], taperPoints[i + 4], taperPoints[i + 5]));
-        return store.y;
+        percent = FastMath.clamp(percent, 0, 1);
+        List<Float> segmentLengths = taper.getSegmentsLength();
+        float percentLength = taper.getTotalLength() * percent;
+        float partLength = 0;
+        int i;
+        for (i = 0; i < segmentLengths.size(); ++i) {
+            partLength += segmentLengths.get(i);
+            if (partLength > percentLength) {
+                partLength -= segmentLengths.get(i);
+                percentLength -= partLength;
+                percent = percentLength / segmentLengths.get(i);
+                break;
+            }
+        }
+        // do not cross the line :)
+        if (percent >= 1) {
+            percent = 1;
+            --i;
+        }
+        if (taper.getType() == SplineType.Bezier) {
+            i *= 3;
+        }
+        return taper.interpolate(percent, i, null).y;
     }
 
     /**
@@ -388,161 +454,342 @@ public class CurvesHelper extends AbstractBlenderHelper {
      * @param taperObject
      *            the taper object
      * @param smooth
-     * 			  the smooth flag
+     *            the smooth flag
      * @param blenderContext
      *            the blender context
      * @return a list of geometries representing the beveled and/or tapered curve
      */
-    protected List<Geometry> applyBevelAndTaper(Curve curve, List<Geometry> bevelObject, Curve taperObject,
-            boolean smooth, BlenderContext blenderContext) {
-        float[] curvePoints = BufferUtils.getFloatArray(curve.getFloatBuffer(Type.Position));
-        MeshHelper meshHelper = blenderContext.getHelper(MeshHelper.class);
+    protected List<Geometry> applyBevelAndTaper(Curve curve, List<Geometry> bevelObject, Spline taperObject, boolean smooth, BlenderContext blenderContext) {
+        Vector3f[] curvePoints = BufferUtils.getVector3Array(curve.getFloatBuffer(Type.Position));
+        Vector3f subtractResult = new Vector3f();
         float curveLength = curve.getLength();
-        //TODO: use the smooth var
-
-        //taper data
-        float[] taperPoints = null;
-        float taperLength = 0;
-        if (taperObject != null) {
-            taperPoints = BufferUtils.getFloatArray(taperObject.getFloatBuffer(Type.Position));
-            taperLength = taperObject.getLength();
-        }
-
-        //several objects can be allocated only once
-        Vector3f p = new Vector3f();
-        Vector3f z = new Vector3f(0, 0, 1);
-        Vector3f negativeY = new Vector3f(0, -1, 0);
-        Matrix4f m = new Matrix4f();
-        float lengthAlongCurve = 0, taperScale = 1.0f;
-        Quaternion planeRotation = new Quaternion();
-        Quaternion zRotation = new Quaternion();
-        float[] temp = new float[]{0, 0, 0, 1};
-        Map<Vector3f, Vector3f> normalMap = new HashMap<Vector3f, Vector3f>();//normalMap merges normals of faces that will be rendered smooth
 
         FloatBuffer[] vertexBuffers = new FloatBuffer[bevelObject.size()];
         FloatBuffer[] normalBuffers = new FloatBuffer[bevelObject.size()];
-        IntBuffer[] indexBuffers = new IntBuffer[bevelObject.size()];
+        IndexBuffer[] indexBuffers = new IndexBuffer[bevelObject.size()];
         for (int geomIndex = 0; geomIndex < bevelObject.size(); ++geomIndex) {
             Mesh mesh = bevelObject.get(geomIndex).getMesh();
-            FloatBuffer positions = mesh.getFloatBuffer(Type.Position);
-            float[] vertices = BufferUtils.getFloatArray(positions);
+            Vector3f[] positions = BufferUtils.getVector3Array(mesh.getFloatBuffer(Type.Position));
+            Vector3f[] bevelPoints = this.transformToFirstLineOfBevelPoints(positions, curvePoints[0], curvePoints[1]);
 
-            for (int i = 0; i < curvePoints.length; i += 3) {
-                p.set(curvePoints[i], curvePoints[i + 1], curvePoints[i + 2]);
-                Vector3f v;
-                if (i == 0) {
-                    v = new Vector3f(curvePoints[3] - p.x, curvePoints[4] - p.y, curvePoints[5] - p.z);
-                } else if (i + 3 >= curvePoints.length) {
-                    v = new Vector3f(p.x - curvePoints[i - 3], p.y - curvePoints[i - 2], p.z - curvePoints[i - 1]);
-                    lengthAlongCurve += v.length();
-                } else {
-                    v = new Vector3f(curvePoints[i + 3] - curvePoints[i - 3],
-                            curvePoints[i + 4] - curvePoints[i - 2],
-                            curvePoints[i + 5] - curvePoints[i - 1]);
-                    lengthAlongCurve += new Vector3f(curvePoints[i + 3] - p.x, curvePoints[i + 4] - p.y, curvePoints[i + 5] - p.z).length();
-                }
-                v.normalizeLocal();
+            List<Vector3f[]> bevels = new ArrayList<Vector3f[]>(curvePoints.length);
+            bevels.add(bevelPoints);
 
-                float angle = FastMath.acos(v.dot(z));
-                v.crossLocal(z).normalizeLocal();//v is the rotation axis now
-                planeRotation.fromAngleAxis(angle, v);
+            vertexBuffers[geomIndex] = BufferUtils.createFloatBuffer(bevelPoints.length * 3 * curvePoints.length * (smooth ? 1 : 6));
+            for (int i = 1; i < curvePoints.length - 1; ++i) {
+                bevelPoints = this.transformBevel(bevelPoints, curvePoints[i - 1], curvePoints[i], curvePoints[i + 1]);
+                bevels.add(bevelPoints);
+            }
+            bevelPoints = this.transformBevel(bevelPoints, curvePoints[curvePoints.length - 2], curvePoints[curvePoints.length - 1], null);
+            bevels.add(bevelPoints);
 
-                Vector3f zAxisRotationVector = negativeY.cross(v).normalizeLocal();
-                float zAxisRotationAngle = FastMath.acos(negativeY.dot(v));
-                zRotation.fromAngleAxis(zAxisRotationAngle, zAxisRotationVector);
+            if (bevels.size() > 2) {
+                // changing the first and last bevel so that they are parallel to their neighbours (blender works this way)
+                // notice this implicates that the distances of every corresponding point in th two bevels must be identical and
+                // equal to the distance between the points on curve that define the bevel position
+                // so instead doing complicated rotations on each point we will simply properly translate each of them
 
-                //point transformation matrix
-                if (taperPoints != null) {
-                    taperScale = this.getTaperScale(taperPoints, taperLength, lengthAlongCurve / curveLength);
-                }
-                m.set(Matrix4f.IDENTITY);
-                m.setRotationQuaternion(planeRotation.multLocal(zRotation));
-                m.setTranslation(p);
-
-                //these vertices need to be thrown on XY plane
-                //and moved to the origin of [p1.x, p1.y] on the plane
-                Vector3f[] verts = new Vector3f[vertices.length / 3];
-                for (int j = 0; j < verts.length; ++j) {
-                    temp[0] = vertices[j * 3] * taperScale;
-                    temp[1] = vertices[j * 3 + 1] * taperScale;
-                    temp[2] = 0;
-                    m.mult(temp);//the result is stored in the array
-                    if (fixUpAxis) {
-                        verts[j] = new Vector3f(temp[0], temp[1], temp[2]);
-                    } else {
-                        verts[j] = new Vector3f(temp[0], temp[2], -temp[1]);
-                    }
-                }
-                if (vertexBuffers[geomIndex] == null) {
-                    vertexBuffers[geomIndex] = BufferUtils.createFloatBuffer(verts.length * curvePoints.length);
-                }
-                FloatBuffer buffer = BufferUtils.createFloatBuffer(verts);
-                vertexBuffers[geomIndex].put(buffer);
-
-                //adding indexes
-                IntBuffer indexBuffer = indexBuffers[geomIndex];
-                if (indexBuffer == null) {
-                    //the amount of faces in the final mesh is the amount of edges in the bevel curve
-                    //(which is less by 1 than its number of vertices)
-                    //multiplied by 2 (because each edge has two faces assigned on both sides)
-                    //and multiplied by the amount of bevel curve repeats which is equal to the amount of vertices on the target curve
-                    //finally we need to subtract the bevel edges amount 2 times because the border edges have only one face attached
-                    //and at last multiply everything by 3 because each face needs 3 indexes to be described
-                    int bevelCurveEdgesAmount = verts.length - 1;
-                    indexBuffer = BufferUtils.createIntBuffer(((bevelCurveEdgesAmount << 1) * curvePoints.length - bevelCurveEdgesAmount << 1) * 3);
-                    indexBuffers[geomIndex] = indexBuffer;
-                }
-                int pointOffset = i / 3 * verts.length;
-                if (i + 3 < curvePoints.length) {
-                    for (int index = 0; index < verts.length - 1; ++index) {
-                        indexBuffer.put(index + pointOffset);
-                        indexBuffer.put(index + pointOffset + 1);
-                        indexBuffer.put(verts.length + index + pointOffset);
-                        indexBuffer.put(verts.length + index + pointOffset);
-                        indexBuffer.put(index + pointOffset + 1);
-                        indexBuffer.put(verts.length + index + pointOffset + 1);
+                int[][] pointIndexes = new int[][] { { 0, 1 }, { curvePoints.length - 1, curvePoints.length - 2 } };
+                for (int[] indexes : pointIndexes) {
+                    float distance = curvePoints[indexes[1]].subtract(curvePoints[indexes[0]], subtractResult).length();
+                    Vector3f[] bevel = bevels.get(indexes[0]);
+                    Vector3f[] nextBevel = bevels.get(indexes[1]);
+                    for (int i = 0; i < bevel.length; ++i) {
+                        float d = bevel[i].subtract(nextBevel[i], subtractResult).length();
+                        subtractResult.normalizeLocal().multLocal(distance - d);
+                        bevel[i].addLocal(subtractResult);
                     }
                 }
             }
+
+            // apply scales to the bevels
+            float lengthAlongCurve = 0;
+            for (int i = 0; i < curvePoints.length; ++i) {
+                if (i > 0) {
+                    lengthAlongCurve += curvePoints[i].subtract(curvePoints[i - 1], subtractResult).length();
+                }
+                float taperScale = this.getTaperScale(taperObject, i == 0 ? 0 : lengthAlongCurve / curveLength);
+                this.applyScale(bevels.get(i), curvePoints[i], taperScale);
+            }
+
+            if (smooth) {// add everything to the buffer
+                for (Vector3f[] bevel : bevels) {
+                    for (Vector3f d : bevel) {
+                        vertexBuffers[geomIndex].put(d.x);
+                        vertexBuffers[geomIndex].put(d.y);
+                        vertexBuffers[geomIndex].put(d.z);
+                    }
+                }
+            } else {// add vertices to the buffer duplicating them so that every vertex belongs only to a single triangle
+                for (int i = 0; i < curvePoints.length - 1; ++i) {
+                    for (int j = 0; j < bevelPoints.length - 1; ++j) {
+                        // first triangle
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j].x);
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j].y);
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j].z);
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j + 1].x);
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j + 1].y);
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j + 1].z);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j].x);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j].y);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j].z);
+
+                        // second triangle
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j + 1].x);
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j + 1].y);
+                        vertexBuffers[geomIndex].put(bevels.get(i)[j + 1].z);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j + 1].x);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j + 1].y);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j + 1].z);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j].x);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j].y);
+                        vertexBuffers[geomIndex].put(bevels.get(i + 1)[j].z);
+                    }
+                }
+            }
+
+            indexBuffers[geomIndex] = this.generateIndexes(bevelPoints.length, curvePoints.length, smooth);
+            normalBuffers[geomIndex] = this.generateNormals(indexBuffers[geomIndex], vertexBuffers[geomIndex], smooth);
         }
 
-        //calculating the normals
-        for (int geomIndex = 0; geomIndex < bevelObject.size(); ++geomIndex) {
-            Vector3f[] allVerts = BufferUtils.getVector3Array(vertexBuffers[geomIndex]);
-            int[] allIndices = BufferUtils.getIntArray(indexBuffers[geomIndex]);
-            for (int i = 0; i < allIndices.length - 3; i += 3) {
-                Vector3f n = FastMath.computeNormal(allVerts[allIndices[i]], allVerts[allIndices[i + 1]], allVerts[allIndices[i + 2]]);
-                meshHelper.addNormal(n, normalMap, smooth, allVerts[allIndices[i]], allVerts[allIndices[i + 1]], allVerts[allIndices[i + 2]]);
-            }
-            if (normalBuffers[geomIndex] == null) {
-                normalBuffers[geomIndex] = BufferUtils.createFloatBuffer(allVerts.length * 3);
-            }
-            for (Vector3f v : allVerts) {
-                Vector3f n = normalMap.get(v);
-                normalBuffers[geomIndex].put(n.x);
-                normalBuffers[geomIndex].put(n.y);
-                normalBuffers[geomIndex].put(n.z);
-            }
-        }
-
+        // creating and returning the result
         List<Geometry> result = new ArrayList<Geometry>(vertexBuffers.length);
-        Float oneReferenceToCurveLength = new Float(curveLength);//its important for array modifier to use one reference here
+        Float oneReferenceToCurveLength = new Float(curveLength);// its important for array modifier to use one reference here
         for (int i = 0; i < vertexBuffers.length; ++i) {
             Mesh mesh = new Mesh();
             mesh.setBuffer(Type.Position, 3, vertexBuffers[i]);
-            mesh.setBuffer(Type.Index, 3, indexBuffers[i]);
+            if (indexBuffers[i].getBuffer() instanceof IntBuffer) {
+                mesh.setBuffer(Type.Index, 3, (IntBuffer) indexBuffers[i].getBuffer());
+            } else {
+                mesh.setBuffer(Type.Index, 3, (ShortBuffer) indexBuffers[i].getBuffer());
+            }
             mesh.setBuffer(Type.Normal, 3, normalBuffers[i]);
             Geometry g = new Geometry("g" + i, mesh);
             g.setUserData("curveLength", oneReferenceToCurveLength);
             g.updateModelBound();
             result.add(g);
         }
-
         return result;
     }
 
     /**
+     * the method applies scale for the given bevel points. The points table is
+     * being modified so expect ypur result there.
+     * 
+     * @param points
+     *            the bevel points
+     * @param centerPoint
+     *            the center point of the bevel
+     * @param scale
+     *            the scale to be applied
+     */
+    private void applyScale(Vector3f[] points, Vector3f centerPoint, float scale) {
+        Vector3f taperScaleVector = new Vector3f();
+        for (Vector3f p : points) {
+            taperScaleVector.set(centerPoint).subtractLocal(p).multLocal(1 - scale);
+            p.addLocal(taperScaleVector);
+        }
+    }
+
+    /**
+     * The method generates normal buffer for the created mesh of the curve.
+     * 
+     * @param indexes
+     *            the indexes of the mesh points
+     * @param points
+     *            the mesh's points
+     * @param smooth
+     *            the flag indicating if the result is to be smooth or solid
+     * @return normals buffer for the mesh
+     */
+    private FloatBuffer generateNormals(IndexBuffer indexes, FloatBuffer points, boolean smooth) {
+        Map<Integer, Vector3f> normalMap = new TreeMap<Integer, Vector3f>();
+        Vector3f[] allVerts = BufferUtils.getVector3Array(points);
+
+        for (int i = 0; i < indexes.size(); i += 3) {
+            int index1 = indexes.get(i);
+            int index2 = indexes.get(i + 1);
+            int index3 = indexes.get(i + 2);
+
+            Vector3f n = FastMath.computeNormal(allVerts[index1], allVerts[index2], allVerts[index3]);
+            this.addNormal(n, normalMap, smooth, index1, index2, index3);
+        }
+
+        FloatBuffer normals = BufferUtils.createFloatBuffer(normalMap.size() * 3);
+        for (Entry<Integer, Vector3f> entry : normalMap.entrySet()) {
+            normals.put(entry.getValue().x);
+            normals.put(entry.getValue().y);
+            normals.put(entry.getValue().z);
+        }
+        return normals;
+    }
+
+    /**
+     * The amount of faces in the final mesh is the amount of edges in the bevel
+     * curve (which is less by 1 than its number of vertices) multiplied by 2
+     * (because each edge has two faces assigned on both sides) and multiplied
+     * by the amount of bevel curve repeats which is equal to the amount of
+     * vertices on the target curve finally we need to subtract the bevel edges
+     * amount 2 times because the border edges have only one face attached and
+     * at last multiply everything by 3 because each face needs 3 indexes to be
+     * described
+     * 
+     * @param bevelShapeVertexCount
+     *            amount of points in bevel shape
+     * @param bevelRepeats
+     *            amount of bevel shapes along the curve
+     * @param smooth
+     *            the smooth flag
+     * @return index buffer for the mesh
+     */
+    private IndexBuffer generateIndexes(int bevelShapeVertexCount, int bevelRepeats, boolean smooth) {
+        int putIndex = 0;
+        if (smooth) {
+            int indexBufferSize = (bevelRepeats - 1) * (bevelShapeVertexCount - 1) * 6;
+            IndexBuffer result = IndexBuffer.createIndexBuffer(indexBufferSize, indexBufferSize);
+
+            for (int i = 0; i < bevelRepeats - 1; ++i) {
+                for (int j = 0; j < bevelShapeVertexCount - 1; ++j) {
+                    result.put(putIndex++, i * bevelShapeVertexCount + j);
+                    result.put(putIndex++, i * bevelShapeVertexCount + j + 1);
+                    result.put(putIndex++, (i + 1) * bevelShapeVertexCount + j);
+
+                    result.put(putIndex++, i * bevelShapeVertexCount + j + 1);
+                    result.put(putIndex++, (i + 1) * bevelShapeVertexCount + j + 1);
+                    result.put(putIndex++, (i + 1) * bevelShapeVertexCount + j);
+                }
+            }
+            return result;
+        } else {
+            // every pair of bevel vertices belongs to two triangles
+            // we have the same amount of pairs as the amount of vertices in bevel
+            // so the amount of triangles is: bevelShapeVertexCount * 2 * (bevelRepeats - 1)
+            // and this gives the amount of vertices in non smooth shape as below ...
+            int indexBufferSize = bevelShapeVertexCount * bevelRepeats * 6;// 6 = 2 * 3 where 2 is stated above and 3 is the count of vertices for each triangle
+            IndexBuffer result = IndexBuffer.createIndexBuffer(indexBufferSize, indexBufferSize);
+            for (int i = 0; i < indexBufferSize; ++i) {
+                result.put(putIndex++, i);
+            }
+            return result;
+        }
+    }
+
+    /**
+     * The method transforms the bevel along the curve.
+     * 
+     * @param bevel
+     *            the bevel to be transformed
+     * @param prevPos
+     *            previous curve point
+     * @param currPos
+     *            current curve point (here the center of the new bevel will be
+     *            set)
+     * @param nextPos
+     *            next curve point
+     * @return points of transformed bevel
+     */
+    private Vector3f[] transformBevel(Vector3f[] bevel, Vector3f prevPos, Vector3f currPos, Vector3f nextPos) {
+        bevel = bevel.clone();
+
+        // currPos and directionVector define the line in 3D space
+        Vector3f directionVector = prevPos != null ? currPos.subtract(prevPos) : nextPos.subtract(currPos);
+        directionVector.normalizeLocal();
+
+        // plane is described by equation: Ax + By + Cz + D = 0 where planeNormal = [A, B, C] and D = -(Ax + By + Cz)
+        Vector3f planeNormal = null;
+        if (prevPos != null) {
+            planeNormal = currPos.subtract(prevPos).normalizeLocal();
+            if (nextPos != null) {
+                planeNormal.addLocal(nextPos.subtract(currPos).normalizeLocal()).normalizeLocal();
+            }
+        } else {
+            planeNormal = nextPos.subtract(currPos).normalizeLocal();
+        }
+        float D = -planeNormal.dot(currPos);// D = -(Ax + By + Cz)
+
+        // now we need to compute paralell cast of each bevel point on the plane, the leading line is already known
+        // parametric equation of a line: x = px + vx * t; y = py + vy * t; z = pz + vz * t
+        // where p = currPos and v = directionVector
+        // using x, y and z in plane equation we get value of 't' that will allow us to compute the point where plane and line cross
+        float temp = planeNormal.dot(directionVector);
+        for (int i = 0; i < bevel.length; ++i) {
+            float t = -(planeNormal.dot(bevel[i]) + D) / temp;
+            if (fixUpAxis) {
+                bevel[i] = new Vector3f(bevel[i].x + directionVector.x * t, bevel[i].y + directionVector.y * t, bevel[i].z + directionVector.z * t);
+            } else {
+                bevel[i] = new Vector3f(bevel[i].x + directionVector.x * t, -bevel[i].z + directionVector.z * t, bevel[i].y + directionVector.y * t);
+            }
+        }
+        return bevel;
+    }
+
+    /**
+     * This method transforms the first line of the bevel points positioning it
+     * on the first point of the curve.
+     * 
+     * @param startingLinePoints
+     *            the vbevel shape points
+     * @param firstCurvePoint
+     *            the first curve's point
+     * @param secondCurvePoint
+     *            the second curve's point
+     * @return points of transformed bevel
+     */
+    private Vector3f[] transformToFirstLineOfBevelPoints(Vector3f[] startingLinePoints, Vector3f firstCurvePoint, Vector3f secondCurvePoint) {
+        Vector3f planeNormal = secondCurvePoint.subtract(firstCurvePoint).normalizeLocal();
+
+        float angle = FastMath.acos(planeNormal.dot(Vector3f.UNIT_Y));
+        planeNormal.crossLocal(Vector3f.UNIT_Y).normalizeLocal();// planeNormal is the rotation axis now
+        Quaternion pointRotation = new Quaternion();
+        pointRotation.fromAngleAxis(angle, planeNormal);
+
+        Matrix4f m = new Matrix4f();
+        m.setRotationQuaternion(pointRotation);
+        m.setTranslation(firstCurvePoint);
+
+        float[] temp = new float[] { 0, 0, 0, 1 };
+        Vector3f[] verts = new Vector3f[startingLinePoints.length];
+        for (int j = 0; j < verts.length; ++j) {
+            temp[0] = startingLinePoints[j].x;
+            temp[1] = startingLinePoints[j].y;
+            temp[2] = startingLinePoints[j].z;
+            temp = m.mult(temp);// the result is stored in the array
+            if (fixUpAxis) {
+                verts[j] = new Vector3f(temp[0], -temp[2], temp[1]);
+            } else {
+                verts[j] = new Vector3f(temp[0], temp[1], temp[2]);
+            }
+        }
+        return verts;
+    }
+
+    /**
+     * The method adds a normal to the given map. Depending in the smooth factor
+     * it is either merged with the revious normal or not.
+     * 
+     * @param normalToAdd
+     *            the normal vector to be added
+     * @param normalMap
+     *            the normal map where we add vectors
+     * @param smooth
+     *            the smooth flag
+     * @param indexes
+     *            the indexes of the normals
+     */
+    private void addNormal(Vector3f normalToAdd, Map<Integer, Vector3f> normalMap, boolean smooth, int... indexes) {
+        for (int index : indexes) {
+            Vector3f n = normalMap.get(index);
+            if (!smooth || n == null) {
+                normalMap.put(index, normalToAdd.clone());
+            } else {
+                n.addLocal(normalToAdd).normalizeLocal();
+            }
+        }
+    }
+
+    /**
      * This method loads the taper object.
+     * 
      * @param taperStructure
      *            the taper structure
      * @param blenderContext
@@ -550,24 +797,22 @@ public class CurvesHelper extends AbstractBlenderHelper {
      * @return the taper object
      * @throws BlenderFileException
      */
-    protected Curve loadTaperObject(Structure taperStructure, BlenderContext blenderContext) throws BlenderFileException {
-        //reading nurbs
+    protected Spline loadTaperObject(Structure taperStructure, BlenderContext blenderContext) throws BlenderFileException {
+        // reading nurbs
         List<Structure> nurbStructures = ((Structure) taperStructure.getFieldValue("nurb")).evaluateListBase(blenderContext);
         for (Structure nurb : nurbStructures) {
             Pointer pBezierTriple = (Pointer) nurb.getFieldValue("bezt");
             if (pBezierTriple.isNotNull()) {
-                //creating the curve object
+                // creating the curve object
                 BezierCurve bezierCurve = new BezierCurve(0, pBezierTriple.fetchData(blenderContext.getInputStream()), 3);
                 List<Vector3f> controlPoints = bezierCurve.getControlPoints();
-                //removing the first and last handles
+                // removing the first and last handles
                 controlPoints.remove(0);
                 controlPoints.remove(controlPoints.size() - 1);
 
-                //return the first taper curve that has more than 3 control points
+                // return the first taper curve that has more than 3 control points
                 if (controlPoints.size() > 3) {
-                    Spline spline = new Spline(SplineType.Bezier, controlPoints, 0, false);
-                    int resolution = ((Number) taperStructure.getFieldValue("resolu")).intValue();
-                    return new Curve(spline, resolution);
+                    return new Spline(SplineType.Bezier, controlPoints, 0, false);
                 }
             }
         }
@@ -575,7 +820,9 @@ public class CurvesHelper extends AbstractBlenderHelper {
     }
 
     /**
-     * This method returns the translation of the curve. The UP axis is taken into account here.
+     * This method returns the translation of the curve. The UP axis is taken
+     * into account here.
+     * 
      * @param curveStructure
      *            the curve structure
      * @return curve translation
@@ -589,9 +836,9 @@ public class CurvesHelper extends AbstractBlenderHelper {
             return new Vector3f(locArray.get(0).floatValue(), locArray.get(2).floatValue(), locArray.get(1).floatValue());
         }
     }
-    
+
     @Override
     public boolean shouldBeLoaded(Structure structure, BlenderContext blenderContext) {
-    	return true;
+        return true;
     }
 }
