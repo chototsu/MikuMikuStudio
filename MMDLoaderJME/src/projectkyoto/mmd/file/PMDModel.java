@@ -29,14 +29,26 @@
  */
 package projectkyoto.mmd.file;
 
+import java.io.BufferedInputStream;
+import java.io.DataOutput;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel.MapMode;
+import projectkyoto.mmd.file.util2.BufferUtil;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class PMDModel {
+public class PMDModel implements Serializable{
     // PMD Header
 
     private String id; // char[3] "Pmd"
@@ -45,7 +57,8 @@ public class PMDModel {
     private String comment; // char[256] コメント
     // 頂点リスト
     private int vertCount; // 頂点数
-    private PMDVertex[] vertexList;
+//    private PMDVertex[] vertexList;
+    private ByteBuffer vertexBuffer;
     private int faceVertCount;
     private int faceVertIndex[];
     private int materialCount;
@@ -61,35 +74,40 @@ public class PMDModel {
     private PMDToonTextureList toonTextureList;
     private PMDRigidBodyList rigidBodyList;
     private PMDJointList jointList;
-    private URL url;
 
     public PMDModel() {
     }
 
     public PMDModel(URL url) throws IOException {
-        readFromFile(url);
+        readFromFile(url.openStream());
     }
-
-    public void readFromFile(URL url) throws IOException {
-        DataInputStreamLittleEndian is = null;
+    public PMDModel(InputStream is) throws IOException {
+        readFromFile(is);
+    }
+    public void readFromFile(InputStream is) throws IOException {
+        DataInputStreamLittleEndian dis = null;
         try {
 //            is = new DataInputStreamLittleEndian(new BufferedInputStream(
 //                    new FileInputStream(
 //                    file)));
-            is = new DataInputStreamLittleEndian(url);
-            readFromStream(is);
-            is.close();
-            this.url = url;
+            dis = new DataInputStreamLittleEndian(new BufferedInputStream(is));
+            readFromStream(dis);
+            dis.close();
+//            this.url = url;
         } finally {
-            if (is != null) {
-                is.close();
-                is = null;
+            if (dis != null) {
+                dis.close();
+                dis = null;
             }
         }
 //        System.out.println(toString());
     }
 
     public void readFromStream(DataInputStreamLittleEndian is) throws
+            IOException {
+        readFromStream(is, false);
+    }
+    public void readFromStream(DataInputStreamLittleEndian is, boolean skipVertFlag) throws
             IOException {
         id = is.readString(3);
         if (!"Pmd".equals(id)) {
@@ -99,25 +117,53 @@ public class PMDModel {
         modelName = is.readString(20);
         comment = is.readString(256);
         vertCount = is.readInt();
-        vertexList = new PMDVertex[vertCount];
-        for (int i = 0; i < vertCount; i++) {
-            vertexList[i] = new PMDVertex(is);
+//        vertexList = new PMDVertex[vertCount];
+//        vertexBuffer = ByteBuffer.allocateDirect(PMDVertex.size() * vertCount);
+        if (skipVertFlag) {
+//            vertexBuffer = BufferUtil.createByteBuffer(PMDVertex.size() * vertCount);
+//            vertexBuffer.order(ByteOrder.nativeOrder());
+//            PMDVertex tmpVertex = new PMDVertex();
+//            for (int i = 0; i < vertCount; i++) {
+//                tmpVertex.readFromStream(is);
+////                tmpVertex.writeToBuffer(vertexBuffer);
+//
+//            }
+            is.skip(38 * vertCount);
+        } else {
+            vertexBuffer = BufferUtil.createByteBuffer(PMDVertex.size() * vertCount);
+            vertexBuffer.order(ByteOrder.nativeOrder());
+            PMDVertex tmpVertex = new PMDVertex();
+            for (int i = 0; i < vertCount; i++) {
+                tmpVertex.readFromStream(is);
+                tmpVertex.writeToBuffer(vertexBuffer);
+            }
         }
         faceVertCount = is.readInt();
-        faceVertIndex = new int[faceVertCount];
-        for (int i = 0; i < faceVertCount; i++) {
-            faceVertIndex[i] = is.readUnsignedShort();
-        }
-        // 逆にする。
-        for (int i = 0; i < faceVertCount; i += 3) {
-            int tmp = faceVertIndex[i];
-            faceVertIndex[i] = faceVertIndex[i + 1];
-            faceVertIndex[i + 1] = tmp;
+        if (skipVertFlag) {
+//            for (int i = 0; i < faceVertCount; i++) {
+//                is.readUnsignedShort();
+//            }
+            long skip = is.skip(faceVertCount * 2);
+            if (skip != faceVertCount * 2) {
+                throw new IllegalArgumentException("skip = "+skip+" "+faceVertCount * 2);
+            }
+        } else {
+            faceVertIndex = new int[faceVertCount];
+            for (int i = 0; i < faceVertCount; i++) {
+                faceVertIndex[i] = is.readUnsignedShort();
+            }
+            // 逆にする。
+            for (int i = 0; i < faceVertCount; i += 3) {
+                int tmp = faceVertIndex[i];
+                faceVertIndex[i] = faceVertIndex[i + 1];
+                faceVertIndex[i + 1] = tmp;
+            }
         }
         materialCount = is.readInt();
         material = new PMDMaterial[materialCount];
         for (int i = 0; i < materialCount; i++) {
             material[i] = new PMDMaterial(is);
+            material[i].setMaterialNo(i);
         }
         boneList = new PMDBoneList(is);
         ikList = new PMDIKList(is);
@@ -131,11 +177,66 @@ public class PMDModel {
         boneDispList = new PMDBoneDispList(is);
         headerEnglish = new PMDHeaderEnglish(this, is);
         toonTextureList = new PMDToonTextureList(is);
-        rigidBodyList = new PMDRigidBodyList(is);
-        jointList = new PMDJointList(is);
-
+        try {
+            rigidBodyList = new PMDRigidBodyList(is);
+            jointList = new PMDJointList(is);
+        } catch(EOFException ex) {
+            rigidBodyList = new PMDRigidBodyList();
+            jointList = new PMDJointList();
+        }
+//        toonTextureList = new PMDToonTextureList();
+//        rigidBodyList = new PMDRigidBodyList();
+//        jointList = new PMDJointList();
     }
-
+    public void writeToStream(DataOutput os) throws IOException {
+        PMDUtil.writeString(os, "Pmd", 3);
+        os.writeFloat(version);
+        PMDUtil.writeString(os, modelName, 20);
+        PMDUtil.writeString(os, comment, 256);
+        os.writeInt(vertCount);
+        System.out.print("vertCount out = "+vertCount);
+        for (int i = 0; i < vertCount; i++) {
+            PMDVertex tmpVertex = new PMDVertex();
+            getVertex(i, tmpVertex);
+            tmpVertex.writeToStream(os);
+        }
+        os.writeInt(faceVertCount);
+        for (int i = 0; i < faceVertCount; i += 3) {
+            os.writeShort(faceVertIndex[i+1]);
+            os.writeShort(faceVertIndex[i]);
+            os.writeShort(faceVertIndex[i+2]);
+        }
+        os.writeInt(materialCount);
+        for(PMDMaterial mat : material) {
+            mat.writeToStream(os);
+        }
+        boneList.writeToStream(os);
+        ikList.writeToStream(os);
+        os.writeShort(skinCount);
+        for(PMDSkinData skin : skinData) {
+            skin.writeToStream(os);
+        }
+        skinDispList.writeToStream(os);
+        boneDispNameList.writeToStream(os);
+        boneDispList.writeToStream(os);
+        headerEnglish.writeToStream(os);
+        toonTextureList.writeToStream(os);
+        rigidBodyList.writeToStream(os);
+        jointList.writeToStream(os);
+        
+    }    
+    public PMDVertex getVertex(int i) {
+        return getVertex(i, new PMDVertex());
+    }
+    public PMDVertex getVertex(int i, PMDVertex in) {
+        vertexBuffer.position(PMDVertex.size() * i);
+        in.readFromBuffer(vertexBuffer);
+        return in;
+    }
+    public void setVertex(int i, PMDVertex in) {
+        vertexBuffer.position(PMDVertex.size() * i);
+        in.writeToBuffer(vertexBuffer);
+    }
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -144,8 +245,11 @@ public class PMDModel {
                 + " modelName = " + modelName
                 + " comment = " + comment);
         sb.append(" vertexCount = " + vertCount);
-        for (PMDVertex vertex : vertexList) {
-            sb.append(vertex.toString());
+        PMDVertex tmpVertex = new PMDVertex();
+        vertexBuffer.position(0);
+        for (int i=0;i<vertCount;i++) {
+            tmpVertex.readFromBuffer(vertexBuffer);
+            sb.append(tmpVertex.toString());
         }
         sb.append(" faceVertCount = " + faceVertCount);
         sb.append(" faceVertIndex = {");
@@ -246,13 +350,14 @@ public class PMDModel {
         this.vertCount = vertCount;
     }
 
-    public PMDVertex[] getVertexList() {
-        return vertexList;
+    public ByteBuffer getVertexBuffer() {
+        return vertexBuffer;
     }
 
-    public void setVertexList(PMDVertex[] vertexList) {
-        this.vertexList = vertexList;
+    public void setVertexBuffer(ByteBuffer vertexBuffer) {
+        this.vertexBuffer = vertexBuffer;
     }
+
 
     public PMDBoneList getBoneList() {
         return boneList;

@@ -32,14 +32,16 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 import javax.vecmath.Vector3f;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDRigidBody {
+public class PMDRigidBody implements Serializable{
     private String rigidBodyName;
     private int relBoneIndex;
     private int rigidBodyGroupIndex;
@@ -73,6 +75,26 @@ public class PMDRigidBody {
         recoil = is.readFloat();
         friction = is.readFloat();
         rigidBodyType = is.readUnsignedByte();
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        PMDUtil.writeString(os, rigidBodyName, 20);
+        os.writeShort(relBoneIndex);
+        os.writeByte(rigidBodyGroupIndex);
+        os.writeShort(rigidBodyGroupTarget);
+        os.writeByte(shapeType);
+        os.writeFloat(shapeW);
+        os.writeFloat(shapeH);
+        os.writeFloat(shapeD);
+        PMDUtil.writeVector3f(os, pos);
+        os.writeFloat(-rot.x);
+        os.writeFloat(-rot.y);
+        os.writeFloat(rot.z);
+        os.writeFloat(weight);
+        os.writeFloat(posDim);
+        os.writeFloat(rotDim);
+        os.writeFloat(recoil);
+        os.writeFloat(friction);
+        os.writeByte(rigidBodyType);
     }
 
     @Override

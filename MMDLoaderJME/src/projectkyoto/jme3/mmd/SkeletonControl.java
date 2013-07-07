@@ -386,18 +386,18 @@ public class SkeletonControl extends AbstractControl implements Savable, Cloneab
         return skinMap.get(skinName).getWeight();
     }
 
-    public void setSkinWeight(String skinName, float weight) {
-        Skin skin = skinMap.get(skinName);
-        skin.setWeight(weight);
-        for (PMDSkinVertData svd : skin.getSkinData().getSkinVertData()) {
-            javax.vecmath.Vector3f dist = skinPosArray[svd.getSkinVertIndex()];
-//            dist.set(skinPosArrayOrig[svd.getSkinVertIndex()]);
-//            dist.interpolate(svd.getSkinVertPos(), weight);
-            dist.set(svd.getSkinVertPos());
-            dist.scale(weight);
-            dist.add(skinPosArrayOrig[svd.getSkinVertIndex()]);
-        }
-    }
+//    public void setSkinWeight(String skinName, float weight) {
+//        Skin skin = skinMap.get(skinName);
+//        skin.setWeight(weight);
+//        for (PMDSkinVertData svd : skin.getSkinData().getSkinVertData()) {
+//            javax.vecmath.Vector3f dist = skinPosArray[svd.getSkinVertIndex()];
+////            dist.set(skinPosArrayOrig[svd.getSkinVertIndex()]);
+////            dist.interpolate(svd.getSkinVertPos(), weight);
+//            dist.set(svd.getSkinVertPos());
+//            dist.scale(weight);
+//            dist.add(skinPosArrayOrig[svd.getSkinVertIndex()]);
+//        }
+//    }
 
     public Matrix4f[] getOffsetMatrices() {
         return offsetMatrices;

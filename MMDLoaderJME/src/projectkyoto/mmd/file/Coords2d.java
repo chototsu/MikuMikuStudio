@@ -31,13 +31,17 @@
  */
 package projectkyoto.mmd.file;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class Coords2d {
+public class Coords2d implements Serializable{
     private float u;
     private float v;
 
@@ -52,9 +56,28 @@ public class Coords2d {
         this.u = u;
         this.v = v;
     }
-    public Coords2d(DataInputStreamLittleEndian is) throws IOException {
+    public Coords2d(DataInput is) throws IOException {
         u = is.readFloat();
         v = is.readFloat();
+    }
+    public Coords2d readFromStream(DataInput is) throws IOException {
+        u = is.readFloat();
+        v = is.readFloat();
+        return this;
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeFloat(u);
+        os.writeFloat(v);
+    }
+    public Coords2d readFromBuffer(ByteBuffer bb) {
+        u = bb.getFloat();
+        v = bb.getFloat();
+        return this;
+    }
+    public Coords2d writeToBuffer(ByteBuffer bb) {
+        bb.putFloat(u);
+        bb.putFloat(v);
+        return this;
     }
     public Coords2d() {
     }

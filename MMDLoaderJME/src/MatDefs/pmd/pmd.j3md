@@ -38,16 +38,16 @@ MaterialDef pmd {
         Boolean UseVertexColor
 
         // Ambient color
-        Color Ambient
+        Color Ambient (MaterialAmbient)
 
         // Diffuse color
-        Color Diffuse : Color
+        Color Diffuse (MaterialDiffuse)
 
         // Specular color
-        Color Specular
+        Color Specular (MaterialSpecular)
 
         // Specular power/shininess
-        Float Shininess
+        Float Shininess (MaterialShininess) : 1
 
         // Diffuse map
         Texture2D DiffuseMap
@@ -100,8 +100,8 @@ MaterialDef pmd {
 
         VertexShader GLSL100:   MatDefs/pmd/pmd.vert
         FragmentShader GLSL100: MatDefs/pmd/pmd.frag
-        // VertexShader GLSL120:   MatDefs/pmd/pmd_cartoon.vert
-        // FragmentShader GLSL120: MatDefs/pmd/pmd_cartoon.frag
+        // VertexShader GLSL100:   MatDefs/pmd/pmd_cartoon.vert
+        //FragmentShader GLSL100: MatDefs/pmd/pmd_cartoon.frag
 
         // VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
         // FragmentShader GLSL100: Common/MatDefs/Light/Lighting.frag
@@ -137,13 +137,13 @@ MaterialDef pmd {
             USE_REFLECTION : EnvMap
             SPHERE_MAP : SphereMap
 
-            // NUM_BONES : NumBones
+            NUM_BONES : NumBones
             USE_HWSKINNING
-            SPHERE_MAP_A : SphereMap_a
-            SPHERE_MAP_H : SphereMap_h
+            SPHERE_MAP_A : SphereMap_A
+            SPHERE_MAP_H : SphereMap_H
         }
         RenderState {
-            FaceCull Off
+            FaceCull Back
         }
     }
 
@@ -151,8 +151,8 @@ MaterialDef pmd {
 
         LightMode MultiPass
 
-        VertexShader GLSL120:   MatDefs/pmd/pmd_cartoon.vert
-        FragmentShader GLSL120: MatDefs/pmd/pmd_cartoon.frag
+        VertexShader GLSL100:   MatDefs/pmd/pmd_cartoon.vert
+        FragmentShader GLSL100: MatDefs/pmd/pmd_cartoon.frag
 
         // VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
         // FragmentShader GLSL100: Common/MatDefs/Light/Lighting.frag
@@ -188,7 +188,7 @@ MaterialDef pmd {
             USE_REFLECTION : EnvMap
             SPHERE_MAP : SphereMap
 
-            // NUM_BONES : NumBones
+            NUM_BONES : NumBones
             USE_HWSKINNING
         }
         RenderState {
@@ -202,7 +202,7 @@ MaterialDef pmd {
 
         // VertexShader GLSL100 :   Common/MatDefs/Shadow/PreShadow.vert
         FragmentShader GLSL100 : Common/MatDefs/Shadow/PreShadow.frag
-        VertexShader GLSL100:   MatDefs/pmd/pmd.vert
+        VertexShader GLSL100:   MatDefs/pmd/PreShadow_pmd.vert
 
         WorldParameters {
             WorldViewProjectionMatrix
@@ -210,6 +210,7 @@ MaterialDef pmd {
         }
 
         Defines {
+            NUM_BONES : NumBones
             DIFFUSEMAP_ALPHA : DiffuseMap
             USE_HWSKINNING
         }

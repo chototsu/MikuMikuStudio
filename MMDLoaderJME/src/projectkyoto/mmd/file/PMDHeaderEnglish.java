@@ -29,16 +29,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDHeaderEnglish {
+public class PMDHeaderEnglish implements Serializable {
 
     private int englishNameCompatibility;
     private String modelName;
@@ -50,20 +51,38 @@ public class PMDHeaderEnglish {
     public PMDHeaderEnglish(PMDModel model, DataInputStreamLittleEndian is) throws IOException {
         englishNameCompatibility = is.readUnsignedByte();
         if (englishNameCompatibility == 1) {
-        modelName = is.readString(20);
-        comment = is.readString(256);
+            modelName = is.readString(20);
+            comment = is.readString(256);
             boneNameEnglish = new String[model.getBoneList().getBoneCount()];
             for (int i = 0; i < boneNameEnglish.length; i++) {
                 boneNameEnglish[i] = is.readString(20);
             }
-            skinNameEnglish = new String[model.getSkinCount() - 1];
-            for (int i = 0; i < skinNameEnglish.length; i++) {
-                skinNameEnglish[i] = is.readString(20);
+            if (model.getSkinCount() > 0) {
+                skinNameEnglish = new String[model.getSkinCount() - 1];
+                for (int i = 0; i < skinNameEnglish.length; i++) {
+                    skinNameEnglish[i] = is.readString(20);
+                }
             }
-
             dispNameEnglish = new String[model.getBoneDispNameList().getBoneDispNameCount()];
-            for(int i=0;i<dispNameEnglish.length;i++) {
+            for (int i = 0; i < dispNameEnglish.length; i++) {
                 dispNameEnglish[i] = is.readString(50);
+            }
+        }
+    }
+
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeByte(englishNameCompatibility);
+        if (englishNameCompatibility == 1) {
+            PMDUtil.writeString(os, modelName, 20);
+            PMDUtil.writeString(os, comment, 256);
+            for(String boneName : boneNameEnglish) {
+                PMDUtil.writeString(os, boneName, 20);
+            }
+            for(String skinName : skinNameEnglish) {
+                PMDUtil.writeString(os, skinName, 20);
+            }
+            for(String dispName : dispNameEnglish) {
+                PMDUtil.writeString(os, dispName, 50);
             }
         }
     }
@@ -78,19 +97,19 @@ public class PMDHeaderEnglish {
             sb.append("modelName = ").append(modelName).append('\n');
             sb.append("comment = ").append(comment).append('\n');
             sb.append("boneNameEnglish = ").append("{\n");
-            for(int i=0;i<boneNameEnglish.length;i++) {
+            for (int i = 0; i < boneNameEnglish.length; i++) {
                 sb.append(i);
                 sb.append(" ").append(boneNameEnglish[i]).append('\n');
             }
             sb.append("}\n");
             sb.append("skinNameEnglish = ").append("{\n");
-            for(int i=0;i<skinNameEnglish.length;i++) {
+            for (int i = 0; i < skinNameEnglish.length; i++) {
                 sb.append(i);
                 sb.append(" ").append(skinNameEnglish[i]).append('\n');
             }
             sb.append("}\n");
             sb.append("dispNameEnglish = ").append("{\n");
-            for(int i=0;i<dispNameEnglish.length;i++) {
+            for (int i = 0; i < dispNameEnglish.length; i++) {
                 sb.append(i);
                 sb.append(" ").append(dispNameEnglish[i]).append('\n');
             }

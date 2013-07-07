@@ -14,7 +14,7 @@
 /*   copyright notice, this list of conditions and the following     */
 /*   disclaimer in the documentation and/or other materials provided */
 /*   with the distribution.                                          */
-/* - Neither the name of the MMDLoaderJME3 project team nor the names of  */
+/* - Neither the name of the MMDLoaderJME project team nor the names of  */
 /*   its contributors may be used to endorse or promote products     */
 /*   derived from this software without specific prior written       */
 /*   permission.                                                     */
@@ -36,8 +36,6 @@
 
 package projectkyoto.jme3.mmd.vmd;
 
-import com.jme3.math.FastMath;
-
 /**
  *
  * @author kobayasi
@@ -51,82 +49,53 @@ public class IPUtil {
     static float ipfuncd(float t, float p1, float p2) {
         return ((3 + 9 * p1 - 9 * p2) * t * t + (6 * p2 - 12 * p1) * t + 3 * p1);
     }
-    /* VMD::setInterpolationTable: set up motion interpolation parameter */
 
-    static float calcIp(BoneMotionList bml, float x, int offset) {
+    static float calcIp(final VMDControl.BoneMotionList bml, float x, int offset) {
         if (x <= 0) {
             return 0f;
         }
         if (x >=1) {
             return 1f;
         }
-        int i = (int)((float)BoneMotionList.IPTABLESIZE * x);
-        if (i >= BoneMotionList.IPTABLESIZE) {
-            return 1f;
+        final float ipTable[][][] = bml.ipTable;
+        int ipTableSize = ipTable[offset].length;
+        for(int i=bml.ipTableIndex;i<ipTableSize;i++) {
+            if (bml.ipTable[offset][i][0] == x) {
+                bml.ipTableIndex = i;
+                return bml.ipTable[offset][i][1];
+            }
+            if (ipTable[offset][i][0] > x) {
+                float x1,x2,y1,y2;
+                if (i == 0) {
+                    x1 = 0;
+                    y1 = 0;
+                } else {
+                    x1 = ipTable[offset][i-1][0];
+                    y1 = ipTable[offset][i-1][1];
+                }
+                x2 = ipTable[offset][i][0];
+                y2 = ipTable[offset][i][1];
+                bml.ipTableIndex = i;
+                return y1 + (y2 - y1) * (x - x1) / (x2 - x1);
+            }
         }
-        float f1,f2;
-        f1 = bml.ipTable[offset][i];
-        if (i < BoneMotionList.IPTABLESIZE-1) {
-            f2 = bml.ipTable[offset][i+1];
-        } else {
-            f2 = 1f;
-        }
-        return f1 + (f2 - f1) * (x * (float)BoneMotionList.IPTABLESIZE - (float)i);
+        bml.ipTableIndex = ipTableSize;
+        return 1f;
     }
-    static float calcIp(byte ip[], float x, int offset) {
-        short i, d;
+    static void createInterpolationTable(final byte ip[], final float ipTable[][][]) {
+        int i, d;
         float x1, x2, y1, y2;
         float inval, t, v, tt;
-
-        /*
-         * check if they are just a linear function
-         */
-        if (ip[0 + offset] == ip[4 + offset] && ip[8 + offset] == ip[12 + offset]) {
-            // linear
-//            return x;
-        }
-
-        /*
-         * xの近似解を求める。
-         */
-        //for (i = 0; i < 4; i++) {
-        x1 = (float) ip[offset] / 127.0f;
-        y1 = (float) ip[ 4 + offset] / 127.0f;
-        x2 = (float) ip[ 8 + offset] / 127.0f;
-        y2 = (float) ip[12 + offset] / 127.0f;
-        // for (d = 0; d < kInterpolationTableSize; d++) {
-        inval = x; //((float) d + 0.5f) / (float) kInterpolationTableSize;
-         /*
-         * get Y value for given inval
-         */
-        t = inval;
-        for (int i2 = 0; i2 < 1000; i2++) {
-            v = ipfunc(t, x1, x2) - inval;
-            if (Math.abs(v) < 0.0001f) {
-                break;
-            }
-            tt = ipfuncd(t, x1, x2);
-            if (tt == 0.0f) {
-                break;
-            }
-            t -= v / tt;
-        }
-        return ipfunc(t, y1, y2);
-    }
-
-    static void createInterpolationTable(byte ip[], int ipTableSize, float ipTable[][]) {
-        short i, d;
-        float x1, x2, y1, y2;
-        float inval, t, v, tt;
-
         /*
          * check if they are just a linear function
          */
         for (i = 0; i < 4; i++) {
+            int ipTableSize = ipTable[i].length;
             if (ip[0 + i] == ip[4 + i] && ip[8 + i] == ip[12 + i]) {
                 // linear
                 for (d = 0; d < ipTableSize; d++) {
-                    ipTable[i][d] = (float) d / ipTableSize;
+                    ipTable[i][d][0] = (float) d / ipTableSize;
+                    ipTable[i][d][1] = (float) d / ipTableSize;
                 }
             } else {
                 x1 = ip[   i] / 127.0f;
@@ -134,25 +103,16 @@ public class IPUtil {
                 x2 = ip[ 8 + i] / 127.0f;
                 y2 = ip[12 + i] / 127.0f;
                 for (d = 0; d < ipTableSize; d++) {
-                    inval = ((float) d + 0.5f) / (float) ipTableSize;
+                    inval = ((float) d ) / (float) ipTableSize;
                     /*
                      * get Y value for given inval
                      */
                     t = inval;
-                    for (int i2=0;i2<1000;i2++) {
-                        v = ipfunc(t, x1, x2) - inval;
-                        if (FastMath.abs(v) < 0.0001f) {
-                            break;
-                        }
-                        tt = ipfuncd(t, x1, x2);
-                        if (tt == 0.0f) {
-                            break;
-                        }
-                        t -= v / tt;
-                    }
-                    ipTable[i][d] = ipfunc(t, y1, y2);
+                    ipTable[i][d][0] = ipfunc(t, x1, x2);
+                    ipTable[i][d][1] = ipfunc(t, y1, y2);
                 }
             }
         }
     }
+
 }

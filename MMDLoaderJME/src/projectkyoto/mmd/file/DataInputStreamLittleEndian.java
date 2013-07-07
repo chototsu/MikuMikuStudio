@@ -32,6 +32,7 @@
 package projectkyoto.mmd.file;
 
 import java.io.BufferedInputStream;
+import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,39 +46,49 @@ import java.net.URL;
  *
  * @author Kazuhiko Kobayashi
  */
-public class DataInputStreamLittleEndian extends FilterInputStream {
-    public URL url;
+public class DataInputStreamLittleEndian extends FilterInputStream implements DataInput {
+//    public URL url;
+
     private DataInputStream dis;
     byte[] buf;
 
     public DataInputStreamLittleEndian(InputStream in) {
         super(in);
-        dis = new DataInputStream(this);
+        dis = new DataInputStream(in);
     }
+
     public DataInputStreamLittleEndian(URL url) throws IOException {
         super(new BufferedInputStream(url.openStream()));
-        this.url = url;
+//        this.url = url;
         dis = new DataInputStream(this);
     }
+
     final byte[] getBuf(int size) {
         if (buf == null || buf.length < size) {
             buf = new byte[size];
         }
         return buf;
     }
+
+    @Override
     public final int readInt() throws IOException {
         return Integer.reverseBytes(dis.readInt());
     }
 
+    @Override
     public final short readShort() throws IOException {
         return Short.reverseBytes(dis.readShort());
     }
+
+    @Override
     public final int readUnsignedShort() throws IOException {
         short shortValue = readShort();
         int intValue = shortValue;
         intValue = intValue & 0xffff;
         return intValue;
     }
+
+    @Override
     public final int readUnsignedByte() throws IOException {
         byte byteValue = readByte();
         int intValue = byteValue;
@@ -85,30 +96,87 @@ public class DataInputStreamLittleEndian extends FilterInputStream {
         return intValue;
     }
 
+    @Override
     public final long readLong() throws IOException {
         return Long.reverseBytes(dis.readLong());
     }
 
+    @Override
     public final float readFloat() throws IOException {
         return Float.intBitsToFloat(readInt());
     }
 
+    @Override
     public final double readDouble() throws IOException {
         return Double.longBitsToDouble(readLong());
     }
+
     public final String readString(int size) throws IOException {
         byte[] buf = getBuf(size);
-        read(buf,0,size);
-        for(int i=0;i<size;i++) {
+        int pos = 0;
+        while(pos < size) {
+            pos += read(buf, pos, size - pos);
+        }
+        for (int i = 0; i < size; i++) {
             if (buf[i] == 0) {
-                return new String(buf,0,i,"Shift_JIS").intern();
+                return new String(buf, 0, i, "Shift_JIS").intern();
             }
         }
-        return new String(buf,"Shift_JIS");
+        return new String(buf, 0, size, "Shift_JIS").intern();
     }
-    public final byte readByte() throws IOException{
+
+    @Override
+    public final byte readByte() throws IOException {
         byte[] buf = getBuf(1);
-        read(buf,0,1);
+        read(buf, 0, 1);
         return buf[0];
+    }
+
+    @Override
+    public long skip(long l) throws IOException {
+        long l2 = l;
+        while (l2 > 0) {
+            long l3 = dis.skip(l2);
+            l2 = l2 - l3;
+            if (l3 == 0) {
+                break;
+            }
+        }
+        return l;
+    }
+
+    @Override
+    public void readFully(byte[] bytes) throws IOException {
+        dis.readFully(bytes);
+    }
+
+    @Override
+    public void readFully(byte[] bytes, int i, int i1) throws IOException {
+        dis.readFully(bytes, i, i1);
+    }
+
+    @Override
+    public int skipBytes(int i) throws IOException {
+        return dis.skipBytes(i);
+    }
+
+    @Override
+    public boolean readBoolean() throws IOException {
+        return dis.readBoolean();
+    }
+
+    @Override
+    public char readChar() throws IOException {
+        return dis.readChar();
+    }
+
+    @Override
+    public String readLine() throws IOException {
+        return dis.readLine();
+    }
+
+    @Override
+    public String readUTF() throws IOException {
+        return dis.readUTF();
     }
 }

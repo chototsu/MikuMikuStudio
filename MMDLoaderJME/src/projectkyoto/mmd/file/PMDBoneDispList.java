@@ -32,15 +32,21 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDBoneDispList {
+public class PMDBoneDispList implements Serializable{
     private int boneDispCount;
     private PMDBoneDisp boneDispArray[];
+
+    public PMDBoneDispList() {
+    }
     public PMDBoneDispList(DataInputStreamLittleEndian is) throws IOException {
         boneDispCount = is.readInt();
         boneDispArray = new PMDBoneDisp[boneDispCount];
@@ -48,7 +54,27 @@ public class PMDBoneDispList {
             boneDispArray[i] = new PMDBoneDisp(is);
         }
     }
-
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeInt(boneDispCount);
+        for(int i=0;i<boneDispCount;i++) {
+            boneDispArray[i].writeToStream(os);
+        }
+    }
+    public void readFromBuffer(ByteBuffer bb) {
+        boneDispCount = bb.getInt();
+        boneDispArray = new PMDBoneDisp[boneDispCount];
+        for(int i=0;i<boneDispCount;i++) {
+            PMDBoneDisp bd = new PMDBoneDisp();
+            bd.readFromBuffer(bb);
+            boneDispArray[i] = bd;
+        }
+    }
+    public void writeToBuffer(ByteBuffer bb) {
+        bb.putInt(boneDispCount);
+        for(PMDBoneDisp bd : boneDispArray) {
+            bd.writeToBuffer(bb);
+        }
+    }
     @Override
     public String toString() {
         return "PMDBoneDispList{" + "boneDispCount=" + boneDispCount + ", boneDispArray=" + boneDispArray + '}';

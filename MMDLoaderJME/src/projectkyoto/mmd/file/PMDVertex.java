@@ -32,14 +32,17 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
 import javax.vecmath.Vector3f;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class PMDVertex {
+public class PMDVertex implements Serializable{
 
     private Vector3f pos; // 位置
     private Vector3f normal; // 法線
@@ -63,15 +66,48 @@ public class PMDVertex {
 
 
     public PMDVertex() {
+        pos = new Vector3f();
+        normal = new Vector3f();
+        uv = new Coords2d();
     }
-    public PMDVertex(DataInputStreamLittleEndian is) throws IOException {
-        pos = PMDUtil.readVector3f(is);
-        normal = PMDUtil.readVector3f(is);
-        uv = new Coords2d(is);
+    public PMDVertex readFromStream(DataInputStreamLittleEndian is) throws IOException {
+        PMDUtil.readVector3f(is, pos);
+        PMDUtil.readVector3f(is, normal);
+        uv.readFromStream(is);
         boneNum1 = is.readUnsignedShort();
         boneNum2 = is.readUnsignedShort();
         boneWeight = is.readByte();
         edgeFlag = is.readByte();
+        return this;
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        PMDUtil.writeVector3f(os, pos);
+        PMDUtil.writeVector3f(os, normal);
+        uv.writeToStream(os);
+        os.writeShort(boneNum1);
+        os.writeShort(boneNum2);
+        os.writeByte(boneWeight);
+        os.writeByte(edgeFlag);
+    }    
+    public PMDVertex readFromBuffer(ByteBuffer bb) {
+        PMDUtil.readVector3f(bb, pos);
+        PMDUtil.readVector3f(bb, normal);
+        uv.readFromBuffer(bb);
+        boneNum1 = bb.getShort();
+        boneNum2 = bb.getShort();
+        boneWeight = bb.get();
+        edgeFlag = bb.get();
+        return this;
+    }
+    public PMDVertex writeToBuffer(ByteBuffer bb) {
+        PMDUtil.writeVector3f(bb, pos);
+        PMDUtil.writeVector3f(bb, normal);
+        uv.writeToBuffer(bb);
+        bb.putShort((short)boneNum1);
+        bb.putShort((short)boneNum2);
+        bb.put(boneWeight);
+        bb.put(edgeFlag);
+        return this;
     }
 
     public int getBoneNum1() {
@@ -133,9 +169,6 @@ public class PMDVertex {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if (obj == null) {
             return false;
         }
@@ -167,10 +200,49 @@ public class PMDVertex {
         return true;
     }
 
+    public boolean equals2(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        return false;
+//        if (obj == null) {
+//            return false;
+//        }
+//        if (getClass() != obj.getClass()) {
+//            return false;
+//        }
+//        final PMDVertex other = (PMDVertex) obj;
+//        if (this.pos != other.pos && (this.pos == null || !this.pos.equals(other.pos))) {
+//            return false;
+//        }
+//        if (this.normal != other.normal && (this.normal == null || !this.normal.equals(other.normal))) {
+//            return false;
+//        }
+//        if (this.uv != other.uv && (this.uv == null || !this.uv.equals(other.uv))) {
+//            return false;
+//        }
+//        if (this.boneNum1 != other.boneNum1) {
+//            return false;
+//        }
+//        if (this.boneNum2 != other.boneNum2) {
+//            return false;
+//        }
+//        if (this.boneWeight != other.boneWeight) {
+//            return false;
+//        }
+//        if (this.edgeFlag != other.edgeFlag) {
+//            return false;
+//        }
+//        return true;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
         hash = 89 * hash + (this.pos != null ? this.pos.hashCode() : 0);
         return hash;
+    }
+    public static int size() {
+        return 38;
     }
 }

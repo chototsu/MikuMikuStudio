@@ -24,22 +24,35 @@
  */
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDRigidBodyList {
+public class PMDRigidBodyList implements Serializable{
 
     private int rigidBodyCount;
     private PMDRigidBody[] rigidBodyArray;
+
+    public PMDRigidBodyList() {
+        rigidBodyCount = 0;
+        rigidBodyArray = new PMDRigidBody[0];
+    }
 
     public PMDRigidBodyList(DataInputStreamLittleEndian is) throws IOException {
         rigidBodyCount = is.readInt();
         rigidBodyArray = new PMDRigidBody[rigidBodyCount];
         for (int i = 0; i < rigidBodyCount; i++) {
             rigidBodyArray[i] = new PMDRigidBody(is);
+        }
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeInt(rigidBodyCount);
+        for(PMDRigidBody rigidBody : rigidBodyArray) {
+            rigidBody.writeToStream(os);
         }
     }
 

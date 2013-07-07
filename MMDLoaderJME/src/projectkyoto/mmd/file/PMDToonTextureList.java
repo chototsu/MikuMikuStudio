@@ -32,19 +32,32 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDToonTextureList {
+public class PMDToonTextureList implements Serializable{
     private String toonFileName[] = new String[10];
+
+    public PMDToonTextureList() {
+        for(int i=0;i<10;i++) {
+            toonFileName[i] = "";
+        }
+    }
     public PMDToonTextureList(DataInputStreamLittleEndian is) throws IOException {
         for(int i=0;i<10;i++) {
             toonFileName[i] = is.readString(100);
         }
     }
+    public void writeToStream(DataOutput os) throws IOException {
+        for(int i=0;i<10;i++) {
+            PMDUtil.writeString(os, toonFileName[i], 100);
+        }
+    }    
 
     @Override
     public String toString() {

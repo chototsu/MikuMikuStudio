@@ -32,14 +32,16 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 import javax.vecmath.Vector3f;
 
 /**
  *
  * @author kobayasi
  */
-public class PMDSkinVertData {
+public class PMDSkinVertData implements Serializable{
     private int skinVertIndex;
     private Vector3f skinVertPos;
 
@@ -54,7 +56,12 @@ public class PMDSkinVertData {
         skinVertPos.y = is.readFloat();
         skinVertPos.z = -is.readFloat();
     }
-
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeInt(skinVertIndex);
+        os.writeFloat(skinVertPos.x);
+        os.writeFloat(skinVertPos.y);
+        os.writeFloat(-skinVertPos.z);
+    }
     public int getSkinVertIndex() {
         return skinVertIndex;
     }

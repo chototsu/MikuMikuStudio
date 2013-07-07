@@ -32,7 +32,9 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 
 /*
  * To change this template, choose Tools | Templates
@@ -43,7 +45,7 @@ import java.io.IOException;
  *
  * @author Kazuhiko Kobayashi
  */
-public class XColorRGB {
+public class XColorRGB implements Serializable{
     private float red;
     private float green;
     private float blue;
@@ -84,11 +86,46 @@ public class XColorRGB {
         green = is.readFloat();
         blue = is.readFloat();
     }
+    public void writeToStream(DataOutput os) throws IOException {
+        os.writeFloat(red);
+        os.writeFloat(green);
+        os.writeFloat(blue);
+    }
     @Override
     public String toString() {
         return "{red = "+red
                 +" green = "+green
                 +" blue = "+green
                 +"}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final XColorRGB other = (XColorRGB) obj;
+        if (Float.floatToIntBits(this.red) != Float.floatToIntBits(other.red)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.green) != Float.floatToIntBits(other.green)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.blue) != Float.floatToIntBits(other.blue)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 41 * hash + Float.floatToIntBits(this.red);
+        hash = 41 * hash + Float.floatToIntBits(this.green);
+        hash = 41 * hash + Float.floatToIntBits(this.blue);
+        return hash;
     }
 }

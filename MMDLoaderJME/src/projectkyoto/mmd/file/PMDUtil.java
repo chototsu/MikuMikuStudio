@@ -29,10 +29,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import javax.vecmath.Vector3f;
 
 /**
@@ -41,8 +42,41 @@ import javax.vecmath.Vector3f;
  */
 public class PMDUtil {
 
+    public static Vector3f readVector3f(DataInputStreamLittleEndian is, Vector3f v)
+            throws IOException {
+        v.set(is.readFloat(), is.readFloat(), -is.readFloat());
+        return v;
+    }
+
     public static Vector3f readVector3f(DataInputStreamLittleEndian is) throws
             IOException {
-        return new Vector3f(is.readFloat(), is.readFloat(), -is.readFloat());
+        return readVector3f(is, new Vector3f());
+    }
+    public static Vector3f readVector3f(ByteBuffer bb, Vector3f v) {
+        v.set(bb.getFloat(), bb.getFloat(), bb.getFloat());
+        return v;
+    }
+    public static Vector3f writeVector3f(ByteBuffer bb, Vector3f v) {
+        bb.putFloat(v.x);
+        bb.putFloat(v.y);
+        bb.putFloat(v.z);
+        return v;
+    }
+    public static void writeString(DataOutput os, String s, int len) throws IOException {
+        byte[] buf = s.getBytes("Shift_JIS");
+        int l = buf.length;
+        if (l > len) {
+            os.write(buf, 0, len);
+        } else {
+            os.write(buf);
+            for(;l < len;l++) {
+                os.writeByte(0);
+            }
+        }
+    }
+    public static void writeVector3f(DataOutput os, Vector3f v) throws IOException{
+        os.writeFloat(v.x);
+        os.writeFloat(v.y);
+        os.writeFloat(-v.z);
     }
 }

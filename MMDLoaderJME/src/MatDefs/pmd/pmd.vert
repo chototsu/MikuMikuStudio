@@ -1,5 +1,14 @@
+#ifdef GL_ES
+# define LOWP       lowp
+# define MEDIUMP    mediump
+#else
+# define LOWP    
+# define MEDIUMP   
+#endif
 // #import "MatDefs/pmd/Skinning.glsllib"
-uniform mat4 m_BoneMatrices[20];
+#ifdef USE_HWSKINNING
+uniform mat4 m_BoneMatrices[NUM_BONES];
+#endif
 #define ATTENUATION
 // #define HQ_ATTENUATION
 
@@ -8,23 +17,23 @@ uniform mat4 g_WorldViewMatrix;
 uniform mat3 g_NormalMatrix;
 uniform mat4 g_ViewMatrix;
 
-uniform vec4 m_Ambient;
-uniform vec4 m_Diffuse;
-uniform vec4 m_Specular;
-uniform float m_Shininess;
+uniform LOWP vec4 m_Ambient;
+uniform LOWP vec4 m_Diffuse;
+uniform LOWP vec4 m_Specular;
+uniform LOWP float m_Shininess;
 
-uniform vec4 g_LightColor;
+uniform LOWP vec4 g_LightColor;
 uniform vec4 g_LightPosition;
-uniform vec4 g_AmbientLightColor;
+uniform LOWP vec4 g_AmbientLightColor;
 
-varying vec2 texCoord;
+varying LOWP vec2 texCoord;
 
-varying vec4 AmbientSum;
-varying vec4 DiffuseSum;
-varying vec4 SpecularSum;
+varying LOWP vec4 AmbientSum;
+varying LOWP vec4 DiffuseSum;
+varying LOWP vec4 SpecularSum;
 
 attribute vec3 inPosition;
-attribute vec2 inTexCoord;
+attribute LOWP vec2 inTexCoord;
 attribute vec3 inNormal;
 
 // uniform Sampler2D m_BoneParameter;
@@ -35,7 +44,7 @@ attribute vec3 inNormal;
 #endif
 
 #ifdef VERTEX_COLOR
-  attribute vec4 inColor;
+  attribute LOWP vec4 inColor;
 #endif
 
 #ifndef VERTEX_LIGHTING
@@ -49,7 +58,7 @@ attribute vec3 inNormal;
   varying vec4 vLightDir;
 #endif
 
-#ifdef USE_REFLECTION
+// #ifdef USE_REFLECTION
     uniform vec3 g_CameraPosition;
     uniform mat4 g_WorldMatrix;
 
@@ -68,15 +77,15 @@ attribute vec3 inNormal;
      * varying refVec
      */
     void computeRef(in vec4 position, in vec4 normal){
-        vec3 worldPos = (g_WorldMatrix * vec4(position.xyz,1.0)).xyz;
+        vec3 worldPos = (g_WorldMatrix * position).xyz;
 
-        vec3 I = normalize( g_CameraPosition - worldPos  ).xyz;
-        vec3 N = normalize( (g_WorldMatrix * vec4(normal.xyz, 0.0)).xyz );
+        vec3 I = normalize( worldPos - g_CameraPosition    ).xyz;
+        vec3 N = normalize( (g_WorldMatrix * normal).xyz );
 
         refVec.xyz = reflect(I, N);
-        refVec.w   = m_FresnelParams.x + m_FresnelParams.y * pow(1.0 + dot(I, N), m_FresnelParams.z);
+        refVec.w   = 1.0;//m_FresnelParams.x + m_FresnelParams.y * pow(1.0 + dot(I, N), m_FresnelParams.z);
     }
-#endif
+// #endif
 
 // JME3 lights in world space
 void lightComputeDir(in vec3 worldPos, in vec4 color, in vec4 position, out vec4 lightDir){
@@ -113,39 +122,54 @@ vec2 computeLighting(in vec3 wvPos, in vec3 wvNorm, in vec3 wvViewDir, in vec4 w
      lightComputeDir(wvPos, g_LightColor, wvLightPos, lightDir);
 
      float diffuseFactor = lightComputeDiffuse(wvNorm, lightDir.xyz);
-     float specularFactor = lightComputeSpecular(wvNorm, wvViewDir, lightDir.xyz, m_Shininess);
+     float specularFactor = 0.0;
+     if (m_Shininess != 0.0) {
+        specularFactor = lightComputeSpecular(wvNorm, wvViewDir, lightDir.xyz, m_Shininess);
+     }
      //specularFactor *= step(0.01, diffuseFactor);
      return vec2(diffuseFactor, specularFactor) * vec2(lightDir.w);
   }
 #endif
-attribute vec4 inBoneWeight;
-attribute vec4 inBoneIndices;
-attribute vec4 inBoneIndex;
-
+attribute vec2 inBoneWeight;
+attribute vec2 inBoneIndex;
+#ifdef USE_HWSKINNING
 void Skinning_Compute(inout vec4 position, inout vec4 normal){
 //    vec4 index  = inBoneIndices;
-    vec4 index  = inBoneIndex;
-    vec4 weight = inBoneWeight;
+    vec2 index  = inBoneIndex;
+    vec2 weight = inBoneWeight;
 
-    vec4 newPos    = vec4(0.0);
-    vec4 newNormal = vec4(0.0);
+    vec4 newPos;
+    vec4 newNormal;
 
-    for (float i = 0.0; i < 2.0; i += 1.0){
-        mat4 skinMat = m_BoneMatrices[int(index.x)];
-        newPos    += weight.x * (skinMat * position);
-        newNormal += weight.x * (skinMat * normal);
-        index = index.yzwx;
-        weight = weight.yzwx;
-    }
+    //for (float i = 1.0; i < 2.0; i += 1.0){
+        mat4 skinMat;
+#if NUM_BONES != 1
+    skinMat = m_BoneMatrices[int(index.x)];
+    newPos    = weight.x * (skinMat * position);
+    newNormal = weight.x * (skinMat * normal);
+
+    skinMat = m_BoneMatrices[int(index.y)];
+    newPos    = newPos + weight.y * (skinMat * position);
+    newNormal = newNormal + weight.y * (skinMat * normal);
+#else
+    skinMat = m_BoneMatrices[0];
+    newPos    = (skinMat * position);
+    newNormal = (skinMat * normal);
+#endif
+        //index = index.yzwx;
+        //weight = weight.yzwx;
+    //}
 
     position = newPos;
     normal = newNormal;
 }
-
+#endif
 void main(){
    vec4 pos = vec4(inPosition, 1.0);
    vec4 normal = vec4(inNormal,0.0);
+#ifdef USE_HWSKINNING
    Skinning_Compute(pos, normal);
+#endif
 //    pos = m_BoneMatrices[0] * pos;
    gl_Position = g_WorldViewProjectionMatrix * pos;
    texCoord = inTexCoord;
@@ -165,7 +189,7 @@ void main(){
 
    vec4 wvLightPos = (g_ViewMatrix * vec4(g_LightPosition.xyz, g_LightColor.w));
    wvLightPos.w = g_LightPosition.w;
-   vec4 lightColor = g_LightColor;
+   LOWP vec4 lightColor = g_LightColor;
 
    #if defined(NORMALMAP) && !defined(VERTEX_LIGHTING)
      vec3 wvTangent = normalize(g_NormalMatrix * inTangent.xyz);
@@ -197,7 +221,7 @@ void main(){
       DiffuseSum  = m_Diffuse  * lightColor;
       SpecularSum = m_Specular * lightColor;
     #else
-      AmbientSum  = vec4(0.2, 0.2, 0.2, 1.0) * g_AmbientLightColor; // Default: ambient color is dark gray
+      AmbientSum  = /*vec4(0.2, 0.2, 0.2, 1.0) * */g_AmbientLightColor; // Default: ambient color is dark gray
       DiffuseSum  = lightColor;
       SpecularSum = lightColor;
     #endif
@@ -211,10 +235,10 @@ void main(){
        vec2 light = computeLighting(wvPosition, wvNormal, viewDir, wvLightPos);
 
        AmbientSum.a  = light.x;
-       SpecularSum.a = light.y;
+       SpecularSum.a = light.y /* * 0.3*/;
     #endif
 
-    #ifdef USE_REFLECTION
+    #if defined(USE_REFLECTION) || defined(SPHERE_MAP_A) || defined(SPHERE_MAP_H)
         computeRef(pos,normal);
     #endif 
 }

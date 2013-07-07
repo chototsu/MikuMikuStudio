@@ -32,13 +32,15 @@
 
 package projectkyoto.mmd.file;
 
+import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class XColorRGBA extends XColorRGB {
+public class XColorRGBA extends XColorRGB implements Serializable{
 
     private float alpha;
 
@@ -53,6 +55,10 @@ public class XColorRGBA extends XColorRGB {
     public XColorRGBA(DataInputStreamLittleEndian is) throws IOException {
         super(is);
         alpha = is.readFloat();
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        super.writeToStream(os);
+        os.writeFloat(alpha);
     }
 
     public float getAlpha() {
@@ -70,5 +76,22 @@ public class XColorRGBA extends XColorRGB {
                 + " blue = " + getBlue()
                 + " alpha = " + alpha
                 + "}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        final XColorRGBA other = (XColorRGBA) obj;
+        if (Float.floatToIntBits(this.alpha) != Float.floatToIntBits(other.alpha)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

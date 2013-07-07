@@ -29,19 +29,30 @@
  */
 package projectkyoto.jme3.mmd;
 
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
+import com.jme3.export.Savable;
+import com.jme3.util.BufferUtils;
+import java.io.IOException;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import projectkyoto.mmd.file.PMDSkinData;
+import projectkyoto.mmd.file.PMDSkinVertData;
 
 /**
  *
  * @author kobayasi
  */
-public class Skin {
+public class Skin implements Cloneable, Savable{
 
     String skinName;
     float weight = 0f;
-    PMDSkinData skinData;
     PMDNode pmdNode;
     boolean updateNeeded = false;
+    ShortBuffer indexBuf;
+    FloatBuffer skinBuf;
 
     public Skin(PMDNode pmdNode, String skinName) {
         this.pmdNode = pmdNode;
@@ -71,19 +82,55 @@ public class Skin {
         }
     }
 
-    public PMDSkinData getSkinData() {
-        return skinData;
-    }
-
-    public void setSkinData(PMDSkinData skinData) {
-        this.skinData = skinData;
-    }
-
     public boolean isUpdateNeeded() {
         return updateNeeded;
     }
 
     public void setUpdateNeeded(boolean updateNeeded) {
         this.updateNeeded = updateNeeded;
+    }
+
+    @Override
+    protected Skin clone() throws CloneNotSupportedException {
+        return (Skin)super.clone();
+    }
+
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        OutputCapsule c = ex.getCapsule(this);
+        c.write(skinName, "skinName", "");
+        c.write(weight, "weight", 0f);
+        
+    }
+
+    public ShortBuffer getIndexBuf() {
+        return indexBuf;
+    }
+
+    public void setIndexBuf(ShortBuffer indexBuf) {
+        this.indexBuf = indexBuf;
+    }
+
+    public PMDNode getPmdNode() {
+        return pmdNode;
+    }
+
+    public void setPmdNode(PMDNode pmdNode) {
+        this.pmdNode = pmdNode;
+    }
+
+    public FloatBuffer getSkinBuf() {
+        return skinBuf;
+    }
+
+    public void setSkinBuf(FloatBuffer skinBuf) {
+        this.skinBuf = skinBuf;
+    }
+
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        InputCapsule c = im.getCapsule(this);
+        skinName = c.readString("skinName", "");
+        weight = c.readFloat("weight", 0f);
     }
 }

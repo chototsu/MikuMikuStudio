@@ -1,10 +1,18 @@
+#ifdef GL_ES
+# define LOWP       lowp
+# define MEDIUMP    mediump
+#else
+# define LOWP    
+# define MEDIUMP   
+#endif
+
 #import "Common/ShaderLib/Optics.glsllib"
 
 #ifdef SPHERE_MAP_A
-  uniform sampler2D m_SphereMap_a;
+  uniform sampler2D m_SphereMap_A;
 #endif
 #ifdef SPHERE_MAP_H
-  uniform sampler2D m_SphereMap_h;
+  uniform sampler2D m_SphereMap_H;
 #endif
 
 
@@ -12,11 +20,11 @@
 //#define HQ_ATTENUATION
 
 
-varying vec2 texCoord;
+varying LOWP vec2 texCoord;
 
-varying vec4 AmbientSum;
-varying vec4 DiffuseSum;
-varying vec4 SpecularSum;
+varying LOWP vec4 AmbientSum;
+varying LOWP vec4 DiffuseSum;
+varying LOWP vec4 SpecularSum;
 
 #ifndef VERTEX_LIGHTING
   varying vec3 vPosition;
@@ -61,7 +69,7 @@ varying vec3 lightVec;
 #ifdef USE_REFLECTION 
     uniform float m_ReflectionPower;
     uniform float m_ReflectionIntensity;
-    varying vec4 refVec;
+//    varying vec4 refVec;
 
     uniform ENVMAP m_EnvMap;
 #endif
@@ -122,9 +130,15 @@ vec2 computeLighting(in vec3 wvPos, in vec3 wvNorm, in vec3 wvViewDir, in vec3 w
    return vec2(diffuseFactor, specularFactor) * vec2(att);
 }
 #endif
+    varying vec4 refVec;
+vec2 Optics_SphereCoord2(in vec3 dir){
+    float dzplus1 = dir.z + 1.0;
+    float m = 2.0 * sqrt(dir.x * dir.x + dir.y * dir.y + dzplus1 * dzplus1);
+    return vec2(dir.x / m + 0.5, 0.5 - dir.y / m);
+}
 
 void main(){
-    vec2 newTexCoord;
+    LOWP vec2 newTexCoord;
  
     #if defined(PARALLAXMAP) || defined(NORMALMAP_PARALLAX)
        float h;
@@ -147,13 +161,14 @@ void main(){
     #else
       vec4 diffuseColor = vec4(1.0);
     #endif
-    float alpha = DiffuseSum.a * diffuseColor.a;
+    LOWP float alpha = DiffuseSum.a * diffuseColor.a;
+    //float alpha = (DiffuseSum.a + diffuseColor.a)/2;
     #ifdef ALPHAMAP
        alpha = alpha * texture2D(m_AlphaMap, newTexCoord).r;
     #endif
-    if(alpha < m_AlphaDiscardThreshold){
-        discard;
-    }
+    //if(alpha < 0.1 /*m_AlphaDiscardThreshold*/){
+    //    discard;
+    //}
 
     // ***********************
     // Read from textures
@@ -179,22 +194,20 @@ void main(){
     #endif
 
     #ifdef VERTEX_LIGHTING
-       vec2 light = vec2(AmbientSum.a, SpecularSum.a);
+       LOWP vec2 light = vec2(AmbientSum.a, SpecularSum.a);
        #ifdef COLORRAMP
            // light.x = texture2D(m_ColorRamp, vec2(light.x, 0.0)).r;
            // light.y = texture2D(m_ColorRamp, vec2(light.y, 0.0)).r;
-           light.x = texture2D(m_ColorRamp, vec2(0.0,light.x)).r;
-           light.y = texture2D(m_ColorRamp, vec2(0.0,light.y)).r;
+           diffuseColor.rgb  *= texture2D(m_ColorRamp, vec2(0.0,light. x)).rgb;
+           //specularColor.rgb *= texture2D(m_ColorRamp, vec2(0.0,light. y)).rgb;
        #endif
+// adero200
+       //if (light.y != light.y) {
+       //     light.y = 0.0;
+       //}
+       LOWP vec4 output_color = (((AmbientSum + DiffuseSum) * diffuseColor)
+                      + SpecularSum * specularColor * light.y );
 
-       gl_FragColor =  AmbientSum * diffuseColor + 
-                       DiffuseSum * diffuseColor  * light.x +
-                       SpecularSum * specularColor * light.y;
-           diffuseColor.rgb  *= texture2D(m_ColorRamp, vec2(0.0,light.x)).rgb;
-           specularColor.rgb *= texture2D(m_ColorRamp, vec2(0.0,light.y)).rgb;
-       gl_FragColor =  AmbientSum * diffuseColor + 
-                       DiffuseSum * diffuseColor   +
-                       SpecularSum * specularColor ;
     #else
        vec4 lightDir = vLightDir;
        lightDir.xyz = normalize(lightDir.xyz);
@@ -219,19 +232,34 @@ void main(){
             SpecularSum2 = vec4(1.0);
             light.y = 1.0;
        #endif
-
+//       if (isnan(light.y)) {
+       if (light.y != light.y) {
+            light.y = 0.0;
+       }
 //       gl_FragColor =  (AmbientSum * diffuseColor +
 //                       DiffuseSum * diffuseColor + //* light.x +
 //                       SpecularSum2 * specularColor * light.y ) * 0.8;
-       gl_FragColor =  (((AmbientSum + DiffuseSum) * diffuseColor)  +
-                       SpecularSum2 * specularColor * light.y * 0.8)  ;
+       vec4 output_color = (((AmbientSum + DiffuseSum) * diffuseColor)  +
+                       SpecularSum2 * specularColor * light.y );
 #ifdef SPHERE_MAP_A
-        gl_FragColor += texture2D(m_SphereMap_a, Optics_SphereCoord(reflect(normView, normal));
+        vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
+        output_color.xyz +=  (texture2D(m_SphereMap_A, v2).xyz);
 #endif
 #ifdef SPHERE_MAP_H
-        gl_FragColor *= texture2D(m_SphereMap_h, Optics_SphereCoord(reflect(normView, normal));
+        vec2 v2 = Optics_SphereCoord(normalize(refVec.xyz));
+        output_color.xyz *= (texture2D(m_SphereMap_H, v2).xyz);
 #endif
 
     #endif
-    gl_FragColor.a = alpha;
+#ifdef SPHERE_MAP_A
+        vec2 v2 = Optics_SphereCoord(refVec.xyz);
+        output_color.xyz +=  (texture2D(m_SphereMap_A, v2).xyz);
+#endif
+#ifdef SPHERE_MAP_H
+        vec2 v2 = Optics_SphereCoord(refVec.xyz);
+        output_color.xyz *= (texture2D(m_SphereMap_H, v2).xyz);
+
+#endif
+    output_color.a = alpha;
+    gl_FragColor = output_color;
 }

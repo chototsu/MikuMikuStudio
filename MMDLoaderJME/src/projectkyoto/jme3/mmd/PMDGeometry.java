@@ -29,9 +29,18 @@
  */
 package projectkyoto.jme3.mmd;
 
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
 import com.jme3.material.Material;
+import com.jme3.math.Matrix4f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer.Type;
+import com.jme3.util.BufferUtils;
+import java.io.IOException;
+import java.nio.FloatBuffer;
 import projectkyoto.mmd.file.PMDMaterial;
 
 /**
@@ -78,4 +87,107 @@ public class PMDGeometry extends Geometry {
     public void setNoSkinningMaterial(Material noSkinningMaterial) {
         this.noSkinningMaterial = noSkinningMaterial;
     }
+
+    @Override
+    public PMDGeometry clone() {
+        Mesh meshBackup = mesh;
+        mesh = new Mesh();
+        PMDGeometry newPMDGeometry = (PMDGeometry)super.clone(true);
+        mesh = meshBackup;
+//        newPMDGeometry.setMesh(getMesh().clone());
+        if (mesh instanceof PMDSkinMesh) {
+            PMDSkinMesh oldMesh = (PMDSkinMesh)mesh;
+            PMDSkinMesh newMesh = new PMDSkinMesh();
+            newMesh.setBuffer(oldMesh.getBuffer(Type.Position));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.Normal));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.BoneIndex));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.BoneWeight));
+            newMesh.boneIndexArray = oldMesh.boneIndexArray;
+            newMesh.boneMatrixArray = new Matrix4f[oldMesh.boneMatrixArray.length];
+            if (oldMesh.getBuffer(Type.TexCoord) != null) {
+                newMesh.setBuffer(oldMesh.getBuffer(Type.TexCoord));
+            }
+//            for(int i=0;i<mesh.boneMatrixArray.length;i++) {
+//                newMesh.boneMatrixArray[i] = new Matrix4f();
+//                newMesh.boneMatrixArray[i].loadIdentity();
+//            }
+            newMesh.bound = oldMesh.bound.clone();
+            newMesh.setBuffer(oldMesh.getBuffer(Type.Index));
+            newPMDGeometry.setMesh(newMesh);
+
+            newMesh.setBoneIndexBuffer(oldMesh.getBoneIndexBuffer());
+            FloatBuffer fb = BufferUtils.createFloatBuffer(oldMesh.getBoneMatrixBuffer().capacity());
+            newMesh.setBoneMatrixBuffer(fb);
+        } else {
+            PMDMesh oldMesh = (PMDMesh)mesh;
+            PMDMesh newMesh = new PMDMesh();
+            newMesh.boneIndexArray = oldMesh.boneIndexArray;
+            newMesh.boneMatrixArray = new Matrix4f[oldMesh.boneMatrixArray.length];
+            for (int i = 0; i < newMesh.boneMatrixArray.length; i++) {
+                newMesh.boneMatrixArray[i] = new Matrix4f();
+                newMesh.boneMatrixArray[i].set(oldMesh.boneMatrixArray[i]);
+            }
+            newMesh.setMode(Mesh.Mode.Triangles);
+            newMesh.setVbBackup(oldMesh.getVbBackup());
+            newMesh.setNbBackup(oldMesh.getNbBackup());
+            newMesh.setBuffer(oldMesh.getVbBackup());
+            newMesh.setBuffer(oldMesh.getNbBackup());
+            newMesh.setBuffer(oldMesh.getBuffer(Type.Index));
+            if (oldMesh.getBuffer(Type.TexCoord) != null) {
+                newMesh.setBuffer(oldMesh.getBuffer(Type.TexCoord));
+            }
+            newMesh.setBuffer(oldMesh.getBuffer(Type.BoneIndex));
+            newMesh.setBuffer(oldMesh.getBuffer(Type.BoneWeight));
+            if (oldMesh.getBuffer(Type.InterleavedData) != null)
+            newMesh.setBuffer(oldMesh.getBuffer(Type.InterleavedData));
+            newPMDGeometry.setMesh(newMesh);
+            
+            newMesh.setBoneIndexBuffer(oldMesh.getBoneIndexBuffer());
+            FloatBuffer fb = BufferUtils.createFloatBuffer(oldMesh.getBoneMatrixBuffer().capacity());
+            newMesh.setBoneMatrixBuffer(fb);
+//            newMesh.setInterleaved();
+        }
+        newPMDGeometry.glslSkinningMaterial = glslSkinningMaterial.clone();
+        newPMDGeometry.noSkinningMaterial = noSkinningMaterial.clone();
+        return newPMDGeometry;
+    }
+
+    @Override
+    public PMDGeometry clone(boolean cloneMaterial) {
+        return clone();
+    }
+
+//    @Override
+//    public void setMesh(Mesh mesh) {
+//        super.setMesh(mesh);
+//        if (mesh instanceof PMDMesh) {
+//            pmdMesh = (PMDMesh)mesh;
+//        }
+//    }
+
+    @Override
+    public void setMaterial(Material material) {
+        super.setMaterial(material);
+        if (mesh instanceof PMDMesh) {
+            PMDMesh pmdMesh = (PMDMesh)mesh;
+            pmdMesh.boneMatricesParamIndex = -1;
+        }
+    }
+
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        super.read(im);
+        InputCapsule c = im.getCapsule(this);
+        glslSkinningMaterial = (Material)c.readSavable("glslSkinningMaterial", null);
+        noSkinningMaterial = (Material)c.readSavable("noSkinningMaterial", null);
+    }
+
+    @Override
+    public void write(JmeExporter ex) throws IOException {
+        super.write(ex);
+        OutputCapsule c = ex.getCapsule(this);
+        c.write(glslSkinningMaterial, "glslSkinningMaterial", null);
+        c.write(noSkinningMaterial, "noSkinningMaterial", null);
+    }
+    
 }

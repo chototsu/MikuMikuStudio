@@ -32,21 +32,24 @@
 package projectkyoto.mmd.file;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 
 /**
  *
  * @author Kazuhiko Kobayashi
  */
-public class PMDMaterial {
+public class PMDMaterial implements Serializable{
     private XMaterial material;
     private byte toonIndex;
     private byte edgeFlag;
     private int faceVertCount;
     private String textureFileName; // 20文字
-    private byte[] textureData;
+    private int materialNo;
+//    private byte[] textureData;
 
     public PMDMaterial() {
     }
@@ -56,33 +59,13 @@ public class PMDMaterial {
         edgeFlag = is.readByte();
         faceVertCount = is.readInt();
         textureFileName = is.readString(20);
-//        if (textureFileName.length() != 0) {
-//            texture = TextureIO.newTexture(new URL(is.url ,textureFileName), true,"bmp");
-//        }
-        if (!textureFileName.isEmpty()) {
-            InputStream textureIs = null;
-            try {
-                textureIs = new URL(is.url ,textureFileName).openStream();
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                byte[] buf = new byte[4096];
-                for(;;) {
-                    int size = textureIs.read(buf);
-                    if (size <= 0) {
-                        break;
-                    }
-                    os.write(buf,0,size);
-                }
-                os.close();
-                textureData = os.toByteArray();
-            } catch(IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                if (textureIs != null) {
-                    textureIs.close();
-                    textureIs = null;
-                }
-            }
-        }
+    }
+    public void writeToStream(DataOutput os) throws IOException {
+        material.writeToStream(os);
+        os.writeByte(toonIndex);
+        os.writeByte(edgeFlag);
+        os.writeInt(faceVertCount);
+        PMDUtil.writeString(os, textureFileName, 20);
     }
 
     public byte getEdgeFlag() {
@@ -125,13 +108,21 @@ public class PMDMaterial {
         this.toonIndex = toonIndex;
     }
 
-    public byte[] getTextureData() {
-        return textureData;
+    public int getMaterialNo() {
+        return materialNo;
     }
 
-    public void setTextureData(byte[] textureData) {
-        this.textureData = textureData;
+    public void setMaterialNo(int materialNo) {
+        this.materialNo = materialNo;
     }
+
+//    public byte[] getTextureData() {
+//        return textureData;
+//    }
+//
+//    public void setTextureData(byte[] textureData) {
+//        this.textureData = textureData;
+//    }
 
     @Override
     public String toString() {
@@ -145,9 +136,6 @@ public class PMDMaterial {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if (obj == null) {
             return false;
         }
@@ -169,6 +157,8 @@ public class PMDMaterial {
         }
         return true;
     }
+
+
 
     @Override
     public int hashCode() {

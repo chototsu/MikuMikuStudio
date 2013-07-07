@@ -35,19 +35,19 @@ MaterialDef pmd {
         Boolean WardIso
 
         // Use vertex color as an additional diffuse color.
-        Boolean UseVertexColor
+        Boolean UseVertexColor : false
 
         // Ambient color
-        Color Ambient
+        Color Ambient (MaterialAmbient)
 
         // Diffuse color
-        Color Diffuse : Color
+        Color Diffuse (MaterialDiffuse)
 
         // Specular color
-        Color Specular
+        Color Specular (MaterialSpecular)
 
         // Specular power/shininess
-        Float Shininess
+        Float Shininess (MaterialShininess) : 1
 
         // Diffuse map
         Texture2D DiffuseMap
@@ -90,14 +90,18 @@ MaterialDef pmd {
         Texture2D BoneParameter
 
         Float EdgeSize
+        Texture2D SphereMap_A
+        Texture2D SphereMap_H
     }
 
     Technique {
 
         LightMode MultiPass
 
-        VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
+        VertexShader GLSL100:   MatDefs/pmd/pmd.vert
         FragmentShader GLSL100: MatDefs/pmd/pmd.frag
+        // VertexShader GLSL100:   MatDefs/pmd/pmd_cartoon.vert
+        // FragmentShader GLSL100: MatDefs/pmd/pmd_cartoon.frag
 
         // VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
         // FragmentShader GLSL100: Common/MatDefs/Light/Lighting.frag
@@ -134,7 +138,13 @@ MaterialDef pmd {
             SPHERE_MAP : SphereMap
 
             // NUM_BONES : NumBones
-            USE_HWSKINNING
+            // USE_HWSKINNING
+
+            SPHERE_MAP_A : SphereMap_A
+            SPHERE_MAP_H : SphereMap_H
+        }
+        RenderState {
+            FaceCull Back
         }
     }
 

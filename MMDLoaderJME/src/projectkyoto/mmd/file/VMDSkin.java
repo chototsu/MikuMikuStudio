@@ -33,18 +33,22 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author kobayasi
  */
-public class VMDSkin {
+public class VMDSkin implements Serializable{
 
     private String skinName; // char[15]
     private int flameNo;
     private float weight;
 
     public VMDSkin(DataInputStreamLittleEndian is) throws IOException {
+        readFromStream(is);
+    }
+    public final void readFromStream(DataInputStreamLittleEndian is) throws IOException {
         skinName = is.readString(15);
         flameNo = is.readInt();
         weight = is.readFloat();
