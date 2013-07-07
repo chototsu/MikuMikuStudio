@@ -233,6 +233,10 @@ public class PMDModel implements Serializable{
         in.readFromBuffer(vertexBuffer);
         return in;
     }
+    public void setVertex(int i, PMDVertex in) {
+        vertexBuffer.position(PMDVertex.size() * i);
+        in.writeToBuffer(vertexBuffer);
+    }
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
