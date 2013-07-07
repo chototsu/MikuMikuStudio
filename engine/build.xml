@@ -49,10 +49,10 @@
         <move file="build/classes/jme3game" todir="build/testclasses/" failonerror="false"/>
         <jar jarfile="build/jME3-test.jar" basedir="build/testclasses/" compress="true"/>
 
-        <!--separate jbullet physics classes-->
+<!--        separate jbullet physics classes
         <mkdir dir="build/jbullet/com/jme3/"/>
         <move file="build/classes/com/jme3/bullet" todir="build/jbullet/com/jme3/" failonerror="false"/>
-        <jar jarfile="build/jME3-jbullet.jar" basedir="build/jbullet/" compress="true"/>
+        <jar jarfile="build/jME3-jbullet.jar" basedir="build/jbullet/" compress="true"/>-->
 
         <!--separate assets-->
         <jar jarfile="build/jME3-testdata.jar" basedir="src/test-data" compress="true"/>
@@ -69,7 +69,7 @@
             <map from="${testdata.dir.resolved}" to="${testdata.jar.resolved}"/>
             
             <!--add both bullet jar files to dist classpath, will both be in manifest-->
-            <path path="build/jME3-jbullet.jar"/>
+<!--            <path path="build/jME3-jbullet.jar"/>-->
             <path path="build/jME3-bullet.jar"/>
             <path path="build/jME3-test.jar"/>
         </pathconvert>
@@ -123,7 +123,16 @@
             <fileset dir="${src.desktop-fx.dir}" excludes="${excludes}" includes="${includes}">
                 <filename name="**/*.java"/>
             </fileset>
-            <fileset dir="${src.jbullet.dir}" excludes="${excludes}" includes="${includes}">
+<!--            <fileset dir="${src.jbullet.dir}" excludes="${excludes}" includes="${includes}">
+                <filename name="**/*.java"/>
+            </fileset>-->
+            <fileset dir="src/bullet/com" excludes="${excludes}" includes="${includes}">
+                <filename name="**/*.java"/>
+            </fileset>
+            <fileset dir="src/bullet/projectkyoto" excludes="${excludes}" includes="${includes}">
+                <filename name="**/*.java"/>
+            </fileset>
+            <fileset dir="${src.mmd.dir}" excludes="${excludes}" includes="${includes}">
                 <filename name="**/*.java"/>
             </fileset>
             <fileset dir="${src.niftygui.dir}" excludes="${excludes}" includes="${includes}">
@@ -152,7 +161,10 @@
             <fileset dir="${src.desktop-fx.dir}" excludes="${excludes}" includes="${includes}">
                 <filename name="**/doc-files/**"/>
             </fileset>
-            <fileset dir="${src.jbullet.dir}" excludes="${excludes}" includes="${includes}">
+<!--            <fileset dir="${src.jbullet.dir}" excludes="${excludes}" includes="${includes}">
+                <filename name="**/doc-files/**"/>
+            </fileset>-->
+            <fileset dir="${src.mmd.dir}" excludes="${excludes}" includes="${includes}">
                 <filename name="**/doc-files/**"/>
             </fileset>
             <fileset dir="${src.niftygui.dir}" excludes="${excludes}" includes="${includes}">
@@ -185,15 +197,15 @@
 
     <target name="-do-update-sdk">
         <fileset id="jme3-jars" dir="dist/">
-            <include name="**/jME3-jbullet.jar"/>
+<!--            <include name="**/jME3-jbullet.jar"/>-->
             <include name="**/jME3-bullet.jar"/>
             <include name="**/jME3-bullet-natives.jar"/>
         </fileset>
-        <fileset id="mmd-jars" dir="lib/">
+<!--        <fileset id="mmd-jars" dir="lib/">
             <include name="MMDLoaderJME3-lib.jar"/>
             <include name="MMDLoaderJME3-source.jar"/>
             <include name="MMDLoaderJME3-javadoc.jar"/>
-        </fileset>
+        </fileset>-->
 
         <!--clear old files-->
         <delete dir="${jmp_dir}/JME3TestsTemplate/src/"/>
@@ -263,7 +275,8 @@
             <zipfileset dir="${src.desktop.dir}"/>
             <zipfileset dir="${src.desktop-fx.dir}"/>
             <zipfileset dir="${src.games.dir}"/>
-            <zipfileset dir="${src.jbullet.dir}"/>
+<!--            <zipfileset dir="${src.jbullet.dir}"/>-->
+            <zipfileset dir="${src.mmd.dir}"/>
             <zipfileset dir="${src.niftygui.dir}"/>
             <zipfileset dir="${src.jogg.dir}"/>
             <zipfileset dir="${src.lwjgl-oal.dir}"/>
@@ -318,7 +331,8 @@
             <zipfileset dir="${src.desktop.dir}" prefix="source"/>
             <zipfileset dir="${src.desktop-fx.dir}" prefix="source"/>
             <zipfileset dir="${src.games.dir}" prefix="source"/>
-            <zipfileset dir="${src.jbullet.dir}" prefix="source"/>
+<!--            <zipfileset dir="${src.jbullet.dir}" prefix="source"/>-->
+            <zipfileset dir="${src.mmd.dir}" prefix="source"/>
             <zipfileset dir="${src.niftygui.dir}" prefix="source"/>
             <zipfileset dir="${src.jogg.dir}" prefix="source"/>
             <zipfileset dir="${src.lwjgl-oal.dir}" prefix="source"/>
