@@ -465,6 +465,10 @@ public final class OGLESShaderRenderer implements Renderer {
         }
         if (depth) {
             bits |= GLES20.GL_DEPTH_BUFFER_BIT;
+            if (context.depthWriteEnabled == false) {
+                GLES20.glDepthMask(true);
+                context.depthWriteEnabled = true;
+            }
         }
         if (stencil) {
             bits |= GLES20.GL_STENCIL_BUFFER_BIT;
