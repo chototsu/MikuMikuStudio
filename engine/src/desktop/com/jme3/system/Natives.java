@@ -72,16 +72,31 @@ public class Natives {
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         
         if (url == null) {
-            if (!warning) {
-                logger.log(Level.WARNING, "Cannot locate native library: {0}/{1}",
-                        new String[]{sysName, fullname});
+            if (sysName.equals("macosx")) {
+                fullname = fullname.replace(".dylib", ".jnilib");
+                String path2 = "native/" + sysName + "/" + fullname;
+                // logger.warning("retry "+path2);
+                url = Thread.currentThread().getContextClassLoader().getResource(path2);
+                if (url == null) {
+                    if (!warning) {
+                        logger.log(Level.WARNING, "Cannot locate native library: {0}/{1}",
+                                new String[]{sysName, fullname});
+                    }
+                    return;
+                }
+            } else {
+                if (!warning) {
+                    logger.log(Level.WARNING, "Cannot locate native library: {0}/{1}",
+                            new String[]{sysName, fullname});
+                }
+                return;
             }
-            return;
         }
         
         URLConnection conn = url.openConnection();
         InputStream in = conn.getInputStream();
         File targetFile = new File(workingDir, fullname);
+        // logger.info("targetFile = "+targetFile.getPath());
         if (targetFile.exists()){
             // OK, compare last modified date of this file to 
             // file in jar
@@ -274,8 +289,8 @@ public class Natives {
                 if (needLWJGL) {
                     extractNativeLib("macosx", "lwjgl");
                 }
-//                if (needOAL)
-//                    extractNativeLib("macosx", "openal");
+                if (needOAL)
+                    extractNativeLib("macosx", "openal");
                 if (needJInput) {
                     extractNativeLib("macosx", "jinput-osx");
                 }
