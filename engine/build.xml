@@ -18,7 +18,7 @@
     <target name="-compile-bullet">
         <echo message="Compiling Bullet"/>
         <mkdir dir="build/bullet"/>
-        <javac classpath="${javac.classpath}${path.separator}${build.classes.dir}" destdir="build/bullet" srcdir="src/bullet"/>
+        <javac classpath="${javac.classpath}${path.separator}${build.classes.dir}" destdir="build/bullet" srcdir="src/bullet" source="1.6" target="1.6"/>
         <jar jarfile="build/jME3-bullet.jar" basedir="build/bullet/" compress="true"/>
     </target>
     
@@ -31,6 +31,7 @@
         </path>
         <mkdir dir="build/android"/>
         <javac  target="1.6"
+                source="1.6"
                 encoding="UTF-8"
                 debug="true"
                 deprecation="on"
