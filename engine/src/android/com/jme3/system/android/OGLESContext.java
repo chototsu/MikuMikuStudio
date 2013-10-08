@@ -506,4 +506,12 @@ public class OGLESContext implements JmeContext, GLSurfaceView.Renderer
         return clientOpenGLESVersion;
     }
 
+    public int getMinFrameDuration() {
+        return minFrameDuration;
+    }
+
+    public void setMinFrameDuration(int minFrameDuration) {
+        this.minFrameDuration = minFrameDuration;
+    }
+
 }
