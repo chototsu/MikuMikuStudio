@@ -41,6 +41,8 @@ import com.jme3.asset.plugins.ClasspathLocator;
 import com.jme3.audio.plugins.AndroidAudioLoader;
 import java.util.ArrayList;
 import java.util.List;
+import projectkyoto.jme3.mmd.PMDLoaderGLSLSkinning2;
+import projectkyoto.jme3.mmd.VMDLoader;
 
 /**
  * <code>AndroidAssetManager</code> is an implementation of DesktopAssetManager for Android
@@ -93,6 +95,9 @@ public class AndroidAssetManager extends DesktopAssetManager {
         this.registerLoader(com.jme3.scene.plugins.ogre.SceneLoader.class, "scene");
         this.registerLoader(com.jme3.shader.plugins.GLSLLoader.class, "vert", "frag", "glsl", "glsllib");
 
+        this.registerLoader(PMDLoaderGLSLSkinning2.class, "pmd");
+        this.registerLoader(VMDLoader.class, "vmd");
+        this.registerLoader(AndroidImageLoader.class, "sph", "spa");
 
         logger.info("AndroidAssetManager created.");
     }
