@@ -47,6 +47,7 @@ import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.NiftyInputConsumer;
 import de.lessvoid.nifty.input.keyboard.KeyboardInputEvent;
 import de.lessvoid.nifty.spi.input.InputSystem;
+import de.lessvoid.nifty.tools.resourceloader.NiftyResourceLoader;
 import java.util.ArrayList;
 
 public class InputSystemJme implements InputSystem, RawInputListener {
@@ -68,6 +69,9 @@ public class InputSystemJme implements InputSystem, RawInputListener {
 
     public InputSystemJme(InputManager inputManager){
         this.inputManager = inputManager;
+    }
+
+    public void setResourceLoader(NiftyResourceLoader niftyResourceLoader) {
     }
 
     public void setNifty(Nifty nifty) {

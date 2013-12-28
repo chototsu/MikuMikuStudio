@@ -45,8 +45,8 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.texture.FrameBuffer;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.spi.time.impl.FastTimeProvider;
 import de.lessvoid.nifty.tools.TimeProvider;
-import de.lessvoid.nifty.tools.resourceloader.ResourceLoader;
 import de.lessvoid.nifty.tools.resourceloader.ResourceLocation;
 import java.io.InputStream;
 import java.net.URL;
@@ -97,18 +97,18 @@ public class NiftyJmeDisplay implements SceneProcessor {
         w = vp.getCamera().getWidth();
         h = vp.getCamera().getHeight();
 
-        resourceLocation = new ResourceLocationJme();
-        ResourceLoader.removeAllResourceLocations();
-        ResourceLoader.addResourceLocation(resourceLocation);
-
         soundDev = new SoundDeviceJme(assetManager, audioRenderer);
         renderDev = new RenderDeviceJme(this);
         inputSys = new InputSystemJme(inputManager);
         if (inputManager != null)
             inputManager.addRawInputListener(inputSys);
         
-        nifty = new Nifty(renderDev, soundDev, inputSys, new TimeProvider());
+        nifty = new Nifty(renderDev, soundDev, inputSys, new FastTimeProvider());
         inputSys.setNifty(nifty);
+
+        resourceLocation = new ResourceLocationJme();
+        nifty.getResourceLoader().removeAllResourceLocations();
+        nifty.getResourceLoader().addResourceLocation(resourceLocation);
     }
 
     public void initialize(RenderManager rm, ViewPort vp) {

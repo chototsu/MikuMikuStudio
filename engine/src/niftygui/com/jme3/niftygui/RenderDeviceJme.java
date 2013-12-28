@@ -51,6 +51,7 @@ import de.lessvoid.nifty.elements.render.TextRenderer.RenderFontNull;
 import de.lessvoid.nifty.render.BlendMode;
 import de.lessvoid.nifty.spi.render.*;
 import de.lessvoid.nifty.tools.Color;
+import de.lessvoid.nifty.tools.resourceloader.NiftyResourceLoader;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
@@ -91,6 +92,9 @@ public class RenderDeviceJme implements RenderDevice {
 
         niftyMat = new Material(display.getAssetManager(), "Common/MatDefs/Nifty/Nifty.j3md");
         niftyMat.getAdditionalRenderState().setDepthTest(false);
+    }
+
+    public void setResourceLoader(NiftyResourceLoader niftyResourceLoader) {
     }
 
     public void setRenderManager(RenderManager rm){
@@ -187,7 +191,7 @@ public class RenderDeviceJme implements RenderDevice {
         quadColor.updateData(buf);
     }
 
-    public void renderFont(RenderFont font, String str, int x, int y, Color color, float size){
+    public void renderFont(RenderFont font, String str, int x, int y, Color color, float sizeX, float sizeY) {        
         if (str.length() == 0)
             return;
 
@@ -214,12 +218,12 @@ public class RenderDeviceJme implements RenderDevice {
         float width = text.getLineWidth();
         float height = text.getLineHeight();
 
-        float x0 = x + 0.5f * width  * (1f - size);
-        float y0 = y + 0.5f * height * (1f - size);
+        float x0 = x + 0.5f * width  * (1f - sizeX);
+        float y0 = y + 0.5f * height * (1f - sizeY);
 
         tempMat.loadIdentity();
         tempMat.setTranslation(x0, getHeight() - y0, 0);
-        tempMat.setScale(size, size, 0);
+        tempMat.setScale(sizeX, sizeY, 0);
 
         rm.setWorldMatrix(tempMat);
         text.render(rm);
