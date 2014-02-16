@@ -32,7 +32,7 @@
 
 package com.jme3.system;
 
-import java.awt.Canvas;
+import java.awt.*;
 
 public interface JmeCanvasContext extends JmeContext {
     public Canvas getCanvas();

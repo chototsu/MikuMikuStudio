@@ -31,314 +31,86 @@
  */
 package com.jme3.system;
 
-import com.jme3.app.SettingsDialog;
-import com.jme3.app.SettingsDialog.SelectionListener;
 import com.jme3.asset.AssetManager;
-import com.jme3.asset.AssetNotFoundException;
-import com.jme3.asset.DesktopAssetManager;
 import com.jme3.audio.AudioRenderer;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
 
 public class JmeSystem {
 
     private static final Logger logger = Logger.getLogger(JmeSystem.class.getName());
     private static boolean initialized = false;
-    private static boolean lowPermissions = false;
+
+    private static JmeSystemDelegate delegate;
+
+    static {
+        try {
+            delegate = (JmeSystemDelegate) Class.forName("com.jme3.system.JmeSystemDelegateImpl").newInstance();
+        } catch (Exception ex) {
+            throw new RuntimeException("initialize failed.", ex);
+        }
+    }
 
     public static boolean trackDirectMemory() {
         return false;
     }
 
+    public static JmeSystemDelegate getDelegate() {
+        return delegate;
+    }
+
+    public static void setDelegate(JmeSystemDelegate delegate) {
+        JmeSystem.delegate = delegate;
+    }
+
     public static void setLowPermissions(boolean lowPerm) {
-        lowPermissions = lowPerm;
+        delegate.setLowPermissions(lowPerm);
     }
 
     public static boolean isLowPermissions() {
-        return lowPermissions;
+        return delegate.isLowPermissions();
     }
 
     public static AssetManager newAssetManager(URL configFile) {
-        return new DesktopAssetManager(configFile);
+        return delegate.newAssetManager(configFile);
     }
 
     public static AssetManager newAssetManager() {
-        return new DesktopAssetManager(null);
+        return delegate.newAssetManager(null);
     }
 
     public static boolean showSettingsDialog(AppSettings sourceSettings, final boolean loadFromRegistry) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            throw new IllegalStateException("Cannot run from EDT");
-        }
-
-
-        final AppSettings settings = new AppSettings(false);
-        settings.copyFrom(sourceSettings);
-        String iconPath = sourceSettings.getSettingsDialogImage();
-        final URL iconUrl = JmeSystem.class.getResource(iconPath.startsWith("/") ? iconPath : "/" + iconPath);
-        if (iconUrl == null) {
-            throw new AssetNotFoundException(sourceSettings.getSettingsDialogImage());
-        }
-
-        final AtomicBoolean done = new AtomicBoolean();
-        final AtomicInteger result = new AtomicInteger();
-        final Object lock = new Object();
-
-        final SelectionListener selectionListener = new SelectionListener() {
-
-            public void onSelection(int selection) {
-                synchronized (lock) {
-                    done.set(true);
-                    result.set(selection);
-                    lock.notifyAll();
-                }
-            }
-        };
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                synchronized (lock) {
-                    SettingsDialog dialog = new SettingsDialog(settings, iconUrl, loadFromRegistry);
-                    dialog.setSelectionListener(selectionListener);
-                    dialog.showDialog();
-                }
-            }
-        });
-
-        synchronized (lock) {
-            while (!done.get()) {
-                try {
-                    lock.wait();
-                } catch (InterruptedException ex) {
-                }
-            }
-        }
-
-        sourceSettings.copyFrom(settings);
-
-        return result.get() == SettingsDialog.APPROVE_SELECTION;
-    }
-
-    private static boolean is64Bit(String arch) {
-        if (arch.equals("x86")) {
-            return false;
-        } else if (arch.equals("amd64")) {
-            return true;
-        } else if (arch.equals("x86_64")) {
-            return true;
-        } else if (arch.equals("ppc") || arch.equals("PowerPC")) {
-            return false;
-        } else if (arch.equals("ppc64")) {
-            return true;
-        } else if (arch.equals("i386") || arch.equals("i686")) {
-            return false;
-        } else if (arch.equals("universal")) {
-            return false;
-        } else {
-            throw new UnsupportedOperationException("Unsupported architecture: " + arch);
-        }
+        return delegate.showSettingsDialog(sourceSettings, loadFromRegistry);
     }
 
     public static Platform getPlatform() {
-        String os = System.getProperty("os.name").toLowerCase();
-        String arch = System.getProperty("os.arch").toLowerCase();
-        logger.log(Level.INFO,"os = "+os+" arch = "+arch);
-        boolean is64 = is64Bit(arch);
-        if (os.contains("windows")) {
-            return is64 ? Platform.Windows64 : Platform.Windows32;
-        } else if (os.contains("linux") || os.contains("freebsd")) {
-            return is64 ? Platform.Linux64 : Platform.Linux32;
-        } else if (os.contains("mac os x") || os.contains("darwin")) {
-            if (arch.startsWith("ppc")) {
-                return is64 ? Platform.MacOSX_PPC64 : Platform.MacOSX_PPC32;
-            } else {
-                return is64 ? Platform.MacOSX64 : Platform.MacOSX32;
-            }
-        } else if (os.contains("sunos")) {
-            return is64 ? Platform.SolarisAMD64 : Platform.SolarisX86;
-        } else {
-            throw new UnsupportedOperationException("The specified platform: " + os + " is not supported.");
-        }
-    }
-
-    private static JmeContext newContextLwjgl(AppSettings settings, JmeContext.Type type) {
-        try {
-            Class<? extends JmeContext> ctxClazz = null;
-            switch (type) {
-                case Canvas:
-                    ctxClazz = (Class<? extends JmeContext>) Class.forName("com.jme3.system.lwjgl.LwjglCanvas");
-                    break;
-                case Display:
-                    ctxClazz = (Class<? extends JmeContext>) Class.forName("com.jme3.system.lwjgl.LwjglDisplay");
-                    break;
-                case OffscreenSurface:
-                    ctxClazz = (Class<? extends JmeContext>) Class.forName("com.jme3.system.lwjgl.LwjglOffscreenBuffer");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported context type " + type);
-            }
-
-            return ctxClazz.newInstance();
-        } catch (InstantiationException ex) {
-            logger.log(Level.SEVERE, "Failed to create context", ex);
-        } catch (IllegalAccessException ex) {
-            logger.log(Level.SEVERE, "Failed to create context", ex);
-        } catch (ClassNotFoundException ex) {
-            logger.log(Level.SEVERE, "CRITICAL ERROR: Context class is missing!\n"
-                    + "Make sure jme3_lwjgl-ogl is on the classpath.", ex);
-        }
-
-        return null;
-    }
-
-    private static JmeContext newContextJogl(AppSettings settings, JmeContext.Type type) {
-        try {
-            Class<? extends JmeContext> ctxClazz = null;
-            switch (type) {
-                case Display:
-                    ctxClazz = (Class<? extends JmeContext>) Class.forName("com.jme3.system.jogl.JoglDisplay");
-                    break;
-                case Canvas:
-                    ctxClazz = (Class<? extends JmeContext>) Class.forName("com.jme3.system.jogl.JoglCanvas");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported context type " + type);
-            }
-
-            return ctxClazz.newInstance();
-        } catch (InstantiationException ex) {
-            logger.log(Level.SEVERE, "Failed to create context", ex);
-        } catch (IllegalAccessException ex) {
-            logger.log(Level.SEVERE, "Failed to create context", ex);
-        } catch (ClassNotFoundException ex) {
-            logger.log(Level.SEVERE, "CRITICAL ERROR: Context class is missing!\n"
-                    + "Make sure jme3_jogl is on the classpath.", ex);
-        }
-
-        return null;
-    }
-
-    private static JmeContext newContextCustom(AppSettings settings, JmeContext.Type type) {
-        try {
-            String className = settings.getRenderer().substring("CUSTOM".length());
-
-            Class<? extends JmeContext> ctxClazz = null;
-            ctxClazz = (Class<? extends JmeContext>) Class.forName(className);
-            return ctxClazz.newInstance();
-        } catch (InstantiationException ex) {
-            logger.log(Level.SEVERE, "Failed to create context", ex);
-        } catch (IllegalAccessException ex) {
-            logger.log(Level.SEVERE, "Failed to create context", ex);
-        } catch (ClassNotFoundException ex) {
-            logger.log(Level.SEVERE, "CRITICAL ERROR: Context class is missing!", ex);
-        }
-
-        return null;
+        return delegate.getPlatform();
     }
 
     public static JmeContext newContext(AppSettings settings, JmeContext.Type contextType) {
-        initialize(settings);
-        JmeContext ctx;
-        if (settings.getRenderer() == null
-                || settings.getRenderer().equals("NULL")
-                || contextType == JmeContext.Type.Headless) {
-            ctx = new NullContext();
-            ctx.setSettings(settings);
-        } else if (settings.getRenderer().startsWith("LWJGL")) {
-            ctx = newContextLwjgl(settings, contextType);
-            ctx.setSettings(settings);
-        } else if (settings.getRenderer().startsWith("JOGL")) {
-            ctx = newContextJogl(settings, contextType);
-            ctx.setSettings(settings);
-        } else if (settings.getRenderer().startsWith("CUSTOM")) {
-            ctx = newContextCustom(settings, contextType);
-            ctx.setSettings(settings);
-        } else {
-            throw new UnsupportedOperationException(
-                    "Unrecognizable renderer specified: "
-                    + settings.getRenderer());
-        }
-        return ctx;
+        return delegate.newContext(settings, contextType);
     }
 
     public static AudioRenderer newAudioRenderer(AppSettings settings) {
-        initialize(settings);
-        Class<? extends AudioRenderer> clazz = null;
-        try {
-            if (settings.getAudioRenderer().startsWith("LWJGL")) {
-                clazz = (Class<? extends AudioRenderer>) Class.forName("com.jme3.audio.lwjgl.LwjglAudioRenderer");
-            } else if (settings.getAudioRenderer().startsWith("JOAL")) {
-                clazz = (Class<? extends AudioRenderer>) Class.forName("com.jme3.audio.joal.JoalAudioRenderer");
-            } else {
-                throw new UnsupportedOperationException(
-                        "Unrecognizable audio renderer specified: "
-                        + settings.getAudioRenderer());
-            }
-
-            AudioRenderer ar = clazz.newInstance();
-            return ar;
-        } catch (InstantiationException ex) {
-            logger.log(Level.SEVERE, "Failed to create context", ex);
-        } catch (IllegalAccessException ex) {
-            logger.log(Level.SEVERE, "Failed to create context", ex);
-        } catch (ClassNotFoundException ex) {
-            logger.log(Level.SEVERE, "CRITICAL ERROR: Audio implementation class is missing!\n"
-                    + "Make sure jme3_lwjgl-oal or jm3_joal is on the classpath.", ex);
-        }
-        return null;
+        return delegate.newAudioRenderer(settings);
     }
 
     public static void initialize(AppSettings settings) {
-        if (initialized) {
-            return;
-        }
-
+        delegate.initialize(settings);
         initialized = true;
-        try {
-            if (!lowPermissions) {
-                // can only modify logging settings
-                // if permissions are available
-//                JmeFormatter formatter = new JmeFormatter();
-//                Handler fileHandler = new FileHandler("jme.log");
-//                fileHandler.setFormatter(formatter);
-//                Logger.getLogger("").addHandler(fileHandler);
-//                Handler consoleHandler = new ConsoleHandler();
-//                consoleHandler.setFormatter(formatter);
-//                Logger.getLogger("").removeHandler(Logger.getLogger("").getHandlers()[0]);
-//                Logger.getLogger("").addHandler(consoleHandler);
-            }
-//        } catch (IOException ex){
-//            logger.log(Level.SEVERE, "I/O Error while creating log file", ex);
-        } catch (SecurityException ex) {
-            logger.log(Level.SEVERE, "Security error in creating log file", ex);
-        }
-        logger.log(Level.INFO, "Running on {0} chototsu", getFullName());
-
-
-        if (!lowPermissions) {
-            try {
-                Natives.extractNativeLibs(getPlatform(), settings);
-            } catch (IOException ex) {
-                logger.log(Level.SEVERE, "Error while copying native libraries", ex);
-            }
-        }
     }
 
     public static String getFullName() {
-        return "jMonkeyEngine 3.0.0 Beta";
+        return delegate.getFullName();
     }
 
     public static InputStream getResourceAsStream(String name) {
-        return JmeSystem.class.getResourceAsStream(name);
+        return delegate.getResourceAsStream(name);
     }
 
     public static URL getResource(String name) {
-        return JmeSystem.class.getResource(name);
+        return delegate.getResource(name);
     }
 }
