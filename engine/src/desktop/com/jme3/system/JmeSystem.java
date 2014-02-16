@@ -31,6 +31,7 @@
  */
 package com.jme3.system;
 
+import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioRenderer;
 
@@ -44,6 +45,7 @@ public class JmeSystem {
     private static boolean initialized = false;
 
     private static JmeSystemDelegate delegate;
+    protected static ThreadLocal<Application> app = new ThreadLocal<Application>();
 
     static {
         try {

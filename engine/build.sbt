@@ -15,6 +15,7 @@ unmanagedSourceDirectories in Compile := Seq(
   , baseDirectory.value / "src/desktop-fx"
   , baseDirectory.value / "src/games"
 //  , baseDirectory.value / "src/jheora"
+  , baseDirectory.value / "src/jogg"
 //  , baseDirectory.value / "src/lwjgl-oal"
 //  , baseDirectory.value / "src/lwjgl-ogl"
   , baseDirectory.value / "src/mmd"
@@ -45,3 +46,6 @@ libraryDependencies += "xpp3" % "xpp3" % "1.1.4c"
 
 libraryDependencies += "com.jme3" % "noise" % "3.0.0-SNAPSHOT"
 
+libraryDependencies += "net.sf.sociaal" % "j-ogg-oggd" % "3.0.0.20130526"
+
+libraryDependencies += "net.sf.sociaal" % "j-ogg-vorbisd" % "3.0.0.20130526"
