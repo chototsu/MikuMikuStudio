@@ -14,4 +14,9 @@ lazy val gdx = project.dependsOn(engine)
 
 lazy val niftygui = project.dependsOn(engine)
 
+publishArtifact := false
+
+publishLocal := {}
+
+publish := {}
 
