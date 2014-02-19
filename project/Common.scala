@@ -4,7 +4,7 @@ import sbt.Keys._
 object Common {
   lazy val settings = Seq(
     organization := "info.projectkyoto"
-    , version := "1.0.0-SNAPSHOT"
+    , version := "0.8.0"
     //    , homepage := Some(url("https://github.com/chototsu/MikuMikuStudio"))
     , startYear := Some(2010)
     , description := "A game engine compatible with MikuMikuDance."
@@ -13,8 +13,8 @@ object Common {
     , crossPaths := false
     , javacOptions ++= Seq("-encoding", "UTF-8", "-source", "1.6", "-target", "1.6")
     , javacOptions in doc := Seq("-locale", "en_US", "-encoding", "UTF-8", "-source", "1.6")
-    , resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-    , resolvers += "nifty-maven-repo.sourceforge.net" at "http://nifty-gui.sourceforge.net/nifty-maven-repo"
+//    , resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+//    , resolvers += "nifty-maven-repo.sourceforge.net" at "http://nifty-gui.sourceforge.net/nifty-maven-repo"
     , pomExtra := (
       <url>https://github.com/chototsu/MikuMikuStudio</url>
         <licenses>
@@ -44,6 +44,8 @@ object Common {
         Some("releases" at nexus + "service/local/staging/deploy/maven2")
     }
     , publishArtifact in Test := false
+    , pomIncludeRepository := { _ => false }
+
   )
 }
 

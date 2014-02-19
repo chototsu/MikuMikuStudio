@@ -24,12 +24,12 @@ unmanagedSourceDirectories in Compile := Seq(
   , baseDirectory.value / "src/ogre"
   , baseDirectory.value / "src/pack"
   , baseDirectory.value / "src/tools"
-  , baseDirectory.value / "src/terrain"
+//  , baseDirectory.value / "src/terrain"
   , baseDirectory.value / "src/xml"
 )
 
 sources in Compile ~= {
-  dirs => dirs filter(file => (!file.getAbsolutePath.contains("cinematic")))
+  dirs => dirs filter(file => (!file.getAbsolutePath.contains("cinematic") && !file.getAbsolutePath.contains("CollisionShapeFactory.java")))
 }
 
 unmanagedResourceDirectories in Compile <<= unmanagedSourceDirectories in Compile
@@ -44,7 +44,7 @@ libraryDependencies += "java3d" % "vecmath" % "1.3.1"
 
 libraryDependencies += "xpp3" % "xpp3" % "1.1.4c"
 
-libraryDependencies += "com.jme3" % "noise" % "3.0.0-SNAPSHOT"
+//libraryDependencies += "com.jme3" % "noise" % "3.0.0-SNAPSHOT"
 
 libraryDependencies += "net.sf.sociaal" % "j-ogg-oggd" % "3.0.0.20130526"
 
