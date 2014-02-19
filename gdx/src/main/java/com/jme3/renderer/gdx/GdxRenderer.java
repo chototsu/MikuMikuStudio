@@ -2101,10 +2101,6 @@ public final class GdxRenderer implements Renderer {
     }
     public void setTexture(int unit, Texture tex) {
         Image image = tex.getImage();
-        // TODO
-        if (image.getData().size() == 0 || image.getFormat() == null) {
-            return;
-        }
         if (image.isUpdateNeeded()) {
 //            logger.warning("setTexture: isUpdateNeeded");
 //            if (image.getEfficentData() instanceof Bitmap) {
