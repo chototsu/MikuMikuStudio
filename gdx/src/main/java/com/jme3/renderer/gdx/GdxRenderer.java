@@ -103,7 +103,7 @@ public final class GdxRenderer implements Renderer {
     private boolean verboseLogging = false;
     private boolean useVBO = true;
     public boolean adreno_finish_bug = false;
-
+    private int mainFrameBuffer = -1;
     public GdxRenderer() {
     }
 
@@ -411,6 +411,12 @@ public final class GdxRenderer implements Renderer {
             adreno_finish_bug = true;
         }
         logger.log(Level.INFO, "Caps: {0}", caps);
+
+        // Get main framebuffer id because main framebuffer is not 0 on iOS.
+        if (mainFrameBuffer == -1) {
+            Gdx.gl20.glGetIntegerv(GL20.GL_FRAMEBUFFER_BINDING, intBuf16);
+            mainFrameBuffer = intBuf16.get(0);
+        }
     }
 
     /**
@@ -1712,13 +1718,13 @@ public final class GdxRenderer implements Renderer {
 
         if (fb == null) {
             // unbind any fbos
-            if (context.boundFBO != 0) {
-                Gdx.gl20.glBindFramebuffer(GL20.GL_FRAMEBUFFER, 0);
+            if (context.boundFBO != mainFrameBuffer) {
+                Gdx.gl20.glBindFramebuffer(GL20.GL_FRAMEBUFFER, mainFrameBuffer);
 //                RendererUtil.checkGLError();
 
                 statistics.onFrameBufferUse(null, true);
 
-                context.boundFBO = 0;
+                context.boundFBO = mainFrameBuffer;
             }
 
             /*

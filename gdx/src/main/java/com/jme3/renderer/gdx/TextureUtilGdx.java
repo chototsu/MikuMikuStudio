@@ -406,13 +406,13 @@ public class TextureUtilGdx {
                 format = GL20.GL_COMPRESSED_TEXTURE_FORMATS;
                 dataType = GL20.GL_UNSIGNED_BYTE;
             case Depth:
-                format = GL20.GL_DEPTH_COMPONENT;
-                dataType = GL20.GL_UNSIGNED_BYTE;
-                break;
+//                format = GL20.GL_DEPTH_COMPONENT;
+//                dataType = GL20.GL_UNSIGNED_BYTE;
+//                break;
             case Depth16:
                 format = GL20.GL_DEPTH_COMPONENT;
-                internalFormat = GL20.GL_DEPTH_COMPONENT16;
-                dataType = GL20.GL_UNSIGNED_BYTE;
+                internalFormat = GL20.GL_DEPTH_COMPONENT;
+                dataType = GL20.GL_UNSIGNED_SHORT;
                 break;
             case Depth24:
             case Depth32:
