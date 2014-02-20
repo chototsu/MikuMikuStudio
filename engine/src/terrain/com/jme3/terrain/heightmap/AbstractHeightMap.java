@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -149,7 +149,7 @@ public abstract class AbstractHeightMap implements HeightMap {
      * @return the value at (x,z).
      */
     public float getTrueHeightAtPoint(int x, int z) {
-        //logger.info( heightData[x + (z*size)]);
+        //logger.fine( heightData[x + (z*size)]);
         return heightData[x + (z * size)];
     }
 
@@ -253,9 +253,12 @@ public abstract class AbstractHeightMap implements HeightMap {
             throw new Exception("Filename must not be null");
         }
         //open the streams and send the height data to the file.
+        FileOutputStream fos = null;
+        DataOutputStream dos = null;
         try {
-            FileOutputStream fos = new FileOutputStream(filename);
-            DataOutputStream dos = new DataOutputStream(fos);
+            fos = new FileOutputStream(filename);
+            dos = new DataOutputStream(fos);
+            
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
                     dos.write((int) heightData[j + (i * size)]);
@@ -270,9 +273,16 @@ public abstract class AbstractHeightMap implements HeightMap {
         } catch (IOException e) {
             logger.log(Level.WARNING, "Error writing to file {0}", filename);
             return false;
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
+            if (dos != null) {
+                dos.close();
+            }
         }
 
-        logger.log(Level.INFO, "Saved terrain to {0}", filename);
+        logger.log(Level.FINE, "Saved terrain to {0}", filename);
         return true;
     }
 

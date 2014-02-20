@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.terrain.geomipmap.lodcalc;
 
 import com.jme3.export.JmeExporter;
@@ -45,14 +44,13 @@ import java.util.List;
 
 public class PerspectiveLodCalculator implements LodCalculator {
 
-    private TerrainPatch patch;
     private Camera cam;
-    private float[] entropyDistances;
     private float pixelError;
+    private boolean turnOffLod = false;
 
     public PerspectiveLodCalculator() {}
     
-    public PerspectiveLodCalculator(Camera cam, float pixelError){
+    public PerspectiveLodCalculator(Camera cam, float pixelError) {
         this.cam = cam;
         this.pixelError = pixelError;
     }
@@ -74,21 +72,24 @@ public class PerspectiveLodCalculator implements LodCalculator {
         return A / T;
     }
     
-    public boolean calculateLod(List<Vector3f> locations, HashMap<String, UpdatedTerrainPatch> updates) {
-        return calculateLod(patch, locations, updates);
-    }
-
-    public boolean calculateLod(TerrainPatch terrainPatch, List<Vector3f> locations, HashMap<String, UpdatedTerrainPatch> updates) {
-        if (entropyDistances == null){
-            // compute entropy distances
-            float[] lodEntropies = patch.getLodEntropies();
-            entropyDistances = new float[lodEntropies.length];
-            float cameraConstant = getCameraConstant(cam, pixelError);
-            for (int i = 0; i < lodEntropies.length; i++){
-                entropyDistances[i] = lodEntropies[i] * cameraConstant;
+    public boolean calculateLod(TerrainPatch patch, List<Vector3f> locations, HashMap<String, UpdatedTerrainPatch> updates) {
+        if (turnOffLod) {
+            // set to full detail
+            int prevLOD = patch.getLod();
+            UpdatedTerrainPatch utp = updates.get(patch.getName());
+            if (utp == null) {
+                utp = new UpdatedTerrainPatch(patch);
+                updates.put(utp.getName(), utp);
             }
+            utp.setNewLod(0);
+            utp.setPreviousLod(prevLOD);
+            //utp.setReIndexNeeded(true);
+            return true;
         }
-
+        
+        float[] lodEntropies = patch.getLodEntropies();
+        float cameraConstant = getCameraConstant(cam, pixelError);
+        
         Vector3f patchPos = getCenterLocation(patch);
 
         // vector from camera to patch
@@ -98,7 +99,7 @@ public class PerspectiveLodCalculator implements LodCalculator {
 
         // go through each lod level to find the one we are in
         for (int i = 0; i <= patch.getMaxLod(); i++) {
-            if (distance < entropyDistances[i] || i == patch.getMaxLod()){
+            if (distance < lodEntropies[i] * cameraConstant || i == patch.getMaxLod()){
                 boolean reIndexNeeded = false;
                 if (i != patch.getLod()) {
                     reIndexNeeded = true;
@@ -106,15 +107,15 @@ public class PerspectiveLodCalculator implements LodCalculator {
                 }
                 int prevLOD = patch.getLod();
 
-                //previousLod = lod;
-                //lod = i;
+                
                 UpdatedTerrainPatch utp = updates.get(patch.getName());
                 if (utp == null) {
-                    utp = new UpdatedTerrainPatch(patch, i);//save in here, do not update actual variables
+                    utp = new UpdatedTerrainPatch(patch);//save in here, do not update actual variables
                     updates.put(utp.getName(), utp);
                 }
+                utp.setNewLod(i);
                 utp.setPreviousLod(prevLOD);
-                utp.setReIndexNeeded(reIndexNeeded);
+                //utp.setReIndexNeeded(reIndexNeeded);
                 return reIndexNeeded;
             }
         }
@@ -139,6 +140,7 @@ public class PerspectiveLodCalculator implements LodCalculator {
     }
 
     public void write(JmeExporter ex) throws IOException {
+        
     }
 
     public void read(JmeImporter im) throws IOException {
@@ -161,15 +163,15 @@ public class PerspectiveLodCalculator implements LodCalculator {
     }
 
     public void turnOffLod() {
-        //TODO
+        turnOffLod = true;
     }
-
+    
     public boolean isLodOff() {
-        return false; //TODO
+        return turnOffLod;
     }
     
     public void turnOnLod() {
-        //TODO
+        turnOffLod = false;
     }
     
 }

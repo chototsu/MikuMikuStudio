@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jme3.terrain.geomipmap.picking;
 
 import com.jme3.collision.CollisionResult;
@@ -68,4 +67,12 @@ public class TerrainPickData implements Comparable {
         return 0;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof TerrainPickData){
+            return ((TerrainPickData)obj).compareTo(this) == 0;
+        }
+        return super.equals(obj);
+    }
+    
 }

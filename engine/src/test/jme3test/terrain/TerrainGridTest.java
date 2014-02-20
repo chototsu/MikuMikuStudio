@@ -12,15 +12,17 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.terrain.geomipmap.TerrainGrid;
 import com.jme3.terrain.geomipmap.TerrainGridListener;
+import com.jme3.terrain.geomipmap.TerrainGridLodControl;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.TerrainQuad;
+import com.jme3.terrain.geomipmap.grid.ImageTileLoader;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
-import com.jme3.terrain.heightmap.ImageBasedHeightMapGrid;
 import com.jme3.terrain.heightmap.Namer;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture.WrapMode;
@@ -33,7 +35,7 @@ public class TerrainGridTest extends SimpleApplication {
     private float grassScale = 64;
     private float dirtScale = 16;
     private float rockScale = 128;
-    private boolean usePhysics = true;
+    private boolean usePhysics = false;
     private boolean physicsAdded = false;
 
     public static void main(final String[] args) {
@@ -44,11 +46,11 @@ public class TerrainGridTest extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        File file = new File("mountains.zip");
+        File file = new File("TerrainGridTestData.zip");
         if (!file.exists()) {
-            assetManager.registerLocator("http://jmonkeyengine.googlecode.com/files/mountains.zip", HttpZipLocator.class);
+            assetManager.registerLocator("http://jmonkeyengine.googlecode.com/files/TerrainGridTestData.zip", HttpZipLocator.class);
         } else {
-            assetManager.registerLocator("mountains.zip", ZipLocator.class);
+            assetManager.registerLocator("TerrainGridTestData.zip", ZipLocator.class);
         }
 
         this.flyCam.setMoveSpeed(100f);
@@ -94,29 +96,34 @@ public class TerrainGridTest extends SimpleApplication {
 
         this.mat_terrain.setFloat("terrainSize", 129);
 
-        this.terrain = new TerrainGrid("terrain", 65, 257, new ImageBasedHeightMapGrid(assetManager, new Namer() {
+        this.terrain = new TerrainGrid("terrain", 65, 257, new ImageTileLoader(assetManager, new Namer() {
 
             public String getName(int x, int y) {
                 return "Scenes/TerrainMountains/terrain_" + x + "_" + y + ".png";
             }
         }));
-
-        this.terrain.setMaterial(this.mat_terrain);
+        
+        this.terrain.setMaterial(mat_terrain);
         this.terrain.setLocalTranslation(0, 0, 0);
-        this.terrain.setLocalScale(2f, 1f, 2f);
+        this.terrain.setLocalScale(1f, 1f, 1f);
         this.rootNode.attachChild(this.terrain);
 
-        TerrainLodControl control = new TerrainLodControl(this.terrain, getCamera());
+        TerrainLodControl control = new TerrainGridLodControl(this.terrain, getCamera());
         control.setLodCalculator( new DistanceLodCalculator(65, 2.7f) ); // patch size, and a multiplier
         this.terrain.addControl(control);
 
         final BulletAppState bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
 
-        this.getCamera().setLocation(new Vector3f(0, 256, 0));
-
+        this.getCamera().setLocation(new Vector3f(0, 400, 0));
+        this.getCamera().lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
+        
         this.viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
 
+        DirectionalLight light = new DirectionalLight();
+        light.setDirection((new Vector3f(-0.5f, -1f, -0.5f)).normalize());
+        rootNode.addLight(light);
+        
         if (usePhysics) {
             CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(0.5f, 1.8f, 1);
             player3 = new CharacterControl(capsuleShape, 0.5f);
@@ -128,28 +135,29 @@ public class TerrainGridTest extends SimpleApplication {
 
             bulletAppState.getPhysicsSpace().add(player3);
 
-            terrain.addListener("physicsStartListener", new TerrainGridListener() {
+            terrain.addListener(new TerrainGridListener() {
 
                 public void gridMoved(Vector3f newCenter) {
                 }
 
-                public Material tileLoaded(Material material, Vector3f cell) {
-                    return material;
-                }
-
                 public void tileAttached(Vector3f cell, TerrainQuad quad) {
+                    while(quad.getControl(RigidBodyControl.class)!=null){
+                        quad.removeControl(RigidBodyControl.class);
+                    }
                     quad.addControl(new RigidBodyControl(new HeightfieldCollisionShape(quad.getHeightMap(), terrain.getLocalScale()), 0));
                     bulletAppState.getPhysicsSpace().add(quad);
                 }
 
                 public void tileDetached(Vector3f cell, TerrainQuad quad) {
-                    bulletAppState.getPhysicsSpace().remove(quad);
-                    quad.removeControl(RigidBodyControl.class);
+                    if (quad.getControl(RigidBodyControl.class) != null) {
+                        bulletAppState.getPhysicsSpace().remove(quad);
+                        quad.removeControl(RigidBodyControl.class);
+                    }
                 }
 
             });
         }
-        this.terrain.initialize(cam.getLocation());
+        
         this.initKeys();
     }
 

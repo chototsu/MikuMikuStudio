@@ -1,39 +1,26 @@
 package jme3test.terrain;
 
-import com.jme3.terrain.geomipmap.TerrainQuad;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.ScreenshotAppState;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
-import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.input.KeyInput;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
 import com.jme3.terrain.geomipmap.TerrainGrid;
-import com.jme3.terrain.geomipmap.TerrainGridListener;
+import com.jme3.terrain.geomipmap.TerrainGridLodControl;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
+import com.jme3.terrain.geomipmap.grid.FractalTileLoader;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
-import com.jme3.terrain.heightmap.FractalHeightMapGrid;
+import com.jme3.terrain.noise.ShaderUtils;
+import com.jme3.terrain.noise.basis.FilteredBasis;
+import com.jme3.terrain.noise.filter.IterativeFilter;
+import com.jme3.terrain.noise.filter.OptimizedErode;
+import com.jme3.terrain.noise.filter.PerturbFilter;
+import com.jme3.terrain.noise.filter.SmoothFilter;
+import com.jme3.terrain.noise.fractal.FractalSum;
+import com.jme3.terrain.noise.modulator.NoiseModulator;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture.WrapMode;
-import org.novyon.noise.ShaderUtils;
-import org.novyon.noise.basis.FilteredBasis;
-import org.novyon.noise.filter.IterativeFilter;
-import org.novyon.noise.filter.OptimizedErode;
-import org.novyon.noise.filter.PerturbFilter;
-import org.novyon.noise.filter.SmoothFilter;
-import org.novyon.noise.fractal.FractalSum;
-import org.novyon.noise.modulator.NoiseModulator;
 
 public class TerrainFractalGridTest extends SimpleApplication {
 
@@ -42,7 +29,6 @@ public class TerrainFractalGridTest extends SimpleApplication {
     private float grassScale = 64;
     private float dirtScale = 16;
     private float rockScale = 128;
-    private boolean usePhysics = false;
 
     public static void main(final String[] args) {
         TerrainFractalGridTest app = new TerrainFractalGridTest();
@@ -136,138 +122,27 @@ public class TerrainFractalGridTest extends SimpleApplication {
 
         ground.addPreFilter(this.iterate);
 
-        this.terrain = new TerrainGrid("terrain", 33, 129, new FractalHeightMapGrid(ground, null, 256f));
+        this.terrain = new TerrainGrid("terrain", 33, 129, new FractalTileLoader(ground, 256f));
 
         this.terrain.setMaterial(this.mat_terrain);
         this.terrain.setLocalTranslation(0, 0, 0);
         this.terrain.setLocalScale(2f, 1f, 2f);
         this.rootNode.attachChild(this.terrain);
 
-        List<Camera> cameras = new ArrayList<Camera>();
-        cameras.add(this.getCamera());
-        TerrainLodControl control = new TerrainLodControl(this.terrain, cameras);
-        control.setLodCalculator( new DistanceLodCalculator(33, 2.7f) ); // patch size, and a multiplier
+        TerrainLodControl control = new TerrainGridLodControl(this.terrain, this.getCamera());
+        control.setLodCalculator(new DistanceLodCalculator(33, 2.7f)); // patch size, and a multiplier
         this.terrain.addControl(control);
 
-        final BulletAppState bulletAppState = new BulletAppState();
-        stateManager.attach(bulletAppState);
 
 
-        this.getCamera().setLocation(new Vector3f(0, 0, 0));
+        this.getCamera().setLocation(new Vector3f(0, 300, 0));
 
         this.viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
 
-        if (usePhysics) {
-            CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(0.5f, 1.8f, 1);
-            player3 = new CharacterControl(capsuleShape, 0.5f);
-            player3.setJumpSpeed(20);
-            player3.setFallSpeed(10);
-            player3.setGravity(10);
-
-            player3.setPhysicsLocation(new Vector3f(cam.getLocation().x, 512, cam.getLocation().z));
-
-            bulletAppState.getPhysicsSpace().add(player3);
-
-            terrain.addListener("physicsStartListener", new TerrainGridListener() {
-
-                public void gridMoved(Vector3f newCenter) {
-                }
-
-                public Material tileLoaded(Material material, Vector3f cell) {
-                    return material;
-                }
-
-                public void tileAttached(Vector3f cell, TerrainQuad quad) {
-                    quad.addControl(new RigidBodyControl(new HeightfieldCollisionShape(quad.getHeightMap(), terrain.getLocalScale()), 0));
-                    bulletAppState.getPhysicsSpace().add(quad);
-                }
-
-                public void tileDetached(Vector3f cell, TerrainQuad quad) {
-                    bulletAppState.getPhysicsSpace().remove(quad);
-                    quad.removeControl(RigidBodyControl.class);
-                }
-
-            });
-        }
-        this.terrain.initialize(cam.getLocation());
-        this.initKeys();
+        
     }
-
-    private void initKeys() {
-        // You can map one or several inputs to one named action
-        this.inputManager.addMapping("Lefts", new KeyTrigger(KeyInput.KEY_A));
-        this.inputManager.addMapping("Rights", new KeyTrigger(KeyInput.KEY_D));
-        this.inputManager.addMapping("Ups", new KeyTrigger(KeyInput.KEY_W));
-        this.inputManager.addMapping("Downs", new KeyTrigger(KeyInput.KEY_S));
-        this.inputManager.addMapping("Jumps", new KeyTrigger(KeyInput.KEY_SPACE));
-        this.inputManager.addListener(this.actionListener, "Lefts");
-        this.inputManager.addListener(this.actionListener, "Rights");
-        this.inputManager.addListener(this.actionListener, "Ups");
-        this.inputManager.addListener(this.actionListener, "Downs");
-        this.inputManager.addListener(this.actionListener, "Jumps");
-    }
-    private boolean left;
-    private boolean right;
-    private boolean up;
-    private boolean down;
-    private final ActionListener actionListener = new ActionListener() {
-
-        @Override
-        public void onAction(final String name, final boolean keyPressed, final float tpf) {
-            if (name.equals("Lefts")) {
-                if (keyPressed) {
-                    TerrainFractalGridTest.this.left = true;
-                } else {
-                    TerrainFractalGridTest.this.left = false;
-                }
-            } else if (name.equals("Rights")) {
-                if (keyPressed) {
-                    TerrainFractalGridTest.this.right = true;
-                } else {
-                    TerrainFractalGridTest.this.right = false;
-                }
-            } else if (name.equals("Ups")) {
-                if (keyPressed) {
-                    TerrainFractalGridTest.this.up = true;
-                } else {
-                    TerrainFractalGridTest.this.up = false;
-                }
-            } else if (name.equals("Downs")) {
-                if (keyPressed) {
-                    TerrainFractalGridTest.this.down = true;
-                } else {
-                    TerrainFractalGridTest.this.down = false;
-                }
-            } else if (name.equals("Jumps")) {
-                if (usePhysics) {
-                    TerrainFractalGridTest.this.player3.jump();
-                }
-            }
-        }
-    };
-    private final Vector3f walkDirection = new Vector3f();
 
     @Override
     public void simpleUpdate(final float tpf) {
-            Vector3f camDir = this.cam.getDirection().clone().multLocal(0.6f);
-            Vector3f camLeft = this.cam.getLeft().clone().multLocal(0.4f);
-            this.walkDirection.set(0, 0, 0);
-            if (this.left) {
-                this.walkDirection.addLocal(camLeft);
-            }
-            if (this.right) {
-                this.walkDirection.addLocal(camLeft.negate());
-            }
-            if (this.up) {
-                this.walkDirection.addLocal(camDir);
-            }
-            if (this.down) {
-                this.walkDirection.addLocal(camDir.negate());
-            }
-
-        if (usePhysics) {
-            this.player3.setWalkDirection(this.walkDirection);
-            this.cam.setLocation(this.player3.getPhysicsLocation());
-        }
     }
 }

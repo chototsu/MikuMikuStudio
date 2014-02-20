@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,23 +54,22 @@ import com.jme3.scene.shape.Sphere;
 import com.jme3.terrain.geomipmap.TerrainGrid;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.TerrainQuad;
+import com.jme3.terrain.geomipmap.grid.FractalTileLoader;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
 import com.jme3.terrain.heightmap.AbstractHeightMap;
-import com.jme3.terrain.heightmap.FractalHeightMapGrid;
 import com.jme3.terrain.heightmap.ImageBasedHeightMap;
+import com.jme3.terrain.noise.ShaderUtils;
+import com.jme3.terrain.noise.basis.FilteredBasis;
+import com.jme3.terrain.noise.filter.IterativeFilter;
+import com.jme3.terrain.noise.filter.OptimizedErode;
+import com.jme3.terrain.noise.filter.PerturbFilter;
+import com.jme3.terrain.noise.filter.SmoothFilter;
+import com.jme3.terrain.noise.fractal.FractalSum;
+import com.jme3.terrain.noise.modulator.NoiseModulator;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture.WrapMode;
 import java.util.ArrayList;
 import java.util.List;
-import jme3tools.converters.ImageToAwt;
-import org.novyon.noise.ShaderUtils;
-import org.novyon.noise.basis.FilteredBasis;
-import org.novyon.noise.filter.IterativeFilter;
-import org.novyon.noise.filter.OptimizedErode;
-import org.novyon.noise.filter.PerturbFilter;
-import org.novyon.noise.filter.SmoothFilter;
-import org.novyon.noise.fractal.FractalSum;
-import org.novyon.noise.modulator.NoiseModulator;
 
 /**
  *
@@ -281,6 +280,7 @@ public class TerrainTestModifyHeight extends SimpleApplication {
         matTerrain = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
         matTerrain.setBoolean("useTriPlanarMapping", false);
         matTerrain.setBoolean("WardIso", true);
+        matTerrain.setFloat("Shininess", 0);
 
         // ALPHA map (for splat textures)
         matTerrain.setTexture("AlphaMap", assetManager.loadTexture("Textures/Terrain/splat/alphamap.png"));
@@ -307,7 +307,7 @@ public class TerrainTestModifyHeight extends SimpleApplication {
         Texture heightMapImage = assetManager.loadTexture("Textures/Terrain/splat/mountains512.png");
         AbstractHeightMap heightmap = null;
         try {
-            heightmap = new ImageBasedHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, true, 0), 0.5f);
+            heightmap = new ImageBasedHeightMap(heightMapImage.getImage(), 0.5f);
             heightmap.load();
             heightmap.smooth(0.9f, 1);
 
@@ -402,13 +402,13 @@ public class TerrainTestModifyHeight extends SimpleApplication {
 
         ground.addPreFilter(iterate);
 
-        this.terrain = new TerrainGrid("terrain", 65, 257, new FractalHeightMapGrid(ground, null, 256f));
+        this.terrain = new TerrainGrid("terrain", 65, 257, new FractalTileLoader(ground, 256f));
 
 
         terrain.setMaterial(matTerrain);
         terrain.setLocalTranslation(0, 0, 0);
         terrain.setLocalScale(2f, 1f, 2f);
-        ((TerrainGrid)terrain).initialize(Vector3f.ZERO);
+        
         rootNode.attachChild(this.terrain);
 
         TerrainLodControl control = new TerrainLodControl(this.terrain, getCamera());

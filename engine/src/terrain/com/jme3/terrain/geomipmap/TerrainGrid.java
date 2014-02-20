@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,45 +31,100 @@
  */
 package com.jme3.terrain.geomipmap;
 
-import com.jme3.scene.control.UpdateControl;
-import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.terrain.heightmap.HeightMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.jme3.bounding.BoundingBox;
+import com.jme3.export.InputCapsule;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
+import com.jme3.export.OutputCapsule;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.terrain.geomipmap.lodcalc.LodCalculator;
-import com.jme3.terrain.geomipmap.lodcalc.LodCalculatorFactory;
-import com.jme3.terrain.geomipmap.lodcalc.LodDistanceCalculatorFactory;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.control.UpdateControl;
+import com.jme3.terrain.Terrain;
+import com.jme3.terrain.heightmap.HeightMap;
 import com.jme3.terrain.heightmap.HeightMapGrid;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
+ * <p>
+ * TerrainGrid itself is an actual TerrainQuad. Its four children are the visible four tiles.</p>
+ * </p><p>
+ * The grid is indexed by cells. Each cell has an integer XZ coordinate originating at 0,0.
+ * TerrainGrid will piggyback on the TerrainLodControl so it can use the camera for its
+ * updates as well. It does this in the overwritten update() method.
+ * </p><p>
+ * It uses an LRU (Least Recently Used) cache of 16 terrain tiles (full TerrainQuadTrees). The
+ * center 4 are the ones that are visible. As the camera moves, it checks what camera cell it is in
+ * and will attach the now visible tiles.
+ * </p><p>
+ * The 'quadIndex' variable is a 4x4 array that represents the tiles. The center
+ * four (index numbers: 5, 6, 9, 10) are what is visible. Each quadIndex value is an
+ * offset vector. The vector contains whole numbers and represents how many tiles in offset
+ * this location is from the center of the map. So for example the index 11 [Vector3f(2, 0, 1)]
+ * is located 2*terrainSize in X axis and 1*terrainSize in Z axis.
+ * </p><p>
+ * As the camera moves, it tests what cameraCell it is in. Each camera cell covers four quad tiles
+ * and is half way inside each one.
+ * </p><pre>
+ * +-------+-------+
+ * | 1     |     3 |    Four terrainQuads that make up the grid
+ * |    *..|..*    |    with the cameraCell in the middle, covering
+ * |----|--|--|----|    all four quads.
+ * |    *..|..*    |
+ * | 2     |     4 |
+ * +-------+-------+
+ * </pre><p>
+ * This results in the effect of when the camera gets half way across one of the sides of a quad to
+ * an empty (non-loaded) area, it will trigger the system to load in the next tiles.
+ * </p><p>
+ * The tile loading is done on a background thread, and once the tile is loaded, then it is
+ * attached to the qrid quad tree, back on the OGL thread. It will grab the terrain quad from
+ * the LRU cache if it exists. If it does not exist, it will load in the new TerrainQuad tile.
+ * </p><p>
+ * The loading of new tiles triggers events for any TerrainGridListeners. The events are:
+ * <ul>
+ *  <li>tile Attached
+ *  <li>tile Detached
+ *  <li>grid moved.
+ * </ul>
+ * <p>
+ * These allow physics to update, and other operation (often needed for loading the terrain) to occur
+ * at the right time.
+ * </p>
  * @author Anthyon
  */
 public class TerrainGrid extends TerrainQuad {
-
     protected static final Logger log = Logger.getLogger(TerrainGrid.class.getCanonicalName());
-    protected Vector3f currentCell;
-    protected int quarterSize;
+    protected Vector3f currentCamCell = Vector3f.ZERO;
+    protected int quarterSize; // half of quadSize
     protected int quadSize;
     protected HeightMapGrid heightMapGrid;
+    private TerrainGridTileLoader gridTileLoader;
     protected Vector3f[] quadIndex;
-    protected Map<String, TerrainGridListener> listeners = new HashMap<String, TerrainGridListener>();
+    protected Set<TerrainGridListener> listeners = new HashSet<TerrainGridListener>();
     protected Material material;
-    protected LRUCache<Vector3f, TerrainQuad> cache = new LRUCache<Vector3f, TerrainQuad>(16);
-    protected RigidBodyControl[] quadControls;
-    protected PhysicsSpace space;
-    private int cellsLoaded = 0;
-    private int[] gridOffset;
+    //cache  needs to be 1 row (4 cells) larger than what we care is cached
+    protected LRUCache<Vector3f, TerrainQuad> cache = new LRUCache<Vector3f, TerrainQuad>(20);
+    protected int cellsLoaded = 0;
+    protected int[] gridOffset;
+    protected boolean runOnce = false;
+    protected ExecutorService cacheExecutor;
 
     protected class UpdateQuadCache implements Runnable {
 
@@ -79,31 +134,59 @@ public class TerrainGrid extends TerrainQuad {
             this.location = location;
         }
 
+        /**
+         * This is executed if the camera has moved into a new CameraCell and will load in
+         * the new TerrainQuad tiles to be children of this TerrainGrid parent.
+         * It will first check the LRU cache to see if the terrain tile is already there,
+         * if it is not there, it will load it in and then cache that tile.
+         * The terrain tiles get added to the quad tree back on the OGL thread using the
+         * attachQuadAt() method. It also resets any cached values in TerrainQuad (such as
+         * neighbours).
+         */
         public void run() {
-
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
                     int quadIdx = i * 4 + j;
-                    final Vector3f temp = location.add(quadIndex[quadIdx]);
-                    TerrainQuad q = cache.get(temp);
+                    final Vector3f quadCell = location.add(quadIndex[quadIdx]);
+                    TerrainQuad q = cache.get(quadCell);
                     if (q == null) {
-                        // create the new Quad since it doesn't exist
-                        HeightMap heightMapAt = heightMapGrid.getHeightMapAt(temp);
-                        q = new TerrainQuad(getName() + "Quad" + temp, patchSize, quadSize, totalSize, heightMapAt == null ? null : heightMapAt.getHeightMap());
-                        q.setMaterial(material.clone());
-                        log.log(Level.FINE, "Loaded TerrainQuad {0}", q.getName());
+                        if (heightMapGrid != null) {
+                            // create the new Quad since it doesn't exist
+                            HeightMap heightMapAt = heightMapGrid.getHeightMapAt(quadCell);
+                            q = new TerrainQuad(getName() + "Quad" + quadCell, patchSize, quadSize, heightMapAt == null ? null : heightMapAt.getHeightMap());
+                            q.setMaterial(material.clone());
+                            log.log(Level.FINE, "Loaded TerrainQuad {0} from HeightMapGrid", q.getName());
+                        } else if (gridTileLoader != null) {
+                            q = gridTileLoader.getTerrainQuadAt(quadCell);
+                            // only clone the material to the quad if it doesn't have a material of its own
+                            if(q.getMaterial()==null) q.setMaterial(material.clone());
+                            log.log(Level.FINE, "Loaded TerrainQuad {0} from TerrainQuadGrid", q.getName());
+                        }
                     }
-                    cache.put(temp, q);
+                    cache.put(quadCell, q);
 
+                    
+                    final int quadrant = getQuadrant(quadIdx);
+                    final TerrainQuad newQuad = q;
+                    
                     if (isCenter(quadIdx)) {
                         // if it should be attached as a child right now, attach it
-                        final int quadrant = getQuadrant(quadIdx);
-                        final TerrainQuad newQuad = q;
-                        // back on the OpenGL thread:
                         getControl(UpdateControl.class).enqueue(new Callable() {
-
+                            // back on the OpenGL thread:
                             public Object call() throws Exception {
-                                attachQuadAt(newQuad, quadrant, temp);
+                                if (newQuad.getParent() != null) {
+                                    attachQuadAt(newQuad, quadrant, quadCell, true);
+                                }
+                                else {
+                                    attachQuadAt(newQuad, quadrant, quadCell, false);
+                                }
+                                return null;
+                            }
+                        });
+                    } else {
+                        getControl(UpdateControl.class).enqueue(new Callable() {
+                            public Object call() throws Exception {
+                                removeQuad(newQuad);
                                 return null;
                             }
                         });
@@ -111,6 +194,20 @@ public class TerrainGrid extends TerrainQuad {
                 }
             }
 
+            getControl(UpdateControl.class).enqueue(new Callable() {
+                    // back on the OpenGL thread:
+                    public Object call() throws Exception {
+                        for (Spatial s : getChildren()) {
+                            if (s instanceof TerrainQuad) {
+                                TerrainQuad tq = (TerrainQuad)s;
+                                tq.resetCachedNeighbours();
+                            }
+                        }
+                        System.out.println("fixed normals "+location.clone().mult(size));
+                        setNeedToRecalculateNormals();
+                        return null;
+                    }
+            });
         }
     }
 
@@ -119,182 +216,240 @@ public class TerrainGrid extends TerrainQuad {
     }
 
     protected int getQuadrant(int quadIndex) {
-        if (quadIndex == 9) {
+        if (quadIndex == 5) {
             return 1;
-        } else if (quadIndex == 5) {
+        } else if (quadIndex == 9) {
             return 2;
-        } else if (quadIndex == 10) {
-            return 3;
         } else if (quadIndex == 6) {
+            return 3;
+        } else if (quadIndex == 10) {
             return 4;
         }
         return 0; // error
     }
 
-    public TerrainGrid(String name, int patchSize, int maxVisibleSize, Vector3f scale, HeightMapGrid heightMapGrid,
+    public TerrainGrid(String name, int patchSize, int maxVisibleSize, Vector3f scale, TerrainGridTileLoader terrainQuadGrid,
             Vector2f offset, float offsetAmount) {
         this.name = name;
         this.patchSize = patchSize;
         this.size = maxVisibleSize;
-        this.quarterSize = maxVisibleSize >> 2;
-        this.quadSize = (maxVisibleSize + 1) >> 1;
         this.stepScale = scale;
-        this.heightMapGrid = heightMapGrid;
-        heightMapGrid.setSize(this.quadSize);
-        this.totalSize = maxVisibleSize;
         this.offset = offset;
         this.offsetAmount = offsetAmount;
-        //this.lodCalculatorFactory = lodCalculatorFactory;
-        this.gridOffset = new int[]{0,0};
-        //if (lodCalculatorFactory == null) {
-        //    lodCalculatorFactory = new LodDistanceCalculatorFactory();
-        //}
-        this.quadIndex = new Vector3f[]{
-        new Vector3f(-1, 0, 2), new Vector3f(0, 0, 2), new Vector3f(1, 0, 2), new Vector3f(2, 0, 2),
-        new Vector3f(-1, 0, 1), new Vector3f(0, 0, 1), new Vector3f(1, 0, 1), new Vector3f(2, 0, 1),
-        new Vector3f(-1, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 0, 0), new Vector3f(2, 0, 0),
-        new Vector3f(-1, 0, -1), new Vector3f(0, 0, -1), new Vector3f(1, 0, -1), new Vector3f(-2, 0, -1)};
-
+        initData();
+        this.gridTileLoader = terrainQuadGrid;
+        terrainQuadGrid.setPatchSize(this.patchSize);
+        terrainQuadGrid.setQuadSize(this.quadSize);
         addControl(new UpdateControl());
+        
+        fixNormalEdges(new BoundingBox(new Vector3f(0,0,0), size*2, Float.MAX_VALUE, size*2));
+        addControl(new NormalRecalcControl(this));
     }
 
-    public TerrainGrid(String name, int patchSize, int maxVisibleSize, Vector3f scale, HeightMapGrid heightMapGrid) {
-        this(name, patchSize, maxVisibleSize, scale, heightMapGrid, new Vector2f(), 0);
+    public TerrainGrid(String name, int patchSize, int maxVisibleSize, Vector3f scale, TerrainGridTileLoader terrainQuadGrid) {
+        this(name, patchSize, maxVisibleSize, scale, terrainQuadGrid, new Vector2f(), 0);
     }
 
-    public TerrainGrid(String name, int patchSize, int maxVisibleSize, HeightMapGrid heightMapGrid) {
-        this(name, patchSize, maxVisibleSize, Vector3f.UNIT_XYZ, heightMapGrid);
+    public TerrainGrid(String name, int patchSize, int maxVisibleSize, TerrainGridTileLoader terrainQuadGrid) {
+        this(name, patchSize, maxVisibleSize, Vector3f.UNIT_XYZ, terrainQuadGrid);
     }
 
     public TerrainGrid() {
     }
 
-    public void initialize(Vector3f location) {
-        if (this.material == null) {
-            throw new RuntimeException("Material must be set prior to call of initialize");
-        }
-        Vector3f camCell = this.getCell(location);
-        this.updateChildrens(camCell);
-        for (TerrainGridListener l : this.listeners.values()) {
-            l.gridMoved(camCell);
-        }
+    private void initData() {
+        int maxVisibleSize = size;
+        this.quarterSize = maxVisibleSize >> 2;
+        this.quadSize = (maxVisibleSize + 1) >> 1;
+        this.totalSize = maxVisibleSize;
+        this.gridOffset = new int[]{0, 0};
+
+        /*
+         *        -z
+         *         | 
+         *        1|3 
+         *  -x ----+---- x
+         *        2|4
+         *         |
+         *         z
+         */
+        this.quadIndex = new Vector3f[]{
+            new Vector3f(-1, 0, -1), new Vector3f(0, 0, -1), new Vector3f(1, 0, -1), new Vector3f(2, 0, -1),
+            new Vector3f(-1, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 0, 0), new Vector3f(2, 0, 0),
+            new Vector3f(-1, 0, 1), new Vector3f(0, 0, 1), new Vector3f(1, 0, 1), new Vector3f(2, 0, 1),
+            new Vector3f(-1, 0, 2), new Vector3f(0, 0, 2), new Vector3f(1, 0, 2), new Vector3f(2, 0, 2)};
+
     }
 
-    @Override
-    public void update(List<Vector3f> locations, LodCalculator lodCalculator) {
-        // for now, only the first camera is handled.
-        // to accept more, there are two ways:
-        // 1: every camera has an associated grid, then the location is not enough to identify which camera location has changed
-        // 2: grids are associated with locations, and no incremental update is done, we load new grids for new locations, and unload those that are not needed anymore
-        Vector3f cam = locations.get(0);
-        Vector3f camCell = this.getCell(cam);
-        if(cellsLoaded>1){                  // Check if cells are updated before updating gridoffset.
-            gridOffset[0] = Math.round(camCell.x*(size/2));
-            gridOffset[1] = Math.round(camCell.z*(size/2));
-            cellsLoaded=0;
-        }
-        if (camCell.x != this.currentCell.x || camCell.z != currentCell.z) {
-            this.updateChildrens(camCell);
-            for (TerrainGridListener l : this.listeners.values()) {
-                l.gridMoved(camCell);
-            }
-        }
-        super.update(locations, lodCalculator);
+    /**
+     * Get the location in cell-coordinates of the specified location.
+     * Cell coordinates are integer corrdinates, usually with y=0, each 
+     * representing a cell in the world.
+     * For example, moving right in the +X direction:
+     * (0,0,0) (1,0,0) (2,0,0), (3,0,0)
+     * and then down the -Z direction:
+     * (3,0,-1) (3,0,-2) (3,0,-3)
+     */
+    public Vector3f getCamCell(Vector3f location) {
+        Vector3f tile = getTileCell(location);
+        Vector3f offsetHalf = new Vector3f(-0.5f, 0, -0.5f);
+        Vector3f shifted = tile.subtract(offsetHalf);
+        return new Vector3f(FastMath.floor(shifted.x), 0, FastMath.floor(shifted.z));
     }
 
-    public Vector3f getCell(Vector3f location) {
-        final Vector3f v = location.clone().divideLocal(this.getLocalScale().mult(this.quadSize - 1)).add(0.5f, 0, 0.5f);
-        return new Vector3f(FastMath.floor(v.x), 0, FastMath.floor(v.z));
+    /**
+     * Centered at 0,0.
+     * Get the tile index location in integer form:
+     * @param location world coordinate
+     */
+    public Vector3f getTileCell(Vector3f location) {
+        Vector3f tileLoc = location.divide(this.getWorldScale().mult(this.quadSize));
+        return tileLoc;
     }
 
-    protected void removeQuad(int idx) {
-        if (this.getQuad(idx) != null) {
-            if (quadControls != null) {
-                this.getQuad(idx).removeControl(RigidBodyControl.class);
+    public TerrainGridTileLoader getGridTileLoader() {
+        return gridTileLoader;
+    }
+    
+    /**
+     * Get the terrain tile at the specified world location, in XZ coordinates.
+     */
+    public Terrain getTerrainAt(Vector3f worldLocation) {
+        if (worldLocation == null)
+            return null;
+        Vector3f tileCell = getTileCell(worldLocation.setY(0));
+        tileCell = new Vector3f(Math.round(tileCell.x), tileCell.y, Math.round(tileCell.z));
+        return cache.get(tileCell);
+    }
+    
+    /**
+     * Get the terrain tile at the specified XZ cell coordinate (not world coordinate).
+     * @param cellCoordinate integer cell coordinates
+     * @return the terrain tile at that location
+     */
+    public Terrain getTerrainAtCell(Vector3f cellCoordinate) {
+        return cache.get(cellCoordinate);
+    }
+    
+    /**
+     * Convert the world location into a cell location (integer coordinates)
+     */
+    public Vector3f toCellSpace(Vector3f worldLocation) {
+        Vector3f tileCell = getTileCell(worldLocation);
+        tileCell = new Vector3f(Math.round(tileCell.x), tileCell.y, Math.round(tileCell.z));
+        return tileCell;
+    }
+    
+    /**
+     * Convert the cell coordinate (integer coordinates) into world coordinates.
+     */
+    public Vector3f toWorldSpace(Vector3f cellLocation) {
+        return cellLocation.mult(getLocalScale()).multLocal(quadSize - 1);
+    }
+    
+    protected void removeQuad(TerrainQuad q) {
+        if (q != null && ( (q.getQuadrant() > 0 && q.getQuadrant()<5) || q.getParent() != null) ) {
+            for (TerrainGridListener l : listeners) {
+                l.tileDetached(getTileCell(q.getWorldTranslation()), q);
             }
-            for (TerrainGridListener l : listeners.values()) {
-                l.tileDetached(getCell(this.getQuad(idx).getWorldTranslation()), this.getQuad(idx));
-            }
-            this.detachChild(this.getQuad(idx));
+            q.setQuadrant((short)0);
+            this.detachChild(q);
             cellsLoaded++; // For gridoffset calc., maybe the run() method is a better location for this.
         }
     }
 
     /**
      * Runs on the rendering thread
+     * @param shifted quads are still attached to the parent and don't need to re-load
      */
-    protected void attachQuadAt(TerrainQuad q, int quadrant, Vector3f cam) {
-        this.removeQuad(quadrant);
-        //q.setMaterial(this.material);
-        //q.setLocalTranslation(quadOrigins[quadrant - 1]);
+    protected void attachQuadAt(TerrainQuad q, int quadrant, Vector3f quadCell, boolean shifted) {
+        
         q.setQuadrant((short) quadrant);
-        this.attachChild(q);
+        if (!shifted)
+            this.attachChild(q);
 
-        Vector3f loc = cam.mult(this.quadSize - 1).subtract(quarterSize, 0, quarterSize);// quadrant location handled TerrainQuad automatically now
+        Vector3f loc = quadCell.mult(this.quadSize - 1).subtract(quarterSize, 0, quarterSize);// quadrant location handled TerrainQuad automatically now
         q.setLocalTranslation(loc);
 
-        for (TerrainGridListener l : listeners.values()) {
-            l.tileAttached(cam, q);
-        }
-
-        updateModelBound();
-    }
-
-    protected void updateChildrens(Vector3f cam) {
-        // ---------------------------------------------------
-        // LRU cache is used, so elements that need to remain
-        // should be touched.
-        // ---------------------------------------------------
-        int dx = 0;
-        int dy = 0;
-        if (currentCell != null) {
-            dx = (int) (cam.x - currentCell.x);
-            dy = (int) (cam.z - currentCell.z);
-        }
-
-        int kxm = 0;
-        int kxM = 4;
-        int kym = 0;
-        int kyM = 4;
-        if (dx == -1) {
-            kxM = 3;
-        } else if (dx == 1) {
-            kxm = 1;
-        }
-
-        if (dy == -1) {
-            kyM = 3;
-        } else if (dy == 1) {
-            kym = 1;
-        }
-
-        for (int i = kym; i < kyM; i++) {
-            for (int j = kxm; j < kxM; j++) {
-                cache.get(cam.add(quadIndex[i * 4 + j]));
+        if (!shifted) {
+            for (TerrainGridListener l : listeners) {
+                l.tileAttached(quadCell, q);
             }
         }
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-
-        if (executor == null) {
-            executor = createExecutorService();
-        }
-
-        executor.submit(new UpdateQuadCache(cam));
-
-        this.currentCell = cam;
+        updateModelBound();
+        
     }
 
-    public void addListener(String id, TerrainGridListener listener) {
-        this.listeners.put(id, listener);
+    
+    /**
+     * Called when the camera has moved into a new cell. We need to
+     * update what quads are in the scene now.
+     * 
+     * Step 1: touch cache
+     * LRU cache is used, so elements that need to remain
+     * should be touched.
+     *
+     * Step 2: load new quads in background thread
+     * if the camera has moved into a new cell, we load in new quads
+     * @param camCell the cell the camera is in
+     */
+    protected void updateChildren(Vector3f camCell) {
+
+        int dx = 0;
+        int dy = 0;
+        if (currentCamCell != null) {
+            dx = (int) (camCell.x - currentCamCell.x);
+            dy = (int) (camCell.z - currentCamCell.z);
+        }
+
+        int xMin = 0;
+        int xMax = 4;
+        int yMin = 0;
+        int yMax = 4;
+        if (dx == -1) { // camera moved to -X direction
+            xMax = 3;
+        } else if (dx == 1) { // camera moved to +X direction
+            xMin = 1;
+        }
+
+        if (dy == -1) { // camera moved to -Y direction
+            yMax = 3;
+        } else if (dy == 1) { // camera moved to +Y direction
+            yMin = 1;
+        }
+
+        // Touch the items in the cache that we are and will be interested in.
+        // We activate cells in the direction we are moving. If we didn't move 
+        // either way in one of the axes (say X or Y axis) then they are all touched.
+        for (int i = yMin; i < yMax; i++) {
+            for (int j = xMin; j < xMax; j++) {
+                cache.get(camCell.add(quadIndex[i * 4 + j]));
+            }
+        }
+        
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+
+        if (cacheExecutor == null) {
+            // use the same executor as the LODControl
+            cacheExecutor = createExecutorService();
+        }
+
+        cacheExecutor.submit(new UpdateQuadCache(camCell));
+
+        this.currentCamCell = camCell;
+    }
+
+    public void addListener(TerrainGridListener listener) {
+        this.listeners.add(listener);
     }
 
     public Vector3f getCurrentCell() {
-        return this.currentCell;
+        return this.currentCamCell;
     }
 
-    public void removeListener(String id) {
-        this.listeners.remove(id);
+    public void removeListener(TerrainGridListener listener) {
+        this.listeners.remove(listener);
     }
 
     @Override
@@ -316,49 +471,95 @@ public class TerrainGrid extends TerrainQuad {
         }
         super.adjustHeight(xz, height);
     }
-    
+
     @Override
     protected float getHeightmapHeight(int x, int z) {
-        return super.getHeightmapHeight(x-gridOffset[0], z-gridOffset[1]);
+        return super.getHeightmapHeight(x - gridOffset[0], z - gridOffset[1]);
+    }
+    
+    @Override
+    public int getNumMajorSubdivisions() {
+        return 2;
+    }
+    
+    @Override
+    public Material getMaterial(Vector3f worldLocation) {
+        if (worldLocation == null)
+            return null;
+        Vector3f tileCell = getTileCell(worldLocation);
+        Terrain terrain = cache.get(tileCell);
+        if (terrain == null)
+            return null; // terrain not loaded for that cell yet!
+        return terrain.getMaterial(worldLocation);
+    }
+
+    /**
+     * This will print out any exceptions from the thread
+     */
+    protected ExecutorService createExecutorService() {
+        final ThreadFactory threadFactory = new ThreadFactory() {
+            public Thread newThread(Runnable r) {
+                Thread th = new Thread(r);
+                th.setName("jME TerrainGrid Thread");
+                th.setDaemon(true);
+                return th;
+            }
+        };
+        ThreadPoolExecutor ex = new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>(), 
+                                    threadFactory) {
+            protected void afterExecute(Runnable r, Throwable t) {
+                super.afterExecute(r, t);
+                if (t == null && r instanceof Future<?>) {
+                    try {
+                        Future<?> future = (Future<?>) r;
+                        if (future.isDone())
+                            future.get();
+                    } catch (CancellationException ce) {
+                        t = ce;
+                    } catch (ExecutionException ee) {
+                        t = ee.getCause();
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt(); // ignore/reset
+                    }
+                }
+                if (t != null)
+                    t.printStackTrace();
+            }
+        };
+        return ex;
+    }
+    
+    @Override
+    public void read(JmeImporter im) throws IOException {
+        super.read(im);
+        InputCapsule c = im.getCapsule(this);
+        name = c.readString("name", null);
+        size = c.readInt("size", 0);
+        patchSize = c.readInt("patchSize", 0);
+        stepScale = (Vector3f) c.readSavable("stepScale", null);
+        offset = (Vector2f) c.readSavable("offset", null);
+        offsetAmount = c.readFloat("offsetAmount", 0);
+        gridTileLoader = (TerrainGridTileLoader) c.readSavable("terrainQuadGrid", null);
+        material = (Material) c.readSavable("material", null);
+        initData();
+        if (gridTileLoader != null) {
+            gridTileLoader.setPatchSize(this.patchSize);
+            gridTileLoader.setQuadSize(this.quadSize);
+        }
     }
 
     @Override
-    protected TerrainQuad findDownQuad() {
-        if (quadrant == 1) {
-            return cache.get(currentCell.add(quadIndex[13]));
-        } else if (quadrant == 3) {
-            return cache.get(currentCell.add(quadIndex[14]));
-        }
-        return null;
-    }
-
-    @Override
-    protected TerrainQuad findLeftQuad() {
-        if (quadrant == 1) {
-            return cache.get(currentCell.add(quadIndex[8]));
-        } else if (quadrant == 2) {
-            return cache.get(currentCell.add(quadIndex[4]));
-        }
-        return null;
-    }
-
-    @Override
-    protected TerrainQuad findRightQuad() {
-        if (quadrant == 3) {
-            return cache.get(currentCell.add(quadIndex[11]));
-        } else if (quadrant == 4) {
-            return cache.get(currentCell.add(quadIndex[7]));
-        }
-        return null;
-    }
-
-    @Override
-    protected TerrainQuad findTopQuad() {
-        if (quadrant == 2) {
-            return cache.get(currentCell.add(quadIndex[1]));
-        } else if (quadrant == 4) {
-            return cache.get(currentCell.add(quadIndex[2]));
-        }
-        return null;
+    public void write(JmeExporter ex) throws IOException {
+        super.write(ex);
+        OutputCapsule c = ex.getCapsule(this);
+        c.write(gridTileLoader, "terrainQuadGrid", null);
+        c.write(size, "size", 0);
+        c.write(patchSize, "patchSize", 0);
+        c.write(stepScale, "stepScale", null);
+        c.write(offset, "offset", null);
+        c.write(offsetAmount, "offsetAmount", 0);
+        c.write(material, "material", null);
     }
 }

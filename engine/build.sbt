@@ -24,12 +24,12 @@ unmanagedSourceDirectories in Compile := Seq(
   , baseDirectory.value / "src/ogre"
   , baseDirectory.value / "src/pack"
   , baseDirectory.value / "src/tools"
-//  , baseDirectory.value / "src/terrain"
+  , baseDirectory.value / "src/terrain"
   , baseDirectory.value / "src/xml"
 )
 
 sources in Compile ~= {
-  dirs => dirs filter(file => (!file.getAbsolutePath.contains("cinematic") && !file.getAbsolutePath.contains("CollisionShapeFactory.java")))
+  dirs => dirs filter(file => (!file.getAbsolutePath.contains("cinematic") /* && !file.getAbsolutePath.contains("CollisionShapeFactory.java")*/))
 }
 
 unmanagedResourceDirectories in Compile <<= unmanagedSourceDirectories in Compile

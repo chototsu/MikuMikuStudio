@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -151,7 +151,7 @@ public class MidpointDisplacementHeightMap extends AbstractHeightMap {
 
         normalizeTerrain(NORMALIZE_RANGE);
 
-        logger.log(Level.INFO, "Midpoint displacement heightmap generated");
+        logger.log(Level.FINE, "Midpoint displacement heightmap generated");
         return true;
     }
 

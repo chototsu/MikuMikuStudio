@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,25 +31,26 @@
  */
 package com.jme3.terrain.geomipmap;
 
-import com.jme3.terrain.GeoMap;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.math.FastMath;
 import com.jme3.math.Triangle;
-import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Mesh.Mode;
-import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.VertexBuffer.Type;
+import com.jme3.scene.mesh.IndexBuffer;
+import com.jme3.terrain.GeoMap;
 import com.jme3.util.BufferUtils;
-import com.jme3.util.TangentBinormalGenerator;
+import com.jme3.util.TempVars;
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 /**
  * Produces the mesh for the TerrainPatch.
@@ -69,8 +70,13 @@ public class LODGeomap extends GeoMap {
     public LODGeomap() {
     }
 
+    @Deprecated
     public LODGeomap(int size, FloatBuffer heightMap) {
-        super(heightMap, null, size, size, 1);
+        super(heightMap, size, size, 1);
+    }
+    
+    public LODGeomap(int size, float[] heightMap) {
+        super(heightMap, size, size, 1);
     }
 
     public Mesh createMesh(Vector3f scale, Vector2f tcScale, Vector2f tcOffset, float offsetAmount, int totalSize, boolean center) {
@@ -81,10 +87,15 @@ public class LODGeomap extends GeoMap {
         FloatBuffer pb = writeVertexArray(null, scale, center);
         FloatBuffer texb = writeTexCoordArray(null, tcOffset, tcScale, offsetAmount, totalSize);
         FloatBuffer nb = writeNormalArray(null, scale);
-        IntBuffer ib = writeIndexArrayLodDiff(null, lod, rightLod, topLod, leftLod, bottomLod);
+        Buffer ib;
+        IndexBuffer idxB = writeIndexArrayLodDiff(lod, rightLod, topLod, leftLod, bottomLod, totalSize);
+        if (idxB.getBuffer() instanceof IntBuffer)
+            ib = (IntBuffer)idxB.getBuffer();
+        else
+            ib = (ShortBuffer)idxB.getBuffer();
         FloatBuffer bb = BufferUtils.createFloatBuffer(getWidth() * getHeight() * 3);
         FloatBuffer tanb = BufferUtils.createFloatBuffer(getWidth() * getHeight() * 3);
-        writeTangentArray(tanb, bb, texb, scale);
+        writeTangentArray(nb, tanb, bb, texb, scale);
         Mesh m = new Mesh();
         m.setMode(Mode.TriangleStrip);
         m.setBuffer(Type.Position, 3, pb);
@@ -92,14 +103,13 @@ public class LODGeomap extends GeoMap {
         m.setBuffer(Type.Tangent, 3, tanb);
         m.setBuffer(Type.Binormal, 3, bb);
         m.setBuffer(Type.TexCoord, 2, texb);
-        m.setBuffer(Type.Index, 3, ib);
+        if (ib instanceof IntBuffer)
+            m.setBuffer(Type.Index, 3, (IntBuffer)ib);
+        else if (ib instanceof ShortBuffer)
+            m.setBuffer(Type.Index, 3, (ShortBuffer)ib);
         m.setStatic();
         m.updateBound();
         return m;
-    }
-
-    protected void removeNormalBuffer() {
-        ndata = null;
     }
 
     public FloatBuffer writeTexCoordArray(FloatBuffer store, Vector2f offset, Vector2f scale, float offsetAmount, int totalSize) {
@@ -152,14 +162,13 @@ public class LODGeomap extends GeoMap {
      * @param bottomLod LOD of the bottom neighbour
      * @return the LOD-ified index buffer
      */
-    public IntBuffer writeIndexArrayLodDiff(IntBuffer store, int lod, boolean rightLod, boolean topLod, boolean leftLod, boolean bottomLod) {
+    public IndexBuffer writeIndexArrayLodDiff(int lod, boolean rightLod, boolean topLod, boolean leftLod, boolean bottomLod, int totalSize) {
 
-        IntBuffer buffer2 = store;
+        
         int numIndexes = calculateNumIndexesLodDiff(lod);
-        if (store == null) {
-            buffer2 = BufferUtils.createIntBuffer(numIndexes);
-        }
-        VerboseIntBuffer buffer = new VerboseIntBuffer(buffer2);
+        
+        IndexBuffer ib = IndexBuffer.createIndexBuffer(numIndexes, numIndexes);
+        VerboseBuffer buffer = new VerboseBuffer(ib);
 
 
         // generate center squares minus the edges
@@ -275,7 +284,7 @@ public class LODGeomap extends GeoMap {
                 buffer.put(idx);
                 idx = (row + 2 * lod) * getWidth();
                 buffer.put(idx);
-                if (row < getWidth() - lod - 2 - 1) { //if not the last one
+                if (row < getWidth() - 1 - 2 * lod) { //if not the last one
                     idx = (row + 2 * lod) * getWidth() + lod;
                     buffer.put(idx);
                     idx = (row + 2 * lod) * getWidth();
@@ -355,14 +364,12 @@ public class LODGeomap extends GeoMap {
         return buffer.delegate;
     }
 
-    public IntBuffer writeIndexArrayLodVariable(IntBuffer store, int lod, int rightLod, int topLod, int leftLod, int bottomLod) {
+    public IndexBuffer writeIndexArrayLodVariable(int lod, int rightLod, int topLod, int leftLod, int bottomLod, int totalSize) {
 
-        IntBuffer buffer2 = store;
         int numIndexes = calculateNumIndexesLodDiff(lod);
-        if (store == null) {
-            buffer2 = BufferUtils.createIntBuffer(numIndexes);
-        }
-        VerboseIntBuffer buffer = new VerboseIntBuffer(buffer2);
+        
+        IndexBuffer ib = IndexBuffer.createIndexBuffer(numIndexes, numIndexes);
+        VerboseBuffer buffer = new VerboseBuffer(ib);
 
 
         // generate center squares minus the edges
@@ -628,7 +635,7 @@ public class LODGeomap extends GeoMap {
         return num;
     }
 
-    public FloatBuffer[] writeTangentArray(FloatBuffer tangentStore, FloatBuffer binormalStore, FloatBuffer textureBuffer, Vector3f scale) {
+    public FloatBuffer[] writeTangentArray(FloatBuffer normalBuffer, FloatBuffer tangentStore, FloatBuffer binormalStore, FloatBuffer textureBuffer, Vector3f scale) {
         if (!isLoaded()) {
             throw new NullPointerException();
         }
@@ -651,38 +658,60 @@ public class LODGeomap extends GeoMap {
         }
         binormalStore.rewind();
 
+        Vector3f normal = new Vector3f();
         Vector3f tangent = new Vector3f();
         Vector3f binormal = new Vector3f();
-        Vector3f v1 = new Vector3f();
+        /*Vector3f v1 = new Vector3f();
         Vector3f v2 = new Vector3f();
         Vector3f v3 = new Vector3f();
         Vector2f t1 = new Vector2f();
         Vector2f t2 = new Vector2f();
-        Vector2f t3 = new Vector2f();
-
-        scale = Vector3f.UNIT_XYZ;
+        Vector2f t3 = new Vector2f();*/
 
         for (int r = 0; r < getHeight(); r++) {
             for (int c = 0; c < getWidth(); c++) {
+                
+                int idx = (r * getWidth() + c) * 3;
+                normal.set(normalBuffer.get(idx), normalBuffer.get(idx+1), normalBuffer.get(idx+2));
+                tangent.set(normal.cross(new Vector3f(0,0,1)));
+                binormal.set(new Vector3f(1,0,0).cross(normal));
+                
+                BufferUtils.setInBuffer(tangent.normalizeLocal(), tangentStore, (r * getWidth() + c)); // save the tangent
+                BufferUtils.setInBuffer(binormal.normalizeLocal(), binormalStore, (r * getWidth() + c)); // save the binormal
+            }
+        }
+
+/*        for (int r = 0; r < getHeight(); r++) {
+            for (int c = 0; c < getWidth(); c++) {
 
                 int texIdx = ((getHeight() - 1 - r) * getWidth() + c) * 2; // pull from the end
-                int texIdxPrev = ((getHeight() - 1 - (r - 1)) * getWidth() + c) * 2; // pull from the end
+                int texIdxAbove = ((getHeight() - 1 - (r - 1)) * getWidth() + c) * 2; // pull from the end
                 int texIdxNext = ((getHeight() - 1 - (r + 1)) * getWidth() + c) * 2; // pull from the end
 
                 v1.set(c, getValue(c, r), r);
                 t1.set(textureBuffer.get(texIdx), textureBuffer.get(texIdx + 1));
 
-                if (r == 0) { // first row
-                    v3.set(c, getValue(c, r), r); // ???
-                    t3.set(textureBuffer.get(texIdxNext), textureBuffer.get(texIdxNext + 1)); // ???
+                // below
+                if (r == getHeight()-1) { // last row
+                    v3.set(c, getValue(c, r), r + 1);
+                    float u = textureBuffer.get(texIdx) - textureBuffer.get(texIdxAbove);
+                    u += textureBuffer.get(texIdx);
+                    float v = textureBuffer.get(texIdx + 1) - textureBuffer.get(texIdxAbove + 1);
+                    v += textureBuffer.get(texIdx + 1);
+                    t3.set(u, v);
                 } else {
-                    v3.set(c, getValue(c, r - 1), r - 1);
-                    t3.set(textureBuffer.get(texIdxPrev), textureBuffer.get(texIdxPrev + 1));
+                    v3.set(c, getValue(c, r + 1), r + 1);
+                    t3.set(textureBuffer.get(texIdxNext), textureBuffer.get(texIdxNext + 1));
                 }
-
-                if (c == getWidth() - 1) { // last column
-                    v2.set(c + 1, getValue(c, r), r); // use same height
-                    t2.set(textureBuffer.get(texIdx), textureBuffer.get(texIdx + 1));
+                
+                //right
+                if (c == getWidth()-1) { // last column
+                    v2.set(c + 1, getValue(c, r), r);
+                    float u = textureBuffer.get(texIdx) - textureBuffer.get(texIdx - 2);
+                    u += textureBuffer.get(texIdx);
+                    float v = textureBuffer.get(texIdx + 1) - textureBuffer.get(texIdx - 1);
+                    v += textureBuffer.get(texIdx - 1);
+                    t2.set(u, v);
                 } else {
                     v2.set(c + 1, getValue(c + 1, r), r); // one to the right
                     t2.set(textureBuffer.get(texIdx + 2), textureBuffer.get(texIdx + 3));
@@ -693,14 +722,14 @@ public class LODGeomap extends GeoMap {
                 BufferUtils.setInBuffer(binormal, binormalStore, (r * getWidth() + c)); // save the binormal
             }
         }
-
+        */
         return new FloatBuffer[]{tangentStore, binormalStore};
     }
 
     /**
      * 
-     * @param v Takes 3 vertexes: root, right, top
-     * @param t Takes 3 tex coords: root, right, top
+     * @param v Takes 3 vertices: root, right, bottom
+     * @param t Takes 3 tex coords: root, right, bottom
      * @param tangent that will store the result
      * @return the tangent store
      */
@@ -762,122 +791,230 @@ public class LODGeomap extends GeoMap {
         }
         store.rewind();
 
-        Vector3f rootPoint = new Vector3f();
-        Vector3f rightPoint = new Vector3f();
-        Vector3f leftPoint = new Vector3f();
-        Vector3f topPoint = new Vector3f();
-        Vector3f bottomPoint = new Vector3f();
+        TempVars vars = TempVars.get();
+        
+        Vector3f rootPoint = vars.vect1;
+        Vector3f rightPoint = vars.vect2;
+        Vector3f leftPoint = vars.vect3;
+        Vector3f topPoint = vars.vect4;
+        Vector3f bottomPoint = vars.vect5;
+        
+        Vector3f tmp1 = vars.vect6;
 
         // calculate normals for each polygon
         for (int r = 0; r < getHeight(); r++) {
             for (int c = 0; c < getWidth(); c++) {
 
-                rootPoint.set(c, getValue(c, r), r);
-                Vector3f normal = new Vector3f();
+                rootPoint.set(0, getValue(c, r), 0);
+                Vector3f normal = vars.vect8;
 
                 if (r == 0) { // first row
                     if (c == 0) { // first column
-                        rightPoint.set(c + 1, getValue(c + 1, r), r);
-                        bottomPoint.set(c, getValue(c, r + 1), r + 1);
-                        normal.set(getNormal(bottomPoint, rootPoint, rightPoint, scale));
+                        rightPoint.set(1, getValue(c + 1, r), 0);
+                        bottomPoint.set(0, getValue(c, r + 1), 1);
+                        getNormal(bottomPoint, rootPoint, rightPoint, scale, normal);
                     } else if (c == getWidth() - 1) { // last column
-                        leftPoint.set(c - 1, getValue(c - 1, r), r);
-                        bottomPoint.set(c, getValue(c, r + 1), r + 1);
-                        normal.set(getNormal(leftPoint, rootPoint, bottomPoint, scale));
+                        leftPoint.set(-1, getValue(c - 1, r), 0);
+                        bottomPoint.set(0, getValue(c, r + 1), 1);
+                        getNormal(leftPoint, rootPoint, bottomPoint, scale, normal);
                     } else { // all middle columns
-                        leftPoint.set(c - 1, getValue(c - 1, r), r);
-                        rightPoint.set(c + 1, getValue(c + 1, r), r);
-                        bottomPoint.set(c, getValue(c, r + 1), r + 1);
-                        Vector3f n1 = getNormal(leftPoint, rootPoint, bottomPoint, scale);
-                        Vector3f n2 = getNormal(bottomPoint, rootPoint, rightPoint, scale);
-                        normal.set(n1.add(n2).normalizeLocal());
+                        leftPoint.set(-1, getValue(c - 1, r), 0);
+                        rightPoint.set(1, getValue(c + 1, r), 0);
+                        bottomPoint.set(0, getValue(c, r + 1), 1);
+                        
+                        normal.set( getNormal(leftPoint, rootPoint, bottomPoint, scale, tmp1) );
+                        normal.addLocal( getNormal(bottomPoint, rootPoint, rightPoint, scale, tmp1) );
                     }
                 } else if (r == getHeight() - 1) { // last row
                     if (c == 0) { // first column
-                        topPoint.set(c, getValue(c, r - 1), r - 1);
-                        rightPoint.set(c + 1, getValue(c + 1, r), r);
-                        normal.set(getNormal(rightPoint, rootPoint, topPoint, scale));
+                        topPoint.set(0, getValue(c, r - 1), -1);
+                        rightPoint.set(1, getValue(c + 1, r), 0);
+                        getNormal(rightPoint, rootPoint, topPoint, scale, normal);
                     } else if (c == getWidth() - 1) { // last column
-                        topPoint.set(c, getValue(c, r - 1), r - 1);
-                        leftPoint.set(c - 1, getValue(c - 1, r), r);
-                        normal.set(getNormal(topPoint, rootPoint, leftPoint, scale));
+                        topPoint.set(0, getValue(c, r - 1), -1);
+                        leftPoint.set(-1, getValue(c - 1, r), 0);
+                        getNormal(topPoint, rootPoint, leftPoint, scale, normal);
                     } else { // all middle columns
-                        topPoint.set(c, getValue(c, r - 1), r - 1);
-                        leftPoint.set(c - 1, getValue(c - 1, r), r);
-                        rightPoint.set(c + 1, getValue(c + 1, r), r);
-                        Vector3f n1 = getNormal(topPoint, rootPoint, leftPoint, scale);
-                        Vector3f n2 = getNormal(rightPoint, rootPoint, topPoint, scale);
-                        normal.set(n1.add(n2).normalizeLocal());
+                        topPoint.set(0, getValue(c, r - 1), -1);
+                        leftPoint.set(-1, getValue(c - 1, r), 0);
+                        rightPoint.set(1, getValue(c + 1, r), 0);
+                        
+                        normal.set( getNormal(topPoint, rootPoint, leftPoint, scale, tmp1) );
+                        normal.addLocal( getNormal(rightPoint, rootPoint, topPoint, scale, tmp1) );
                     }
                 } else { // all middle rows
                     if (c == 0) { // first column
-                        topPoint.set(c, getValue(c, r - 1), r - 1);
-                        rightPoint.set(c + 1, getValue(c + 1, r), r);
-                        bottomPoint.set(c, getValue(c, r + 1), r + 1);
-                        Vector3f n1 = getNormal(rightPoint, rootPoint, topPoint, scale);
-                        Vector3f n2 = getNormal(bottomPoint, rootPoint, rightPoint, scale);
-                        normal.set(n1.add(n2).normalizeLocal());
+                        topPoint.set(0, getValue(c, r - 1), -1);
+                        rightPoint.set(1, getValue(c + 1, r), 0);
+                        bottomPoint.set(0, getValue(c, r + 1), 1);
+                        
+                        normal.set( getNormal(rightPoint, rootPoint, topPoint, scale, tmp1) );
+                        normal.addLocal( getNormal(bottomPoint, rootPoint, rightPoint, scale, tmp1) );
                     } else if (c == getWidth() - 1) { // last column
-                        topPoint.set(c, getValue(c, r - 1), r - 1);
-                        leftPoint.set(c - 1, getValue(c - 1, r), r);
-                        bottomPoint.set(c, getValue(c, r + 1), r + 1);
-                        Vector3f n1 = getNormal(topPoint, rootPoint, leftPoint, scale);
-                        Vector3f n2 = getNormal(leftPoint, rootPoint, bottomPoint, scale);
-                        normal.set(n1.add(n2).normalizeLocal());
+                        topPoint.set(0, getValue(c, r - 1), -1);
+                        leftPoint.set(-1, getValue(c - 1, r), 0);
+                        bottomPoint.set(0, getValue(c, r + 1), 1);
+
+                        normal.set( getNormal(topPoint, rootPoint, leftPoint, scale, tmp1) );
+                        normal.addLocal( getNormal(leftPoint, rootPoint, bottomPoint, scale, tmp1) );
                     } else { // all middle columns
-                        topPoint.set(c, getValue(c, r - 1), r - 1);
-                        leftPoint.set(c - 1, getValue(c - 1, r), r);
-                        rightPoint.set(c + 1, getValue(c + 1, r), r);
-                        bottomPoint.set(c, getValue(c, r + 1), r + 1);
-                        Vector3f n1 = getNormal(topPoint, rootPoint, leftPoint, scale);
-                        Vector3f n2 = getNormal(leftPoint, rootPoint, bottomPoint, scale);
-                        Vector3f n3 = getNormal(bottomPoint, rootPoint, rightPoint, scale);
-                        Vector3f n4 = getNormal(rightPoint, rootPoint, topPoint, scale);
-                        normal.set(n1.add(n2).add(n3).add(n4).normalizeLocal());
+                        topPoint.set(0, getValue(c, r - 1), -1);
+                        leftPoint.set(-1, getValue(c - 1, r), 0);
+                        rightPoint.set(1, getValue(c + 1, r), 0);
+                        bottomPoint.set(0, getValue(c, r + 1), 1);
+                        
+                        normal.set( getNormal(topPoint,  rootPoint, leftPoint, scale, tmp1 ) );
+                        normal.addLocal( getNormal(leftPoint, rootPoint, bottomPoint, scale, tmp1) );
+                        normal.addLocal( getNormal(bottomPoint, rootPoint, rightPoint, scale, tmp1) );
+                        normal.addLocal( getNormal(rightPoint, rootPoint, topPoint, scale, tmp1) );
                     }
                 }
-
+                normal.normalizeLocal();
                 BufferUtils.setInBuffer(normal, store, (r * getWidth() + c)); // save the normal
-
             }
         }
-
+        vars.release();
+        
         return store;
     }
 
-    private Vector3f getNormal(Vector3f firstPoint, Vector3f rootPoint, Vector3f secondPoint, Vector3f scale) {
-        Vector3f normal = new Vector3f();
-        //scale = Vector3f.UNIT_XYZ;
-        normal.set(firstPoint.mult(scale)).subtractLocal(rootPoint.mult(scale)).crossLocal(secondPoint.mult(scale).subtract(rootPoint.mult(scale))).normalizeLocal();
-        return normal;
+    private Vector3f getNormal(Vector3f firstPoint, Vector3f rootPoint, Vector3f secondPoint, Vector3f scale, Vector3f store) {
+        float x1 = firstPoint.x - rootPoint.x;
+        float y1 = firstPoint.y - rootPoint.y;
+        float z1 = firstPoint.z - rootPoint.z;
+        x1 *= scale.x;
+        y1 *= scale.y;
+        z1 *= scale.z;
+        float x2 = secondPoint.x - rootPoint.x;
+        float y2 = secondPoint.y - rootPoint.y;
+        float z2 = secondPoint.z - rootPoint.z;
+        x2 *= scale.x;
+        y2 *= scale.y;
+        z2 *= scale.z;
+        float x3 = (y1 * z2) - (z1 * y2);
+        float y3 = (z1 * x2) - (x1 * z2);
+        float z3 = (x1 * y2) - (y1 * x2);
+        
+        float inv = 1.0f / FastMath.sqrt(x3 * x3 + y3 * y3 + z3 * z3);
+        store.x = x3 * inv;
+        store.y = y3 * inv;
+        store.z = z3 * inv;
+        
+        
+        /*firstPoint.multLocal(scale);
+        rootPoint.multLocal(scale);
+        secondPoint.multLocal(scale);
+        firstPoint.subtractLocal(rootPoint);
+        secondPoint.subtractLocal(rootPoint);
+        firstPoint.cross(secondPoint, store);*/
+        return store;
     }
 
     /**
      * Keeps a count of the number of indexes, good for debugging
      */
-    public class VerboseIntBuffer {
+    public class VerboseBuffer {
 
-        private IntBuffer delegate;
+        private IndexBuffer delegate;
+        //private IntBuffer delegateInt;
+        //private ShortBuffer delegateShort;
         int count = 0;
+        //private boolean intb = true;
 
-        public VerboseIntBuffer(IntBuffer d) {
-            delegate = d;
+        public VerboseBuffer(IndexBuffer d) {
+            this.delegate = d;
         }
+        
+        /*public VerboseBuffer(Buffer d) {
+            if (d instanceof IntBuffer)
+                delegateInt = (IntBuffer)d;
+            else if (d instanceof ShortBuffer) {
+                delegateShort = (ShortBuffer)d;
+                intb = false;
+            }
+        }*/
 
         public void put(int value) {
-            try {
-                delegate.put(value);
-                count++;
-            } catch (BufferOverflowException e) {
-                //System.out.println("err buffer size: "+delegate.capacity());
-            }
+            delegate.put(count, value);
+            count++;
         }
+        /*public void put(int value) {
+            try {
+                count++;
+                int limit = intb? delegateInt.limit() : delegateShort.limit();
+                if (count > limit)
+                    throw new BufferOverflowException();
+                if (intb)
+                    delegateInt.put(value);
+                else {
+                    System.out.println(Integer.toString(value)+" "+Short.toString((short)value));
+                    delegateShort.put((short)value);
+                }
+            } catch (BufferOverflowException e) {
+                Logger.getLogger(this.getClass().getName()).log(Logger.Level.ERROR, "err buffer size: "+delegateInt.capacity());
+            }
+        }*/
 
         public int getCount() {
             return count;
         }
     }
 
+    /**
+     * Get the two triangles that make up the grid section at the specified point.
+     *
+     * For every grid space there are two triangles oriented like this:
+     *  *----*
+     *  |a / |
+     *  | / b|
+     *  *----*
+     * The corners of the mesh have differently oriented triangles. The two
+     * corners that we have to special-case are the top left and bottom right
+     * corners. They are oriented inversely:
+     *  *----*
+     *  | \ b|
+     *  |a \ |
+     *  *----*
+     */
+    protected float getHeight(int x, int z, float xm, float zm) {
+        
+        int index = findClosestHeightIndex(x, z);
+        if (index < 0) {
+            return Float.NaN;
+        }
+        
+        float h1 = hdata[index];                // top left
+        float h2 = hdata[index + 1];            // top right
+        float h3 = hdata[index + width];        // bottom left
+        float h4 = hdata[index + width + 1];    // bottom right
+
+        //float dix = (x % 1f) ;
+        //float diz = (z % 1f) ;
+            
+        if ((x == 0 && z == 0) || (x == width - 2 && z == width - 2)) {
+            // top left or bottom right grid point
+            /*  1----2
+             *  | \ b|
+             *  |a \ |
+             *  3----4 */
+            if (xm<zm)
+                return h1 + xm*(h4-h3) + zm*(h3-h1);
+            else
+                return h1 + xm*(h2-h1) + zm*(h4-h2);
+            
+        } else {
+            // all other grid points
+            /*  1----2
+             *  |a / |
+             *  | / b|
+             *  3----4 */
+            if (xm<(1-zm))
+                return h3 + (xm)*(h2-h1) + (1f-zm)*(h1-h3);
+            else
+                return h3 + (xm)*(h4-h3) + (1f-zm)*(h2-h4);
+        }
+    }
+    
     /**
      * Get a representation of the underlying triangle at the given point,
      * translated to world coordinates.
@@ -937,8 +1074,6 @@ public class LODGeomap extends GeoMap {
      *
      * @param x local x coordinate
      * @param z local z coordinate
-     * @param scale
-     * @param translation
      * @return
      */
     protected Triangle[] getGridTrianglesAtPoint(float x, float z) {
@@ -953,13 +1088,13 @@ public class LODGeomap extends GeoMap {
         Triangle t = new Triangle(new Vector3f(), new Vector3f(), new Vector3f());
         Triangle t2 = new Triangle(new Vector3f(), new Vector3f(), new Vector3f());
 
-        float h1 = hdata.get(index);                // top left
-        float h2 = hdata.get(index + 1);            // top right
-        float h3 = hdata.get(index + width);        // bottom left
-        float h4 = hdata.get(index + width + 1);    // bottom right
+        float h1 = hdata[index];                // top left
+        float h2 = hdata[index + 1];            // top right
+        float h3 = hdata[index + width];        // bottom left
+        float h4 = hdata[index + width + 1];    // bottom right
 
 
-        if ((gridX == 0 && gridY == 0) || (gridX == width - 1 && gridY == width - 1)) {
+        if ((gridX == 0 && gridY == 0) || (gridX == width - 2 && gridY == width - 2)) {
             // top left or bottom right grid point
             t.get(0).x = (gridX);
             t.get(0).y = (h1);
@@ -1024,7 +1159,7 @@ public class LODGeomap extends GeoMap {
     protected Triangle getTriangleAtPoint(float x, float z) {
         Triangle[] triangles = getGridTrianglesAtPoint(x, z);
         if (triangles == null) {
-            System.out.println("x,z: " + x + "," + z);
+            //System.out.println("x,z: " + x + "," + z);
             return null;
         }
         Vector2f point = new Vector2f(x, z);

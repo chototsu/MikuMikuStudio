@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,26 +31,26 @@
  */
 package jme3test.terrain;
 
-import jme3tools.converters.ImageToAwt;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.debug.Arrow;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
-import com.jme3.terrain.heightmap.AbstractHeightMap;
-import com.jme3.terrain.heightmap.ImageBasedHeightMap;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
+import com.jme3.terrain.heightmap.AbstractHeightMap;
+import com.jme3.terrain.heightmap.ImageBasedHeightMap;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture.WrapMode;
 import com.jme3.util.SkyFactory;
@@ -97,25 +97,27 @@ public class TerrainTestAdvanced extends SimpleApplication {
         // TERRAIN TEXTURE material
         matTerrain = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
         matTerrain.setBoolean("useTriPlanarMapping", false);
+        matTerrain.setFloat("Shininess", 0.0f);
 
         // ALPHA map (for splat textures)
         matTerrain.setTexture("AlphaMap", assetManager.loadTexture("Textures/Terrain/splat/alpha1.png"));
         matTerrain.setTexture("AlphaMap_1", assetManager.loadTexture("Textures/Terrain/splat/alpha2.png"));
-
+        // this material also supports 'AlphaMap_2', so you can get up to 12 diffuse textures
+        
         // HEIGHTMAP image (for the terrain heightmap)
         Texture heightMapImage = assetManager.loadTexture("Textures/Terrain/splat/mountains512.png");
-
+        
+        // DIRT texture, Diffuse textures 0 to 3 use the first AlphaMap
+        Texture dirt = assetManager.loadTexture("Textures/Terrain/splat/dirt.jpg");
+        dirt.setWrap(WrapMode.Repeat);
+        matTerrain.setTexture("DiffuseMap", dirt);
+        matTerrain.setFloat("DiffuseMap_0_scale", dirtScale);
+        
         // GRASS texture
         Texture grass = assetManager.loadTexture("Textures/Terrain/splat/grass.jpg");
         grass.setWrap(WrapMode.Repeat);
         matTerrain.setTexture("DiffuseMap_1", grass);
         matTerrain.setFloat("DiffuseMap_1_scale", grassScale);
-
-        // DIRT texture
-        Texture dirt = assetManager.loadTexture("Textures/Terrain/splat/dirt.jpg");
-        dirt.setWrap(WrapMode.Repeat);
-        matTerrain.setTexture("DiffuseMap", dirt);
-        matTerrain.setFloat("DiffuseMap_0_scale", dirtScale);
 
         // ROCK texture
         Texture rock = assetManager.loadTexture("Textures/Terrain/splat/road.jpg");
@@ -129,12 +131,14 @@ public class TerrainTestAdvanced extends SimpleApplication {
         matTerrain.setTexture("DiffuseMap_3", brick);
         matTerrain.setFloat("DiffuseMap_3_scale", rockScale);
 
-        // RIVER ROCK texture
+        // RIVER ROCK texture, this texture will use the next alphaMap: AlphaMap_1
         Texture riverRock = assetManager.loadTexture("Textures/Terrain/Pond/Pond.jpg");
         riverRock.setWrap(WrapMode.Repeat);
         matTerrain.setTexture("DiffuseMap_4", riverRock);
         matTerrain.setFloat("DiffuseMap_4_scale", rockScale);
-
+        
+        // diffuse textures 4 to 7 use AlphaMap_1
+        // diffuse textures 8 to 11 use AlphaMap_2
 
         Texture normalMap0 = assetManager.loadTexture("Textures/Terrain/splat/grass_normal.jpg");
         normalMap0.setWrap(WrapMode.Repeat);
@@ -142,22 +146,23 @@ public class TerrainTestAdvanced extends SimpleApplication {
         normalMap1.setWrap(WrapMode.Repeat);
         Texture normalMap2 = assetManager.loadTexture("Textures/Terrain/splat/road_normal.png");
         normalMap2.setWrap(WrapMode.Repeat);
-        matTerrain.setTexture("NormalMap", normalMap2);
+        //matTerrain.setTexture("NormalMap", normalMap0);
         matTerrain.setTexture("NormalMap_1", normalMap2);
         matTerrain.setTexture("NormalMap_2", normalMap2);
         matTerrain.setTexture("NormalMap_4", normalMap2);
 
-        // WIREFRAME material
+        
+        // WIREFRAME material (used to debug the terrain, only useful for this test case)
         matWire = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         matWire.getAdditionalRenderState().setWireframe(true);
         matWire.setColor("Color", ColorRGBA.Green);
-
+        
         createSky();
 
         // CREATE HEIGHTMAP
         AbstractHeightMap heightmap = null;
         try {
-            heightmap = new ImageBasedHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, true, 0), 0.5f);
+            heightmap = new ImageBasedHeightMap(heightMapImage.getImage(), 0.5f);
             heightmap.load();
             heightmap.smooth(0.9f, 1);
 
@@ -185,16 +190,18 @@ public class TerrainTestAdvanced extends SimpleApplication {
         terrain.setLocalScale(1f, 1f, 1f);
         rootNode.attachChild(terrain);
         
-        Material debugMat = assetManager.loadMaterial("Common/Materials/VertexColor.j3m");
+        //Material debugMat = assetManager.loadMaterial("Common/Materials/VertexColor.j3m");
         //terrain.generateDebugTangents(debugMat);
 
         DirectionalLight light = new DirectionalLight();
-        light.setDirection((new Vector3f(-0.25f, -1f, -0.25f)).normalize());
+        light.setDirection((new Vector3f(-0.1f, -0.1f, -0.1f)).normalize());
         rootNode.addLight(light);
 
         cam.setLocation(new Vector3f(0, 10, -10));
         cam.lookAtDirection(new Vector3f(0, -1.5f, -1).normalizeLocal(), Vector3f.UNIT_Y);
         flyCam.setMoveSpeed(400);
+        
+        rootNode.attachChild(createAxisMarker(20));
     }
 
     public void loadHintText() {
@@ -213,8 +220,8 @@ public class TerrainTestAdvanced extends SimpleApplication {
         inputManager.addListener(actionListener, "triPlanar");
         inputManager.addMapping("WardIso", new KeyTrigger(KeyInput.KEY_9));
         inputManager.addListener(actionListener, "WardIso");
-        inputManager.addMapping("Minnaert", new KeyTrigger(KeyInput.KEY_0));
-        inputManager.addListener(actionListener, "Minnaert");
+        inputManager.addMapping("DetachControl", new KeyTrigger(KeyInput.KEY_0));
+        inputManager.addListener(actionListener, "DetachControl");
     }
     private ActionListener actionListener = new ActionListener() {
 
@@ -246,6 +253,15 @@ public class TerrainTestAdvanced extends SimpleApplication {
                     matTerrain.setFloat("DiffuseMap_3_scale", rockScale);
                     matTerrain.setFloat("DiffuseMap_4_scale", rockScale);
                 }
+            } if (name.equals("DetachControl") && !pressed) {
+                TerrainLodControl control = terrain.getControl(TerrainLodControl.class);
+                if (control != null)
+                    control.detachAndCleanUpControl();
+                else {
+                    control = new TerrainLodControl(terrain, cam);
+                    terrain.addControl(control);
+                }
+                    
             }
         }
     };
@@ -260,5 +276,36 @@ public class TerrainTestAdvanced extends SimpleApplication {
 
         Spatial sky = SkyFactory.createSky(assetManager, west, east, north, south, up, down);
         rootNode.attachChild(sky);
+    }
+    
+    protected Node createAxisMarker(float arrowSize) {
+
+        Material redMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        redMat.getAdditionalRenderState().setWireframe(true);
+        redMat.setColor("Color", ColorRGBA.Red);
+        
+        Material greenMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        greenMat.getAdditionalRenderState().setWireframe(true);
+        greenMat.setColor("Color", ColorRGBA.Green);
+        
+        Material blueMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        blueMat.getAdditionalRenderState().setWireframe(true);
+        blueMat.setColor("Color", ColorRGBA.Blue);
+
+        Node axis = new Node();
+
+        // create arrows
+        Geometry arrowX = new Geometry("arrowX", new Arrow(new Vector3f(arrowSize, 0, 0)));
+        arrowX.setMaterial(redMat);
+        Geometry arrowY = new Geometry("arrowY", new Arrow(new Vector3f(0, arrowSize, 0)));
+        arrowY.setMaterial(greenMat);
+        Geometry arrowZ = new Geometry("arrowZ", new Arrow(new Vector3f(0, 0, arrowSize)));
+        arrowZ.setMaterial(blueMat);
+        axis.attachChild(arrowX);
+        axis.attachChild(arrowY);
+        axis.attachChild(arrowZ);
+
+        //axis.setModelBound(new BoundingBox());
+        return axis;
     }
 }

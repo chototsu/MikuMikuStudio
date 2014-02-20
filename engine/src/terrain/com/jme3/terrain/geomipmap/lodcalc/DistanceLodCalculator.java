@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,41 +63,42 @@ public class DistanceLodCalculator implements LodCalculator {
     }
     
     public boolean calculateLod(TerrainPatch terrainPatch, List<Vector3f> locations, HashMap<String, UpdatedTerrainPatch> updates) {
+        if (locations == null || locations.isEmpty())
+            return false;// no camera yet
         float distance = getCenterLocation(terrainPatch).distance(locations.get(0));
 
-        
         if (turnOffLod) {
             // set to full detail
             int prevLOD = terrainPatch.getLod();
             UpdatedTerrainPatch utp = updates.get(terrainPatch.getName());
             if (utp == null) {
-                utp = new UpdatedTerrainPatch(terrainPatch, 0);
+                utp = new UpdatedTerrainPatch(terrainPatch);
                 updates.put(utp.getName(), utp);
             }
             utp.setNewLod(0);
             utp.setPreviousLod(prevLOD);
-            utp.setReIndexNeeded(true);
+            //utp.setReIndexNeeded(true);
             return true;
         }
         
         // go through each lod level to find the one we are in
         for (int i = 0; i <= terrainPatch.getMaxLod(); i++) {
-            if (distance < getLodDistanceThreshold() * (i + 1)*terrainPatch.getWorldScale().x || i == terrainPatch.getMaxLod()) {
+            if (distance < getLodDistanceThreshold() * (i + 1)*terrainPatch.getWorldScaleCached().x || i == terrainPatch.getMaxLod()) {
                 boolean reIndexNeeded = false;
                 if (i != terrainPatch.getLod()) {
                     reIndexNeeded = true;
                     //System.out.println("lod change: "+lod+" > "+i+"    dist: "+distance);
                 }
                 int prevLOD = terrainPatch.getLod();
-                //previousLod = lod;
-                //lod = i;
+                
                 UpdatedTerrainPatch utp = updates.get(terrainPatch.getName());
                 if (utp == null) {
-                    utp = new UpdatedTerrainPatch(terrainPatch, i);//save in here, do not update actual variables
+                    utp = new UpdatedTerrainPatch(terrainPatch);//save in here, do not update actual variables
                     updates.put(utp.getName(), utp);
                 }
+                utp.setNewLod(i);
                 utp.setPreviousLod(prevLOD);
-                utp.setReIndexNeeded(reIndexNeeded);
+                //utp.setReIndexNeeded(reIndexNeeded);
 
                 return reIndexNeeded;
             }
@@ -107,9 +108,9 @@ public class DistanceLodCalculator implements LodCalculator {
     }
 
     protected Vector3f getCenterLocation(TerrainPatch terrainPatch) {
-        Vector3f loc = terrainPatch.getWorldTranslation().clone();
-        loc.x += terrainPatch.getSize()*terrainPatch.getWorldScale().x / 2;
-        loc.z += terrainPatch.getSize()*terrainPatch.getWorldScale().z / 2;
+        Vector3f loc = terrainPatch.getWorldTranslationCached();
+        loc.x += terrainPatch.getSize()*terrainPatch.getWorldScaleCached().x / 2;
+        loc.z += terrainPatch.getSize()*terrainPatch.getWorldScaleCached().z / 2;
         return loc;
     }
 

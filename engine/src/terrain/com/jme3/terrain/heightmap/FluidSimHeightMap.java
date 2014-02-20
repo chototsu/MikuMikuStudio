@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -216,7 +216,7 @@ public class FluidSimHeightMap extends AbstractHeightMap {
         }
         normalizeTerrain(NORMALIZE_RANGE);
 
-        logger.info("Created Heightmap using fluid simulation");
+        logger.fine("Created Heightmap using fluid simulation");
 
         return true;
     }

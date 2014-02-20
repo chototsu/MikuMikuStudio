@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 jMonkeyEngine
+ * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -318,7 +318,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
         erodeTerrain();
         normalizeTerrain(NORMALIZE_RANGE);
 
-        logger.info("Created heightmap using Particle Deposition");
+        logger.fine("Created heightmap using Particle Deposition");
 
 
         return false;
