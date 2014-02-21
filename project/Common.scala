@@ -16,7 +16,7 @@ object Common {
         <licenses>
           <license>
             <name>BSD-style</name>
-            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <url>https://raw.github.com/chototsu/MikuMikuStudio/master/LICENSE.txt</url>
             <distribution>repo</distribution>
           </license>
           <license>
