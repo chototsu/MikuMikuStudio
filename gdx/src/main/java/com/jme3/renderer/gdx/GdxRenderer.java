@@ -27,7 +27,6 @@
 package com.jme3.renderer.gdx;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.jme3.light.LightList;
 import com.jme3.material.RenderState;
@@ -389,7 +388,7 @@ public final class GdxRenderer implements Renderer {
             logger.info("GLES20.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST)");
         }
 
-        Gdx.gl20.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
+//        Gdx.gl20.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);
 
 //	checkGLError();
 
@@ -2898,7 +2897,7 @@ public final class GdxRenderer implements Renderer {
                 logger.log(Level.INFO, "GLES10.glPointSize({0})", mesh.getPointSize());
             }
             // TODO
-            Gdx.gl10.glPointSize(mesh.getPointSize());
+//            Gdx.gl10.glPointSize(mesh.getPointSize());
             context.pointSize = mesh.getPointSize();
         }
         if (context.lineWidth != mesh.getLineWidth()) {

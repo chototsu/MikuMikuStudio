@@ -4,7 +4,7 @@ import sbt.Keys._
 object Common {
   lazy val settings = Seq(
     organization := "info.projectkyoto"
-    , version := "0.8.1-SNAPSHOT"
+    , version := "0.8.2-SNAPSHOT"
     , startYear := Some(2010)
     , description := "A game engine compatible with MikuMikuDance."
     , autoScalaLibrary := false
@@ -47,6 +47,8 @@ object Common {
     }
     , publishArtifact in Test := false
     , pomIncludeRepository := { _ => false }
+    , resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
+
 
   )
 }

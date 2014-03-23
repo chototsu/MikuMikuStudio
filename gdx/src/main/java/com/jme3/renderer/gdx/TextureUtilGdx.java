@@ -28,7 +28,7 @@
 package com.jme3.renderer.gdx;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL10;
+//import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.jme3.asset.DesktopAssetManager;
 import com.jme3.math.FastMath;
@@ -61,23 +61,23 @@ public class TextureUtilGdx {
         switch (fmt){
             case Alpha16:
             case Alpha8:
-                return GL10.GL_ALPHA;
+                return GL20.GL_ALPHA;
             case Luminance8Alpha8:
             case Luminance16Alpha16:
-                return GL10.GL_LUMINANCE_ALPHA;
+                return GL20.GL_LUMINANCE_ALPHA;
             case Luminance8:
             case Luminance16:
-                return GL10.GL_LUMINANCE;
+                return GL20.GL_LUMINANCE;
             case RGB10:
             case RGB16:
             case BGR8:
             case RGB8:
             case RGB565:
-                return GL10.GL_RGB;
+                return GL20.GL_RGB;
             case RGB5A1:
             case RGBA16:
             case RGBA8:
-                return GL10.GL_RGBA;
+                return GL20.GL_RGBA;
                 
             case Depth:
                 return Gdx.gl20.GL_DEPTH_COMPONENT;
