@@ -152,6 +152,14 @@ public class PMDGeometry extends Geometry {
         return newPMDGeometry;
     }
 
+    public int getMaterialNo() {
+        if (pmdMaterial != null) {
+            return pmdMaterial.getMaterialNo();
+        } else {
+            return 10000;
+        }
+    }
+
     @Override
     public PMDGeometry clone(boolean cloneMaterial) {
         return clone();

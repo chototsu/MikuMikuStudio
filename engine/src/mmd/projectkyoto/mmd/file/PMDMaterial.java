@@ -146,6 +146,9 @@ public class PMDMaterial implements Serializable{
         if (this.material != other.material && (this.material == null || !this.material.equals(other.material))) {
             return false;
         }
+        if (this.materialNo != other.materialNo) {
+            return false;
+        }
         if (this.toonIndex != other.toonIndex) {
             return false;
         }

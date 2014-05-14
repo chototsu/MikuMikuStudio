@@ -367,15 +367,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
         }
         geom.setPmdMaterial(m);
-        if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
-            geom.setQueueBucket(Bucket.Transparent);
-        } else {
-            if (m.getTextureFileName().length() > 0) {
-            geom.setQueueBucket(Bucket.Transparent);
-            } else {
-                geom.setQueueBucket(Bucket.Inherit);
-            }
-        }
+        geom.setQueueBucket(Bucket.MMD);
     }
 
     Material createMaterial(PMDMaterial m, boolean skinning) {

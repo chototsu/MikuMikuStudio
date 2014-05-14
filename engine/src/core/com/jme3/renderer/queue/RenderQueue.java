@@ -52,6 +52,8 @@ public class RenderQueue {
     private GeometryList skyList;
     private GeometryList shadowRecv;
     private GeometryList shadowCast;
+    private GeometryList mmdList;
+
 
     /**
      * Creates a new RenderQueue, the default {@link GeometryComparator comparators}
@@ -65,6 +67,7 @@ public class RenderQueue {
         this.skyList = new GeometryList(new NullComparator());
         this.shadowRecv = new GeometryList(new OpaqueComparator());
         this.shadowCast = new GeometryList(new OpaqueComparator());
+        this.mmdList = new GeometryList(new MMDComparator());
     }
 
     /**
@@ -127,6 +130,7 @@ public class RenderQueue {
          * mode as the parent Node does.
          */
         Inherit,
+        MMD,
     }
 
     /**
@@ -203,6 +207,9 @@ public class RenderQueue {
             case Translucent:
                 translucentList = new GeometryList(c);
                 break;
+            case MMD:
+                mmdList = new GeometryList(c);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown bucket type: " + bucket);
         }
@@ -268,6 +275,9 @@ public class RenderQueue {
                 break;
             case Translucent:
                 translucentList.add(g);
+                break;
+            case MMD:
+                mmdList.add(g);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown bucket type: " + bucket);
@@ -339,6 +349,8 @@ public class RenderQueue {
                 return transparentList.size() == 0;
             case Translucent:
                 return translucentList.size() == 0;
+            case MMD:
+                return mmdList.size() == 0;
             default:
                 throw new UnsupportedOperationException("Unsupported bucket type: " + bucket);
         }
@@ -365,7 +377,9 @@ public class RenderQueue {
             case Translucent:
                 renderGeometryList(translucentList, rm, cam, clear);
                 break;
-
+            case MMD:
+                renderGeometryList(mmdList, rm, cam, clear);
+                break;
             default:
                 throw new UnsupportedOperationException("Unsupported bucket type: " + bucket);
         }
@@ -379,5 +393,6 @@ public class RenderQueue {
         skyList.clear();
         shadowCast.clear();
         shadowRecv.clear();
+        mmdList.clear();
     }
 }

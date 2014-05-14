@@ -118,17 +118,17 @@ public class MeshConverter implements Serializable{
             PMDMaterial material = model.getMaterial()[materialNo];
             // find same material
             MeshData meshData = new MeshData(model, maxBoneSize, material);
-            for(int meshIndex = meshDataList.size()-1;meshIndex >=0;meshIndex--) {
-                PMDMaterial material2 = meshDataList.get(meshIndex).getMaterial();
-                if (material.equals(material2)) {
-                    meshData = meshDataList.get(meshIndex);
-                    for(int i=meshData.getVertIndexList().size()-1;i>=0;i--) {
-                        Integer vertIndex = meshData.getVertIndexList().get(i);
-                        meshTmpVertMap.put(vertIndex, i);
-                    }
-                    break;
-                }
-            }
+//            for(int meshIndex = meshDataList.size()-1;meshIndex >=0;meshIndex--) {
+//                PMDMaterial material2 = meshDataList.get(meshIndex).getMaterial();
+//                if (false && material.equals(material2)) {
+//                    meshData = meshDataList.get(meshIndex);
+//                    for(int i=meshData.getVertIndexList().size()-1;i>=0;i--) {
+//                        Integer vertIndex = meshData.getVertIndexList().get(i);
+//                        meshTmpVertMap.put(vertIndex, i);
+//                    }
+//                    break;
+//                }
+//            }
             if (material.getFaceVertCount() == 0) {
                 continue;
             }
