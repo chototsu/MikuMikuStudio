@@ -74,6 +74,7 @@ public class MeshConverter implements Serializable{
     public ByteBuffer interleavedBuffer;
     int currentVertIndex = 0;
     PMNData pmnData;
+    int skinVertBitmap[];
     public MeshConverter() {
         
     }
@@ -84,12 +85,15 @@ public class MeshConverter implements Serializable{
 //        removeUnusedSkinVertex();
     }
     private final void initSkinVertSet() {
+        skinVertBitmap = new int[model.getVertCount() / 32 + 1];
         for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {
             PMDSkinData skinData = model.getSkinData()[skinCount];
             if (skinData.getSkinType() == 0) {
                 for(int skinVertCount = 0;skinVertCount<skinData.getSkinVertCount();skinVertCount++) {
-                    VertIndex vi = new VertIndex(skinData.getIndexBuf().get(skinVertCount));
-                    skinVertSet.add(vi);
+//                    VertIndex vi = new VertIndex(skinData.getIndexBuf().get(skinVertCount));
+                    int vi = skinData.getIndexBuf().get(skinVertCount) & 0xffff;
+                    int bit = 2 ^ (vi & 31);
+                    skinVertBitmap[vi / 32] |= bit;
                 }
                 break;
             }
@@ -205,8 +209,14 @@ public class MeshConverter implements Serializable{
     }
     VertIndex tmpvi = new VertIndex(0);
     boolean containsSkin(int i) {
-        tmpvi.index = i;
-        return skinVertSet.contains(tmpvi);
+//        tmpvi.index = i;
+//        return skinVertSet.contains(tmpvi);
+        int bit = 2 ^ (i & 31);
+        if ((skinVertBitmap[i / 32] & bit) !=  0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 //    boolean _containsSkin(int i) {
 //        for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {
