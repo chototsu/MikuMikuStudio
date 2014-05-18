@@ -85,6 +85,7 @@ public class VMDControl extends AbstractControl {
     float currentTime = 0f;
     float currentTime2 = 0f;
     boolean fixedPhysics = false;
+    public boolean followRotateEnabled = true;
 
     public VMDControl(PMDNode pmdNode, VMDFile vmdFile) {
         this(pmdNode, vmdFile, new PhysicsControl());
@@ -183,17 +184,6 @@ public class VMDControl extends AbstractControl {
                 motionMap.put(m.getBoneName(), motionList);
 //logger.info("boneName = "+m.getBoneName()+" "+motionList.boneIndex+" "+motionList.bone);
                 PMDBone pmdBone = pmdNode.getPmdModel().getBoneList().getBones()[motionList.boneIndex];
-                if (pmdBone.getBoneType() == 9) {
-                    // FOLLOW_ROTATE
-                    for (int i = motionList.boneIndex + 1; i < pmdNode.getPmdModel().getBoneList().getBones().length; i++) {
-                        PMDBone b = pmdNode.getPmdModel().getBoneList().getBones()[i];
-                        if (b.getParentBoneIndex() == motionList.boneIndex) {
-                            motionList.childBone = pmdNode.getSkeleton().getBone(i);
-                            break;
-                        }
-                    }
-                    motionList.rotateCoef = (float)pmdBone.getTargetBone() / 100f;
-                }
             }
             motionList.add(motionNo);
             if (m.getFrameNo() > lastFrameNo) {
@@ -382,6 +372,7 @@ public class VMDControl extends AbstractControl {
     }
 
     void calcBonePosition() {
+        if (followRotateEnabled) resetFollowRotate();
         for (int i = pmdNode.getSkeleton().getBoneCount() - 1; i >= 0; i--) {
             int i2 = i; //boneEnabled.length -1 - i;
             if (boneEnabled[i2] == 1) {
@@ -402,10 +393,10 @@ public class VMDControl extends AbstractControl {
                 if (bml.size() - 1 < bml.currentCount) {
                     VMDMotion m1 = bml.getVMDMotion(tmpMotion2, bml.size() - 1);
                     Quat4f q = m1.getRotation();
-                    if (bml.boneType == 9 && bml.childBone != null) {
+                    if (false && bml.boneType == 9 && bml.childBone != null) {
                         TempVars t = TempVars.get();
                         t.quat1.set(q.x, q.y, q.z,q.w);
-                        t.quat2.set(0,0,0,1);
+                        t.quat2.loadIdentity();
                         t.quat2.slerp(bml.childBone.getLocalRotation(), bml.rotateCoef);
                         t.quat1.multLocal(t.quat2);
                         bone.getLocalRotation().set(t.quat1);
@@ -478,6 +469,8 @@ public class VMDControl extends AbstractControl {
                 }
             }
         }
+        if (followRotateEnabled)
+            updateFollowRotate();
         pmdNode.getSkeleton().updateWorldVectors();
         ikControl.updateIKBoneRotation();
         for (int i = 0; i < pmdNode.getPmdModel().getBoneList().getBoneCount(); i++) {
@@ -489,11 +482,58 @@ public class VMDControl extends AbstractControl {
 //                    bone.getLocalRotation().loadIdentity();
 //                }
                 Bone targetBone = pmdNode.getSkeleton().getBone(pmdBone.getTargetBone());
-                bone.getLocalRotation().multLocal(targetBone.getLocalRotation());
+                bone.getLocalRotation().set(targetBone.getLocalRotation());
                 bone.updateWorldVectors();
             }
         }
 //        calcSkins(currentFrameNo);
+    }
+
+    public void updateFollowRotate() {
+        TempVars t = TempVars.get();
+        PMDBone bones[] = pmdNode.getPmdModel().getBoneList().getBones();
+        for(int i=0;i<bones.length;i++) {
+            PMDBone pmdBone = bones[i];
+            if (pmdBone.getBoneType() == 9) {
+                // Follow rotate
+                int tailBonePos = pmdBone.getTailPosBoneIndex();
+                if (tailBonePos >= 0 && tailBonePos < pmdNode.getSkeleton().getBoneCount() /*&& i != 18 && i !=28*/) {
+                    Bone bone = pmdNode.getSkeleton().getBone(i);
+//                    bone.getLocalPosition().set(bone.getWorldBindPosition());
+//                    bone.getLocalRotation().set(bone.getWorldBindRotation());
+                    Bone childBone = pmdNode.getSkeleton().getBone(tailBonePos);
+                    float rotateCoef = (float)pmdBone.getTargetBone() / 100f;
+//                    if (i == 18 || i == 28) {
+//                        rotateCoef = 1f;
+//                    }
+//                    logger.warning("bone = "+i + " childBone = "+tailBonePos+" rotateCoef = "+rotateCoef);
+
+                    t.quat1.set(bone.getLocalRotation());
+                    t.quat2.loadIdentity();
+//                    t.quat2.set(childBone.getWorldBindRotation());
+                    t.quat2.nlerp(childBone.getLocalRotation(), rotateCoef);
+                    t.quat1.multLocal(t.quat2);
+//                    if (rotateCoef >= 0)
+                    bone.getLocalRotation().set(t.quat1);
+//                    if (i == 18 || i == 28) {
+//                        bone.getLocalRotation().set(childBone.getLocalRotation());
+//                    }
+                }
+
+            }
+        }
+        t.release();
+    }
+    public void resetFollowRotate() {
+        PMDBone bones[] = pmdNode.getPmdModel().getBoneList().getBones();
+        for(int i=0;i<bones.length;i++) {
+            PMDBone pmdBone = bones[i];
+            if (pmdBone.getBoneType() == 9) {
+                pmdNode.getSkeleton().getBone(i).getLocalRotation().set(pmdNode.getSkeleton().getBone(i).getWorldBindRotation());
+                pmdNode.getSkeleton().getBone(i).getLocalPosition().set(pmdNode.getSkeleton().getBone(i).getWorldBindPosition());
+
+            }
+        }
     }
 
     public void calcSkins() {
