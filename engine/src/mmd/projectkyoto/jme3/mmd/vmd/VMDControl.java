@@ -33,6 +33,7 @@ import com.jme3.animation.Bone;
 import com.jme3.animation.Skeleton;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -85,7 +86,6 @@ public class VMDControl extends AbstractControl {
     float currentTime = 0f;
     float currentTime2 = 0f;
     boolean fixedPhysics = false;
-    public boolean followRotateEnabled = true;
 
     public VMDControl(PMDNode pmdNode, VMDFile vmdFile) {
         this(pmdNode, vmdFile, new PhysicsControl());
@@ -141,12 +141,6 @@ public class VMDControl extends AbstractControl {
                     break;
                 }
             }
-        }
-        for (int i = 0; i < pmdNode.getPmdModel().getBoneList().getBones().length; i++) {
-            PMDBone bone = pmdNode.getPmdModel().getBoneList().getBones()[i];
-//            if (bone.getBoneName().indexOf("胸") >=0) {
-//                System.out.println(bone.getBoneName()+" "+boneEnabled[i]);
-//            }
         }
         ikControl.setBoneEnabled(boneEnabled);
         for (int i = pmdNode.getSkeleton().getBoneCount() - 1; i >= 0; i--) {
@@ -372,7 +366,7 @@ public class VMDControl extends AbstractControl {
     }
 
     void calcBonePosition() {
-        if (followRotateEnabled) resetFollowRotate();
+//        if (followRotateEnabled) resetFollowRotate();
         for (int i = pmdNode.getSkeleton().getBoneCount() - 1; i >= 0; i--) {
             int i2 = i; //boneEnabled.length -1 - i;
             if (boneEnabled[i2] == 1) {
@@ -393,17 +387,7 @@ public class VMDControl extends AbstractControl {
                 if (bml.size() - 1 < bml.currentCount) {
                     VMDMotion m1 = bml.getVMDMotion(tmpMotion2, bml.size() - 1);
                     Quat4f q = m1.getRotation();
-                    if (false && bml.boneType == 9 && bml.childBone != null) {
-                        TempVars t = TempVars.get();
-                        t.quat1.set(q.x, q.y, q.z,q.w);
-                        t.quat2.loadIdentity();
-                        t.quat2.slerp(bml.childBone.getLocalRotation(), bml.rotateCoef);
-                        t.quat1.multLocal(t.quat2);
-                        bone.getLocalRotation().set(t.quat1);
-                        t.release();
-                    } else {
-                        bone.getLocalRotation().set(q.x, q.y, q.z, q.w);
-                    }
+                    bone.getLocalRotation().set(q.x, q.y, q.z, q.w);
                     Point3f p = m1.getLocation();
                     Vector3f v = bone.getWorldBindPosition();
                     if (true || bml.boneType == 1 || bml.boneType == 2) {
@@ -469,8 +453,7 @@ public class VMDControl extends AbstractControl {
                 }
             }
         }
-        if (followRotateEnabled)
-            updateFollowRotate();
+        updateFollowRotate();
         pmdNode.getSkeleton().updateWorldVectors();
         ikControl.updateIKBoneRotation();
         for (int i = 0; i < pmdNode.getPmdModel().getBoneList().getBoneCount(); i++) {
@@ -502,28 +485,48 @@ public class VMDControl extends AbstractControl {
 //                    bone.getLocalPosition().set(bone.getWorldBindPosition());
 //                    bone.getLocalRotation().set(bone.getWorldBindRotation());
                     Bone childBone = pmdNode.getSkeleton().getBone(tailBonePos);
-                    float rotateCoef = (float)pmdBone.getTargetBone() / 100f;
-//                    if (i == 18 || i == 28) {
-//                        rotateCoef = 1f;
-//                    }
-//                    logger.warning("bone = "+i + " childBone = "+tailBonePos+" rotateCoef = "+rotateCoef);
-
-                    t.quat1.set(bone.getLocalRotation());
-                    t.quat2.loadIdentity();
-//                    t.quat2.set(childBone.getWorldBindRotation());
-                    t.quat2.nlerp(childBone.getLocalRotation(), rotateCoef);
-                    t.quat1.multLocal(t.quat2);
-//                    if (rotateCoef >= 0)
-                    bone.getLocalRotation().set(t.quat1);
-//                    if (i == 18 || i == 28) {
-//                        bone.getLocalRotation().set(childBone.getLocalRotation());
-//                    }
+                    float rotateCoef = ((float)pmdBone.getTargetBone()) * 0.01f;
+                    if (true || bones[tailBonePos].getBoneType() == 8) {
+                        Quaternion q = childBone.getLocalRotation();
+                        if (q.getW() > 1f) {
+                            t.quat1.set(q.getX(), q.getY(), -q.getZ(), 1f);
+                        } else if (q.getW() < -1f) {
+                            t.quat1.set(q.getX(), q.getY(), -q.getZ(), -1f);
+                        } else {
+                            t.quat1.set(q.getX(), q.getY(), -q.getZ(), -q.getW());
+                        }
+                        float sita = FastMath.acos(t.quat1.getW());
+                        if (t.quat1.getW() < 0f) {
+                            sita -= FastMath.PI;
+                        }
+                        float n = FastMath.sqrt(t.quat1.getX() * t.quat1.getX()
+                                + t.quat1.getY() * t.quat1.getY()
+                                + t.quat1.getZ() * t.quat1.getZ());
+                        if (sita == 0f || sita < FastMath.FLT_EPSILON) {
+                            bone.getLocalRotation().loadIdentity();
+                        } else {
+//                        float angle = childBone.getLocalRotation().toAngleAxis(t.vect1);
+//                        angle *= rotateCoef;
+//                        t.quat1.fromAngleAxis(angle, t.vect1);
+                            float nsita = sita * rotateCoef;
+                            float vv = FastMath.sin(nsita)/n;
+                            bone.getLocalRotation().set(t.quat1.getX() * vv, t.quat1.getY() * vv, -t.quat1.getZ() * vv , -FastMath.cos(nsita));
+//                        bone.getLocalRotation().fromAngleAxis(angle, t.vect1);
+                            bone.getLocalRotation().normalizeLocal();
+                        }
+                    } else {
+                        t.quat1.set(bone.getLocalRotation());
+                        t.quat2.loadIdentity();
+                        t.quat2.nlerp(childBone.getLocalRotation(), rotateCoef);
+                        bone.getLocalRotation().set(t.quat2);
+                    }
                 }
 
             }
         }
         t.release();
     }
+
     public void resetFollowRotate() {
         PMDBone bones[] = pmdNode.getPmdModel().getBoneList().getBones();
         for(int i=0;i<bones.length;i++) {

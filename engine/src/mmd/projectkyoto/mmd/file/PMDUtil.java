@@ -63,7 +63,7 @@ public class PMDUtil {
         return v;
     }
     public static void writeString(DataOutput os, String s, int len) throws IOException {
-        byte[] buf = s.getBytes("Shift_JIS");
+        byte[] buf = s.getBytes("MS932");
         int l = buf.length;
         if (l > len) {
             os.write(buf, 0, len);

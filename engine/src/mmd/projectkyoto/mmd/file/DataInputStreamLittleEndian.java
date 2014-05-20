@@ -119,10 +119,10 @@ public class DataInputStreamLittleEndian extends FilterInputStream implements Da
         }
         for (int i = 0; i < size; i++) {
             if (buf[i] == 0) {
-                return new String(buf, 0, i, "Shift_JIS").intern();
+                return KeywordManager.getKeyword(buf, i);
             }
         }
-        return new String(buf, 0, size, "Shift_JIS").intern();
+        return KeywordManager.getKeyword(buf, size);
     }
 
     @Override

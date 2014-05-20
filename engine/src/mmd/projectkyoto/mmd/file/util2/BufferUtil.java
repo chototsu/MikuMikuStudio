@@ -5,6 +5,8 @@
 package projectkyoto.mmd.file.util2;
 
 import com.jme3.util.BufferUtils;
+import projectkyoto.mmd.file.KeywordManager;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -80,7 +82,7 @@ public class BufferUtil {
     public static void writeString(ByteBuffer bb, String s, int size) {
         try {
             byte[] buf = getBuf(size);
-            byte[] buf2 = s.getBytes("Shift_JIS");
+            byte[] buf2 = s.getBytes("MS932");
             int i = 0;
             for(;i<size;i++) {
                 if (buf2.length >= i) {
@@ -98,13 +100,13 @@ public class BufferUtil {
         try {
             byte[] buf = getBuf(size);
             bb.get(buf, 0, size);
-            for(int i=0;i<size;i++) {
+            for (int i = 0; i < size; i++) {
                 if (buf[i] == 0) {
-                    return new String(buf,0,i,"Shift_JIS");
+                    return KeywordManager.getKeyword(buf, i);
                 }
             }
-            return new String(buf,"Shift_JIS");
-        } catch (UnsupportedEncodingException ex) {
+            return KeywordManager.getKeyword(buf, size);
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
