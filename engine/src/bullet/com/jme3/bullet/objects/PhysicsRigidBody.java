@@ -747,4 +747,18 @@ public class PhysicsRigidBody extends PhysicsCollisionObject {
 
         joints = capsule.readSavableArrayList("joints", null);
     }
+
+    @Override
+    public void destroy() {
+        for(PhysicsJoint joint : joints) {
+            joint.destroy();
+        }
+        joints.clear();
+        super.destroy();
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+    }
 }

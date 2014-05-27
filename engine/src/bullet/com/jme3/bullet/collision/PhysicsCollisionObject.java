@@ -32,7 +32,9 @@
 package com.jme3.bullet.collision;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.joints.PhysicsJoint;
 import com.jme3.bullet.util.DebugShapeFactory;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
@@ -47,6 +49,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.debug.Arrow;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -57,7 +60,7 @@ import java.util.logging.Logger;
  * @author normenhansen
  */
 public abstract class PhysicsCollisionObject implements Savable {
-
+    private static final Logger logger = Logger.getLogger(PhysicsCollisionObject.class.getName());
     protected long objectId = 0;
     protected Spatial debugShape;
     protected Arrow debugArrow;
@@ -87,6 +90,8 @@ public abstract class PhysicsCollisionObject implements Savable {
     protected int collisionGroup = 0x00000001;
     protected int collisionGroupsMask = 0x00000001;
     private Object userObject;
+    private PhysicsSpace physicsSpace;
+
 
     /**
      * Sets a CollisionShape to this physics object, note that the object should
@@ -298,6 +303,14 @@ public abstract class PhysicsCollisionObject implements Savable {
     native void setCollisionGroup(long objectId, int collisionGroup);
     native void setCollideWithGroups(long objectId, int collisionGroups);
 
+    public PhysicsSpace getPhysicsSpace() {
+        return physicsSpace;
+    }
+
+    public void setPhysicsSpace(PhysicsSpace physicsSpace) {
+        this.physicsSpace = physicsSpace;
+    }
+
     @Override
     public void write(JmeExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
@@ -317,11 +330,22 @@ public abstract class PhysicsCollisionObject implements Savable {
         collisionShape = shape;
     }
 
+    public void destroy() {
+        logger.fine("destroy()");
+        if (objectId != 0) {
+            finalizeNative(objectId);
+            objectId = 0;
+        }
+    }
+
     @Override
     protected void finalize() throws Throwable {
-        super.finalize();
         Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Finalizing CollisionObject {0}", Long.toHexString(objectId));
-        finalizeNative(objectId);
+        if (physicsSpace != null) {
+            return;
+        }
+        destroy();
+        super.finalize();
     }
 
     protected native void finalizeNative(long objectId);
