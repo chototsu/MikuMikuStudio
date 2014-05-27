@@ -718,7 +718,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
     private void loadTextureConcurrent(final String textureName) {
         Future f = futureMap.get(textureName);
         if (f == null) {
-            ThreadUtil.Job job = new ThreadUtil.Job(100) {
+            ThreadUtil.Job job = new ThreadUtil.Job(1) {
                 @Override
                 public Object call() throws Exception {
                     Texture tex =  assetManager.loadTexture(textureName);
