@@ -28,6 +28,7 @@
 package projectkyoto.mmd.file;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -92,21 +93,47 @@ public class KeywordManager {
             return newKeyword;
         }
     }
+    public static class KeyValue {
+        public int id;
+        public String value;
 
-    private static HashMap<Keyword, String> map = new HashMap<Keyword, String>();
+        public KeyValue(String value) {
+            this.id = getNextId();
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return "KeyValue{" +
+                    "id=" + id +
+                    ", value='" + value + '\'' +
+                    '}';
+        }
+    }
+    private static int nextId = 0;
+    private static synchronized int getNextId() {
+        return nextId++;
+    }
+
+    private static HashMap<Keyword, KeyValue> map = new HashMap<Keyword, KeyValue>();
+    private static ArrayList<KeyValue> keyValueList = new ArrayList<KeyValue>();
     private static Keyword keyword = new Keyword();
-    public static synchronized String getKeyword(byte[] buf, int length) throws IOException{
+    public static synchronized KeyValue getKeyword(byte[] buf, int length) throws IOException{
         try {
             keyword.set(buf, length);
-            String value = map.get(keyword);
+            KeyValue value = map.get(keyword);
             if (value == null) {
-                value = (new String(buf,0, length,"MS932")).intern();
+                value = new KeyValue((new String(buf,0, length,"MS932")).intern());
                 map.put(keyword.clone(), value);
+                keyValueList.add(value);
             }
             return value;
         } catch(CloneNotSupportedException ex) {
             throw new IOException("clone error", ex);
         }
+    }
+    public static synchronized KeyValue getKeyValue(int id) {
+        return keyValueList.get(id);
     }
     public static synchronized String[] getKeywords() {
         String[] array = new String[map.size()];

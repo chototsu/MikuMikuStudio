@@ -119,6 +119,19 @@ public class DataInputStreamLittleEndian extends FilterInputStream implements Da
         }
         for (int i = 0; i < size; i++) {
             if (buf[i] == 0) {
+                return KeywordManager.getKeyword(buf, i).value;
+            }
+        }
+        return KeywordManager.getKeyword(buf, size).value;
+    }
+    public final KeywordManager.KeyValue readKeyword(int size) throws IOException {
+        byte[] buf = getBuf(size);
+        int pos = 0;
+        while(pos < size) {
+            pos += read(buf, pos, size - pos);
+        }
+        for (int i = 0; i < size; i++) {
+            if (buf[i] == 0) {
                 return KeywordManager.getKeyword(buf, i);
             }
         }

@@ -102,10 +102,10 @@ public class BufferUtil {
             bb.get(buf, 0, size);
             for (int i = 0; i < size; i++) {
                 if (buf[i] == 0) {
-                    return KeywordManager.getKeyword(buf, i);
+                    return KeywordManager.getKeyword(buf, i).value;
                 }
             }
-            return KeywordManager.getKeyword(buf, size);
+            return KeywordManager.getKeyword(buf, size).value;
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
