@@ -92,7 +92,7 @@ public class MeshConverter implements Serializable{
                 for(int skinVertCount = 0;skinVertCount<skinData.getSkinVertCount();skinVertCount++) {
 //                    VertIndex vi = new VertIndex(skinData.getIndexBuf().get(skinVertCount));
                     int vi = skinData.getIndexBuf().get(skinVertCount) & 0xffff;
-                    int bit = 2 ^ (vi & 31);
+                    int bit = 1 << (vi & 31);
                     skinVertBitmap[vi / 32] |= bit;
                 }
                 break;
@@ -211,7 +211,7 @@ public class MeshConverter implements Serializable{
     boolean containsSkin(int i) {
 //        tmpvi.index = i;
 //        return skinVertSet.contains(tmpvi);
-        int bit = 2 ^ (i & 31);
+        int bit = 1 << (i & 31);
         if ((skinVertBitmap[i / 32] & bit) !=  0) {
             return true;
         } else {
