@@ -47,6 +47,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Line;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.vecmath.Quat4f;
 import projectkyoto.jme3.mmd.PMDNode;
 import projectkyoto.mmd.file.PMDException;
@@ -58,10 +59,11 @@ import projectkyoto.mmd.file.PMDModel;
  * @author kobayasi
  */
 public class PMDPhysicsWorld {
+    private static final Logger logger = Logger.getLogger(PMDPhysicsWorld.class.getName());
     int maxSteps = 10;
     // bullet physics
     static final Object lockObject = new Object();
-    PhysicsSpace physicsSpace;
+    private PhysicsSpace physicsSpace;
     Map<PMDNode, PMDRigidBody[]> rigidBodyMap = new HashMap<PMDNode, PMDRigidBody[]>();
     PMDRigidBody[][] nodeRigidBodyArray = new PMDRigidBody[0][];
     Map<PMDNode, SixDofJoint[]> constraintMap = new HashMap<PMDNode, SixDofJoint[]>();
@@ -425,7 +427,6 @@ public class PMDPhysicsWorld {
 //        }
         if (constRot1.getY() <= -FastMath.PI / 0.5f) {
             constRot1.setY(-FastMath.PI * 0.49f);
-            System.out.println("constRot1 y must > -90");
         }
 //        if (constRot1.getZ() <= -FastMath.PI / 1.0f) {
 //            constRot1.setZ(-FastMath.PI * 1f);
@@ -624,6 +625,14 @@ public class PMDPhysicsWorld {
     public void setMaxSteps(int maxSteps) {
         this.maxSteps = maxSteps;
     }
-    
 
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        logger.fine("finalize()");
+        if (physicsSpace != null) {
+            physicsSpace.destroy();
+            physicsSpace = null;
+        }
+    }
 }

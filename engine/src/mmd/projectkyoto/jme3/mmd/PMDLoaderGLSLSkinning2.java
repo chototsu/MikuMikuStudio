@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import projectkyoto.mmd.file.*;
@@ -365,15 +366,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
 
         }
         geom.setPmdMaterial(m);
-        if (m.getMaterial().getFaceColor().getAlpha() < 1f) {
-            geom.setQueueBucket(Bucket.Transparent);
-        } else {
-            if (m.getTextureFileName().length() > 0) {
-            geom.setQueueBucket(Bucket.Transparent);
-            } else {
-                geom.setQueueBucket(Bucket.Inherit);
-            }
-        }
+        geom.setQueueBucket(Bucket.MMD);
     }
 
     Material createMaterial(PMDMaterial m, boolean skinning) {
@@ -651,6 +644,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         this.assetManager = ai.getManager();
         model = new PMDModel(ai.openStream());
         folderName = ai.getKey().getFolder();
+        loadTextures();
         meshConverter = new MeshConverter(model);
         meshConverter.convertMesh();
 //        PMNData pmdData = meshConverter.createPMNData();
@@ -678,6 +672,7 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
         meshConverter = PMDFileUtil.readPMDCache1(is);
         is.close();
         model = meshConverter.getModel();
+        loadTextures();
         PMDNode pmdNode = createNode(ai.getKey().getName());
 //        if (JmeSystem.getFullName().indexOf("Android") == -1) {
 //            try {
@@ -703,15 +698,44 @@ public class PMDLoaderGLSLSkinning2 implements AssetLoader{
     }
     Texture loadTexture(String name) {
         try {
-        Texture tex = textureMap.get(name);
-        if (tex == null) {
-            tex = assetManager.loadTexture(name);
-            textureMap.put(name, tex);
-        }
-        return tex;
+            Future future = futureMap.get(name);
+            if (future != null) {
+                return (Texture)future.get();
+            }
+            Texture tex = textureMap.get(name);
+            if (tex == null) {
+                tex = assetManager.loadTexture(name);
+                textureMap.put(name, tex);
+            }
+            return tex;
         } catch(Exception ex) {
-            logger.log(Level.FINE,"Txture "+name+" not found.");
             return null;
+        }
+    }
+    HashMap<String, Future> futureMap = new HashMap<String, Future>();
+    private void loadTextureConcurrent(final String textureName) {
+        Future f = futureMap.get(textureName);
+        if (f == null) {
+            ThreadUtil.Job job = new ThreadUtil.Job(1) {
+                @Override
+                public Object call() throws Exception {
+                    Texture tex =  assetManager.loadTexture(textureName);
+                    return tex;
+                }
+            };
+            futureMap.put(textureName, ThreadUtil.addJob(job));
+        }
+    }
+    private void loadTextures() {
+        for(PMDMaterial m : model.getMaterial()) {
+            if (m.getTextureFileName().length() > 0) {
+                StringTokenizer st = new StringTokenizer(m.getTextureFileName().replace("\\", "/"), "*");
+//            System.out.println("m.getTextureFileName() = " + m.getTextureFileName());
+                while (st.hasMoreElements()) {
+                    String fileName = st.nextToken();
+                    loadTextureConcurrent(folderName + fileName);
+                }
+            }
         }
     }
 }

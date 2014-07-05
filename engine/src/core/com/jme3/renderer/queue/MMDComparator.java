@@ -24,54 +24,43 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package projectkyoto.mmd.file;
 
-import java.io.DataOutput;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import javax.vecmath.Vector3f;
+package com.jme3.renderer.queue;
+
+import com.jme3.renderer.Camera;
+import com.jme3.scene.Geometry;
+import projectkyoto.jme3.mmd.PMDGeometry;
+
+import java.util.logging.Logger;
 
 /**
- *
- * @author Kazuhiko Kobayashi
+ * Created by kobayasi on 2014/05/14.
  */
-public class PMDUtil {
+public class MMDComparator implements GeometryComparator{
+    private static final Logger logger = Logger.getLogger(MMDComparator.class.getName());
+    @Override
+    public void setCamera(Camera cam) {
 
-    public static Vector3f readVector3f(DataInputStreamLittleEndian is, Vector3f v)
-            throws IOException {
-        v.set(is.readFloat(), is.readFloat(), -is.readFloat());
-        return v;
     }
-
-    public static Vector3f readVector3f(DataInputStreamLittleEndian is) throws
-            IOException {
-        return readVector3f(is, new Vector3f());
-    }
-    public static Vector3f readVector3f(ByteBuffer bb, Vector3f v) {
-        v.set(bb.getFloat(), bb.getFloat(), bb.getFloat());
-        return v;
-    }
-    public static Vector3f writeVector3f(ByteBuffer bb, Vector3f v) {
-        bb.putFloat(v.x);
-        bb.putFloat(v.y);
-        bb.putFloat(v.z);
-        return v;
-    }
-    public static void writeString(DataOutput os, String s, int len) throws IOException {
-        byte[] buf = s.getBytes("MS932");
-        int l = buf.length;
-        if (l > len) {
-            os.write(buf, 0, len);
+    private int calcDistance(Geometry geom) {
+        if (geom instanceof PMDGeometry) {
+            return ((PMDGeometry) geom).getMaterialNo();
         } else {
-            os.write(buf);
-            for(;l < len;l++) {
-                os.writeByte(0);
-            }
+            throw new RuntimeException("Geometry is not a PMDGeometry.");
         }
     }
-    public static void writeVector3f(DataOutput os, Vector3f v) throws IOException{
-        os.writeFloat(v.x);
-        os.writeFloat(v.y);
-        os.writeFloat(-v.z);
+
+    @Override
+    public int compare(Geometry o1, Geometry o2) {
+        int dist1 = calcDistance(o1);
+        int dist2 = calcDistance(o2);
+
+        if (dist1 == dist2) {
+            return 0;
+        } else if (dist1 < dist2) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 }

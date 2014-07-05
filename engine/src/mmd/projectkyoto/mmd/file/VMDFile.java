@@ -49,7 +49,7 @@ public class VMDFile implements Serializable{
 //    private VMDMotion motionArray[];
     private int skinCount;
     private VMDSkin skinArray[];
-    protected final ArrayList<String> boneNames = new ArrayList<String>();
+//    protected final ArrayList<String> boneNames = new ArrayList<String>();
 //    protected final ArrayList<String> skinNames = new ArrayList<String>();
     private ByteBuffer bb1;
 //    private ByteBuffer bb2;

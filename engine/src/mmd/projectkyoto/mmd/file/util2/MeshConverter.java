@@ -69,6 +69,7 @@ public class MeshConverter implements Serializable{
     public ByteBuffer interleavedBuffer;
     int currentVertIndex = 0;
     PMNData pmnData;
+    int skinVertBitmap[];
     public MeshConverter() {
         
     }
@@ -79,12 +80,15 @@ public class MeshConverter implements Serializable{
 //        removeUnusedSkinVertex();
     }
     private final void initSkinVertSet() {
+        skinVertBitmap = new int[model.getVertCount() / 32 + 1];
         for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {
             PMDSkinData skinData = model.getSkinData()[skinCount];
             if (skinData.getSkinType() == 0) {
                 for(int skinVertCount = 0;skinVertCount<skinData.getSkinVertCount();skinVertCount++) {
-                    VertIndex vi = new VertIndex(skinData.getIndexBuf().get(skinVertCount));
-                    skinVertSet.add(vi);
+//                    VertIndex vi = new VertIndex(skinData.getIndexBuf().get(skinVertCount));
+                    int vi = skinData.getIndexBuf().get(skinVertCount) & 0xffff;
+                    int bit = 1 << (vi & 31);
+                    skinVertBitmap[vi / 32] |= bit;
                 }
                 break;
             }
@@ -113,17 +117,17 @@ public class MeshConverter implements Serializable{
             PMDMaterial material = model.getMaterial()[materialNo];
             // find same material
             MeshData meshData = new MeshData(model, maxBoneSize, material);
-            for(int meshIndex = meshDataList.size()-1;meshIndex >=0;meshIndex--) {
-                PMDMaterial material2 = meshDataList.get(meshIndex).getMaterial();
-                if (material.equals(material2)) {
-                    meshData = meshDataList.get(meshIndex);
-                    for(int i=meshData.getVertIndexList().size()-1;i>=0;i--) {
-                        Integer vertIndex = meshData.getVertIndexList().get(i);
-                        meshTmpVertMap.put(vertIndex, i);
-                    }
-                    break;
-                }
-            }
+//            for(int meshIndex = meshDataList.size()-1;meshIndex >=0;meshIndex--) {
+//                PMDMaterial material2 = meshDataList.get(meshIndex).getMaterial();
+//                if (false && material.equals(material2)) {
+//                    meshData = meshDataList.get(meshIndex);
+//                    for(int i=meshData.getVertIndexList().size()-1;i>=0;i--) {
+//                        Integer vertIndex = meshData.getVertIndexList().get(i);
+//                        meshTmpVertMap.put(vertIndex, i);
+//                    }
+//                    break;
+//                }
+//            }
             if (material.getFaceVertCount() == 0) {
                 continue;
             }
@@ -200,8 +204,14 @@ public class MeshConverter implements Serializable{
     }
     VertIndex tmpvi = new VertIndex(0);
     boolean containsSkin(int i) {
-        tmpvi.index = i;
-        return skinVertSet.contains(tmpvi);
+//        tmpvi.index = i;
+//        return skinVertSet.contains(tmpvi);
+        int bit = 1 << (i & 31);
+        if ((skinVertBitmap[i / 32] & bit) !=  0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 //    boolean _containsSkin(int i) {
 //        for(int skinCount = 0;skinCount<model.getSkinCount();skinCount++) {

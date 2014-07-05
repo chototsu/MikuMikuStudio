@@ -52,10 +52,8 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Transform;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -68,7 +66,7 @@ import java.util.logging.Logger;
  * @author normenhansen
  */
 public class PhysicsSpace {
-
+    private static final Logger logger = Logger.getLogger(PhysicsSpace.class.getName());
     public static final int AXIS_X = 0;
     public static final int AXIS_Y = 1;
     public static final int AXIS_Z = 2;
@@ -373,7 +371,6 @@ public class PhysicsSpace {
 
     public static <V> Future<V> enqueueOnThisThread(Callable<V> callable) {
         AppTask<V> task = new AppTask<V>(callable);
-        System.out.println("created apptask");
         pQueueTL.get().add(task);
         return task;
     }
@@ -411,6 +408,7 @@ public class PhysicsSpace {
     }
 
     public void addCollisionObject(PhysicsCollisionObject obj) {
+        obj.setPhysicsSpace(this);
         if (obj instanceof PhysicsGhostObject) {
             addGhostObject((PhysicsGhostObject) obj);
         } else if (obj instanceof PhysicsRigidBody) {
@@ -445,6 +443,9 @@ public class PhysicsSpace {
     }
 
     public void removeCollisionObject(PhysicsCollisionObject obj) {
+        if (obj.getObjectId() == 0 || physicsSpaceId == 0 || obj.getPhysicsSpace() != this) {
+            return;
+        }
         if (obj instanceof PhysicsGhostObject) {
             removeGhostObject((PhysicsGhostObject) obj);
         } else if (obj instanceof PhysicsRigidBody) {
@@ -452,6 +453,7 @@ public class PhysicsSpace {
         } else if (obj instanceof PhysicsCharacter) {
             removeCharacter((PhysicsCharacter) obj);
         }
+        obj.setPhysicsSpace(null);
     }
 
     /**
@@ -621,6 +623,7 @@ public class PhysicsSpace {
             addVehicle(physicsSpaceId, ((PhysicsVehicle) node).getVehicleId());
 //            dynamicsWorld.addVehicle(((PhysicsVehicle) node).getVehicleId());
         }
+        node.setPhysicsSpace(this);
     }
 
     private void removeRigidBody(PhysicsRigidBody node) {
@@ -632,20 +635,37 @@ public class PhysicsSpace {
         }
         Logger.getLogger(PhysicsSpace.class.getName()).log(Level.FINE, "Removing RigidBody {0} from physics space.", Long.toHexString(node.getObjectId()));
         physicsNodes.remove(node.getObjectId());
+        ArrayList<PhysicsJoint> removeJointList = new ArrayList<PhysicsJoint>();
+        for(PhysicsJoint joint : physicsJoints) {
+            if (joint.getBodyA() == node || joint.getBodyB() == node) {
+                removeJointList.add(joint);
+                throw new RuntimeException("never remove joint first.");
+            }
+        }
+        for(PhysicsJoint joint : removeJointList) {
+//            remove(joint);
+        }
         removeRigidBody(physicsSpaceId, node.getObjectId());
+        node.setPhysicsSpace(null);
     }
 
     private void addJoint(PhysicsJoint joint) {
         Logger.getLogger(PhysicsSpace.class.getName()).log(Level.FINE, "Adding Joint {0} to physics space.", Long.toHexString(joint.getObjectId()));
         physicsJoints.add(joint);
         addConstraint(physicsSpaceId, joint.getObjectId());
+        joint.setPhysicsSpace(this);
 //        dynamicsWorld.addConstraint(joint.getObjectId(), !joint.isCollisionBetweenLinkedBodys());
     }
 
     private void removeJoint(PhysicsJoint joint) {
         Logger.getLogger(PhysicsSpace.class.getName()).log(Level.FINE, "Removing Joint {0} from physics space.", Long.toHexString(joint.getObjectId()));
+        if (joint.getObjectId() == 0 || physicsSpaceId == 0 || joint.getPhysicsSpace() != this) {
+            return;
+        }
         physicsJoints.remove(joint);
-        removeConstraint(physicsSpaceId, joint.getObjectId());
+        if (joint.getObjectId() != 0)
+            removeConstraint(physicsSpaceId, joint.getObjectId());
+        joint.setPhysicsSpace(null);
 //        dynamicsWorld.removeConstraint(joint.getObjectId());
     }
 
@@ -801,11 +821,46 @@ public class PhysicsSpace {
      * destroys the current PhysicsSpace so that a new one can be created
      */
     public void destroy() {
-        physicsNodes.clear();
-        physicsJoints.clear();
+        logger.fine("destroy");
+//        physicsNodes.clear();
+//        physicsJoints.clear();
 
 //        dynamicsWorld.destroy();
 //        dynamicsWorld = null;
+        if (physicsSpaceId == 0) {
+            return;
+        }
+        for(;;) {
+            try {
+                ArrayList<PhysicsJoint>deleteJointList = new ArrayList<PhysicsJoint>();
+                while(physicsJoints.size() > 0) {
+                    PhysicsJoint joint = physicsJoints.get(0);
+                    deleteJointList.add(joint);
+                    remove(joint);
+                }
+                ArrayList<PhysicsRigidBody>deleteRBList = new ArrayList<PhysicsRigidBody>();
+                while(physicsNodes.size() > 0) {
+                    for(PhysicsRigidBody node : physicsNodes.values()) {
+                        deleteRBList.add(node);
+                        remove(node);
+                        break;
+                    }
+                }
+                for(PhysicsJoint joint : deleteJointList) {
+                    joint.destroy();
+                }
+                for(PhysicsRigidBody rb : deleteRBList) {
+                    rb.destroy();
+                }
+                break;
+            } catch(Exception ex) {
+                Logger.getLogger(PhysicsSpace.class.getName()).log(Level.SEVERE, "finalize failed.", ex);
+            }
+        }
+        if (physicsSpaceId != 0){
+            finalizeNative(physicsSpaceId);
+            physicsSpaceId = 0;
+        }
     }
 
     /**
@@ -919,28 +974,11 @@ public class PhysicsSpace {
          */
         DBVT;
     }
-
     @Override
     protected void finalize() throws Throwable {
-        for(;;) {
-            try {
-                while(physicsJoints.size() > 0) {
-                    remove(physicsJoints.get(0));
-                }
-                while(physicsNodes.size() > 0) {
-                    for(PhysicsRigidBody node : physicsNodes.values()) {
-                        remove(node);
-                        break;
-                    }
-                }
-                super.finalize();
-                Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Finalizing PhysicsSpace {0}", Long.toHexString(physicsSpaceId));
-                finalizeNative(physicsSpaceId);
-                break;
-            } catch(Exception ex) {
-                Logger.getLogger(PhysicsSpace.class.getName()).log(Level.SEVERE, "finalize failed.", ex);
-            }
-        }
+        Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Finalizing PhysicsSpace {0}", Long.toHexString(physicsSpaceId));
+        destroy();
+        super.finalize();
     }
 
     private native void finalizeNative(long objectId);

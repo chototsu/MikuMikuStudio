@@ -92,6 +92,8 @@ MaterialDef pmd {
         Float EdgeSize
         Texture2D SphereMap_A
         Texture2D SphereMap_H
+
+        Matrix4 PPShadowMat
     }
 
     Technique {
@@ -198,6 +200,56 @@ MaterialDef pmd {
         }
     }
 
+    Technique PPShadow {
+
+        LightMode MultiPass
+
+        VertexShader GLSL100:   MatDefs/pmd/pmd_ppshadow.vert
+        FragmentShader GLSL100: MatDefs/pmd/pmd_ppshadow.frag
+
+        // VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
+        // FragmentShader GLSL100: Common/MatDefs/Light/Lighting.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            NormalMatrix
+            WorldViewMatrix
+            ViewMatrix
+            CameraPosition
+            WorldMatrix
+        }
+
+        Defines {
+            LATC : LATC
+            VERTEX_COLOR : UseVertexColor
+            VERTEX_LIGHTING : VertexLighting
+            ATTENUATION : Attenuation
+            MATERIAL_COLORS : UseMaterialColors
+            V_TANGENT : VTangent
+            MINNAERT  : Minnaert
+            WARDISO   : WardIso
+            LOW_QUALITY : LowQuality
+            HQ_ATTENUATION : HighQuality
+
+            DIFFUSEMAP : DiffuseMap
+            NORMALMAP : NormalMap
+            SPECULARMAP : SpecularMap
+            PARALLAXMAP : ParallaxMap
+            ALPHAMAP : AlphaMap
+            COLORRAMP : ColorRamp
+
+            USE_REFLECTION : EnvMap
+            SPHERE_MAP : SphereMap
+
+            NUM_BONES : NumBones
+            USE_HWSKINNING
+        }
+        RenderState {
+            FaceCull Off
+            DepthTest Off
+            DepthWrite On
+        }
+    }
     Technique PreShadow {
 
         // VertexShader GLSL100 :   Common/MatDefs/Shadow/PreShadow.vert

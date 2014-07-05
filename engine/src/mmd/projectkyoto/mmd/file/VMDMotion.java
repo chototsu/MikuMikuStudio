@@ -55,20 +55,9 @@ public class VMDMotion implements Serializable{
         readFromStream(is);
     }
     public final void readFromStream(DataInputStreamLittleEndian is) throws IOException {
-        boneName = is.readString(15);
-        boneIndex = -1;
-//        for(int i=0;i<vmdFile.boneNames.size();i++) {
-//            if (boneName.equals(vmdFile.boneNames.get(i))) {
-//                boneIndex = (short)i;
-//                break;
-//            }
-//        }
-        boneIndex = (short)vmdFile.boneNames.indexOf(boneName);
-        if (boneIndex < 0) {
-            vmdFile.boneNames.add(boneName);
-//            boneIndex = (short)(vmdFile.boneNames.size() - 1);
-            boneIndex = (short)vmdFile.boneNames.indexOf(boneName);
-        }
+        KeywordManager.KeyValue keyValue = is.readKeyword(15);
+        boneName = keyValue.value;
+        boneIndex = (short) keyValue.id;
         frameNo = is.readInt();
         location = new Point3f();
         location.x = is.readFloat();
@@ -130,7 +119,7 @@ public class VMDMotion implements Serializable{
     }
 
     public String getBoneName() {
-        return vmdFile.boneNames.get(boneIndex);
+        return KeywordManager.getKeyValue(boneIndex).value;
     }
 
     public void setBoneName(String boneName) {

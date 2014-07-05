@@ -31,6 +31,7 @@
  */
 package com.jme3.bullet.joints;
 
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.math.Vector3f;
@@ -47,13 +48,14 @@ import java.util.logging.Logger;
  * @author normenhansen
  */
 public abstract class PhysicsJoint implements Savable {
-
+    private static final Logger logger = Logger.getLogger(PhysicsJoint.class.getName());
     protected long objectId = 0;
     protected PhysicsRigidBody nodeA;
     protected PhysicsRigidBody nodeB;
     protected Vector3f pivotA;
     protected Vector3f pivotB;
     protected boolean collisionBetweenLinkedBodys = true;
+    private PhysicsSpace physicsSpace;
 
     public PhysicsJoint() {
     }
@@ -116,12 +118,26 @@ public abstract class PhysicsJoint implements Savable {
         return pivotB;
     }
 
+    public PhysicsSpace getPhysicsSpace() {
+        return physicsSpace;
+    }
+
+    public void setPhysicsSpace(PhysicsSpace physicsSpace) {
+        this.physicsSpace = physicsSpace;
+    }
+
     /**
      * destroys this joint and removes it from its connected PhysicsRigidBodys joint lists
      */
     public void destroy() {
-        getBodyA().removeJoint(this);
-        getBodyB().removeJoint(this);
+        logger.fine("destroy");
+        if (objectId != 0) {
+            if (physicsSpace != null) {
+                throw new RuntimeException("physicsSpace != null");
+            }
+            finalizeNative(objectId);
+            objectId = 0;
+        }
     }
 
     public void write(JmeExporter ex) throws IOException {
@@ -142,9 +158,12 @@ public abstract class PhysicsJoint implements Savable {
 
     @Override
     protected void finalize() throws Throwable {
-        super.finalize();
         Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Finalizing Joint {0}", Long.toHexString(objectId));
-        finalizeNative(objectId);
+        if (physicsSpace != null) {
+            return;
+        }
+        destroy();
+        super.finalize();
     }
 
     private native void finalizeNative(long objectId);

@@ -911,6 +911,8 @@ public class RenderManager {
         // opaque objects are sorted front-to-back, reducing overdraw
         rq.renderQueue(Bucket.Opaque, this, cam, flush);
 
+        rq.renderQueue(Bucket.MMD, this, cam, flush);
+
         // render the sky, with depth range set to the farthest
         if (!rq.isQueueEmpty(Bucket.Sky)) {
             renderer.setDepthRange(1, 1);
@@ -930,6 +932,7 @@ public class RenderManager {
 
             rq.renderQueue(Bucket.Transparent, this, cam, flush);
         }
+
 
         if (!rq.isQueueEmpty(Bucket.Gui)) {
             renderer.setDepthRange(0, 0);
