@@ -8,7 +8,7 @@ lazy val engine = project
 
 lazy val desktop = project.dependsOn(engine)
 
-lazy val android = project
+//lazy val android = project
 
 lazy val gdx = project.dependsOn(engine)
 
